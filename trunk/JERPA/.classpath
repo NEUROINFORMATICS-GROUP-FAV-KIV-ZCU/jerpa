@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/Filters.jar"/>
+	<classpathentry kind="lib" path="lib/jxlayer.jar"/>
+	<classpathentry kind="lib" path="lib/MultipleGradientPaint.jar"/>
+	<classpathentry kind="lib" path="lib/swing-layout.jar"/>
+	<classpathentry kind="lib" path="lib/swing-worker.jar"/>
+	<classpathentry kind="lib" path="lib/swingx-0.9.5.jar"/>
+	<classpathentry kind="lib" path="lib/swingx-beaninfo-0.9.5.jar"/>
+	<classpathentry kind="lib" path="lib/TimingFramework-1.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/JERPAUi"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
