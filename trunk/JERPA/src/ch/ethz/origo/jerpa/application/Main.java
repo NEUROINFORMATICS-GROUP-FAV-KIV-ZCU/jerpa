@@ -1,6 +1,6 @@
-package jerpa.applications;
+package ch.ethz.origo.jerpa.application;
 
-import jerpa.prezentation.MainFrame;
+import ch.ethz.origo.jerpa.prezentation.MainFrame;
 /**
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)

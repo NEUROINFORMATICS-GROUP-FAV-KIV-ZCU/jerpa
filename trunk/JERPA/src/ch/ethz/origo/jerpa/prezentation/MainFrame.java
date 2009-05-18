@@ -20,7 +20,7 @@
  *                       Department of Computer Science and Engineering, 
  *                       Pilsen, Czech Republic
  */
-package jerpa.prezentation;
+package ch.ethz.origo.jerpa.prezentation;
 
 import ch.ethz.origo.jerpaui.ui.JERPAFrame;
 import ch.ethz.origo.jerpaui.ui.utils.listeners.AppButtonsEvent;
