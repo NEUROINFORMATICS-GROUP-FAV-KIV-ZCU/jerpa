@@ -35,7 +35,7 @@ public class MainFrame implements AppButtonsListener {
 	}
 
 	private void initGui() {
-		mainFrame = new JERPAFrame(ClassLoader.getSystemResourceAsStream("jerpa/data/images/Jerpa_icon.png"));
+		mainFrame = new JERPAFrame("JERPA", ClassLoader.getSystemResourceAsStream("jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setVisible(true);
 	}
 
