@@ -22,7 +22,7 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
-import ch.ethz.origo.jerpaui.ui.JERPAFrame;
+import ch.ethz.origo.jerpaui.prezentation.JERPAFrame;
 import ch.ethz.origo.jerpaui.ui.utils.listeners.AppButtonsEvent;
 import ch.ethz.origo.jerpaui.ui.utils.listeners.AppButtonsListener;
 
