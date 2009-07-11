@@ -22,38 +22,48 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
+import ch.ethz.origo.jerpaui.application.listener.AppButtonsEvent;
+import ch.ethz.origo.jerpaui.application.listener.AppButtonsListener;
 import ch.ethz.origo.jerpaui.prezentation.JERPAFrame;
-import ch.ethz.origo.jerpaui.ui.utils.listeners.AppButtonsEvent;
-import ch.ethz.origo.jerpaui.ui.utils.listeners.AppButtonsListener;
 
+/**
+ * 
+ * @author Vaclav Souhrada
+ * @version 0.1.0 05/07/2009
+ */
 public class MainFrame implements AppButtonsListener {
 
 	private JERPAFrame mainFrame;
 	
+	/**
+	 * Initialize main graphic frame
+	 */
 	public MainFrame() {
 		initGui();
 	}
-
+	
+	/**
+	 * Initialize GUI
+	 * @since 0.1.0
+	 */
 	private void initGui() {
-		mainFrame = new JERPAFrame("JERPA", ClassLoader.getSystemResourceAsStream("jerpa/data/images/Jerpa_icon.png"));
+		mainFrame = new JERPAFrame("JERPA", ClassLoader.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setVisible(true);
 	}
 
 	@Override
 	public void closeAppButton(AppButtonsEvent e) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("daddadadasda");
 	}
 
 	@Override
 	public void maximalizeAppButton(AppButtonsEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void minimalizelizeAppButton(AppButtonsEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
+	
 }

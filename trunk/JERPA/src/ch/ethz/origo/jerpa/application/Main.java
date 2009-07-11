@@ -26,11 +26,11 @@ import javax.swing.SwingUtilities;
 
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
 /**
+ * Main class of this application. Contains main method for application startup.
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.0 
- * Date : 04/16/2009
- * @since 1.0 (app. version)
+ * @version 0.1.0 04/16/2009 
+ * @since 0.1 (app. version)
  *     
  */
 public class Main {
