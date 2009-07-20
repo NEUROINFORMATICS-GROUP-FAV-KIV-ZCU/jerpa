@@ -22,14 +22,19 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
+import nezarazeno.PerspectiveException;
+import noname.ConfigPropertiesLoader;
+import noname.PerspectiveLoader;
 import ch.ethz.origo.jerpaui.application.listener.AppButtonsEvent;
 import ch.ethz.origo.jerpaui.application.listener.AppButtonsListener;
 import ch.ethz.origo.jerpaui.prezentation.JERPAFrame;
 
 /**
  * 
+ * 
  * @author Vaclav Souhrada
  * @version 0.1.0 05/07/2009
+ * @since 0.1.0 (05/07/2009)
  */
 public class MainFrame implements AppButtonsListener {
 
@@ -39,21 +44,40 @@ public class MainFrame implements AppButtonsListener {
 	 * Initialize main graphic frame
 	 */
 	public MainFrame() {
-		initGui();
+		try {
+			initGui();
+		} catch (PerspectiveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
 	 * Initialize GUI
+	 * @throws PerspectiveException 
+	 * 
 	 * @since 0.1.0
 	 */
-	private void initGui() {
-		mainFrame = new JERPAFrame("JERPA", ClassLoader.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
+	private void initGui() throws PerspectiveException {
+		StringBuffer titleBuff = new StringBuffer();
+		titleBuff.append(ConfigPropertiesLoader.getApplicationTitle());
+		titleBuff.append(" ");
+		titleBuff.append(ConfigPropertiesLoader.getAppMajorVersion());
+		titleBuff.append(".");
+		titleBuff.append(ConfigPropertiesLoader.getAppMinorVersion());
+		titleBuff.append(".");
+		titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
+		// create frame
+		mainFrame = new JERPAFrame(titleBuff.toString(), ClassLoader.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
+		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
+		mainFrame.setPerspectives(new PerspectiveLoader());
+		//PerspectiveLoader<T>
 		mainFrame.setVisible(true);
 	}
 
 	@Override
 	public void closeAppButton(AppButtonsEvent e) {
-		System.out.println("daddadadasda");
+
 	}
 
 	@Override

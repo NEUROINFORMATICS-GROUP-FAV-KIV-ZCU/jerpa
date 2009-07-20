@@ -24,21 +24,32 @@ package ch.ethz.origo.jerpa.application;
 
 import javax.swing.SwingUtilities;
 
+import noname.ConfigPropertiesLoader;
+import noname.PropertiesException;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
 /**
  * Main class of this application. Contains main method for application startup.
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)
  * @version 0.1.0 04/16/2009 
- * @since 0.1 (app. version)
+ * @since 0.1.0 (app. version)
  *     
  */
 public class Main {
 
 	/**
+	 * Main method - application start
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		try {
+			ConfigPropertiesLoader.loadProperties();
+		} catch (PropertiesException e) {
+			// TODO udelat hromadne nahrani properties, asi pres interface
+			e.printStackTrace();
+		}
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
