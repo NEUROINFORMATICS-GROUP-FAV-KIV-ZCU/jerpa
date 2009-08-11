@@ -27,7 +27,7 @@ import noname.ConfigPropertiesLoader;
 import noname.PerspectiveLoader;
 import ch.ethz.origo.jerpaui.application.listener.AppButtonsEvent;
 import ch.ethz.origo.jerpaui.application.listener.AppButtonsListener;
-import ch.ethz.origo.jerpaui.prezentation.JERPAFrame;
+import ch.ethz.origo.jerpaui.prezentation.JUIGLEFrame;
 
 /**
  * 
@@ -38,7 +38,7 @@ import ch.ethz.origo.jerpaui.prezentation.JERPAFrame;
  */
 public class MainFrame implements AppButtonsListener {
 
-	private JERPAFrame mainFrame;
+	private JUIGLEFrame mainFrame;
 	
 	/**
 	 * Initialize main graphic frame
@@ -68,7 +68,7 @@ public class MainFrame implements AppButtonsListener {
 		titleBuff.append(".");
 		titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
 		// create frame
-		mainFrame = new JERPAFrame(titleBuff.toString(), ClassLoader.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
+		mainFrame = new JUIGLEFrame(titleBuff.toString(), ClassLoader.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
 		mainFrame.setPerspectives(new PerspectiveLoader());
 		//PerspectiveLoader<T>
