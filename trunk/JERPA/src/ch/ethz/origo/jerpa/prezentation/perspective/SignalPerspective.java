@@ -5,20 +5,19 @@ package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import java.awt.event.ActionEvent;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingUtilities;
 
-import nezarazeno.JUIGLEMenuException;
-import nezarazeno.PerspectiveException;
-
 import org.jdesktop.swingx.JXTitledPanel;
 
-import ch.ethz.origo.jerpaui.prezentation.JUIGLEMenu;
-import ch.ethz.origo.jerpaui.prezentation.JUIGLEMenuItem;
-import ch.ethz.origo.jerpaui.prezentation.perspective.Perspective;
+import ch.ethz.origo.juigle.application.exceptions.JUIGLEMenuException;
+import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
+import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
+import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
+import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
  * 
@@ -32,6 +31,8 @@ public class SignalPerspective extends Perspective {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = 3313465073940475745L;
+	
+	private static String resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing";
 	
 	//
 	private JUIGLEMenuItem fileItem;
@@ -54,10 +55,9 @@ public class SignalPerspective extends Perspective {
 	
 	@Override
 	public String getTitle() {
-		return "Signal Processing";
+		return resource.getString("perspective.title");
 	}
 	
-
 	@Override
 	public void initPerspectiveMenuPanel() throws PerspectiveException {
 		if (menuPanel == null) {
@@ -65,7 +65,7 @@ public class SignalPerspective extends Perspective {
 			menuPanel.setOpaque(false);
 			
 			// initalize menu
-			menu = new JUIGLEMenu(JUIGLEMenu.MENU_LOCATION_TOP, resource);
+			menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP, resourcePath);
 			menu.setFloatable(false);
 			menu.setRollover(true);
 			// initialize and add menu items
@@ -77,27 +77,35 @@ public class SignalPerspective extends Perspective {
 		try {
 			// add items to menu
 			menu.addItem(initAndGetFileMenuItem());
-			menu.addItem(initAndGetEditMenuItem());
+		  menu.addItem(initAndGetEditMenuItem());
 			menu.addItem(initAndGetViewMenuItem());
 			menu.addItem(initAndGetHelpMenuItem());
 			menu.addMenuSeparator();
-			/*menu.addHeaderHideButton();
-			menu.addFooterHideButton();*/
+			//menu.addHeaderHideButton(true);
+			//menu.addFooterHideButton();
 			menuPanel.add(menu);
 		} catch (JUIGLEMenuException e1) {
 			throw new PerspectiveException(e1);
 		}
 	}
 	
-	public void setLocalizedResource(Locale locale) {
-		resource = ResourceBundle.getBundle("ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing", locale);
+	@Override
+	public void setResourceBundlePath(String path) {
+		super.setResourceBundlePath(path);
 	}
 	
+	@Override
+	public String getResourceBundlePath() {
+		return SignalPerspective.resourcePath;
+	}
+	
+	@Override
 	public void updateText() {
+		super.updateText();
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				menu.updateText(resource);
+				menu.updateText();
 			}
 		});
 	}
@@ -136,6 +144,8 @@ public class SignalPerspective extends Perspective {
 	
 	private JUIGLEMenuItem initAndGetEditMenuItem() {
 		editItem = new JUIGLEMenuItem(getLocalizedString("menu.edit"));
+		
+		editItem.setResourceBundleKey("menu.edit");
 
 		return editItem;
 	}
@@ -143,6 +153,8 @@ public class SignalPerspective extends Perspective {
 	private JUIGLEMenuItem initAndGetViewMenuItem() {
 		viewItem = new JUIGLEMenuItem(getLocalizedString("menu.view"));
 
+		viewItem.setResourceBundleKey("menu.view");
+		
 		return viewItem;
 	}
 	
@@ -151,6 +163,7 @@ public class SignalPerspective extends Perspective {
 		keyboardShortcutItem = new JUIGLEMenuItem();
 		aboutItem = new JUIGLEMenuItem();
 		
+		helpItem.setResourceBundleKey("menu.help");
 		keyboardShortcutItem.setResourceBundleKey("menu.help.keyboard.shortcuts");
 		aboutItem.setResourceBundleKey("menu.help.about.signalprocessing");
 		
@@ -165,8 +178,7 @@ public class SignalPerspective extends Perspective {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setLocalizedResource(new Locale("en"));
-				menu.updateText(resource);
+				Locale.setDefault(new Locale("cs","CZ"));
 				updateText();
 			}		
 		};

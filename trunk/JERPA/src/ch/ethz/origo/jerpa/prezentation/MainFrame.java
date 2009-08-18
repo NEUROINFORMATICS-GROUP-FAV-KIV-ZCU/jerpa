@@ -22,12 +22,12 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
-import nezarazeno.PerspectiveException;
 import noname.ConfigPropertiesLoader;
 import noname.PerspectiveLoader;
-import ch.ethz.origo.jerpaui.application.listener.AppButtonsEvent;
-import ch.ethz.origo.jerpaui.application.listener.AppButtonsListener;
-import ch.ethz.origo.jerpaui.prezentation.JUIGLEFrame;
+import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.application.listener.AppButtonsEvent;
+import ch.ethz.origo.juigle.application.listener.AppButtonsListener;
+import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 
 /**
  * 
@@ -39,7 +39,7 @@ import ch.ethz.origo.jerpaui.prezentation.JUIGLEFrame;
 public class MainFrame implements AppButtonsListener {
 
 	private JUIGLEFrame mainFrame;
-	
+
 	/**
 	 * Initialize main graphic frame
 	 */
@@ -51,10 +51,11 @@ public class MainFrame implements AppButtonsListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Initialize GUI
-	 * @throws PerspectiveException 
+	 * 
+	 * @throws PerspectiveException
 	 * 
 	 * @since 0.1.0
 	 */
@@ -68,10 +69,13 @@ public class MainFrame implements AppButtonsListener {
 		titleBuff.append(".");
 		titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
 		// create frame
-		mainFrame = new JUIGLEFrame(titleBuff.toString(), ClassLoader.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
+		mainFrame = new JUIGLEFrame(
+				titleBuff.toString(),
+				ClassLoader
+						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
 		mainFrame.setPerspectives(new PerspectiveLoader());
-		//PerspectiveLoader<T>
+		// PerspectiveLoader<T>
 		mainFrame.setVisible(true);
 	}
 
@@ -82,12 +86,12 @@ public class MainFrame implements AppButtonsListener {
 
 	@Override
 	public void maximalizeAppButton(AppButtonsEvent e) {
-		
+
 	}
 
 	@Override
 	public void minimalizelizeAppButton(AppButtonsEvent e) {
-		
+
 	}
-	
+
 }

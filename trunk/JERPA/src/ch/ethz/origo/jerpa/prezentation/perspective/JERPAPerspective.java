@@ -12,18 +12,18 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import nezarazeno.JUIGLEMenuException;
-import nezarazeno.PerspectiveException;
 
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTitledPanel;
 import org.jdesktop.swingx.painter.Painter;
 
-import ch.ethz.origo.jerpaui.prezentation.GraphicsUtilities;
-import ch.ethz.origo.jerpaui.prezentation.JUIGLEFrame;
-import ch.ethz.origo.jerpaui.prezentation.JUIGLEMenu;
-import ch.ethz.origo.jerpaui.prezentation.JUIGLEMenuItem;
-import ch.ethz.origo.jerpaui.prezentation.perspective.Perspective;
+import ch.ethz.origo.juigle.application.exceptions.JUIGLEMenuException;
+import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.prezentation.GraphicsUtilities;
+import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
+import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
+import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
+import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
  * 

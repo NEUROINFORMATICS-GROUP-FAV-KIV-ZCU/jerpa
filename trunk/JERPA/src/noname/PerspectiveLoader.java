@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import nezarazeno.IPerspectiveLoader;
-import nezarazeno.PerspectiveException;
-import ch.ethz.origo.jerpaui.prezentation.perspective.Perspective;
+import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
  * 
