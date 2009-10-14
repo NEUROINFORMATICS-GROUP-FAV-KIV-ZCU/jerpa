@@ -3,7 +3,6 @@ package ch.ethz.origo.jerpa.prezentation.perspective;
 import javax.swing.Icon;
 
 import org.jdesktop.swingx.JXTaskPane;
-import org.jdesktop.swingx.JXTitledPanel;
 
 import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
@@ -15,16 +14,14 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.0 08/14/09
+ * @version 0.1.0 07/16/09
  * @since 0.1.0 (05/18/09)
+ * @see Perspective
  *
  */
-public class FilterPerspective extends Perspective {
-
-	/** Only for serialization */
-	private static final long serialVersionUID = -3671126854840073832L;
-
-	private static String resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.filter.FilterPerspective";
+public class WEKAPerspective extends Perspective {
+	
+	private static String resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.weka.WekaPerspective";
 	
 	@Override
 	public String getTitle() {
@@ -34,6 +31,11 @@ public class FilterPerspective extends Perspective {
 	@Override
 	public String getRBPerspectiveTitleKey() {
 		return "perspective.title";
+	}
+	
+	@Override
+	public String getResourceBundlePath() {
+		return WEKAPerspective.resourcePath;
 	}
 	
 	@Override
@@ -53,13 +55,9 @@ public class FilterPerspective extends Perspective {
 		}
 	}
 	
-	@Override
-	public String getResourceBundlePath() {
-		return FilterPerspective.resourcePath;
-	}
-	
+
 	public Icon getIcon() throws PerspectiveException {
-		return JUIGLEGraphicsUtilities.createImageIcon("ch/ethz/origo/jerpa/data/images/filterPerspectiveIcon.png", 32, 32);
+		return JUIGLEGraphicsUtilities.createImageIcon("ch/ethz/origo/jerpa/data/images/weka_logo.gif", 64, 32);
 	}
 	
 
@@ -67,8 +65,5 @@ public class FilterPerspective extends Perspective {
 		
 	}
 	
-	
-	
-	
-	
+
 }

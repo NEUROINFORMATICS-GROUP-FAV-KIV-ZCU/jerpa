@@ -4,19 +4,24 @@
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import org.jdesktop.swingx.JXTitledPanel;
+import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.juigle.application.exceptions.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
+import ch.ethz.origo.juigle.prezentation.dialogs.AboutDialog;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
@@ -35,7 +40,7 @@ public class SignalPerspective extends Perspective {
 	private static String resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing";
 	
 	//
-	private JUIGLEMenuItem fileItem;
+	private JUIGLEMenuItem fileMenu;
 	private JUIGLEMenuItem openFileItem;
 	private JUIGLEMenuItem saveFileItem;
 	private JUIGLEMenuItem saveAsFileItem;
@@ -44,9 +49,17 @@ public class SignalPerspective extends Perspective {
 	private JUIGLEMenuItem exportItem;
 	private JUIGLEMenuItem exitItem;
 	//
-	private JUIGLEMenuItem editItem;
+	private JUIGLEMenuItem editMenu;
+	private JUIGLEMenuItem undoItem;
+	private JUIGLEMenuItem redoItem;
+	private JUIGLEMenuItem baselineCorrItem;
+	private JUIGLEMenuItem autoArteSelItem; 
 	//
-	private JUIGLEMenuItem viewItem;
+	private JUIGLEMenuItem viewMenu;
+	private JUIGLEMenuItem channelItem;
+	private JUIGLEMenuItem editInfoWinItem;
+	private JUIGLEMenuItem signalsWinItem;
+	private JUIGLEMenuItem averagingWinItem;
 	//
 	private JUIGLEMenuItem helpItem;
 	private JUIGLEMenuItem keyboardShortcutItem;
@@ -55,14 +68,22 @@ public class SignalPerspective extends Perspective {
 	
 	@Override
 	public String getTitle() {
-		return resource.getString("perspective.title");
+		return resource.getString(getRBPerspectiveTitleKey());
+	}
+	
+	@Override
+	public String getRBPerspectiveTitleKey() {
+		return "perspective.title";
 	}
 	
 	@Override
 	public void initPerspectiveMenuPanel() throws PerspectiveException {
-		if (menuPanel == null) {
-			menuPanel = new JXTitledPanel();
-			menuPanel.setOpaque(false);
+		if (menuTaskPane == null) {
+			
+			//menuTitledPanel = new JXTitledPanel();
+			//menuTitledPanel.setOpaque(false);
+			menuTaskPane = new JXTaskPane();
+			menuTaskPane.setOpaque(false);
 			
 			// initalize menu
 			menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP, resourcePath);
@@ -72,7 +93,12 @@ public class SignalPerspective extends Perspective {
 			initAndAddMenuItems();
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @throws PerspectiveException
+	 * @since 0.1.0
+	 */
 	private void initAndAddMenuItems() throws PerspectiveException {
 		try {
 			// add items to menu
@@ -81,22 +107,22 @@ public class SignalPerspective extends Perspective {
 			menu.addItem(initAndGetViewMenuItem());
 			menu.addItem(initAndGetHelpMenuItem());
 			menu.addMenuSeparator();
-			//menu.addHeaderHideButton(true);
-			//menu.addFooterHideButton();
-			menuPanel.add(menu);
+			menu.addHeaderHideButton(true);
+			menu.addFooterHideButton(true);
+			//menuTitledPanel.add(menu);
+			menuTaskPane.add(menu);
 		} catch (JUIGLEMenuException e1) {
 			throw new PerspectiveException(e1);
 		}
 	}
 	
 	@Override
-	public void setResourceBundlePath(String path) {
-		super.setResourceBundlePath(path);
-	}
-	
-	@Override
 	public String getResourceBundlePath() {
 		return SignalPerspective.resourcePath;
+	}
+	
+	public Icon getIcon() {
+		return JUIGLEGraphicsUtilities.createImageIcon("ch/ethz/origo/jerpa/data/images/icon.gif", "aaaaaaaaaaaaaa");
 	}
 	
 	@Override
@@ -109,9 +135,14 @@ public class SignalPerspective extends Perspective {
 			}
 		});
 	}
-
+	
+	/**
+	 * 
+	 * @return
+	 * @since 0.1.0
+	 */
 	private JUIGLEMenuItem initAndGetFileMenuItem() {
-		fileItem = new JUIGLEMenuItem(getLocalizedString("menu.file"));
+		fileMenu = new JUIGLEMenuItem(getLocalizedString("menu.file"));
 		// initialize subItems of file menu
 		openFileItem = new JUIGLEMenuItem();
 		saveFileItem = new JUIGLEMenuItem();
@@ -121,7 +152,9 @@ public class SignalPerspective extends Perspective {
 		exportItem = new JUIGLEMenuItem();
 		exitItem = new JUIGLEMenuItem();
 		//
-		fileItem.setResourceBundleKey("menu.file");
+		openFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
+		//
+		fileMenu.setResourceBundleKey("menu.file");
 		openFileItem.setResourceBundleKey("menu.open");
 		saveFileItem.setResourceBundleKey("menu.save");
 		saveAsFileItem.setResourceBundleKey("menu.saveAs");
@@ -132,46 +165,99 @@ public class SignalPerspective extends Perspective {
 		//
 		setFileMenuActions();
 		// add subitems to file menu
-		fileItem.addSubItem(openFileItem);
-		fileItem.addSubItem(saveFileItem);
-		fileItem.addSubItem(saveAsFileItem);
-		fileItem.addSubItem(closeItem);
-		fileItem.addSubItem(importItem);
-		fileItem.addSubItem(exportItem);
-		fileItem.addSubItem(exitItem);
-		return fileItem;
+		fileMenu.addSubItem(openFileItem);
+		fileMenu.addSubItem(saveFileItem);
+		fileMenu.addSubItem(saveAsFileItem);
+		fileMenu.addSubItem(closeItem);
+		fileMenu.addSubItem(importItem);
+		fileMenu.addSubItem(exportItem);
+		fileMenu.addSubItem(exitItem);
+		
+		return fileMenu;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @since 0.1.0
+	 */
 	private JUIGLEMenuItem initAndGetEditMenuItem() {
-		editItem = new JUIGLEMenuItem(getLocalizedString("menu.edit"));
+		editMenu = new JUIGLEMenuItem(getLocalizedString("menu.edit"));
+		undoItem = new JUIGLEMenuItem();
+		redoItem = new JUIGLEMenuItem();
+		baselineCorrItem = new JUIGLEMenuItem();
+		autoArteSelItem = new JUIGLEMenuItem(); 
+		//
+		editMenu.setResourceBundleKey("menu.edit");
+		undoItem.setResourceBundleKey("menu.edit.undo");
+		redoItem.setResourceBundleKey("menu.edit.redo");
+		baselineCorrItem.setResourceBundleKey("menu.edit.baselinecorrection");
+		autoArteSelItem.setResourceBundleKey("menu.edit.autoselarte");
+		//
+		setEditMenuActions();
+		//
+		editMenu.addSubItem(undoItem);
+		editMenu.addSubItem(redoItem);
+		editMenu.addSubItem(baselineCorrItem);
+		editMenu.addSubItem(autoArteSelItem);
 		
-		editItem.setResourceBundleKey("menu.edit");
-
-		return editItem;
+		return editMenu;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @since 0.1.0
+	 */
 	private JUIGLEMenuItem initAndGetViewMenuItem() {
-		viewItem = new JUIGLEMenuItem(getLocalizedString("menu.view"));
-
-		viewItem.setResourceBundleKey("menu.view");
+		viewMenu = new JUIGLEMenuItem(getLocalizedString("menu.view"));
+		channelItem = new JUIGLEMenuItem();
+		signalsWinItem = new JUIGLEMenuItem();
+		editInfoWinItem = new JUIGLEMenuItem();
+		averagingWinItem = new JUIGLEMenuItem();
+		//
+		viewMenu.setResourceBundleKey("menu.view");
+		channelItem.setResourceBundleKey("menu.view.channelwin");
+		signalsWinItem.setResourceBundleKey("menu.view.signalwin");
+		editInfoWinItem.setResourceBundleKey("menu.view.infowin");
+		averagingWinItem.setResourceBundleKey("menu.view.averagewin");
+		//
+		setViewMenuActions();
+		//
+		viewMenu.addSubItem(channelItem);
+		viewMenu.addSubItem(editInfoWinItem);
+		viewMenu.addSubItem(signalsWinItem);
+		viewMenu.addSubItem(averagingWinItem);
 		
-		return viewItem;
+		return viewMenu;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @since 0.1.0
+	 */
 	private JUIGLEMenuItem initAndGetHelpMenuItem() {
 		helpItem = new JUIGLEMenuItem(getLocalizedString("menu.help"));
 		keyboardShortcutItem = new JUIGLEMenuItem();
 		aboutItem = new JUIGLEMenuItem();
-		
+		//
+		keyboardShortcutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.CTRL_MASK));
+		//
 		helpItem.setResourceBundleKey("menu.help");
 		keyboardShortcutItem.setResourceBundleKey("menu.help.keyboard.shortcuts");
 		aboutItem.setResourceBundleKey("menu.help.about.signalprocessing");
-		
+		//
+		setHelpMenuActions();
 		helpItem.addSubItem(keyboardShortcutItem);
 		helpItem.addSubItem(aboutItem);
 		return helpItem;
 	}
 	
+	/**
+	 * 
+	 * @since 0.1.0
+	 */
 	private void setFileMenuActions() {
 		Action open = new AbstractAction() {
 			private static final long serialVersionUID = -6603743681967057946L;
@@ -182,8 +268,42 @@ public class SignalPerspective extends Perspective {
 				updateText();
 			}		
 		};
+		closeItem.setAction(open);
+	}
+	
+	/**
+	 * @since 0.1.0
+	 */
+	private void setEditMenuActions() {
 		
-		openFileItem.setAction(open);
+	}
+	
+	/**
+	 * @since 0.1.0
+	 */
+	private void setViewMenuActions() {
+		
+	}
+	
+	/**
+	 * @since 0.1.0
+	 */
+	private void setHelpMenuActions() {
+		Action about = new AbstractAction() {
+			/**  */
+			private static final long serialVersionUID = -1644285485867277600L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						new AboutDialog();						
+					}
+				});
+			}
+		};
+		aboutItem.setAction(about);
 	}
 	
 }

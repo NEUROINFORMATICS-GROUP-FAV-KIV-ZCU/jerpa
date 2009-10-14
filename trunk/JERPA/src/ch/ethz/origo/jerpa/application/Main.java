@@ -24,8 +24,10 @@ package ch.ethz.origo.jerpa.application;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
 import noname.ConfigPropertiesLoader;
-import noname.PropertiesException;
+import ch.ethz.origo.jerpa.application.exception.PropertiesException;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
 /**
  * Main class of this application. Contains main method for application startup.
@@ -36,6 +38,8 @@ import ch.ethz.origo.jerpa.prezentation.MainFrame;
  *     
  */
 public class Main {
+	
+	public static Logger rootLogger = Logger.getRootLogger();
 
 	/**
 	 * Main method - application start
@@ -46,6 +50,7 @@ public class Main {
 		try {
 			ConfigPropertiesLoader.loadProperties();
 		} catch (PropertiesException e) {
+			Main.rootLogger.warn(e.getMessage(), e.getCause());
 			// TODO udelat hromadne nahrani properties, asi pres interface
 			e.printStackTrace();
 		}

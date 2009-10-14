@@ -3,6 +3,8 @@ package noname;
 import java.io.IOException;
 import java.util.Properties;
 
+import ch.ethz.origo.jerpa.application.exception.PropertiesException;
+
 /**
  * 
  * 
@@ -147,9 +149,9 @@ public class ConfigPropertiesLoader {
 		try {
 			ConfigPropertiesLoader.loadProperties();
 		} catch (PropertiesException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println(ConfigPropertiesLoader.getDefaultPerspective());
 	}
+	
 }

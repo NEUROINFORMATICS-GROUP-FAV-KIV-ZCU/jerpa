@@ -2,7 +2,7 @@ package noname;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import nezarazeno.IPerspectiveLoader;
 import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
@@ -16,12 +16,14 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * @since 0.1.0
  */
 public class PerspectiveLoader implements IPerspectiveLoader {
-	
+	// TODO MOZNA PRERADIT DO JUIGLE
 	private String path;
 	
 	private String defaultPerspectiveName;
 	
-	private Collection<Perspective> perspectives;
+	private static PerspectiveLoader loader;
+	
+	private List<Perspective> perspectives;
 
 	/**
 	 * Default constructor - initialize variables
@@ -31,6 +33,13 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 		this.path = ConfigPropertiesLoader.getPerspectivesStoragePath();
 		this.defaultPerspectiveName = ConfigPropertiesLoader.getDefaultPerspective().trim();
 		loadPerspectives();
+	}
+	
+	public static PerspectiveLoader getInstance() throws PerspectiveException {
+		if (loader == null) {
+			loader = new PerspectiveLoader();
+		}
+		return loader;
 	}
 	
 	private void loadPerspectives() throws PerspectiveException {
@@ -73,7 +82,7 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 	}	
 	
 	@Override
-	public Collection<Perspective> getListOfPerspectives() {
+	public List<Perspective> getListOfPerspectives() {
 		return perspectives;
 	}
 }

@@ -1,4 +1,4 @@
-package noname;
+package ch.ethz.origo.jerpa.application.exception;
 
 /**
  * 

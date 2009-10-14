@@ -24,10 +24,12 @@ package ch.ethz.origo.jerpa.prezentation;
 
 import noname.ConfigPropertiesLoader;
 import noname.PerspectiveLoader;
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
 import ch.ethz.origo.juigle.application.listener.AppButtonsEvent;
 import ch.ethz.origo.juigle.application.listener.AppButtonsListener;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
+import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
 
 /**
  * 
@@ -56,7 +58,7 @@ public class MainFrame implements AppButtonsListener {
 	 * Initialize GUI
 	 * 
 	 * @throws PerspectiveException
-	 * 
+	 * @version 0.1.0
 	 * @since 0.1.0
 	 */
 	private void initGui() throws PerspectiveException {
@@ -74,9 +76,16 @@ public class MainFrame implements AppButtonsListener {
 				ClassLoader
 						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
-		mainFrame.setPerspectives(new PerspectiveLoader());
+		mainFrame.addMainMenu(getMainMenu());
+		mainFrame.setPerspectives(PerspectiveLoader.getInstance());
 		// PerspectiveLoader<T>
 		mainFrame.setVisible(true);
+	}
+	
+	private JUIGLEMainMenu getMainMenu() {
+		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu();
+		mainMenu.setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
+		return mainMenu;
 	}
 
 	@Override
