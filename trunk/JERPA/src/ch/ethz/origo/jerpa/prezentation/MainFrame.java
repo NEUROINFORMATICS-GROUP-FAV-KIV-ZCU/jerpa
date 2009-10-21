@@ -22,6 +22,7 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
+import nezarazeno.GUIController;
 import noname.ConfigPropertiesLoader;
 import noname.PerspectiveLoader;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
@@ -35,12 +36,12 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.1.0 05/07/2009
+ * @version 0.1.1 10/18/2009
  * @since 0.1.0 (05/07/2009)
  */
 public class MainFrame implements AppButtonsListener {
 
-	private JUIGLEFrame mainFrame;
+	private GUIController guiController = new GUIController();
 
 	/**
 	 * Initialize main graphic frame
@@ -58,7 +59,7 @@ public class MainFrame implements AppButtonsListener {
 	 * Initialize GUI
 	 * 
 	 * @throws PerspectiveException
-	 * @version 0.1.0
+	 * @version 0.2.0 (10/18/09) 
 	 * @since 0.1.0
 	 */
 	private void initGui() throws PerspectiveException {
@@ -71,7 +72,7 @@ public class MainFrame implements AppButtonsListener {
 		titleBuff.append(".");
 		titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
 		// create frame
-		mainFrame = new JUIGLEFrame(
+		JUIGLEFrame mainFrame = new JUIGLEFrame(
 				titleBuff.toString(),
 				ClassLoader
 						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
@@ -80,6 +81,7 @@ public class MainFrame implements AppButtonsListener {
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance());
 		// PerspectiveLoader<T>
 		mainFrame.setVisible(true);
+		guiController.setJGMainFrameInstance(mainFrame);		
 	}
 	
 	private JUIGLEMainMenu getMainMenu() {

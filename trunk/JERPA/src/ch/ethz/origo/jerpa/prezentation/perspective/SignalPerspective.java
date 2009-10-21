@@ -1,11 +1,9 @@
-/**
- * 
- */
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
+import java.util.Observable;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -17,6 +15,7 @@ import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.juigle.application.exceptions.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
@@ -32,13 +31,12 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * @since 0.1.0 (05/18/09)
  *
  */
-public class SignalPerspective extends Perspective {
+public class SignalPerspective extends Perspective implements IObserver {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = 3313465073940475745L;
 	
 	private static String resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing";
-	
 	//
 	private JUIGLEMenuItem fileMenu;
 	private JUIGLEMenuItem openFileItem;
@@ -65,6 +63,10 @@ public class SignalPerspective extends Perspective {
 	private JUIGLEMenuItem keyboardShortcutItem;
 	private JUIGLEMenuItem aboutItem;
 	
+	public SignalPerspective() {
+		perspectiveObservable.attach(this);
+	}
+	
 	
 	@Override
 	public String getTitle() {
@@ -79,7 +81,6 @@ public class SignalPerspective extends Perspective {
 	@Override
 	public void initPerspectiveMenuPanel() throws PerspectiveException {
 		if (menuTaskPane == null) {
-			
 			//menuTitledPanel = new JXTitledPanel();
 			//menuTitledPanel.setOpaque(false);
 			menuTaskPane = new JXTaskPane();
@@ -304,6 +305,31 @@ public class SignalPerspective extends Perspective {
 			}
 		};
 		aboutItem.setAction(about);
+	}
+
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(Object state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(Object object, int state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
