@@ -41,8 +41,6 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
  */
 public class MainFrame implements AppButtonsListener {
 
-	private GUIController guiController = new GUIController();
-
 	/**
 	 * Initialize main graphic frame
 	 */
@@ -80,8 +78,7 @@ public class MainFrame implements AppButtonsListener {
 		mainFrame.addMainMenu(getMainMenu());
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance());
 		// PerspectiveLoader<T>
-		mainFrame.setVisible(true);
-		guiController.setJGMainFrameInstance(mainFrame);		
+		mainFrame.setVisible(true);	
 	}
 	
 	private JUIGLEMainMenu getMainMenu() {

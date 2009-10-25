@@ -2,7 +2,6 @@ package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.Locale;
 import java.util.Observable;
 
 import javax.swing.AbstractAction;
@@ -13,6 +12,7 @@ import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXTaskPane;
 
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
 import ch.ethz.origo.juigle.application.exceptions.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObserver;
@@ -27,7 +27,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.0 07/16/09
+ * @version 0.1.1 10/25/09
  * @since 0.1.0 (05/18/09)
  *
  */
@@ -63,8 +63,11 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem keyboardShortcutItem;
 	private JUIGLEMenuItem aboutItem;
 	
+	private SignalProject project;
+	
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
+		project = new SignalProject();
 	}
 	
 	
@@ -257,7 +260,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	
 	/**
 	 * 
-	 * @since 0.1.0
+	 * @since 0.1.1
 	 */
 	private void setFileMenuActions() {
 		Action open = new AbstractAction() {
@@ -265,11 +268,10 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Locale.setDefault(new Locale("cs","CZ"));
-				updateText();
+				
 			}		
 		};
-		closeItem.setAction(open);
+		openFileItem.setAction(open);
 	}
 	
 	/**

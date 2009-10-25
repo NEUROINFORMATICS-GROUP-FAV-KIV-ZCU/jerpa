@@ -11,7 +11,7 @@ public class ProjectMementoCaretaker implements Caretaker {
 
 	private Project state;
 	
-	protected ProjectMementoCaretaker(Project state) {
+	public ProjectMementoCaretaker(Project state) {
 		this.state = state;
 	}
 	
