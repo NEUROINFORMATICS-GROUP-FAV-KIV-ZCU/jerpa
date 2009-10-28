@@ -23,4 +23,16 @@ public class WEKAProject extends Project {
 		WEKAProject project = (WEKAProject)memento.getState();
 	}
 
+	@Override
+	public void openFile() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveFile() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

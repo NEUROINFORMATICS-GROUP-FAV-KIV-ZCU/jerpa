@@ -25,4 +25,16 @@ public class JERPAProject extends Project {
 		
 	}
 
+	@Override
+	public void openFile() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveFile() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

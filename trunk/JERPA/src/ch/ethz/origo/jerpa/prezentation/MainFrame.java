@@ -22,7 +22,6 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
-import nezarazeno.GUIController;
 import noname.ConfigPropertiesLoader;
 import noname.PerspectiveLoader;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
@@ -81,9 +80,10 @@ public class MainFrame implements AppButtonsListener {
 		mainFrame.setVisible(true);	
 	}
 	
-	private JUIGLEMainMenu getMainMenu() {
+	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {
 		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu();
 		mainMenu.setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
+		mainMenu.addHomePageItem(null, "http://jerpa.origo.ethz.ch/");
 		return mainMenu;
 	}
 

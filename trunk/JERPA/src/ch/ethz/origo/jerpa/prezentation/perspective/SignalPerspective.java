@@ -143,6 +143,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	/**
 	 * 
 	 * @return
+	 * @version 0.1.1
 	 * @since 0.1.0
 	 */
 	private JUIGLEMenuItem initAndGetFileMenuItem() {
@@ -155,9 +156,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		importItem = new JUIGLEMenuItem();
 		exportItem = new JUIGLEMenuItem();
 		exitItem = new JUIGLEMenuItem();
-		//
-		openFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
-		//
+		// set Resource bundles
 		fileMenu.setResourceBundleKey("menu.file");
 		openFileItem.setResourceBundleKey("menu.open");
 		saveFileItem.setResourceBundleKey("menu.save");
@@ -166,8 +165,11 @@ public class SignalPerspective extends Perspective implements IObserver {
 		importItem.setResourceBundleKey("menu.import");
 		exportItem.setResourceBundleKey("menu.export");
 		exitItem.setResourceBundleKey("menu.exit");
-		//
+		// set actions to menu items
 		setFileMenuActions();
+		// add key accelerators to items
+		openFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
+		saveFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
 		// add subitems to file menu
 		fileMenu.addSubItem(openFileItem);
 		fileMenu.addSubItem(saveFileItem);
@@ -268,7 +270,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				project.openFile();
 			}		
 		};
 		openFileItem.setAction(open);
