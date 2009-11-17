@@ -24,9 +24,10 @@ package ch.ethz.origo.jerpa.application;
 
 import javax.swing.SwingUtilities;
 
+import noname.ConfigPropertiesLoader;
+
 import org.apache.log4j.Logger;
 
-import noname.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.application.exception.PropertiesException;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
 /**
@@ -58,7 +59,8 @@ public class Main {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				new MainFrame();				
+				new MainFrame();
+				//new TestMainFrame();				
 			}
 		});
 	}
