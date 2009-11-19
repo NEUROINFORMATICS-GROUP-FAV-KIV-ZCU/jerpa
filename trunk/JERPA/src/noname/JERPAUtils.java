@@ -9,6 +9,7 @@ package noname;
  */
 public class JERPAUtils {
 	
+	
 	public static final String JAVA_EXTENSION = ".java";
 	
 	public static final String IMAGE_PATH = "ch/ethz/origo/jerpa/data/images/";
