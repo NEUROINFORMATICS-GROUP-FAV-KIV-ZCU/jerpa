@@ -25,7 +25,7 @@ package ch.ethz.origo.jerpa.prezentation;
 import noname.ConfigPropertiesLoader;
 import noname.PerspectiveLoader;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
-import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.listener.AppButtonsEvent;
 import ch.ethz.origo.juigle.application.listener.AppButtonsListener;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
@@ -76,8 +76,9 @@ public class MainFrame implements AppButtonsListener {
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
 		mainFrame.addMainMenu(getMainMenu());
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance());
-		// PerspectiveLoader<T>
 		mainFrame.setVisible(true);	
+		mainFrame.setFullScreen(true);
+		// PerspectiveLoader<T>
 	}
 	
 	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {

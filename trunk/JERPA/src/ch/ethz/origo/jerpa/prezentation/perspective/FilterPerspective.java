@@ -5,7 +5,7 @@ import javax.swing.Icon;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTitledPanel;
 
-import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;

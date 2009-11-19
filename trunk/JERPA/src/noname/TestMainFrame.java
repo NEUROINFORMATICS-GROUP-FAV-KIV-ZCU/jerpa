@@ -3,7 +3,7 @@ package noname;
 import java.io.InputStream;
 
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
-import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
 

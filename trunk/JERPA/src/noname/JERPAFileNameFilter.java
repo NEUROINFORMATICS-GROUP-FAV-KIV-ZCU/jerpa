@@ -28,7 +28,7 @@ public class JERPAFileNameFilter implements FilenameFilter {
 
 	@Override
 	public boolean accept(File dir, String name) {
-		if (name.endsWith(Utils.JAVA_EXTENSION)) {
+		if (name.endsWith(JERPAUtils.JAVA_EXTENSION)) {
 			if (files == null) {
 				return true;
 			} else {

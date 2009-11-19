@@ -37,4 +37,22 @@ public class JERPAProject extends Project {
 		
 	}
 
+	@Override
+	public void closeBuffers() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

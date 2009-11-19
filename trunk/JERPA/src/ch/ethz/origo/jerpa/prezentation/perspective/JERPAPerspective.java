@@ -22,8 +22,8 @@ import org.jdesktop.swingx.JXTitledPanel;
 import org.jdesktop.swingx.painter.Painter;
 
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
-import ch.ethz.origo.juigle.application.exceptions.JUIGLEMenuException;
-import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;

@@ -10,11 +10,18 @@ import javax.swing.Icon;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import noname.JERPAUtils;
+
 import org.jdesktop.swingx.JXTaskPane;
 
-import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
-import ch.ethz.origo.juigle.application.exceptions.JUIGLEMenuException;
-import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.SignalsPanelProvider;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.SignalViewerPanel;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanel;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
+import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
@@ -63,13 +70,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem keyboardShortcutItem;
 	private JUIGLEMenuItem aboutItem;
 	
-	private SignalProject project;
+	private SignalSessionManager sessionManager;
 	
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
-		project = new SignalProject();
+		sessionManager = new SignalSessionManager();
 	}
-	
 	
 	@Override
 	public String getTitle() {
@@ -82,8 +88,17 @@ public class SignalPerspective extends Perspective implements IObserver {
 	}
 	
 	@Override
+	public void initPerspectivePanel() {
+		super.initPerspectivePanel();
+		mainPanel.add(new SignalInfoProvider(sessionManager).getPanel());
+		mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel());
+		mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel());
+		
+	}
+
+	@Override
 	public void initPerspectiveMenuPanel() throws PerspectiveException {
-		if (menuTaskPane == null) {
+		if (menuTitledPanel == null) {
 			//menuTitledPanel = new JXTitledPanel();
 			//menuTitledPanel.setOpaque(false);
 			menuTaskPane = new JXTaskPane();
@@ -126,7 +141,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	}
 	
 	public Icon getIcon() {
-		return JUIGLEGraphicsUtilities.createImageIcon("ch/ethz/origo/jerpa/data/images/icon.gif", "aaaaaaaaaaaaaa");
+		return JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH + "icon.gif", "aaaaaaaaaaaaaa");
 	}
 	
 	@Override
@@ -267,10 +282,9 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private void setFileMenuActions() {
 		Action open = new AbstractAction() {
 			private static final long serialVersionUID = -6603743681967057946L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				project.openFile();
+				//project.openFile();
 			}		
 		};
 		openFileItem.setAction(open);
@@ -310,7 +324,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 		};
 		aboutItem.setAction(about);
 	}
-
 
 	@Override
 	public void update() {

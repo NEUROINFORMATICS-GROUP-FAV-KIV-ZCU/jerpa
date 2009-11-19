@@ -7,7 +7,7 @@ import javax.swing.Icon;
 import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.application.perspective.weka.project.WEKAProject;
-import ch.ethz.origo.juigle.application.exceptions.PerspectiveException;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
