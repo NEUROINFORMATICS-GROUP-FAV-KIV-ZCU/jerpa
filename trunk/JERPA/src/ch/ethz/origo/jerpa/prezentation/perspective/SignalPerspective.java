@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
@@ -16,8 +17,6 @@ import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.SignalsPanelProvider;
-import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.SignalViewerPanel;
-import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanel;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
@@ -90,9 +89,10 @@ public class SignalPerspective extends Perspective implements IObserver {
 	@Override
 	public void initPerspectivePanel() {
 		super.initPerspectivePanel();
-		mainPanel.add(new SignalInfoProvider(sessionManager).getPanel());
-		mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel());
-		mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel());
+		mainPanel.setLayout(new BorderLayout());
+		mainPanel.add(new SignalInfoProvider(sessionManager).getPanel(),BorderLayout.EAST);
+		mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel(),BorderLayout.NORTH);
+		mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(), BorderLayout.CENTER);
 		
 	}
 

@@ -38,7 +38,7 @@ public abstract class SessionManager {
 	public abstract void loadProject(File file) throws ProjectOperationException;
 	
 	/**
-	 * Uzav�e v�echny otev�en� projekty a sma�e jejich do�asn� soubory.
+	 * Close all opened projects and delete their temps files
 	 */
 	public void closeAllProjects() {
 		while (projects.size() > 0) {
