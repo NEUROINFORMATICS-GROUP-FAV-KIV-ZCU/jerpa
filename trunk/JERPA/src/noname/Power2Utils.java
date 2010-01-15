@@ -1,7 +1,7 @@
 package noname;
 
 /**
- * T��da pro matematick� operace.
+ * Class contains mathematical operations.
  * 
  * @author Petr Soukal
  * @author Vaclav Souhrada
@@ -9,7 +9,8 @@ package noname;
  * @since 0.1.0 (11/29/09)
  */
 public class Power2Utils {
-	// konstanty
+	
+	// Constants
 	public final static int CONST_2 = 2;
 	public final static int ZERO = 0;
 
@@ -44,4 +45,5 @@ public class Power2Utils {
 			return newNumber;
 		}
 	}
+	
 }

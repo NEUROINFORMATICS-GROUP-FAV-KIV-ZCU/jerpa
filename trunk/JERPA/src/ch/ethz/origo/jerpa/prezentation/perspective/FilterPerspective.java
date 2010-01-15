@@ -4,18 +4,18 @@ import java.awt.BorderLayout;
 import java.util.Observable;
 
 import javax.swing.Icon;
+import javax.swing.JScrollPane;
 
 import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXTaskPane;
-import org.jdesktop.swingx.JXTree;
-import org.jdesktop.swingx.JXTreeTable;
 
-import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.SignalsPanelProvider;
-import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
-import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
+import ch.ethz.origo.jerpa.data.perspective.filter.FilterTreeTableModel;
+import ch.ethz.origo.juigle.application.exception.DataStoreException;
+import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObserver;
+import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
@@ -29,6 +29,7 @@ import ch.ethz.origo.juigle.prezentation.tables.JUIGLETreeTable;
  * @version 0.1.0 08/14/09
  * @since 0.1.0 (05/18/09)
  * @see Perspective
+ * @see IObserver
  */
 public class FilterPerspective extends Perspective implements IObserver {
 
@@ -57,25 +58,37 @@ public class FilterPerspective extends Perspective implements IObserver {
 		if (menuTaskPane == null) {
 			menuTaskPane = new JXTaskPane();
 			menuTaskPane.setOpaque(false);
-			
 			// initalize menu
 			menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP, resourcePath);
 			menu.setFloatable(false);
 			menu.setRollover(true);
 			// initialize and add menu items
 			initAndAddMenuItems();
+			try {
+				menu.addMenuSeparator();
+			} catch (JUIGLEMenuException e) {
+				throw new PerspectiveException(e);
+			}
+			menu.addHeaderHideButton(false);
+			menu.addFooterHideButton(false);
 			
 			menuTaskPane.add(menu);
 		}
 	}
 	
 	@Override
-	public void initPerspectivePanel() {
+	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
 		mainPanel.setLayout(new BorderLayout());
-		JUIGLETreeTable table = new JUIGLETreeTable();
-		mainPanel.add(table, BorderLayout.EAST);
-		
+		JUIGLETreeTableModel ttm = new FilterTreeTableModel();
+		try {
+			ttm.fillByValues();
+		} catch (DataStoreException e) {
+			throw new PerspectiveException(e);
+		}
+		JUIGLETreeTable table = new JUIGLETreeTable(ttm);
+		JScrollPane sp = new JScrollPane(table);
+		mainPanel.add(sp, BorderLayout.WEST);
 	}
 	
 	@Override

@@ -7,6 +7,7 @@ package ch.ethz.origo.jerpa.application.exception;
  * @author Vaclav Souhrada
  * @version 0.1.0 (11/18/09)
  * @since 0.1.0
+ * @see Exception
  * 
  */
 public class InsufficientDataException extends Exception {

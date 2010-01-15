@@ -14,7 +14,8 @@ import java.awt.Font;
  * @since 0.1.0
  */
 public class Const {
-
+		
+	// FIXME Tuto tridu mozna sloucit s JERPAUtils
 	/**
 	 * N�zev aplikace.
 	 */

@@ -4,6 +4,8 @@ import java.util.Observable;
 
 import javax.swing.Icon;
 
+import noname.JERPAUtils;
+
 import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.application.perspective.weka.project.WEKAProject;
@@ -66,9 +68,14 @@ public class WEKAPerspective extends Perspective implements IObserver {
 		}
 	}
 	
+	@Override
+	public void initPerspectivePanel() throws PerspectiveException {
+		super.initPerspectiveMenuPanel();
+	}
+	
 
 	public Icon getIcon() throws PerspectiveException {
-		return JUIGLEGraphicsUtilities.createImageIcon("ch/ethz/origo/jerpa/data/images/weka_logo.gif", 64, 32);
+		return JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH + "weka_logo.gif", 64, 32);
 	}
 	
 

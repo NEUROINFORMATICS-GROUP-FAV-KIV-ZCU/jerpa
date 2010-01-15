@@ -23,7 +23,7 @@ public class FastDaubechies2 implements IFilter {
 	private static final String AUTHOR = "Petr Soukal";
 	/** Current version of this filter */
 	private static final String VERSION = "1.0.0";
-	/** Filter's name */
+	/** Name of filter */
 	private static final String NAME = "Fast Daubechies2 WT";
 	
 	private static final double sqrt_3 = Math.sqrt(3);
@@ -57,7 +57,6 @@ public class FastDaubechies2 implements IFilter {
 	 */
 	public static double[] transform(double[] inputSignal) {
 		double[] signal;
-
 		int newSignalLength = Power2Utils.newNumberOfPowerBase2(inputSignal.length);
 
 		if (newSignalLength != inputSignal.length) {

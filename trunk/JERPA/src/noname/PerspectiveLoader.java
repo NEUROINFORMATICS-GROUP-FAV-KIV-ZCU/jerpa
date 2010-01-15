@@ -12,8 +12,9 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.0 07/18/09
- * @since 0.1.0
+ * @version 0.1.0 (07/18/09)
+ * @since 0.1.0 (07/18/09)
+ * @see IPerspectiveLoader
  */
 public class PerspectiveLoader implements IPerspectiveLoader {
 	// TODO MOZNA PRERADIT DO JUIGLE

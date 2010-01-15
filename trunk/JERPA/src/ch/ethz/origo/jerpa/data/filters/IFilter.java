@@ -11,7 +11,6 @@ package ch.ethz.origo.jerpa.data.filters;
  */
 public interface IFilter {
 	
-	
 	public String getName();
 	
 	public String getVersion();

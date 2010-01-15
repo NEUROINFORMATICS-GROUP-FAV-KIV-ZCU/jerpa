@@ -87,7 +87,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	}
 	
 	@Override
-	public void initPerspectivePanel() {
+	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.add(new SignalInfoProvider(sessionManager).getPanel(),BorderLayout.EAST);

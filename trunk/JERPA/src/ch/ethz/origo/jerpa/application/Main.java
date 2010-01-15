@@ -33,9 +33,9 @@ import ch.ethz.origo.jerpa.prezentation.MainFrame;
 /**
  * Main class of this application. Contains main method for application startup.
  * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.0 04/16/2009 
- * @since 0.1.0 (app. version)
+ * @since 0.1.0 (04/16/2009 - JERPA birthday) 
  *     
  */
 public class Main {
