@@ -1,31 +1,16 @@
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.Locale;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JMenu;
 import javax.swing.SwingUtilities;
 
-
-import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTaskPane;
-import org.jdesktop.swingx.JXTitledPanel;
-import org.jdesktop.swingx.painter.Painter;
 
-import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
-import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
-import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
@@ -34,8 +19,8 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 /**
  * 
  * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.0 07/16/09
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.1.1 01/16/2010
  * @since 0.1.0 (05/18/09)
  * 
  */

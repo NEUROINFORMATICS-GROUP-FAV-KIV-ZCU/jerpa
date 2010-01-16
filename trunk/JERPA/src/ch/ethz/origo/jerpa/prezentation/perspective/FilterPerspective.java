@@ -118,7 +118,7 @@ public class FilterPerspective extends Perspective implements IObserver {
 	}
 
 	@Override
-	public void update(Object object, int state) {
+	public void update(Object object, Object state) {
 		// TODO Auto-generated method stub
 		
 	}

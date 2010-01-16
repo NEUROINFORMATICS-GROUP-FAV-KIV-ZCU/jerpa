@@ -45,7 +45,7 @@ public class SignalInfoProvider implements IObserver {
 	}
 
 	@Override
-	public void update(Object object, int state) {
+	public void update(Object object, Object state) {
 		// TODO Auto-generated method stub
 
 	}
@@ -53,7 +53,7 @@ public class SignalInfoProvider implements IObserver {
 	@Override
 	public void update(Observable o, Object arg) {
 		int msg;
-		if (arg instanceof java.lang.Integer) {
+		if (arg instanceof Integer) {
 			msg = ((Integer) arg).intValue();
 		} else {
 			return;

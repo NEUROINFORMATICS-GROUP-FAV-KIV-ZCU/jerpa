@@ -22,6 +22,7 @@ import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInf
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObserver;
+import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
@@ -33,7 +34,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.1 10/25/09
+ * @version 0.2.0 01/16/2010
  * @since 0.1.0 (05/18/09)
  *
  */
@@ -74,6 +75,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
 		sessionManager = new SignalSessionManager();
+		
 	}
 	
 	@Override
@@ -327,26 +329,58 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
-		
+		// not implemented		
 	}
 
 	@Override
 	public void update(Object state) {
-		// TODO Auto-generated method stub
-		
+		makeUpdate(state);		
 	}
 
-	@Override
-	public void update(Object object, int state) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+	public void update(Object object, Object state) {
+		makeUpdate(object, state);		
+	}
+
+
+	@Override
+	public void update(Observable o, Object obj) {
+		makeUpdate(o, obj);
 	}
 	
+	/**
+	 * 
+	 * @param obj
+	 * @version 0.1.0
+	 * @since 0.2.0
+	 */
+	private void makeUpdate(Object obj) {
+		int state;
+		if (obj instanceof Integer) {
+			state = (Integer) obj;
+			if (state == PerspectiveObservable.MSG_LANGUAGE_CHANGED) {
+				changeLanguage();
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param object
+	 * @param state
+	 * @version 0.1.0
+	 * @since 0.2.0
+	 */
+	private void makeUpdate(Object object, Object state) {
+				
+	}
+	
+	/**
+	 * @version 0.1.0
+	 * @since 0.2.0
+	 */
+	private void changeLanguage() {
+		
+	}
 }

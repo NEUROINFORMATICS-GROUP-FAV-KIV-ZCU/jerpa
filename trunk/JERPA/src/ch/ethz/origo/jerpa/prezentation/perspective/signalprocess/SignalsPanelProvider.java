@@ -100,7 +100,7 @@ public class SignalsPanelProvider implements IObserver {
 	}
 
 	@Override
-	public void update(Object object, int state) {
+	public void update(Object object, Object state) {
 		// TODO Auto-generated method stub
 
 	}
@@ -204,6 +204,7 @@ public class SignalsPanelProvider implements IObserver {
 		case SingnalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED:
 			drawingComponent.setInvertedView(((SignalProject) session
 					.getCurrentProject()).isInvertedSignalsView());
+			break;
 
 		}
 

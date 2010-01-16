@@ -6,10 +6,10 @@ import java.util.Properties;
 import ch.ethz.origo.jerpa.application.exception.PropertiesException;
 
 /**
- * 
+ * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (07/18/09)
+ * @version 0.1.1 (01/15/2010)
  * @since 0.1.0 (07/18/09)
  * 
  */
