@@ -13,6 +13,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.data.BufferCreator;
 import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Epoch;

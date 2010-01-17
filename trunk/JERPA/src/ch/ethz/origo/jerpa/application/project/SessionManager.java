@@ -9,7 +9,7 @@ import ch.ethz.origo.jerpa.application.exception.ProjectOperationException;
 /**
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (11/18/09)
+ * @version 0.1.1 (01/17/2010)
  * @since 0.1.0 (11/18/09)
  * 
  */
@@ -39,14 +39,14 @@ public abstract class SessionManager {
 	
 	/**
 	 * Close all opened projects and delete their temps files
+	 * @throws ProjectOperationException 
 	 */
-	public void closeAllProjects() {
+	public void closeAllProjects() throws ProjectOperationException {
 		while (projects.size() > 0) {
 			try {
 				closeProject(0);
 			} catch (IOException e) {
-				// System.out.println("Projekt nemohl byt uzavren - soubor nemohl byt
-				// smazan.");
+				throw new ProjectOperationException("JERPA013", e);
 			}
 		}
 	}
@@ -99,7 +99,7 @@ public abstract class SessionManager {
 		projects.remove(currentProjectIndex);
 
 		switchProject(0); /*
-											 * TODO - historie napredposledy zobrazeneho projektu, pri
+											 * FIXME - historie napredposledy zobrazeneho projektu, pri
 											 * uzavreni aktualniho projektu prepnout na ten
 											 * napredposledy zobrazeny; zaroven upravit prezentacni
 											 * vrstvu, bude-li treba

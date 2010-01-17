@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.math.MathException;
 
+import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.exception.InsufficientDataException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
@@ -16,7 +17,6 @@ import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.IndexesLoader;
-import ch.ethz.origo.jerpa.data.formats.CorruptedFileException;
 
 /**
  * Programov� rozhran� pro p��stup aplika�n� vrstvy ��sti <i>pr�m�rov�n� epoch a

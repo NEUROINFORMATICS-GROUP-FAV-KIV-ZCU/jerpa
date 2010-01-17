@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.data.BufferCreator;
 import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Epoch;

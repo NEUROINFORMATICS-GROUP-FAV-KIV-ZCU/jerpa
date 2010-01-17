@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import ch.ethz.origo.jerpa.application.Const;
-import ch.ethz.origo.jerpa.data.formats.CorruptedFileException;
+import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.data.formats.DataFormatLoader;
 import ch.ethz.origo.jerpa.data.formats.EdfFormatLoader;
 import ch.ethz.origo.jerpa.data.formats.GeneratorLoader;
@@ -17,7 +17,10 @@ import ch.ethz.origo.jerpa.data.formats.VdefLoader;
  * T��da pro vytv��en� <code>Buffer</code>u a na��t�n� dat z form�tov�ch
  * datov�ch modul�.
  * 
- * @author Ji�� Ku�era
+ * @author Jiri Kucera
+ * @author Vaclav Souhrada
+ * @version 0.1.0 (01/17/2010)
+ * @since 0.1.0 (01/17/2010)
  */
 public class BufferCreator {
 
@@ -148,7 +151,7 @@ public class BufferCreator {
 		}
 	}
 
-	protected void saveFloat(float value) throws IOException {
+	public void saveFloat(float value) throws IOException {
 		try {
 			ost.writeFloat(value);
 		} catch (IOException e) {

@@ -3,18 +3,22 @@ package ch.ethz.origo.jerpa.prezentation.perspective;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.Observable;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXTaskPane;
 
+import ch.ethz.origo.jerpa.application.exception.ProjectOperationException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.SignalsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
@@ -23,6 +27,7 @@ import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLEFileChooser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
@@ -43,7 +48,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 	/** Only for serialization */
 	private static final long serialVersionUID = 3313465073940475745L;
 	
-	private static String resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing";
 	//
 	private JUIGLEMenuItem fileMenu;
 	private JUIGLEMenuItem openFileItem;
@@ -75,17 +79,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
 		sessionManager = new SignalSessionManager();
-		
-	}
-	
-	@Override
-	public String getTitle() {
-		return resource.getString(getRBPerspectiveTitleKey());
-	}
-	
-	@Override
-	public String getRBPerspectiveTitleKey() {
-		return "perspective.title";
+		resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing";	
 	}
 	
 	@Override
@@ -100,7 +94,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	@Override
 	public void initPerspectiveMenuPanel() throws PerspectiveException {
-		if (menuTitledPanel == null) {
+		if (menuTaskPane == null) {
 			//menuTitledPanel = new JXTitledPanel();
 			//menuTitledPanel.setOpaque(false);
 			menuTaskPane = new JXTaskPane();
@@ -136,12 +130,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 			throw new PerspectiveException(e1);
 		}
 	}
-	
+	/*
 	@Override
 	public String getResourceBundlePath() {
 		return SignalPerspective.resourcePath;
 	}
-	
+	*/
 	public Icon getIcon() {
 		return JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH + "icon.gif", "aaaaaaaaaaaaaa");
 	}
@@ -286,7 +280,34 @@ public class SignalPerspective extends Perspective implements IObserver {
 			private static final long serialVersionUID = -6603743681967057946L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//project.openFile();
+				JUIGLEFileChooser fileChooser = new JUIGLEFileChooser();
+				fileChooser.setDialogTitle("Open file");
+				fileChooser.setFileFilter(new FileNameExtensionFilter(
+						"jERPA project file (*.erpa)", "erpa"));
+				fileChooser.setFileFilter(new FileNameExtensionFilter(
+						"European Data Format (*.edf, *.rec)", "edf", "rec"));
+				fileChooser.setFileFilter(new FileNameExtensionFilter(
+						"Pseudo signal generator (*.generator)", "generator"));
+				fileChooser.setFileFilter(new FileNameExtensionFilter(
+						"BrainStudio Format (*.xml)", "xml"));
+				fileChooser.setFileFilter(new FileNameExtensionFilter(
+						"Brain Vision Data Exchange Header File (*.vhdr)", "vhdr"));
+				fileChooser
+						.setFileFilter(new FileNameExtensionFilter(
+								"All supported files (*.edf, *.erpa, *.generator, *.rec, *.vhdr, *.xml)",
+								"edf", "esp", "generator", "rec", "vhdr", "xml"));
+
+				fileChooser.setAcceptAllFileFilterUsed(false);
+
+				if (fileChooser.showOpenDialog(fileChooser) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					try {
+						sessionManager.loadFile(file);
+					} catch (ProjectOperationException e1) {
+						// FIXME upravit na vypis do GUI JERPA011
+						e1.printStackTrace();
+					}
+				}
 			}		
 		};
 		openFileItem.setAction(open);

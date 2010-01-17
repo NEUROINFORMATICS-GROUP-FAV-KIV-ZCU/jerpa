@@ -2,11 +2,11 @@ package ch.ethz.origo.jerpa.application.perspective.signalprocess;
 
 import java.io.IOException;
 
+import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.BufferCreator;
 import ch.ethz.origo.jerpa.data.Header;
-import ch.ethz.origo.jerpa.data.formats.CorruptedFileException;
 
 /**
  * T��da pro opravu baseliny.

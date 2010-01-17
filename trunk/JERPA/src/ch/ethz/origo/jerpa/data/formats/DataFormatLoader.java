@@ -3,6 +3,7 @@ package ch.ethz.origo.jerpa.data.formats;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.data.BufferCreator;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;

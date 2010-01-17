@@ -9,13 +9,13 @@ import java.util.Observable;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 
 /**
- * Rozhran� mezi aplika�n� a datovou vrstvou.<br/> Obstar�v� vyrovn�vac� pam�
- * pro na��t�n� dat z do�asn�ho souboru.
+ * Rozhran� mezi aplika�n� a datovou vrstvou.<br/>
+ * Obstar�v� vyrovn�vac� pam� pro na��t�n� dat z do�asn�ho souboru.
  * 
- * @author Ji�� Ku�era
+ * @author Jiri Kucera
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 11/17/2009 
- * @since 0.1.0
+ * @version 0.1.1 01/17/2010)
+ * @since 0.1.0 (11/17/2009)
  */
 public class Buffer extends Observable {
 
@@ -31,11 +31,11 @@ public class Buffer extends Observable {
 	private int numberOfParents;
 
 	/**
-	 * Konstruktor vytvo�� Buffer nad do�asn�m souborem.<br/> Do�asn� soubor mus�
-	 * m�t ulo�ena data v bin�rn�m form�tu:<br/> A0, B0, C0, A1, B1, C1, A2, B2,
-	 * C2...,<br/> kde A, B, C (D, E...) je ozna�en� sign�lu, 0, 1, 2... je ��slo
-	 * framu.<br/> A0, B0, C0... jsou hodnoty o d�lce <code>WORD_LENGTH</code>
-	 * byt�.
+	 * Konstruktor vytvo�� Buffer nad do�asn�m souborem.<br/>
+	 * Do�asn� soubor mus� m�t ulo�ena data v bin�rn�m form�tu:<br/>
+	 * A0, B0, C0, A1, B1, C1, A2, B2, C2...,<br/>
+	 * kde A, B, C (D, E...) je ozna�en� sign�lu, 0, 1, 2... je ��slo framu.<br/>
+	 * A0, B0, C0... jsou hodnoty o d�lce <code>WORD_LENGTH</code> byt�.
 	 * 
 	 * @param tmpFile
 	 *          Do�asn� soubor s ulo�en�mi daty.
@@ -68,8 +68,7 @@ public class Buffer extends Observable {
 	public float[] getFrame(long frameIndex) throws InvalidFrameIndexException {
 
 		if (frameIndex < 0 || frameIndex >= numberOfSamples) {
-			throw new InvalidFrameIndexException("JERPA003{"
-					+ frameIndex + "}");
+			throw new InvalidFrameIndexException("JERPA003{" + frameIndex + "}");
 		}
 
 		float[] frame = loadFrame(frameIndex);
@@ -139,8 +138,8 @@ public class Buffer extends Observable {
 	}
 
 	/**
-	 * Metoda pro uzav�en� do�asn�ho souboru a jeho smaz�n�.<br/> Nutno zavolat
-	 * p�ed zru�en�m instance t��dy Buffer.
+	 * Metoda pro uzav�en� do�asn�ho souboru a jeho smaz�n�.<br/>
+	 * Nutno zavolat p�ed zru�en�m instance t��dy Buffer.
 	 * 
 	 * @throws IOException
 	 */
@@ -323,26 +322,28 @@ public class Buffer extends Observable {
 
 	/**
 	 * Metoda pro p��m� seekov�n� v datov�m �lo�i�ti. Nastav� pozici v datov�m
-	 * �lo�i�ti na zadanou hodnotu<br/> Slou�� pouze pro usnadn�n� kop�rov�n� raw
-	 * dat bez specifikace jejich v�znamu.
+	 * �lo�i�ti na zadanou hodnotu<br/>
+	 * Slou�� pouze pro usnadn�n� kop�rov�n� raw dat bez specifikace jejich
+	 * v�znamu.
 	 * 
 	 * @param seekPos
 	 *          Pozice v datov�m �lo�i�ti.
 	 * @throws java.io.IOException
 	 */
-	protected void seek(int seekPos) throws IOException {
+	public void seek(int seekPos) throws IOException {
 		ist.seek(seekPos);
 	}
 
 	/**
 	 * Vr�t� dal�� hodnotu typu <code>float</code> z datov�ho �lo�i�t� a posune
-	 * ukazatel od st�vaj�c� pozice o �ty�i bajty vp�ed.<br/> Slou�� pouze pro
-	 * usnadn�n� kop�rov�n� raw dat bez specifikace jejich v�znamu.
+	 * ukazatel od st�vaj�c� pozice o �ty�i bajty vp�ed.<br/>
+	 * Slou�� pouze pro usnadn�n� kop�rov�n� raw dat bez specifikace jejich
+	 * v�znamu.
 	 * 
 	 * @return Hodnota nach�zej�c� se na aktu�ln� pozici ukazatele.
 	 * @throws java.io.IOException
 	 */
-	protected float getFloat() throws IOException {
+	public float getFloat() throws IOException {
 		return ist.readFloat();
 	}
 
@@ -353,7 +354,7 @@ public class Buffer extends Observable {
 	 * 
 	 * @return Po�et zb�vaj�c�ch bajt�.
 	 */
-	protected int remaining() {
+	public int remaining() {
 		return ist.getRemaining();
 	}
 
