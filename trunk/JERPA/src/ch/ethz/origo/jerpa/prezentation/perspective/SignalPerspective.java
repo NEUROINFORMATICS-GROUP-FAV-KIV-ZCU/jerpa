@@ -38,7 +38,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 /**
  * 
  * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.2.0 01/16/2010
  * @since 0.1.0 (05/18/09)
  *
@@ -89,7 +89,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 		mainPanel.add(new SignalInfoProvider(sessionManager).getPanel(),BorderLayout.EAST);
 		mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel(),BorderLayout.NORTH);
 		mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(), BorderLayout.CENTER);
-		
 	}
 
 	@Override

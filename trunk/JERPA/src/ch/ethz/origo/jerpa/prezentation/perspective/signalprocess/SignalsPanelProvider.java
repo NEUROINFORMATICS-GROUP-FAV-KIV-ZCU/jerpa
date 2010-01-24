@@ -907,7 +907,7 @@ public class SignalsPanelProvider implements IObserver {
 		}
 		if (project.getSelectedChannels() != null) {
 			for (int i = 0; i < project.getSelectedChannels().size(); i++) {
-				signalsPanel.drawableSignalsValueLabels[i].setText("");
+				//signalsPanel.drawableSignalsValueLabels[i].setText("");
 			}
 		}
 	}

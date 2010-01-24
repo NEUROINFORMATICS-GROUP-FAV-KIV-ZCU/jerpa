@@ -82,12 +82,6 @@ public class EdfFormatLoader implements DataFormatLoader {
 		header = new Header();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cz.zcu.kiv.jerpstudio.data.Format#load(cz.zcu.kiv.jerpstudio.data.Header,
-	 *      cz.zcu.kiv.jerpstudio.data.Loader)
-	 */
 	@Override
 	public Header load(BufferCreator loader) throws IOException,
 			CorruptedFileException {
@@ -95,27 +89,17 @@ public class EdfFormatLoader implements DataFormatLoader {
 		File file = loader.getInputFile();
 
 		if (!file.isFile()) {
-			throw new IOException(loader.getInputFile().getAbsolutePath()
-					+ " isn't file.");
+			throw new IOException("JERPA014:" + loader.getInputFile().getAbsolutePath());
 		}
-
 		if (!file.canRead()) {
-			throw new IOException(loader.getInputFile().getAbsolutePath()
-					+ " can't be read.");
+			throw new IOException("JERPA015:" + loader.getInputFile().getAbsolutePath());
 		}
-
 		nioStream = new NioInputStream(file);
-
 		try {
 			loadGlobalHeader();
-
 			loadChannelsHeader();
-		} catch (CorruptedFileException e) {
-			throw e;
-		} catch (IOException e) {
-			throw e;
 		} catch (Exception e) {
-			throw new CorruptedFileException("Probably not an EDF file");
+			throw new CorruptedFileException("JERPA016", e);
 		}
 
 		headerChecksum();
@@ -125,7 +109,6 @@ public class EdfFormatLoader implements DataFormatLoader {
 		dataChecksum();
 
 		return header;
-
 	}
 
 	private void loadGlobalHeader() throws EOFException, CorruptedFileException {

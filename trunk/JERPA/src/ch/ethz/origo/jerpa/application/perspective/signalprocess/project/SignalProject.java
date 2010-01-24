@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.Averages;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.AveragingDataManager;
 import ch.ethz.origo.jerpa.application.project.Project;
@@ -19,10 +16,9 @@ import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.SignalViewerPanel;
-import ch.ethz.origo.juigle.prezentation.JUIGLEFileChooser;
 
 /**
- * T��da poskytuj�c� podporu projekt�.<br/>
+ * Class for support Singnal processing projects.<br/>
  * <br/>
  * V t�to t��d� jsou ulo�eny stavov� prom�nn� zachycuj�c� aktu�ln� stav
  * projektu. Stavov� prom�nn� mus� b�t ulo�eny/obnoveny podle vzoru v metod�ch

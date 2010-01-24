@@ -9,8 +9,8 @@ import ch.ethz.origo.jerpa.application.exception.PropertiesException;
  * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.1 (01/15/2010)
- * @since 0.1.0 (07/18/09)
+ * @version 0.1.2 (1/24/2010)
+ * @since 0.1.0 (7/18/09)
  * 
  */
 public class ConfigPropertiesLoader {
@@ -143,6 +143,17 @@ public class ConfigPropertiesLoader {
 	 */
 	public static String[] getListOfPerspective() {
 		return properties.getProperty("jerpa.perspective.list").split(",");
+	}
+	
+	/**
+	 * Return home page of <code>JERPA</code> project
+	 * 
+	 * @return home page of JERPA project
+	 * @version 0.1.0 (1/24/2010)
+	 * @since 0.1.2 (1/24/2010)
+	 */
+	public static String getJerpaHomePage() {
+		return properties.getProperty("jerpa.homepage");
 	}
 
 	/** Only for test */

@@ -35,7 +35,7 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.1.1 10/18/2009
+ * @version 0.1.2 (1/24/2010)
  * @since 0.1.0 (05/07/2009)
  */
 public class MainFrame implements AppButtonsListener {
@@ -84,7 +84,7 @@ public class MainFrame implements AppButtonsListener {
 	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {
 		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu();
 		mainMenu.setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
-		mainMenu.addHomePageItem(null, "http://jerpa.origo.ethz.ch/");
+		mainMenu.addHomePageItem(null, ConfigPropertiesLoader.getJerpaHomePage());
 		return mainMenu;
 	}
 

@@ -15,10 +15,11 @@
  */
 
 /*
- *    Main.java
- *    Copyright (C) 2009 University of West Bohemia, 
- *                       Department of Computer Science and Engineering, 
- *                       Pilsen, Czech Republic
+ *
+ *    Copyright (C) 2009 - 2010  
+ *    University of West Bohemia, 
+ *    Department of Computer Science and Engineering, 
+ *    Pilsen, Czech Republic
  */
 package ch.ethz.origo.jerpa.application;
 
@@ -30,16 +31,17 @@ import org.apache.log4j.Logger;
 
 import ch.ethz.origo.jerpa.application.exception.PropertiesException;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
+
 /**
  * Main class of this application. Contains main method for application startup.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 04/16/2009 
- * @since 0.1.0 (04/16/2009 - JERPA birthday) 
- *     
+ * @version 0.1.0 04/16/2009
+ * @since 0.1.0 (04/16/2009 - JERPA birthday)
+ * 
  */
 public class Main {
-	
+
 	public static Logger rootLogger = Logger.getRootLogger();
 
 	/**
@@ -55,12 +57,12 @@ public class Main {
 			// TODO udelat hromadne nahrani properties, asi pres interface
 			e.printStackTrace();
 		}
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				new MainFrame();
-				//new TestMainFrame();				
+				// new TestMainFrame();
 			}
 		});
 	}
