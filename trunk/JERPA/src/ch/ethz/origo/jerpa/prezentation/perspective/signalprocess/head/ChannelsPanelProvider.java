@@ -5,8 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -15,6 +13,8 @@ import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionMa
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.juigle.application.observers.IObservable;
+import ch.ethz.origo.juigle.application.observers.IObserver;
 
 /**
  * Rozhran� mezi aplika�n� a prezenta�n� vrstvou. Slou�� pro komunikaci mezi
@@ -22,8 +22,11 @@ import ch.ethz.origo.jerpa.data.Header;
  * pot�ebn�mi komponentami
  * 
  * @author Petr Soukal
+ * @author Vaclav Souhrada
+ * @version 0.2.0 (1/30/2010)
+ * @since 0.1.0 (1/30/2010)
  */
-public class ChannelsPanelProvider implements Observer {
+public class ChannelsPanelProvider implements IObserver {
 
 	private ChannelsPanel channelsPanel;
 	private SingnalPerspectiveObservable spObservable;
@@ -44,13 +47,14 @@ public class ChannelsPanelProvider implements Observer {
 		channelsPanel = new ChannelsPanel(this);
 		countSelectedSignals = 0;
 		spObservable = SingnalPerspectiveObservable.getInstance();
+		spObservable.attach(this);
 	}
 
 	/**
 	 * P�ij�m� zpr�vy pos�l�n� pomoc� guiControlleru.(Komunikace mezi providery)
 	 */
 	@Override
-	public void update(Observable o, Object arg) {
+	public void update(IObservable o, Object arg) {
 		int msg;
 
 		if (arg instanceof java.lang.Integer) {
@@ -190,6 +194,18 @@ public class ChannelsPanelProvider implements Observer {
 				channelsPanel.showChannels.setEnabled(true);
 			}
 		}
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void update(Object state) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

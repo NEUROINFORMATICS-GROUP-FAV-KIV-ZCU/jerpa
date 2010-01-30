@@ -28,6 +28,7 @@ import ch.ethz.origo.jerpa.data.Artefact;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
 
@@ -84,7 +85,8 @@ public class SignalsPanelProvider implements IObserver {
 		baselineCorrection = this.session.getBaselineCorrection();
 		signalsPanel = new SignalsPanel(this);
 		setFirstVisibleChannel(0);
-		spObservable = SingnalPerspectiveObservable.getInstance();
+		spObservable = (SingnalPerspectiveObservable) session.getSignalPerspectiveObservable();
+		spObservable.attach(this);
 	}
 
 	@Override
@@ -100,13 +102,7 @@ public class SignalsPanelProvider implements IObserver {
 	}
 
 	@Override
-	public void update(Object object, Object state) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
+	public void update(IObservable o, Object arg) {
 		int msg;
 
 		if (arg instanceof java.lang.Integer) {

@@ -9,6 +9,7 @@ import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.application.exception.ProjectOperationException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
 import ch.ethz.origo.jerpa.application.project.Project;
 import ch.ethz.origo.jerpa.application.project.SessionManager;
 import ch.ethz.origo.jerpa.data.Buffer;
@@ -17,6 +18,7 @@ import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectLoader;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectWriter;
+import ch.ethz.origo.juigle.application.observers.IObservable;
 
 /**
  * 
@@ -31,11 +33,13 @@ public class SignalSessionManager extends SessionManager {
 	private SignalsSegmentation signalsSegmentation;
 	private AutomaticArtefactSelection autoSelectionArtefact;
 	private BaselineCorrection baselineCorrection;
+	private SingnalPerspectiveObservable sigPerspObservable;
 
 	public SignalSessionManager() {
 		signalsSegmentation = new SignalsSegmentation(this);
 		autoSelectionArtefact = new AutomaticArtefactSelection(this);
 		baselineCorrection = new BaselineCorrection(this);
+		sigPerspObservable = SingnalPerspectiveObservable.getInstance();
 	}
 
 	@Override
@@ -224,6 +228,10 @@ public class SignalSessionManager extends SessionManager {
 		} else {
 			return project.getHeader();
 		}
+	}
+	
+	public IObservable getSignalPerspectiveObservable() {
+		return sigPerspObservable;
 	}
 
 }

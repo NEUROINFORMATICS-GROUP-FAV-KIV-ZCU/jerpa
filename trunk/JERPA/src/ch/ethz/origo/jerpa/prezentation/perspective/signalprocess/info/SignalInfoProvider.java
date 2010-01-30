@@ -1,13 +1,12 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info;
 
-import java.util.Observable;
-
 import javax.swing.JPanel;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 
 /**
@@ -32,6 +31,7 @@ public class SignalInfoProvider implements IObserver {
 		this.channelsInfoDataModel = new ChannelsInfoTableDataModel(session
 				.getCurrentHeader());
 		this.infoPanel = new SignalInfoPanel(this);
+		SingnalPerspectiveObservable.getInstance().attach(this);
 	}
 	@Override
 	public void update() {
@@ -45,13 +45,7 @@ public class SignalInfoProvider implements IObserver {
 	}
 
 	@Override
-	public void update(Object object, Object state) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
+	public void update(IObservable o, Object arg) {
 		int msg;
 		if (arg instanceof Integer) {
 			msg = ((Integer) arg).intValue();

@@ -20,11 +20,13 @@ import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.application.exception.ProjectOperationException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.SignalsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
+import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFileChooser;
@@ -310,6 +312,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 					File file = fileChooser.getSelectedFile();
 					try {
 						sessionManager.loadFile(file);
+						SingnalPerspectiveObservable.getInstance().setState(SingnalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED);
 					} catch (ProjectOperationException e1) {
 						// FIXME upravit na vypis do GUI JERPA011
 						e1.printStackTrace();
@@ -365,16 +368,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 		makeUpdate(state);
 	}
 
-	@Override
-	public void update(Object object, Object state) {
-		makeUpdate(object, state);
-	}
-
-	@Override
-	public void update(Observable o, Object obj) {
-		makeUpdate(o, obj);
-	}
-
 	/**
 	 * 
 	 * @param obj
@@ -408,5 +401,11 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 */
 	private void changeLanguage() {
 
+	}
+
+	@Override
+	public void update(IObservable o, Object state) {
+		makeUpdate(o, state);
+		
 	}
 }

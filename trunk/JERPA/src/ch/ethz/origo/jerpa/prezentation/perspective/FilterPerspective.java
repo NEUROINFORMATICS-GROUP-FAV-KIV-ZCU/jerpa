@@ -14,6 +14,7 @@ import ch.ethz.origo.jerpa.data.perspective.filter.FilterTreeTableModel;
 import ch.ethz.origo.juigle.application.exception.DataStoreException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
+import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
@@ -118,19 +119,9 @@ public class FilterPerspective extends Perspective implements IObserver {
 	}
 
 	@Override
-	public void update(Object object, Object state) {
+	public void update(IObservable o, Object state) {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		// TODO Auto-generated method stub
 		
-	}
-	
-	
-	
-	
-	
 }
