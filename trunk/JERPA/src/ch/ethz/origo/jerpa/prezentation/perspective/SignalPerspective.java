@@ -41,13 +41,13 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.2.0 01/16/2010
  * @since 0.1.0 (05/18/09)
- *
+ * 
  */
 public class SignalPerspective extends Perspective implements IObserver {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = 3313465073940475745L;
-	
+
 	//
 	private JUIGLEMenuItem fileMenu;
 	private JUIGLEMenuItem openFileItem;
@@ -62,7 +62,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem undoItem;
 	private JUIGLEMenuItem redoItem;
 	private JUIGLEMenuItem baselineCorrItem;
-	private JUIGLEMenuItem autoArteSelItem; 
+	private JUIGLEMenuItem autoArteSelItem;
 	//
 	private JUIGLEMenuItem viewMenu;
 	private JUIGLEMenuItem channelItem;
@@ -73,41 +73,45 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem helpItem;
 	private JUIGLEMenuItem keyboardShortcutItem;
 	private JUIGLEMenuItem aboutItem;
-	
+
 	private SignalSessionManager sessionManager;
-	
+
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
 		sessionManager = new SignalSessionManager();
-		resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing";	
+		resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing";
 	}
-	
+
 	@Override
 	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
-		mainPanel.setLayout(new BorderLayout());
-		mainPanel.add(new SignalInfoProvider(sessionManager).getPanel(),BorderLayout.EAST);
-		mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel(),BorderLayout.NORTH);
-		mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(), BorderLayout.CENTER);
+			mainPanel.setLayout(new BorderLayout());
+			mainPanel.add(new SignalInfoProvider(sessionManager).getPanel(),
+					BorderLayout.EAST);
+			mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel(),
+					BorderLayout.NORTH);
+			mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(),
+					BorderLayout.CENTER);
 	}
 
 	@Override
 	public void initPerspectiveMenuPanel() throws PerspectiveException {
 		if (menuTaskPane == null) {
-			//menuTitledPanel = new JXTitledPanel();
-			//menuTitledPanel.setOpaque(false);
+			// menuTitledPanel = new JXTitledPanel();
+			// menuTitledPanel.setOpaque(false);
 			menuTaskPane = new JXTaskPane();
 			menuTaskPane.setOpaque(false);
-			
+
 			// initalize menu
-			menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP, resourcePath);
+			menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP,
+					resourcePath);
 			menu.setFloatable(false);
 			menu.setRollover(true);
 			// initialize and add menu items
 			initAndAddMenuItems();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @throws PerspectiveException
@@ -117,28 +121,28 @@ public class SignalPerspective extends Perspective implements IObserver {
 		try {
 			// add items to menu
 			menu.addItem(initAndGetFileMenuItem());
-		  menu.addItem(initAndGetEditMenuItem());
+			menu.addItem(initAndGetEditMenuItem());
 			menu.addItem(initAndGetViewMenuItem());
 			menu.addItem(initAndGetHelpMenuItem());
 			menu.addMenuSeparator();
 			menu.addHeaderHideButton(true);
 			menu.addFooterHideButton(true);
-			//menuTitledPanel.add(menu);
+			// menuTitledPanel.add(menu);
 			menuTaskPane.add(menu);
 		} catch (JUIGLEMenuException e1) {
 			throw new PerspectiveException(e1);
 		}
 	}
+
 	/*
-	@Override
-	public String getResourceBundlePath() {
-		return SignalPerspective.resourcePath;
-	}
-	*/
+	 * @Override public String getResourceBundlePath() { return
+	 * SignalPerspective.resourcePath; }
+	 */
 	public Icon getIcon() {
-		return JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH + "icon.gif", "aaaaaaaaaaaaaa");
+		return JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH
+				+ "icon.gif", "aaaaaaaaaaaaaa");
 	}
-	
+
 	@Override
 	public void updateText() {
 		super.updateText();
@@ -149,7 +153,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 			}
 		});
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -178,8 +182,10 @@ public class SignalPerspective extends Perspective implements IObserver {
 		// set actions to menu items
 		setFileMenuActions();
 		// add key accelerators to items
-		openFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK));
-		saveFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK));
+		openFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+				KeyEvent.CTRL_MASK));
+		saveFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+				KeyEvent.CTRL_MASK));
 		// add subitems to file menu
 		fileMenu.addSubItem(openFileItem);
 		fileMenu.addSubItem(saveFileItem);
@@ -188,10 +194,10 @@ public class SignalPerspective extends Perspective implements IObserver {
 		fileMenu.addSubItem(importItem);
 		fileMenu.addSubItem(exportItem);
 		fileMenu.addSubItem(exitItem);
-		
+
 		return fileMenu;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -202,7 +208,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		undoItem = new JUIGLEMenuItem();
 		redoItem = new JUIGLEMenuItem();
 		baselineCorrItem = new JUIGLEMenuItem();
-		autoArteSelItem = new JUIGLEMenuItem(); 
+		autoArteSelItem = new JUIGLEMenuItem();
 		//
 		editMenu.setResourceBundleKey("menu.edit");
 		undoItem.setResourceBundleKey("menu.edit.undo");
@@ -216,10 +222,10 @@ public class SignalPerspective extends Perspective implements IObserver {
 		editMenu.addSubItem(redoItem);
 		editMenu.addSubItem(baselineCorrItem);
 		editMenu.addSubItem(autoArteSelItem);
-		
+
 		return editMenu;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -244,10 +250,10 @@ public class SignalPerspective extends Perspective implements IObserver {
 		viewMenu.addSubItem(editInfoWinItem);
 		viewMenu.addSubItem(signalsWinItem);
 		viewMenu.addSubItem(averagingWinItem);
-		
+
 		return viewMenu;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -258,7 +264,8 @@ public class SignalPerspective extends Perspective implements IObserver {
 		keyboardShortcutItem = new JUIGLEMenuItem();
 		aboutItem = new JUIGLEMenuItem();
 		//
-		keyboardShortcutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.CTRL_MASK));
+		keyboardShortcutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+				KeyEvent.CTRL_MASK));
 		//
 		helpItem.setResourceBundleKey("menu.help");
 		keyboardShortcutItem.setResourceBundleKey("menu.help.keyboard.shortcuts");
@@ -269,7 +276,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		helpItem.addSubItem(aboutItem);
 		return helpItem;
 	}
-	
+
 	/**
 	 * 
 	 * @since 0.1.1
@@ -277,6 +284,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private void setFileMenuActions() {
 		Action open = new AbstractAction() {
 			private static final long serialVersionUID = -6603743681967057946L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JUIGLEFileChooser fileChooser = new JUIGLEFileChooser();
@@ -307,25 +315,25 @@ public class SignalPerspective extends Perspective implements IObserver {
 						e1.printStackTrace();
 					}
 				}
-			}		
+			}
 		};
 		openFileItem.setAction(open);
 	}
-	
+
 	/**
 	 * @since 0.1.0
 	 */
 	private void setEditMenuActions() {
-		
+
 	}
-	
+
 	/**
 	 * @since 0.1.0
 	 */
 	private void setViewMenuActions() {
-		
+
 	}
-	
+
 	/**
 	 * @since 0.1.0
 	 */
@@ -339,7 +347,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						new AboutDialog();						
+						new AboutDialog();
 					}
 				});
 			}
@@ -349,26 +357,24 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	@Override
 	public void update() {
-		// not implemented		
+		// not implemented
 	}
 
 	@Override
 	public void update(Object state) {
-		makeUpdate(state);		
+		makeUpdate(state);
 	}
-
 
 	@Override
 	public void update(Object object, Object state) {
-		makeUpdate(object, state);		
+		makeUpdate(object, state);
 	}
-
 
 	@Override
 	public void update(Observable o, Object obj) {
 		makeUpdate(o, obj);
 	}
-	
+
 	/**
 	 * 
 	 * @param obj
@@ -384,7 +390,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 			}
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param object
@@ -393,14 +399,14 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 * @since 0.2.0
 	 */
 	private void makeUpdate(Object object, Object state) {
-				
+
 	}
-	
+
 	/**
 	 * @version 0.1.0
 	 * @since 0.2.0
 	 */
 	private void changeLanguage() {
-		
+
 	}
 }

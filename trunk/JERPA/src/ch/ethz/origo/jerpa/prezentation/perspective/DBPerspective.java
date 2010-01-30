@@ -1,9 +1,14 @@
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXTaskPane;
 
+import ch.ethz.origo.jerpa.prezentation.perspective.db.DbChooserDialog;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
@@ -24,6 +29,7 @@ public class DBPerspective extends Perspective {
 	
 	// Database menu
 	private JUIGLEMenuItem databaseItem;
+	private JUIGLEMenuItem dbConnectItem;
 	private JUIGLEMenuItem dbCreateItem;
 	private JUIGLEMenuItem dbDeleteItem;
 	private JUIGLEMenuItem dbInfoItem;
@@ -82,19 +88,35 @@ public class DBPerspective extends Perspective {
 	private JUIGLEMenuItem initAndGetDatabaseItem() {
 		databaseItem = new JUIGLEMenuItem(getLocalizedString("menu.database"));
 		// initialize subItems of file menu
+		dbConnectItem = new JUIGLEMenuItem();
 		dbCreateItem = new JUIGLEMenuItem();
 		dbDeleteItem = new JUIGLEMenuItem();
 		dbInfoItem = new JUIGLEMenuItem();
 		// set Resource bundles
 		databaseItem.setResourceBundleKey("menu.database");
+		dbConnectItem.setResourceBundleKey("menu.database.connect");
 		dbCreateItem.setResourceBundleKey("menu.database.create");
 		dbDeleteItem.setResourceBundleKey("menu.database.delete");
 		dbInfoItem.setResourceBundleKey("menu.database.info");
+		//
+		setDatabaseItemsAction();
 		// add subitems to dabase item
+		databaseItem.addSubItem(dbConnectItem);
 		databaseItem.addSubItem(dbCreateItem);
 		databaseItem.addSubItem(dbDeleteItem);
 		databaseItem.addSubItem(dbInfoItem);
 		return databaseItem;
+	}
+
+	private void setDatabaseItemsAction() {
+		Action connect = new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new DbChooserDialog();
+			}	
+		};
+		dbConnectItem.setAction(connect);
 	}
 
 	private JUIGLEMenuItem initAndGetToolsItem() {
