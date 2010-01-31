@@ -10,7 +10,7 @@ import ch.ethz.origo.jerpa.application.perspective.weka.project.WEKAProject;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
-import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
@@ -74,7 +74,7 @@ public class WEKAPerspective extends Perspective implements IObserver {
 	
 
 	public Icon getIcon() throws PerspectiveException {
-		return JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH + "weka_logo.gif", 64, 32);
+		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "weka_logo.gif", 64, 32);
 	}
 	
 

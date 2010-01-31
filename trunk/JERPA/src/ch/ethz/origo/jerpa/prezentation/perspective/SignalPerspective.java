@@ -30,7 +30,7 @@ import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFileChooser;
-import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
@@ -141,7 +141,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 * SignalPerspective.resourcePath; }
 	 */
 	public Icon getIcon() {
-		return JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH
+		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
 				+ "icon.gif", "aaaaaaaaaaaaaa");
 	}
 

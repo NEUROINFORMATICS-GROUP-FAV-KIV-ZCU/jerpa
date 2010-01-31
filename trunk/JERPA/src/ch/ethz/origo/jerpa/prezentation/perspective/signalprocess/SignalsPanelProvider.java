@@ -30,7 +30,7 @@ import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
-import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
 /**
  * 
@@ -449,7 +449,7 @@ public class SignalsPanelProvider implements IObserver {
 	 */
 	protected Icon getPlayIcon() {
 		if (playIcon == null) {
-			playIcon = JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH
+			playIcon = JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
 					+ "play24.gif");
 		}
 		return playIcon;
@@ -461,7 +461,7 @@ public class SignalsPanelProvider implements IObserver {
 
 	protected Icon getPauseIcon() {
 		if (pauseIcon == null) {
-			pauseIcon = JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH
+			pauseIcon = JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
 					+ "pause24.gif");
 		}
 		return pauseIcon;
@@ -472,7 +472,7 @@ public class SignalsPanelProvider implements IObserver {
 	 */
 	protected Icon getStopIcon() {
 		if (stopIcon == null) {
-			stopIcon = JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH
+			stopIcon = JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
 					+ "stop24.gif");
 		}
 		return stopIcon;
@@ -483,7 +483,7 @@ public class SignalsPanelProvider implements IObserver {
 	 */
 	protected Icon getSelectionEpochIcon() {
 		if (selectionEpochIcon == null) {
-			selectionEpochIcon = JUIGLEGraphicsUtilities
+			selectionEpochIcon = JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "selEpochIcon.gif");
 		}
 		return selectionEpochIcon;
@@ -495,7 +495,7 @@ public class SignalsPanelProvider implements IObserver {
 	protected Icon getUnselectionEpochIcon() {
 
 		if (unselectionEpochIcon == null) {
-			unselectionEpochIcon = JUIGLEGraphicsUtilities
+			unselectionEpochIcon = JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "unselEpochIcon.gif");
 		}
 		return unselectionEpochIcon;
@@ -506,7 +506,7 @@ public class SignalsPanelProvider implements IObserver {
 	 */
 	protected Icon getSelectionArtefactIcon() {
 		if (selectionArtefactIcon == null) {
-			selectionArtefactIcon = JUIGLEGraphicsUtilities
+			selectionArtefactIcon = JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "selArtefactIcon.gif");
 		}
 		return selectionArtefactIcon;
@@ -517,7 +517,7 @@ public class SignalsPanelProvider implements IObserver {
 	 */
 	protected Icon getUnselectionArtefactIcon() {
 		if (unselectionArtefactIcon == null) {
-			unselectionArtefactIcon = JUIGLEGraphicsUtilities
+			unselectionArtefactIcon = JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "unselArtefactIcon.gif");
 		}
 		return unselectionArtefactIcon;
@@ -528,7 +528,7 @@ public class SignalsPanelProvider implements IObserver {
 	 */
 	protected Icon getPlaybackIcon() {
 		if (playbackIcon == null) {
-			playbackIcon = JUIGLEGraphicsUtilities
+			playbackIcon = JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "playbackicon.png");
 		}
 		return playbackIcon;
@@ -539,7 +539,7 @@ public class SignalsPanelProvider implements IObserver {
 	 */
 	protected Icon getBaselineCorrectionIcon() {
 		if (baselineCorrectionIcon == null) {
-			baselineCorrectionIcon = JUIGLEGraphicsUtilities
+			baselineCorrectionIcon = JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "baselineCorrectionIcon.gif");
 		}
 		return baselineCorrectionIcon;

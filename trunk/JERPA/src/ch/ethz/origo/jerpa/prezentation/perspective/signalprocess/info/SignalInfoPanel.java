@@ -1,25 +1,30 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info;
 
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+
+import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.JXTable;
+
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
 /**
  * Panel with informations about EEG record.
  * 
  * @author Jiri Kucera (original class from jERP Studio)
  * @author Vaclav Souhrada
- * @version 0.1.0 (11/17/09)
+ * @version 0.1.1 (1/31/2010)
  * @since 0.1.0 (11/17/09)
+ * @see JXPanel
  */
-public class SignalInfoPanel extends JPanel {
+public class SignalInfoPanel extends JXPanel {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = -3776887971435045462L;
-	
+
 	private SignalInfoProvider infoProvider;
-	private JTable channelsInfoTable;
-	private JTable infoTable;
+	private JXTable channelsInfoTable;
+	private JXTable infoTable;
 	private JScrollPane infoTableScrollPane;
 	private JScrollPane jScrollPane1;
 
@@ -40,9 +45,17 @@ public class SignalInfoPanel extends JPanel {
 	 */
 	private void initComponents() {
 		infoTableScrollPane = new JScrollPane();
-		infoTable = new JTable();
+		infoTable = new JXTable();
+		infoTable.setColumnControlVisible(true);
+		infoTable.setHighlighters(JUIGLEGraphicsUtils
+				.getHighlighterInstance());
+		infoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jScrollPane1 = new JScrollPane();
-		channelsInfoTable = new JTable();
+		channelsInfoTable = new JXTable();
+		channelsInfoTable.setColumnControlVisible(true);
+		channelsInfoTable.setHighlighters(JUIGLEGraphicsUtils
+				.getHighlighterInstance());
+		channelsInfoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		infoTable.setModel(infoProvider.getGlobalInfoDataModel());
 		infoTable.setEnabled(false);

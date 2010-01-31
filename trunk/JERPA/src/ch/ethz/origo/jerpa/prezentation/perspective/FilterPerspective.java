@@ -17,7 +17,7 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
-import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
@@ -98,7 +98,7 @@ public class FilterPerspective extends Perspective implements IObserver {
 	}
 	
 	public Icon getIcon() throws PerspectiveException {
-		return JUIGLEGraphicsUtilities.createImageIcon(JERPAUtils.IMAGE_PATH + "filterPerspectiveIcon.png", 32, 32);
+		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "filterPerspectiveIcon.png", 32, 32);
 	}
 	
 

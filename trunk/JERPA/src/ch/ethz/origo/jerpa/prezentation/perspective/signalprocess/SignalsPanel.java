@@ -29,7 +29,7 @@ import javax.swing.SpinnerNumberModel;
 
 import noname.JERPAUtils;
 import ch.ethz.origo.jerpa.application.Const;
-import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtilities;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
 /**
  * Okno pro zobrazen� nam��en�ch dat a jejich p�ehr�v�n�. D�le tak� slou�� k
@@ -283,7 +283,7 @@ public class SignalsPanel extends JPanel {
 			stopBT.setMaximumSize(new Dimension(playIcon.getIconWidth(), playIcon
 					.getIconHeight()));
 
-			increaseNumberOfChannelsButton = new JButton(JUIGLEGraphicsUtilities
+			increaseNumberOfChannelsButton = new JButton(JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "chp.gif"));
 			increaseNumberOfChannelsButton.setEnabled(false);
 			increaseNumberOfChannelsButton.addActionListener(new ActionListener() {
@@ -294,7 +294,7 @@ public class SignalsPanel extends JPanel {
 				}
 			});
 
-			decreaseNumberOfChannelsButton = new JButton(JUIGLEGraphicsUtilities
+			decreaseNumberOfChannelsButton = new JButton(JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "chm.gif"));
 			decreaseNumberOfChannelsButton.setEnabled(false);
 			decreaseNumberOfChannelsButton.addActionListener(new ActionListener() {
@@ -305,7 +305,7 @@ public class SignalsPanel extends JPanel {
 				}
 			});
 
-			decreaseVerticalZoomButton = new JButton(JUIGLEGraphicsUtilities
+			decreaseVerticalZoomButton = new JButton(JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "magvm.png"));
 			decreaseVerticalZoomButton.addActionListener(new ActionListener() {
 
@@ -315,7 +315,7 @@ public class SignalsPanel extends JPanel {
 				}
 			});
 
-			increaseVerticalZoomButton = new JButton(JUIGLEGraphicsUtilities
+			increaseVerticalZoomButton = new JButton(JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "magvp.png"));
 			increaseVerticalZoomButton.addActionListener(new ActionListener() {
 
@@ -325,7 +325,7 @@ public class SignalsPanel extends JPanel {
 				}
 			});
 
-			decreaseHorizontalZoomButton = new JButton(JUIGLEGraphicsUtilities
+			decreaseHorizontalZoomButton = new JButton(JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "maghm.png"));
 			decreaseHorizontalZoomButton.addActionListener(new ActionListener() {
 
@@ -335,7 +335,7 @@ public class SignalsPanel extends JPanel {
 				}
 			});
 
-			increaseHorizontalZoomButton = new JButton(JUIGLEGraphicsUtilities
+			increaseHorizontalZoomButton = new JButton(JUIGLEGraphicsUtils
 					.createImageIcon(JERPAUtils.IMAGE_PATH + "maghp.png"));
 			increaseHorizontalZoomButton.addActionListener(new ActionListener() {
 
