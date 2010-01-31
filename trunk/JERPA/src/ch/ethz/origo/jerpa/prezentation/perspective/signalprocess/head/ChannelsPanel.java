@@ -14,20 +14,30 @@ import javax.swing.JScrollPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 
+import org.jdesktop.swingx.JXButton;
+import org.jdesktop.swingx.JXPanel;
+
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.prezentation.JUIGLEButton;
+
 /**
  * Okno pro zobrazen� elektrod m���c� data. Slou�� pro zobrazen� sign�l�, kter�
  * chce u�ivatel vid�t.
  * 
  * @author Petr Soukal (original class from jERP Studio)
  * @author Vaclav Souhrada
- * @version 0.1.0 (11/17/09)
- * @since 0.1.0
+ * @version 0.1.1 (1/31/2010)
+ * @since 0.1.0 (11/17/09)
  */
-public class ChannelsPanel extends JPanel {
-	private static final long serialVersionUID = 1L;
+public class ChannelsPanel extends JXPanel {
+
+	/** Only for serialization */
+	private static final long serialVersionUID = 886527601758286651L;
+
 	int MAX_ELECTRODE_LENGTH = 10, COLS = 3, ROWS = 0, BORDER = 5;
-	JPanel electrodesPanel;
-	JButton showChannels;
+	JXPanel electrodesPanel;
+	JUIGLEButton showChannels;
 	private ChannelsPanelProvider channelsProvider;
 	JCheckBox[] electrodes;
 
@@ -35,15 +45,16 @@ public class ChannelsPanel extends JPanel {
 	 * Vytv��� instance t��dy.
 	 * 
 	 * @param channelsWindowProvider
+	 * @throws JUIGLELangException 
 	 */
-	public ChannelsPanel(ChannelsPanelProvider channelsProvider) {
+	public ChannelsPanel(ChannelsPanelProvider channelsProvider) throws JUIGLELangException {
 		// super("Show signals", true, true, false, true);
 		super(new BorderLayout());
 		this.channelsProvider = channelsProvider;
 		JScrollPane scrollPane = new JScrollPane();
-		JPanel centerPanel = new JPanel(new BorderLayout());
+		JXPanel centerPanel = new JXPanel(new BorderLayout());
 		centerPanel.setBackground(Color.BLACK);
-		JPanel buttonPanel = new JPanel();
+		JXPanel buttonPanel = new JXPanel();
 
 		// LineBorder lineBorder = (LineBorder)
 		// BorderFactory.createLineBorder(Color.RED);
@@ -53,13 +64,16 @@ public class ChannelsPanel extends JPanel {
 				titleBorder, BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER,
 						BORDER));
 
-		electrodesPanel = new JPanel(new GridLayout(ROWS, COLS));
+		electrodesPanel = new JXPanel(new GridLayout(ROWS, COLS));
 		electrodesPanel.setOpaque(false);
 		electrodesPanel.setBorder(compoundBorder);
 
-		showChannels = new JButton("Show selected channels");
+		showChannels = new JUIGLEButton(LangUtils
+				.getPerspectiveLangPathProp(LangUtils.SIGNAL_PERSP_LANG_FILE_KEY),
+				"channel.panel.butt.0");
 		showChannels.addActionListener(new FunctionShowChannelsBT());
 		showChannels.setEnabled(false);
+		showChannels.updateText();
 		this.add(scrollPane);
 		buttonPanel.add(showChannels);
 		centerPanel.add(electrodesPanel, BorderLayout.CENTER);

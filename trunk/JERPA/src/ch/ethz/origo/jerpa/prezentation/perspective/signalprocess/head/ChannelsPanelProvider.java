@@ -13,6 +13,7 @@ import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionMa
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 
@@ -41,8 +42,9 @@ public class ChannelsPanelProvider implements IObserver {
 	 *          - j�dro aplikace udr�uj�c� vztah mezi aplika�n� a prezenta�n�
 	 *          vrstvou.
 	 * @param guiController
+	 * @throws JUIGLELangException 
 	 */
-	public ChannelsPanelProvider(SignalSessionManager session) {
+	public ChannelsPanelProvider(SignalSessionManager session) throws JUIGLELangException {
 		this.session = session;
 		channelsPanel = new ChannelsPanel(this);
 		countSelectedSignals = 0;

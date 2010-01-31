@@ -111,6 +111,8 @@ public class DBPerspective extends Perspective {
 	private void setDatabaseItemsAction() {
 		Action connect = new AbstractAction() {
 
+			private static final long serialVersionUID = 6405057295379917043L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				new DbChooserDialog();

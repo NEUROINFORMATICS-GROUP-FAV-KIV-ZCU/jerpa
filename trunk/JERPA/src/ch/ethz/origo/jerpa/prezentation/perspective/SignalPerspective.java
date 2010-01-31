@@ -21,9 +21,11 @@ import org.jdesktop.swingx.JXTaskPane;
 import ch.ethz.origo.jerpa.application.exception.ProjectOperationException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.SignalsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
@@ -81,7 +83,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
 		sessionManager = new SignalSessionManager();
-		resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.signalprocess.SignalProcessing";
+		resourcePath = LangUtils.getPerspectiveLangPathProp("perspective.signalprocessing.lang");
 	}
 
 	@Override
@@ -92,8 +94,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 					BorderLayout.EAST);
 			mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel(),
 					BorderLayout.NORTH);
-			mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(),
-					BorderLayout.CENTER);
+			try {
+				mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(),
+						BorderLayout.CENTER);
+			} catch (JUIGLELangException e) {
+				throw new PerspectiveException(e);
+			}
 	}
 
 	@Override
