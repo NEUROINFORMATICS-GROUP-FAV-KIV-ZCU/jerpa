@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Observable;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -83,23 +82,24 @@ public class SignalPerspective extends Perspective implements IObserver {
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
 		sessionManager = new SignalSessionManager();
-		resourcePath = LangUtils.getPerspectiveLangPathProp("perspective.signalprocessing.lang");
+		resourcePath = LangUtils
+				.getPerspectiveLangPathProp("perspective.signalprocessing.lang");
 	}
 
 	@Override
 	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
-			mainPanel.setLayout(new BorderLayout());
-			mainPanel.add(new SignalInfoProvider(sessionManager).getPanel(),
-					BorderLayout.EAST);
+		mainPanel.setLayout(new BorderLayout());
+		mainPanel.add(new SignalInfoProvider(sessionManager).getPanel(),
+				BorderLayout.EAST);
+		try {
 			mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel(),
 					BorderLayout.NORTH);
-			try {
-				mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(),
-						BorderLayout.CENTER);
-			} catch (JUIGLELangException e) {
-				throw new PerspectiveException(e);
-			}
+			mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(),
+					BorderLayout.CENTER);
+		} catch (JUIGLELangException e) {
+			throw new PerspectiveException(e);
+		}
 	}
 
 	@Override
@@ -318,7 +318,8 @@ public class SignalPerspective extends Perspective implements IObserver {
 					File file = fileChooser.getSelectedFile();
 					try {
 						sessionManager.loadFile(file);
-						SingnalPerspectiveObservable.getInstance().setState(SingnalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED);
+						SingnalPerspectiveObservable.getInstance().setState(
+								SingnalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED);
 					} catch (ProjectOperationException e1) {
 						// FIXME upravit na vypis do GUI JERPA011
 						e1.printStackTrace();
@@ -412,6 +413,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 	@Override
 	public void update(IObservable o, Object state) {
 		makeUpdate(o, state);
-		
+
 	}
 }

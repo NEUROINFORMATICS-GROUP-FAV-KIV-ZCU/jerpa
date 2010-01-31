@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -28,6 +27,7 @@ import ch.ethz.origo.jerpa.data.Artefact;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
@@ -78,7 +78,7 @@ public class SignalsPanelProvider implements IObserver {
 	// private List<Integer> visibleSignalsIndexes;
 	private float paintVolume;
 
-	public SignalsPanelProvider(SignalSessionManager session) {
+	public SignalsPanelProvider(SignalSessionManager session) throws JUIGLELangException {
 		this.session = session;
 		drawingComponent = new DrawingComponent(this);
 		signalsSegmentation = this.session.getSignalsSegmentation();

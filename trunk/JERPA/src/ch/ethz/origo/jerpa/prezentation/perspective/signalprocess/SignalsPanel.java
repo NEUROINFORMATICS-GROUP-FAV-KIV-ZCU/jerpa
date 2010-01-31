@@ -29,6 +29,7 @@ import javax.swing.SpinnerNumberModel;
 
 import noname.JERPAUtils;
 import ch.ethz.origo.jerpa.application.Const;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
 /**
@@ -88,7 +89,7 @@ public class SignalsPanel extends JPanel {
 	// JToggleButton invertedSignalsButton;
 	protected OptionPopupMenu optionMenu;
 
-	public SignalsPanel(SignalsPanelProvider signalsProvider) {
+	public SignalsPanel(SignalsPanelProvider signalsProvider) throws JUIGLELangException {
 		this.signalsProvider = signalsProvider;
 		playIcon = signalsProvider.getPlayIcon();
 		optionMenu = new OptionPopupMenu(this.signalsProvider);

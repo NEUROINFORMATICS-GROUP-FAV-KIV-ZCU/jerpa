@@ -2,53 +2,90 @@ package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 
 import javax.swing.JComponent;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
 
 /**
  * T��da vytv��ej�c� popup-menu, kter� umo��uje funkce segmentace sign�l� a
  * ozna�en� artefakt�.
  * 
- * @author Petr Soukal (original class from jERP Studio is <code>OptionMenu</code>)
+ * @author Petr Soukal (original class from jERP Studio is
+ *         <code>OptionMenu</code>)
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 11/17/2009 
- * @since 0.1.0
+ * @version 0.1.0 (1/31/2010)
+ * @since 0.1.0 (11/17/2009)
+ * @see JPopupMenu
+ * @see ILanguage
  */
-public class OptionPopupMenu extends JPopupMenu {
+public class OptionPopupMenu extends JPopupMenu implements ILanguage {
+
+	/** Only for serialization */
+	private static final long serialVersionUID = -1606263409130420159L;
+
+	private String resourceBundlePath;
+	private ResourceBundle resource;
+
 	private SignalsPanelProvider signalsProvider;
-	private JMenuItem selectEpoch;
-	private JMenuItem setPlaybackIndicator;
-	private JMenuItem unselectEpoch;
-	private JMenuItem unselectAllEpochs;
-	private JMenuItem unselectArtefact;
-	private JMenuItem unselectAllArtefacts;
-	private JMenuItem unselectAll;
+	private JUIGLEMenuItem selectEpoch;
+	private JUIGLEMenuItem setPlaybackIndicator;
+	private JUIGLEMenuItem unselectEpoch;
+	private JUIGLEMenuItem unselectAllEpochs;
+	private JUIGLEMenuItem unselectArtefact;
+	private JUIGLEMenuItem unselectAllArtefacts;
+	private JUIGLEMenuItem unselectAll;
 	private long frame;
 
 	/**
 	 * Vytv��� objekt dan� t��dy a tla��tka menu.
 	 * 
-	 * @param signalsWindowProvider -
-	 *          objekt t��dy SignalsWindowProvider pro komunikaci s ostatn�mi
+	 * @param signalsWindowProvider
+	 *          - objekt t��dy SignalsWindowProvider pro komunikaci s ostatn�mi
 	 *          t��dami prezenta�n� vrstvy.
+	 * @throws JUIGLELangException 
 	 */
-	public OptionPopupMenu(SignalsPanelProvider signalsProvider) {
+	public OptionPopupMenu(SignalsPanelProvider signalsProvider) throws JUIGLELangException {
 		this.signalsProvider = signalsProvider;
-		selectEpoch = new JMenuItem("Select Epoch");
+		// set up localized files
+		setLocalizedResourceBundle(LangUtils
+				.getPerspectiveLangPathProp(LangUtils.SIGNAL_PERSP_LANG_FILE_KEY));
+		// initialize menu items
+		selectEpoch = new JUIGLEMenuItem();
+		setPlaybackIndicator = new JUIGLEMenuItem();
+		unselectEpoch = new JUIGLEMenuItem();
+		unselectAllEpochs = new JUIGLEMenuItem();
+		unselectArtefact = new JUIGLEMenuItem();
+		unselectAllArtefacts = new JUIGLEMenuItem();
+		unselectAll = new JUIGLEMenuItem();
+		// set up localized files path and keys
+		selectEpoch.setLocalizedResourceBundle(getResourceBundlePath());
+		setPlaybackIndicator.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectEpoch.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectAllEpochs.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectArtefact.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectAllArtefacts.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectAll.setLocalizedResourceBundle(getResourceBundlePath());
+		selectEpoch.setResourceBundleKey("sig.viewer.selepoch");
+		setPlaybackIndicator.setResourceBundleKey("sig.viewer.playback");
+		unselectEpoch.setResourceBundleKey("sig.viewer.unselepoch");
+		unselectAllEpochs.setResourceBundleKey("sig.viewer.unselepoch.all");
+		unselectArtefact.setResourceBundleKey("sig.viewer.unselart");
+		unselectAllArtefacts.setResourceBundleKey("sig.viewer.unselart.all");
+		unselectAll.setResourceBundleKey("sig.viewer.unselect.all");
+		// add listeners to items
 		selectEpoch.addActionListener(new FunctionSelectEpoch());
-		setPlaybackIndicator = new JMenuItem("Set Playback Indicator");
 		setPlaybackIndicator.addActionListener(new FunctionSetPlaybackIndicator());
-		unselectEpoch = new JMenuItem("Unselect Epoch");
 		unselectEpoch.addActionListener(new FunctionUnselectEpoch());
-		unselectAllEpochs = new JMenuItem("Unselect All Epochs");
 		unselectAllEpochs.addActionListener(new FunctionUnselectAllEpochs());
-		unselectArtefact = new JMenuItem("Unselect Artefact");
 		unselectArtefact.addActionListener(new FunctionUnselectArtefact());
-		unselectAllArtefacts = new JMenuItem("Unselect All Artefacts");
 		unselectAllArtefacts.addActionListener(new FunctionUnselectAllArtefacts());
-		unselectAll = new JMenuItem("Unselect All");
 		unselectAll.addActionListener(new FunctionUnselectAll());
 
 		this.add(setPlaybackIndicator);
@@ -60,19 +97,20 @@ public class OptionPopupMenu extends JPopupMenu {
 		this.add(unselectAllEpochs);
 		this.add(unselectAllArtefacts);
 		this.add(unselectAll);
+		updateText();
 	}
 
 	/**
 	 * Nastavuje zobrazen� popup-menu a jeho um�st�n�.
 	 * 
-	 * @param visualComponent -
-	 *          komponenta, ke kter� se menu v�e.
-	 * @param xAxis -
-	 *          x-ov� sou�adnice zobrazen� menu.
-	 * @param yAxis -
-	 *          y-ov� sou�adnice zobrazen� menu.
-	 * @param frame -
-	 *          m�sto v souboru, p�epo��tan� ze sou�adnic kliku.
+	 * @param visualComponent
+	 *          - komponenta, ke kter� se menu v�e.
+	 * @param xAxis
+	 *          - x-ov� sou�adnice zobrazen� menu.
+	 * @param yAxis
+	 *          - y-ov� sou�adnice zobrazen� menu.
+	 * @param frame
+	 *          - m�sto v souboru, p�epo��tan� ze sou�adnic kliku.
 	 */
 	public void setVisibleMenu(JComponent visualComponent, int xAxis, int yAxis,
 			long frame) {
@@ -83,18 +121,18 @@ public class OptionPopupMenu extends JPopupMenu {
 	/**
 	 * Nastavuje povolen�/zak�z�n� jednotliv�ch tla��tek.
 	 * 
-	 * @param enabledSelEpoch -
-	 *          povolen�/zak�z�n� ozna�en� epochy.
-	 * @param enabledUnselEpoch -
-	 *          povolen�/zak�z�n� odzna�en� epochy.
-	 * @param enabledUnselArtefact -
-	 *          povolen�/zak�z�n� odzna�en� artefaktu.
-	 * @param enabledUnselAllEpochs -
-	 *          povolen�/zak�z�n� odzna�en� v�ech epoch.
-	 * @param enabledUnselAllArtefacts -
-	 *          povolen�/zak�z�n� odzna�en� v�ech artefakt�.
-	 * @param enabledUnselAll -
-	 *          povolen�/zak�z�n� odzna�en� v�eho.
+	 * @param enabledSelEpoch
+	 *          - povolen�/zak�z�n� ozna�en� epochy.
+	 * @param enabledUnselEpoch
+	 *          - povolen�/zak�z�n� odzna�en� epochy.
+	 * @param enabledUnselArtefact
+	 *          - povolen�/zak�z�n� odzna�en� artefaktu.
+	 * @param enabledUnselAllEpochs
+	 *          - povolen�/zak�z�n� odzna�en� v�ech epoch.
+	 * @param enabledUnselAllArtefacts
+	 *          - povolen�/zak�z�n� odzna�en� v�ech artefakt�.
+	 * @param enabledUnselAll
+	 *          - povolen�/zak�z�n� odzna�en� v�eho.
 	 */
 	public void setEnabledItems(boolean enabledSelEpoch,
 			boolean enabledUnselEpoch, boolean enabledUnselArtefact,
@@ -124,8 +162,7 @@ public class OptionPopupMenu extends JPopupMenu {
 	private class FunctionSetPlaybackIndicator implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			signalsProvider.getDrawingComponent().setPlaybackIndicatorPosition(
-					frame);
+			signalsProvider.getDrawingComponent().setPlaybackIndicatorPosition(frame);
 		}
 	}
 
@@ -177,5 +214,48 @@ public class OptionPopupMenu extends JPopupMenu {
 		public void actionPerformed(ActionEvent e) {
 			signalsProvider.unselectAllEpochsAndArtefacts();
 		}
+	}
+
+	@Override
+	public String getResourceBundlePath() {
+		return resourceBundlePath;
+	}
+
+	@Override
+	public void setLocalizedResourceBundle(String path) {
+		this.resourceBundlePath = path;
+		this.resource = ResourceBundle.getBundle(path);
+
+	}
+
+	/**
+	 * Not Implemented for this class.
+	 */
+	@Override
+	public void setResourceBundleKey(String key) {
+
+	}
+
+	@Override
+	public void updateText() throws JUIGLELangException {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					selectEpoch.updateText();
+					setPlaybackIndicator.updateText();
+					unselectEpoch.updateText();
+					unselectAllEpochs.updateText();
+					unselectArtefact.updateText();
+					unselectAllArtefacts.updateText();
+					unselectAll.updateText();
+				} catch (JUIGLELangException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+
 	}
 }
