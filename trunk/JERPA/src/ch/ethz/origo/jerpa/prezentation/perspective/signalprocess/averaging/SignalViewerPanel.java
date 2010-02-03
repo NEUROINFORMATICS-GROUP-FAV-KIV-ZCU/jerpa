@@ -437,6 +437,7 @@ public final class SignalViewerPanel extends JPanel implements MouseListener,
 					/ (values.length - 1);
 			oldValuesIndex = (int) ((mousePositionX - signalMargin.left) / step);
 
+			
 			if (oldValuesIndex >= values.length - 1) {
 				oldValuesIndex = values.length - 2;
 			}

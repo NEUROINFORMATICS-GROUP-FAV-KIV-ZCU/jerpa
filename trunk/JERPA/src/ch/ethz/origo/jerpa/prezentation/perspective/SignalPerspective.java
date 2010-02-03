@@ -22,6 +22,7 @@ import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionMa
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.SignalsPanelProvider;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.AveragingPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -92,11 +93,14 @@ public class SignalPerspective extends Perspective implements IObserver {
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.add(new SignalInfoProvider(sessionManager).getPanel(),
 				BorderLayout.EAST);
+		mainPanel.add(new AveragingPanelProvider(sessionManager,
+				SingnalPerspectiveObservable.getInstance()).getPanel(),
+				BorderLayout.CENTER);
 		try {
 			mainPanel.add(new SignalsPanelProvider(sessionManager).getPanel(),
-					BorderLayout.NORTH);
+					BorderLayout.SOUTH);
 			mainPanel.add(new ChannelsPanelProvider(sessionManager).getPanel(),
-					BorderLayout.CENTER);
+					BorderLayout.NORTH);
 		} catch (JUIGLELangException e) {
 			throw new PerspectiveException(e);
 		}

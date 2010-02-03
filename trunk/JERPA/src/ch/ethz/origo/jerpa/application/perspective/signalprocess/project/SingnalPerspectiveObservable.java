@@ -98,8 +98,6 @@ public class SingnalPerspectiveObservable extends JUIGLEObservable {
 			instance = new SingnalPerspectiveObservable();
 		}
 		return instance;
-	}
-	
-	
+	}	
 	
 }
