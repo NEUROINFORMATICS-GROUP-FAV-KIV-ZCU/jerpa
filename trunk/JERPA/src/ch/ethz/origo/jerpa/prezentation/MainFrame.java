@@ -39,6 +39,8 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
  * @since 0.1.0 (05/07/2009)
  */
 public class MainFrame implements AppButtonsListener {
+	
+	public static int HEIGHT;
 
 	/**
 	 * Initialize main graphic frame
@@ -78,6 +80,7 @@ public class MainFrame implements AppButtonsListener {
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance());
 		mainFrame.setVisible(true);	
 		mainFrame.setFullScreen(true);
+		MainFrame.HEIGHT = mainFrame.getHeight();
 		// PerspectiveLoader<T>
 	}
 	

@@ -2,7 +2,6 @@ package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ResourceBundle;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -11,6 +10,7 @@ import javax.swing.SwingUtilities;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
 
 /**
@@ -31,7 +31,7 @@ public class OptionPopupMenu extends JPopupMenu implements ILanguage {
 	private static final long serialVersionUID = -1606263409130420159L;
 
 	private String resourceBundlePath;
-	private ResourceBundle resource;
+	//private ResourceBundle resource;
 
 	private SignalsPanelProvider signalsProvider;
 	private JUIGLEMenuItem selectEpoch;
@@ -65,13 +65,6 @@ public class OptionPopupMenu extends JPopupMenu implements ILanguage {
 		unselectAllArtefacts = new JUIGLEMenuItem();
 		unselectAll = new JUIGLEMenuItem();
 		// set up localized files path and keys
-		selectEpoch.setLocalizedResourceBundle(getResourceBundlePath());
-		setPlaybackIndicator.setLocalizedResourceBundle(getResourceBundlePath());
-		unselectEpoch.setLocalizedResourceBundle(getResourceBundlePath());
-		unselectAllEpochs.setLocalizedResourceBundle(getResourceBundlePath());
-		unselectArtefact.setLocalizedResourceBundle(getResourceBundlePath());
-		unselectAllArtefacts.setLocalizedResourceBundle(getResourceBundlePath());
-		unselectAll.setLocalizedResourceBundle(getResourceBundlePath());
 		selectEpoch.setResourceBundleKey("sig.viewer.selepoch");
 		setPlaybackIndicator.setResourceBundleKey("sig.viewer.playback");
 		unselectEpoch.setResourceBundleKey("sig.viewer.unselepoch");
@@ -79,6 +72,7 @@ public class OptionPopupMenu extends JPopupMenu implements ILanguage {
 		unselectArtefact.setResourceBundleKey("sig.viewer.unselart");
 		unselectAllArtefacts.setResourceBundleKey("sig.viewer.unselart.all");
 		unselectAll.setResourceBundleKey("sig.viewer.unselect.all");
+		updateText();
 		// add listeners to items
 		selectEpoch.addActionListener(new FunctionSelectEpoch());
 		setPlaybackIndicator.addActionListener(new FunctionSetPlaybackIndicator());
@@ -97,7 +91,7 @@ public class OptionPopupMenu extends JPopupMenu implements ILanguage {
 		this.add(unselectAllEpochs);
 		this.add(unselectAllArtefacts);
 		this.add(unselectAll);
-		updateText();
+		LanguageObservable.getInstance().attach(this);
 	}
 
 	/**
@@ -224,8 +218,7 @@ public class OptionPopupMenu extends JPopupMenu implements ILanguage {
 	@Override
 	public void setLocalizedResourceBundle(String path) {
 		this.resourceBundlePath = path;
-		this.resource = ResourceBundle.getBundle(path);
-
+		//this.resource = ResourceBundle.getBundle(path);
 	}
 
 	/**
@@ -243,6 +236,7 @@ public class OptionPopupMenu extends JPopupMenu implements ILanguage {
 			@Override
 			public void run() {
 				try {
+					setResourceBundleItemsPath();
 					selectEpoch.updateText();
 					setPlaybackIndicator.updateText();
 					unselectEpoch.updateText();
@@ -257,5 +251,15 @@ public class OptionPopupMenu extends JPopupMenu implements ILanguage {
 			}
 		});
 
+	}
+	
+	private void setResourceBundleItemsPath() {
+		selectEpoch.setLocalizedResourceBundle(getResourceBundlePath());
+		setPlaybackIndicator.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectEpoch.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectAllEpochs.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectArtefact.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectAllArtefacts.setLocalizedResourceBundle(getResourceBundlePath());
+		unselectAll.setLocalizedResourceBundle(getResourceBundlePath());
 	}
 }
