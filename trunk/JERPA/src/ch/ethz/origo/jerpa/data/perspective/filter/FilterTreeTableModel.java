@@ -10,8 +10,8 @@ import java.util.Vector;
 
 import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
 
-import nezarazeno.ClassFinder;
 import ch.ethz.origo.juigle.application.exception.DataStoreException;
+import ch.ethz.origo.juigle.data.ClassFinder;
 import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
 
 /**

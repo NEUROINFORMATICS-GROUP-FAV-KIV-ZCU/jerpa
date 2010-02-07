@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.data.filters.matchingpursuit;
 
-import ch.ethz.origo.jerpa.data.filters.IFilter;
+import ch.ethz.origo.jerpa.data.filters.IAlgorithmDescriptor;
 
 /**
  * T��da byla p�evzata z diplomov� pr�ce Ing. Jaroslava Svobody (<cite>Svoboda
@@ -14,7 +14,7 @@ import ch.ethz.origo.jerpa.data.filters.IFilter;
  * @since 0.1.0 JERPA version
  * 
  */
-public class FourierMP implements IFilter {
+public class FourierMP implements IAlgorithmDescriptor {
 	/**
 	 * Po�et parametr� identifikuj�c�ch Gabor�v atom.
 	 */

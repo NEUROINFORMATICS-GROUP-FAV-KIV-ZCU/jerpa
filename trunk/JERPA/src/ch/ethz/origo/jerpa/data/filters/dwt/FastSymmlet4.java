@@ -2,7 +2,7 @@ package ch.ethz.origo.jerpa.data.filters.dwt;
 
 import java.util.Arrays;
 
-import ch.ethz.origo.jerpa.data.filters.IFilter;
+import ch.ethz.origo.jerpa.data.filters.IAlgorithmDescriptor;
 
 import noname.Power2Utils;
 
@@ -14,9 +14,9 @@ import noname.Power2Utils;
  * @author Petr Soukal
  * @version 1.0.0 (11/29/09)
  * @since JERPA Version 0.1.0
- * @see IFilter
+ * @see IAlgorithmDescriptor
  */
-public class FastSymmlet4  implements IFilter {
+public class FastSymmlet4  implements IAlgorithmDescriptor {
 	
 	// mate�sk� koeficienty
 	private static final double[] scale = { -0.0757657147893567,
