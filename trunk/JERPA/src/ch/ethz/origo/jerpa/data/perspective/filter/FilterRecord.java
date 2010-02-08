@@ -5,7 +5,7 @@ import ch.ethz.origo.juigle.data.tables.Record;
 /**
  * 
  * @author Vaclav Souhrada
- * @version 0.1.1 (2/08/2010)
+ * @version 0.1.2 (2/08/2010)
  * @since JERPA version 0.1.0 (11/29/09)
  * @see Record
  * @see Comparable
@@ -65,17 +65,13 @@ public class FilterRecord extends Record implements Comparable<FilterRecord> {
 
 	@Override
 	public int compareTo(FilterRecord fr) {
-		int res = 0;
+		int res = 1;
 		int nameEq = this.getName().compareTo(fr.getName());
 		int versionEq = this.getVersion().compareTo(fr.getVersion());
 		int author = this.getAuthor().compareTo(fr.getAuthor());
-	
-		if (nameEq == 0 && versionEq == 0 && author == 0) {
-			return 0;
-		} else if (nameEq == 0 && versionEq != 1 && author == 0) {
-			return 1;
-		} else if (nameEq == 0 && author == 1) {
-			return 1;
+		
+		if (author == 0 && versionEq == 0 && nameEq == 00) {
+			res = 0;
 		}
 		return res;
 	}
