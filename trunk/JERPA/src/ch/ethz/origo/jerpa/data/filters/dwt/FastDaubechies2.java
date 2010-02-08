@@ -26,6 +26,8 @@ public class FastDaubechies2 implements IAlgorithmDescriptor {
 	/** Name of filter */
 	private static final String NAME = "Fast Daubechies2 WT";
 	
+	private static final String CATEGORY = "Filter";
+	
 	private static final double sqrt_3 = Math.sqrt(3);
 	private static final double denom = 4 * Math.sqrt(2);
 
@@ -192,6 +194,11 @@ public class FastDaubechies2 implements IAlgorithmDescriptor {
 	@Override
 	public String getVersion() {
 		return FastDaubechies2.VERSION;
+	}
+
+	@Override
+	public String getCategory() {
+		return FastDaubechies2.CATEGORY;
 	}
 	
 }

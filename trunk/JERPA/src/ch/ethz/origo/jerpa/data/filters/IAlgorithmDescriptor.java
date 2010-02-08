@@ -5,7 +5,7 @@ package ch.ethz.origo.jerpa.data.filters;
  * be used.
  * 
  * @author Vaclav Souhrada
- * @version 0.3.0 (2/07/09)
+ * @version 0.3.1 (2/08/09)
  * @since JERPA version 0.1.0 (11/26/09)
  *
  */
@@ -36,5 +36,12 @@ public interface IAlgorithmDescriptor {
 	 * @return
 	 */
 	public String getDescription();
+	
+	/**
+	 * Return name of algorithm category
+	 * 
+	 * @return name of algorithm category
+	 */
+	public String getCategory();
 
 }

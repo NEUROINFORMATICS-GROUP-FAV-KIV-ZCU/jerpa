@@ -26,6 +26,8 @@ public class FastDaubechies4 implements IAlgorithmDescriptor {
 	/** Filter's name */
 	private static final String NAME = "Fast Daubechies4 WT";
 	
+	private static final String CATEGORY = "Filter";
+	
 	// mate�sk� koeficienty
 	private static final double[] scale = { 2.30377813309000010E-01,
 			7.14846570553000050E-01, 6.30880767930000030E-01,
@@ -252,6 +254,11 @@ public class FastDaubechies4 implements IAlgorithmDescriptor {
 	@Override
 	public String getVersion() {
 		return FastDaubechies4.VERSION;
+	}
+
+	@Override
+	public String getCategory() {
+		return FastDaubechies4.CATEGORY;
 	}
 	
 }

@@ -43,6 +43,8 @@ public class FastSymmlet4  implements IAlgorithmDescriptor {
 	/** Filter's name */
 	private static final String NAME = "Fast Symmlet4 wt";
 	
+	private static final String CATEGORY = "Filter";
+	
 
 	/**
 	 * Metoda prodlu�uje vstupn� sign�l na d�lku (2^n) pokud v takovou d�lku nem�
@@ -251,5 +253,10 @@ public class FastSymmlet4  implements IAlgorithmDescriptor {
 	@Override
 	public String getVersion() {
 		return FastSymmlet4.VERSION;
+	}
+
+	@Override
+	public String getCategory() {
+		return FastSymmlet4.CATEGORY;
 	}
 }

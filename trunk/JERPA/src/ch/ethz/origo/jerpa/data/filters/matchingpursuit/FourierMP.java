@@ -46,6 +46,8 @@ public class FourierMP implements IAlgorithmDescriptor {
 	
 	private static final String NAME = "Matching Pursuit";
 	
+	private static final String CATEGORY = "Filter";
+	
 	/**
 	 * Priv�tn� konstruktor. Neexistuje racion�ln� d�vod k vytv��en� instanc� t�to
 	 * t��dy.
@@ -271,6 +273,11 @@ public class FourierMP implements IAlgorithmDescriptor {
 	@Override
 	public String getVersion() {
 		return FourierMP.VERSION;
+	}
+
+	@Override
+	public String getCategory() {
+		return FourierMP.CATEGORY;
 	}
 	
 }

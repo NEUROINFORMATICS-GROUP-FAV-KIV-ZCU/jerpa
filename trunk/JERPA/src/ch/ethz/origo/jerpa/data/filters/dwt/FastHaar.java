@@ -38,6 +38,8 @@ public class FastHaar implements IAlgorithmDescriptor {
 	private static final String VERSION = "1.0.0";
 	/** Filter's name */
 	private static final String NAME = "Fast Haar WT";
+	
+	private static final String CATEGORY = "Filter";
 
 	/**
 	 * Metoda prodlu�uje vstupn� sign�l na d�lku (2^n) pokud v takovou d�lku nem�
@@ -167,5 +169,10 @@ public class FastHaar implements IAlgorithmDescriptor {
 	@Override
 	public String getVersion() {
 		return FastHaar.VERSION;
+	}
+
+	@Override
+	public String getCategory() {
+		return FastHaar.CATEGORY;
 	}
 }
