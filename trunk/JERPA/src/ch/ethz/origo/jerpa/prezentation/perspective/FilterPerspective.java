@@ -11,8 +11,9 @@ import noname.JERPAUtils;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
-import ch.ethz.origo.jerpa.data.perspective.filter.FilterRecord;
+import ch.ethz.origo.jerpa.data.perspective.filter.AlgorithmRecord;
 import ch.ethz.origo.jerpa.data.perspective.filter.FilterTreeTableModel;
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.exception.DataStoreException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
@@ -38,12 +39,10 @@ public class FilterPerspective extends Perspective implements IObserver {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = -3671126854840073832L;
-
-	private static String resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.filter.FilterPerspective";
 	
 	public FilterPerspective() {
 		perspectiveObservable.attach(this);
-		
+		resourcePath = LangUtils.getPerspectiveLangPathProp("perspective.algorithmmanager.lang");
 	}
 	
 	@Override
@@ -103,13 +102,16 @@ public class FilterPerspective extends Perspective implements IObserver {
 						expanded, leaf, row, hasFocus);
 				if (value instanceof DefaultMutableTreeTableNode) {
 					DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode) value;
-					FilterRecord fr = (FilterRecord) node
+					AlgorithmRecord fr = (AlgorithmRecord) node
 							.getUserObject();
 					setText(fr.getName());
 					if (node.isLeaf()
 							&& node.getParent() == tree.getModel()
 									.getRoot()) {
 						setIcon(getDefaultClosedIcon());
+					} else if (!node.isLeaf()) {
+						setText("Filters");
+						
 					}
 				}
 
@@ -122,7 +124,7 @@ public class FilterPerspective extends Perspective implements IObserver {
 	
 	@Override
 	public String getResourceBundlePath() {
-		return FilterPerspective.resourcePath;
+		return resourcePath;
 	}
 	
 	public Icon getIcon() throws PerspectiveException {

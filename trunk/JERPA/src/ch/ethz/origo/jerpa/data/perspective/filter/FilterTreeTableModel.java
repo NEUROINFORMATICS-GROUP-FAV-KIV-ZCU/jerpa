@@ -29,13 +29,13 @@ public class FilterTreeTableModel extends JUIGLETreeTableModel {
 
 	@Override
 	public void fillByValues() {
-		Set<FilterRecord> treeOfFilters = new TreeSet<FilterRecord>();
+		Set<AlgorithmRecord> treeOfFilters = new TreeSet<AlgorithmRecord>();
 		ClassFinder cf = new ClassFinder();
 		Vector<Class<?>> listOfSubclasses = cf
 				.findSubclasses("ch.ethz.origo.jerpa.data.filters.IAlgorithmDescriptor");
 		for (Class<?> item : listOfSubclasses) {
 			try {
-				FilterRecord fr = new FilterRecord();
+				AlgorithmRecord fr = new AlgorithmRecord();
 				Field author = item.getDeclaredField("AUTHOR");
 				Field version = item.getDeclaredField("VERSION");
 				Field name = item.getDeclaredField("NAME");
@@ -48,6 +48,7 @@ public class FilterTreeTableModel extends JUIGLETreeTableModel {
 				fr.setName((String) name.get(null));
 				fr.setVersion((String) version.get(null));
 				fr.setCategory((String) category.get(null));
+				fr.setAlgorithmClass(item);
 				treeOfFilters.add(fr);
 			} catch (SecurityException e) {
 				e.printStackTrace();
@@ -64,8 +65,8 @@ public class FilterTreeTableModel extends JUIGLETreeTableModel {
 
 		FilterTreeTableNode currentNameNode = null;
 		DefaultMutableTreeTableNode root = new FilterTreeTableNode(
-				new FilterRecord());
-		for (FilterRecord item : treeOfFilters) {
+				new AlgorithmRecord());
+		for (AlgorithmRecord item : treeOfFilters) {
 			currentLast = item.getCategory();
 			if (currentLast.equals(prevLast)) {
 				currentNameNode.add(new FilterTreeTableNode(item));
@@ -73,7 +74,7 @@ public class FilterTreeTableModel extends JUIGLETreeTableModel {
 				if (currentNameNode != null) {
 					root.add(currentNameNode);
 				}
-				FilterRecord fr = new FilterRecord();
+				AlgorithmRecord fr = new AlgorithmRecord();
 				fr.setCategory(item.getCategory());
 				currentNameNode = new FilterTreeTableNode(fr);
 				currentNameNode.add(new FilterTreeTableNode(item));
@@ -119,15 +120,15 @@ public class FilterTreeTableModel extends JUIGLETreeTableModel {
 	 */
 	class FilterTreeTableNode extends DefaultMutableTreeTableNode {
 
-		public FilterTreeTableNode(FilterRecord record) {
+		public FilterTreeTableNode(AlgorithmRecord record) {
 			super(record);
 		}
 
 		@Override
 		public Object getValueAt(int column) {
 			Object toBeDisplayed = "n/a";
-			if (getUserObject() instanceof FilterRecord) {
-				FilterRecord fr = (FilterRecord) getUserObject();
+			if (getUserObject() instanceof AlgorithmRecord) {
+				AlgorithmRecord fr = (AlgorithmRecord) getUserObject();
 				switch (column) {
 				case 0:
 					toBeDisplayed = fr.getName();
