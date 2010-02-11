@@ -1,6 +1,6 @@
-package ch.ethz.origo.jerpa.data.filters.matchingpursuit;
+package ch.ethz.origo.jerpa.data.algorithms.filters.mp;
 
-import ch.ethz.origo.jerpa.data.filters.IAlgorithmDescriptor;
+import ch.ethz.origo.jerpa.data.algorithms.IAlgorithmDescriptor;
 
 /**
  * T��da byla p�evzata z diplomov� pr�ce Ing. Jaroslava Svobody (<cite>Svoboda

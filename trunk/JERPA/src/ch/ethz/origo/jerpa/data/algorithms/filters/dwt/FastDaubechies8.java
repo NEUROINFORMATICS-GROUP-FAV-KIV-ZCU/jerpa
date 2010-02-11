@@ -1,8 +1,8 @@
-package ch.ethz.origo.jerpa.data.filters.dwt;
+package ch.ethz.origo.jerpa.data.algorithms.filters.dwt;
 
 import java.util.Arrays;
 
-import ch.ethz.origo.jerpa.data.filters.IAlgorithmDescriptor;
+import ch.ethz.origo.jerpa.data.algorithms.IAlgorithmDescriptor;
 
 import noname.Power2Utils;
 

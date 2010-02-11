@@ -1,4 +1,4 @@
-package ch.ethz.origo.jerpa.data.filters.matchingpursuit;
+package ch.ethz.origo.jerpa.data.algorithms.filters.mp;
 
 /**
  * T��da obsahuje funkce pou��van� pro v�po�et metody Matching pursuit.

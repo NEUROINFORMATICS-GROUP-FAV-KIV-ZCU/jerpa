@@ -1,4 +1,4 @@
-package ch.ethz.origo.jerpa.data.filters;
+package ch.ethz.origo.jerpa.data.algorithms;
 
 /**
  * This interface have to implement all methods / algorithms. If not, than filter not 

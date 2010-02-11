@@ -1,4 +1,4 @@
-package ch.ethz.origo.jerpa.data.filters.matchingpursuit;
+package ch.ethz.origo.jerpa.data.algorithms.filters.mp;
 
 /**
  * Instance t��dy slou�� k reprezentaci komplexn�ch ��sel a umo��uj� prov�d�t 

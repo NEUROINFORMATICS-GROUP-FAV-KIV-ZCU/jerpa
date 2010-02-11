@@ -1,39 +1,28 @@
-package ch.ethz.origo.jerpa.data.filters.dwt;
+package ch.ethz.origo.jerpa.data.algorithms.filters.dwt;
 
 import java.util.Arrays;
 
-import ch.ethz.origo.jerpa.data.filters.IAlgorithmDescriptor;
+import ch.ethz.origo.jerpa.data.algorithms.IAlgorithmDescriptor;
 
 import noname.Power2Utils;
 
 /**
- * T��da pro rychlou waveletovu transformaci pomoc� Daubechies4 wavelet� (d�lka
- * 8) a mate�sk�ch koeficient�. Po transformaci vznikne pole stejn� d�lky
- * p�vodn�ho sign�lu, proto�e se podvozorkov�v�.
+ * T��da pro rychlou waveletovu transformaci pomoc� Symmlet4 wavelet� (d�lka 8)
+ * a mate�sk�ch koeficient�. Po transformaci vznikne pole stejn� d�lky p�vodn�ho
+ * sign�lu, proto�e se podvozorkov�v�.
  * 
- * @author Petr Soukal (class author)
- * @author Vaclav Souhrada (class revision)
+ * @author Petr Soukal
  * @version 1.0.0 (11/29/09)
  * @since JERPA Version 0.1.0
  * @see IAlgorithmDescriptor
  */
-public class FastDaubechies4 implements IAlgorithmDescriptor {
-	
-	/** Author of this filter */
-	private static final String AUTHOR = "Petr Soukal";
-	/** Current version of this filter */
-	private static final String VERSION = "1.0.0";
-	/** Filter's name */
-	private static final String NAME = "Fast Daubechies4 WT";
-	
-	private static final String CATEGORY = "Filter";
+public class FastSymmlet4  implements IAlgorithmDescriptor {
 	
 	// mate�sk� koeficienty
-	private static final double[] scale = { 2.30377813309000010E-01,
-			7.14846570553000050E-01, 6.30880767930000030E-01,
-			-2.79837694169999990E-02, -1.87034811718999990E-01,
-			3.08413818359999990E-02, 3.28830116670000010E-02,
-			-1.05974017850000000E-02 };
+	private static final double[] scale = { -0.0757657147893567,
+			-0.0296355276459604, 0.497618667632563, 0.803738751805386,
+			0.297857795605605, -0.0992195435769564, -0.0126039672622638,
+			0.0322231006040782 };
 
 	// koeficienty waveletu
 	private static final double[] wavelet = { -scale[7], scale[6], -scale[5],
@@ -46,6 +35,16 @@ public class FastDaubechies4 implements IAlgorithmDescriptor {
 	// koeficienty waveletu
 	private static final double[] iWavelet = { scale[7], wavelet[7], scale[5],
 			wavelet[5], scale[3], wavelet[3], scale[1], wavelet[1] };
+	
+	/** Author of this filter */
+	private static final String AUTHOR = "Petr Soukal";
+	/** Current version of this filter */
+	private static final String VERSION = "1.0.0";
+	/** Filter's name */
+	private static final String NAME = "Fast Symmlet4 wt";
+	
+	private static final String CATEGORY = "Filter";
+	
 
 	/**
 	 * Metoda prodlu�uje vstupn� sign�l na d�lku (2^n) pokud v takovou d�lku nem�
@@ -144,7 +143,7 @@ public class FastDaubechies4 implements IAlgorithmDescriptor {
 
 	/**
 	 * Metoda prodlu�uje vstupn� sign�l na d�lku (2^n) pokud v takovou d�lku nem�
-	 * a nov� m�sto se vypln� nulami. Pokud maj� d�lku 8 nebo v�t�� spou�t�
+	 * a nov� m�sto se vypln� nulami. Pokud m� sign�l d�lku 8 nebo v�t�� spou�t�
 	 * inverzn� transformaci.
 	 * 
 	 * @param inputCoef
@@ -238,7 +237,7 @@ public class FastDaubechies4 implements IAlgorithmDescriptor {
 
 	@Override
 	public String getAuthorName() {
-		return FastDaubechies4.AUTHOR;
+		return FastSymmlet4.AUTHOR;
 	}
 
 	@Override
@@ -248,17 +247,16 @@ public class FastDaubechies4 implements IAlgorithmDescriptor {
 
 	@Override
 	public String getName() {
-		return FastDaubechies4.NAME;
+		return FastSymmlet4.NAME;
 	}
 
 	@Override
 	public String getVersion() {
-		return FastDaubechies4.VERSION;
+		return FastSymmlet4.VERSION;
 	}
 
 	@Override
 	public String getCategory() {
-		return FastDaubechies4.CATEGORY;
+		return FastSymmlet4.CATEGORY;
 	}
-	
 }
