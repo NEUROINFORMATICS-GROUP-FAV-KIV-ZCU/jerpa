@@ -30,7 +30,7 @@ import ch.ethz.origo.juigle.prezentation.tables.JUIGLETreeTable;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.1 (2/08/2010)
+ * @version 0.1.2 (2/11/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -82,7 +82,7 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
 		mainPanel.setLayout(new BorderLayout());
-		JUIGLETreeTableModel ttm = new AlgorithmTreeTableModel();
+		JUIGLETreeTableModel ttm = new AlgorithmTreeTableModel(resourcePath);
 		try {
 			ttm.fillByValues();
 		} catch (DataStoreException e) {
@@ -120,11 +120,6 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 		});
 		JScrollPane sp = new JScrollPane(table);
 		mainPanel.add(sp, BorderLayout.CENTER);
-	}
-	
-	@Override
-	public String getResourceBundlePath() {
-		return resourcePath;
 	}
 	
 	public Icon getIcon() throws PerspectiveException {

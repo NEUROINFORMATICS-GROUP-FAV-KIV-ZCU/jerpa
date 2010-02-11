@@ -4,12 +4,17 @@
 package ch.ethz.origo.jerpa.data.perspective.filter;
 
 import java.lang.reflect.Field;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.data.ClassFinder;
 import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
 
@@ -17,7 +22,7 @@ import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.2.1 (7/08/2010)
+ * @version 0.3.0 (2/11/2010)
  * @since 0.1.0 (11/26/09)
  * @see JUIGLETreeTableModel
  * 
@@ -26,13 +31,23 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = -1729007145954323938L;
+	
+	private static final int NUM_OF_COLUMNS = 3;
+	
+	private ResourceBundle resource;
+	private String resourcePath;
+	
+	public AlgorithmTreeTableModel(String resourceBundlePath) {
+		setLocalizedResourceBundle(resourceBundlePath);
+		LanguageObservable.getInstance().attach(this);
+	}
 
 	@Override
 	public void fillByValues() {
 		Set<AlgorithmRecord> treeOfFilters = new TreeSet<AlgorithmRecord>();
 		ClassFinder cf = new ClassFinder();
 		Vector<Class<?>> listOfSubclasses = cf
-				.findSubclasses("ch.ethz.origo.jerpa.data.filters.IAlgorithmDescriptor");
+				.findSubclasses("ch.ethz.origo.jerpa.data.algorithms.IAlgorithmDescriptor");
 		for (Class<?> item : listOfSubclasses) {
 			try {
 				AlgorithmRecord fr = new AlgorithmRecord();
@@ -87,7 +102,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 3;
+		return AlgorithmTreeTableModel.NUM_OF_COLUMNS;
 	}
 
 	@Override
@@ -95,16 +110,16 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 		String name = "";
 		switch (column) {
 		case 0:
-			name = "Name / Path";
+			name = resource.getString("table.column.name");
 			break;
 		case 1:
-			name = "Version";
+			name = resource.getString("table.column.version");
 			break;
 		case 2:
-			name = "Author";
+			name = resource.getString("table.column.author");
 			break;
 		default:
-			name = "NONAME";
+			name = "n/a";
 			break;
 		}
 		return name;
@@ -153,6 +168,36 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 			return 3;
 		}
 
+	}
+
+	@Override
+	public String getResourceBundlePath() {
+		return resourcePath;
+	}
+
+	@Override
+	public void setLocalizedResourceBundle(String path) {
+		resourcePath = path;
+		resource = ResourceBundle.getBundle(path);
+	}
+
+	@Override
+	public void setResourceBundleKey(String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateText() throws JUIGLELangException {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				setLocalizedResourceBundle(getResourceBundlePath());
+								
+			}
+			
+		});		
 	}
 
 }
