@@ -12,7 +12,7 @@ import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
 import ch.ethz.origo.jerpa.data.perspective.filter.AlgorithmRecord;
-import ch.ethz.origo.jerpa.data.perspective.filter.FilterTreeTableModel;
+import ch.ethz.origo.jerpa.data.perspective.filter.AlgorithmTreeTableModel;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.exception.DataStoreException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
@@ -35,12 +35,12 @@ import ch.ethz.origo.juigle.prezentation.tables.JUIGLETreeTable;
  * @see Perspective
  * @see IObserver
  */
-public class FilterPerspective extends Perspective implements IObserver {
+public class AlgorithmPerspective extends Perspective implements IObserver {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = -3671126854840073832L;
 	
-	public FilterPerspective() {
+	public AlgorithmPerspective() {
 		perspectiveObservable.attach(this);
 		resourcePath = LangUtils.getPerspectiveLangPathProp("perspective.algorithmmanager.lang");
 	}
@@ -82,7 +82,7 @@ public class FilterPerspective extends Perspective implements IObserver {
 	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
 		mainPanel.setLayout(new BorderLayout());
-		JUIGLETreeTableModel ttm = new FilterTreeTableModel();
+		JUIGLETreeTableModel ttm = new AlgorithmTreeTableModel();
 		try {
 			ttm.fillByValues();
 		} catch (DataStoreException e) {

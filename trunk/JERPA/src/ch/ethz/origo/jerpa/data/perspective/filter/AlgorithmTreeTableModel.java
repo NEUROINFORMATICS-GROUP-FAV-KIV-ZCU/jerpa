@@ -22,7 +22,7 @@ import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
  * @see JUIGLETreeTableModel
  * 
  */
-public class FilterTreeTableModel extends JUIGLETreeTableModel {
+public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = -1729007145954323938L;
