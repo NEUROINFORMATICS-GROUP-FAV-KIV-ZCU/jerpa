@@ -4,12 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import ch.ethz.origo.jerpa.application.exception.ProjectOperationException;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectWriter;
+import ch.ethz.origo.juigle.application.exception.ProjectWriterException;
+import ch.ethz.origo.juigle.application.project.IProjectWriter;
+import ch.ethz.origo.juigle.prezentation.perspective.PerspectiveObservable;
 
 /**
  * 
+ * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.1 (01/17/2010)
+ * @version 0.1.2 (2/21/2010)
  * @since 0.1.0 (11/18/09)
  * 
  */
@@ -18,12 +25,43 @@ public abstract class SessionManager {
 	protected ArrayList<Project> projects;
 	protected int currentProjectIndex;
 
+	protected PerspectiveObservable perspObservable;
+
 	public SessionManager() {
 		projects = new ArrayList<Project>();
 		currentProjectIndex = projects.size() - 1;
+		perspObservable = PerspectiveObservable.getInstance();
 	}
 
-	public abstract void saveCurrentProject() throws ProjectOperationException;
+	/**
+	 * 
+	 * @throws ProjectOperationException
+	 *           project can not be saved - <code>JUIGLE EXCEPTION</code>
+	 */
+	public void saveFile() throws ProjectOperationException {
+		Project project = getCurrentProject();
+		if (project == null) {
+			throw new ProjectOperationException("JG012", new Throwable("UNDEFINED VALUE"));
+		}
+		if (project.getProjectFile() == null) {
+			saveAsFile();
+			return;
+		}
+		saveCurrentProject(new SignalProjectWriter());
+	}
+
+	public void saveCurrentProject(IProjectWriter writer)
+			throws ProjectOperationException {
+		try {
+			writer.saveProject();
+		} catch (ProjectWriterException e) {
+			throw new ProjectOperationException(e);
+		}
+
+	}
+
+	public abstract void saveAsFile() throws ProjectOperationException;
+
 
 	public abstract void loadFile(File file) throws ProjectOperationException;
 
@@ -36,10 +74,11 @@ public abstract class SessionManager {
 	 * @throws ProjectOperationException
 	 */
 	public abstract void loadProject(File file) throws ProjectOperationException;
-	
+
 	/**
 	 * Close all opened projects and delete their temps files
-	 * @throws ProjectOperationException 
+	 * 
+	 * @throws ProjectOperationException
 	 */
 	public void closeAllProjects() throws ProjectOperationException {
 		while (projects.size() > 0) {
@@ -73,6 +112,24 @@ public abstract class SessionManager {
 
 	}
 
+	public void closeFile() {
+		getCurrentProject().lockCommand();
+		try {
+			int projectIndex = closeCurrentProject();
+
+			if (projectIndex < 0) {
+				PerspectiveObservable.getInstance().setState(
+						PerspectiveObservable.MSG_PROJECT_CLOSED);
+			} else {
+				PerspectiveObservable.getInstance().setState(
+						PerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED);
+			}
+
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	}
+
 	/**
 	 * Uzav�e aktu�ln� otev�en� projekt a sma�e jeho do�asn� soubor.
 	 * 
@@ -99,16 +156,17 @@ public abstract class SessionManager {
 		projects.remove(currentProjectIndex);
 
 		switchProject(0); /*
-											 * FIXME - historie napredposledy zobrazeneho projektu, pri
-											 * uzavreni aktualniho projektu prepnout na ten
+											 * FIXME - historie napredposledy zobrazeneho projektu,
+											 * pri uzavreni aktualniho projektu prepnout na ten
 											 * napredposledy zobrazeny; zaroven upravit prezentacni
 											 * vrstvu, bude-li treba
 											 */
 		return currentProjectIndex;
 	}
-	
+
 	/**
-	 * Vr�t� projekt zadan� indexem.<br/> Je-li zad�n �patn� index, vrac� null.
+	 * Vr�t� projekt zadan� indexem.<br/>
+	 * Je-li zad�n �patn� index, vrac� null.
 	 * 
 	 * @param index
 	 * @return Projekt se zadan� indexem.
@@ -158,6 +216,100 @@ public abstract class SessionManager {
 		}
 		return names;
 	}
+
+	/**
+	 * Zalo�� nov� pr�zdn� projekt, p�id� ho do seznamu projekt� a nastav� jej
+	 * jako aktu�ln�.
+	 * 
+	 * @param name
+	 *          N�zev projektu.
+	 */
+	protected void createProject(Project project, String name) {
+		project.setName(name);
+		projects.add(project);
+		currentProjectIndex = projects.size() - 1;
+	}
+
+	/**
+	 * Undo v aktu�ln� otev�en�m projektu a roze�le provider�m zpr�vu
+	 * <code>MSG_UNDOABLE_COMMAND_INVOKED</code>.
+	 */
+	public void undo() {
+		Project project;
+
+		if ((project = getCurrentProject()) == null) {
+			JOptionPane.showMessageDialog(null,
+					"Calling undo() while no project is opened.", "Internal error",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		if (project.canUndo()) {
+			getCurrentProject().lockCommand();
+			project.undo();
+			perspObservable.setState(PerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED);
+			perspObservable.setState(PerspectiveObservable.MSG_UNDOABLE_COMMAND_INVOKED);
+			getCurrentProject().unlockCommand();
+		} else {
+			JOptionPane.showMessageDialog(null,
+					"Calling undo() while project can't undo.", "Internal error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	/**
+	 * Vyvol� redo v aktu�ln� otev�en�m projektu a roze�le provider�m zpr�vu
+	 * <code>MSG_UNDOABLE_COMMAND_INVOKED</code>.
+	 */
+	public void redo() {
+		Project project;
+
+		if ((project = getCurrentProject()) == null) {
+			JOptionPane.showMessageDialog(null,
+					"Calling redo() while no project is opened.", "Internal error",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		if (project.canRedo()) {
+			getCurrentProject().lockCommand();
+			project.redo();
+			perspObservable.setState(PerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED);
+			perspObservable.setState(PerspectiveObservable.MSG_UNDOABLE_COMMAND_INVOKED);
+			getCurrentProject().unlockCommand();
+		} else {
+			JOptionPane.showMessageDialog(null,
+					"Calling redo() while project can't redo.", "Internal error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
+	
+	/**
+	 * P�epne na projekt zadan� indexem a roze�le zpr�vu provider�m.<br/> Je-li
+	 * index projektu shodn� s aktu�ln� otev�en�m projektem, nestane se nic.
+	 * 
+	 * @param index
+	 *          Index projektu.
+	 */
+	public void switchProject(int index) {
+		if (index == getCurrentProjectIndex()) {
+			return;
+		}
+		
+		int indexSet = getAndSwitchProject(index);
+
+		if (indexSet != index) {
+			JOptionPane.showMessageDialog(null,
+					"Attempt to set invalid project (index: " + index + ", index set: "
+							+ index + ").", "Internal warning", JOptionPane.WARNING_MESSAGE);
+		}
+
+		if (indexSet == -1) {
+			perspObservable.setState(PerspectiveObservable.MSG_PROJECT_CLOSED);
+		} else {
+			perspObservable.setState(PerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED);
+		}
+	}
 	
 	/**
 	 * P�epne aktu�ln� projekt na projekt zadan� indexem a vrac� index tohoto
@@ -170,7 +322,7 @@ public abstract class SessionManager {
 	 * @return Index aktu�ln� nastaven�ho projektu. -1, nen�-li otev�en ��dn�
 	 *         projekt.
 	 */
-	public int switchProject(int index) {
+	public int getAndSwitchProject(int index) {
 		if (projects == null || projects.size() == 0) {
 			currentProjectIndex = -1;
 			return -1;
@@ -183,19 +335,6 @@ public abstract class SessionManager {
 		}
 
 		return currentProjectIndex;
-	}
-	
-	/**
-	 * Zalo�� nov� pr�zdn� projekt, p�id� ho do seznamu projekt� a nastav� jej
-	 * jako aktu�ln�.
-	 * 
-	 * @param name
-	 *          N�zev projektu.
-	 */
-	protected void createProject(Project project, String name) {
-		project.setName(name);
-		projects.add(project);
-		currentProjectIndex = projects.size() - 1;
 	}
 
 }

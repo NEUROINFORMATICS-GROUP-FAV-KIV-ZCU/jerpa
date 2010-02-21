@@ -38,12 +38,6 @@ import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.Sign
  */
 public class SignalProject extends Project {
 
-	/*
-	 * Stavov� prom�nn� projektu - nezapomenout je p�idat do metod createMemento()
-	 * a setMemento() a do t��dy ProjectState.
-	 */
-	private File projectFile; // neukladat
-
 	private File dataFile; // uklada se, nacita se (zatim jen nazev souboru)
 	// private Buffer buffer; // neukladat do XML
 

@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.application.exception.ProjectOperationException;
@@ -24,8 +28,9 @@ import ch.ethz.origo.juigle.application.observers.IObservable;
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.1.0 (11/18/09)
+ * @version 0.2.0 (2/21/2010)
  * @since 0.1.0 (11/18/09)
+ * @see SessionManager
  * 
  */
 public class SignalSessionManager extends SessionManager {
@@ -90,7 +95,7 @@ public class SignalSessionManager extends SessionManager {
 		SignalProject project = null;
 		loader = new SignalProjectLoader(file);
 		try {
-			project = (SignalProject)loader.loadProject();
+			project = (SignalProject) loader.loadProject();
 		} catch (IOException e) {
 			throw new ProjectOperationException("JERPA011", e);
 		} catch (CorruptedFileException e) {
@@ -98,22 +103,31 @@ public class SignalSessionManager extends SessionManager {
 		}
 		addProject(project);
 	}
-
-	@Override
-	public void saveCurrentProject() throws ProjectOperationException {
+	
+	public void saveAsFile() throws ProjectOperationException {
 		Project project = getCurrentProject();
 		if (project == null) {
-			return;
+			throw new ProjectOperationException("JG012", new Throwable("UNDEFINED VALUE"));
 		}
-		try {
-			new SignalProjectWriter(getCurrentProject()).saveProject();
-		} catch (CorruptedFileException e) {
-			throw new ProjectOperationException("JERPA012", e);
-		} catch (IOException e) {
-			throw new ProjectOperationException("JERPA012", e);
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save project");
+		fileChooser.setFileFilter(new FileNameExtensionFilter(
+				"jERPStudio Project file (*." + Const.PROJECT_FILE_EXTENSION + ")",
+				Const.PROJECT_FILE_EXTENSION));
+
+		fileChooser.setAcceptAllFileFilterUsed(false);
+
+		if (fileChooser.showSaveDialog(fileChooser) == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			if (!file.getName().endsWith("." + Const.PROJECT_FILE_EXTENSION)) {
+				file = new File(file.getAbsolutePath() + "."
+						+ Const.PROJECT_FILE_EXTENSION);
+			}
+			project.setProjectFile(file);
+			saveCurrentProject(new SignalProjectWriter());
 		}
 	}
-	
+
 	/**
 	 * P�id� projekt do seznamu projekt� a nastav� jej jako aktu�ln�.
 	 * 
@@ -152,7 +166,7 @@ public class SignalSessionManager extends SessionManager {
 	public BaselineCorrection getBaselineCorrection() {
 		return baselineCorrection;
 	}
-	
+
 	@Override
 	public SignalProject getCurrentProject() {
 		return (SignalProject) super.getCurrentProject();
@@ -213,23 +227,24 @@ public class SignalSessionManager extends SessionManager {
 			throw new ProjectOperationException(e);
 		}
 	}
-	
+
 	/**
 	 * Vr�t� objekt s metainformacemi <code>Header</code> p�in�le��c� aktu�ln�
-	 * otev�en�mu projektu.<br/> Nen�-li otev�en ��dn� projekt, vrac� null.
+	 * otev�en�mu projektu.<br/>
+	 * Nen�-li otev�en ��dn� projekt, vrac� null.
 	 * 
 	 * @return Objekt s metainformacemi pat��c� aktu�ln� otev�en�mu projektu.
 	 */
 	public Header getCurrentHeader() {
 		SignalProject project;
 
-		if ((project = (SignalProject)getCurrentProject()) == null) {
+		if ((project = (SignalProject) getCurrentProject()) == null) {
 			return null;
 		} else {
 			return project.getHeader();
 		}
 	}
-	
+
 	public IObservable getSignalPerspectiveObservable() {
 		return sigPerspObservable;
 	}
