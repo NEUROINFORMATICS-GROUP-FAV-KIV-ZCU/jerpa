@@ -1,6 +1,7 @@
 package ch.ethz.origo.jerpa.data.perspective.signalprocess;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -30,32 +31,40 @@ import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.NioOutputStream;
+import ch.ethz.origo.juigle.application.exception.ProjectWriterException;
+import ch.ethz.origo.juigle.application.project.IProjectWriter;
 
 /**
  * T��da pro ukl�d�n� projektu do souboru.
  * 
- * @author Ji�� Ku�era
+ * @author Jiri Kucera
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.1.0 (2/21/2010)
+ * @since 0.1.0 (2/21/2010)
+ * @see IProjectWriter
  */
-public class SignalProjectWriter {
+public class SignalProjectWriter implements IProjectWriter {
 
 	private SignalProject project;
 	private String encoding;
 	private String cfgFile;
-
-	public SignalProjectWriter(SignalProject project) {
-		this.project = project;
+	
+	public SignalProjectWriter() {
 		encoding = "utf-8";
-		cfgFile = "jerpproject.xml";
+		cfgFile = "jerpproject.xml";		
 	}
 
-	public void saveProject() throws CorruptedFileException, IOException {
+	public SignalProjectWriter(SignalProject project) {
+		this();
+		this.project = project;
+	}
+
+	public void saveProject() throws ProjectWriterException {
+		NioOutputStream ost;
 		Buffer buffer = project.getBuffer();
 		String outputDataFilePath = project.getProjectFile().getAbsolutePath()
 				+ ".dat";
-
 		File outputDataFile = new File(outputDataFilePath);
-		// System.out.println("DF: " + outputDataFilePath);
-
 		project.setDataFile(outputDataFile);
 
 		try {
@@ -69,17 +78,16 @@ public class SignalProjectWriter {
 					new OutputStreamWriter(
 							new FileOutputStream(project.getProjectFile()), Charset
 									.forName(encoding))));
+			ost = new NioOutputStream(outputDataFilePath);
 		} catch (TransformerException ex) {
-			throw new CorruptedFileException("Project file corrupted: "
-					+ SignalProjectWriter.class.getName());
+			throw new ProjectWriterException(new CorruptedFileException("JERPA018:"
+					+ SignalProjectWriter.class.getName(), ex));
 		} catch (ParserConfigurationException ex) {
-			throw new CorruptedFileException("Project file corrupted: "
-					+ SignalProjectWriter.class.getName());
+			throw new ProjectWriterException(new CorruptedFileException("JERPA018:"
+					+ SignalProjectWriter.class.getName(), ex));
+		} catch (FileNotFoundException e) {
+			throw new ProjectWriterException("JERPA017:" + outputDataFilePath, e);
 		}
-
-		NioOutputStream ost = new NioOutputStream(outputDataFilePath);
-
-		IOException e = null;
 
 		try {
 			buffer.seek(0);
@@ -88,13 +96,13 @@ public class SignalProjectWriter {
 				ost.writeFloat(buffer.getFloat());
 			}
 		} catch (IOException ex) {
-			e = ex;
+			throw new ProjectWriterException("JERPA019", ex);
 		} finally {
-			ost.close();
-		}
-
-		if (e != null) {
-			throw e;
+			try {
+				ost.close();
+			} catch (IOException e1) {
+				throw new ProjectWriterException("JERPA019", e1);
+			}
 		}
 	}
 

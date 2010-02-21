@@ -19,7 +19,6 @@ import org.xml.sax.SAXException;
 
 import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
-import ch.ethz.origo.jerpa.application.project.Project;
 import ch.ethz.origo.jerpa.data.Artefact;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.BufferCreator;
@@ -27,13 +26,14 @@ import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.NioInputStream;
+import ch.ethz.origo.juigle.application.project.Project;
 
 /**
  * Class for setting project from file.
  * 
  * @author Jiri Kucera
  * @author Vaclav Souhrada
- * @version 0.1.0 (01/17/2010)
+ * @version 0.1.1 (2/21/2010)
  * @since 0.1.0 (01/17/2010)
  */
 public class SignalProjectLoader {
