@@ -12,7 +12,6 @@ import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.exception.InsufficientDataException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
-import ch.ethz.origo.jerpa.application.project.Project;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;

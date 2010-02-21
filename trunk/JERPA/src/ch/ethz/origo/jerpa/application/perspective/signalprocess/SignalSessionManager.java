@@ -11,18 +11,18 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
-import ch.ethz.origo.jerpa.application.exception.ProjectOperationException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
-import ch.ethz.origo.jerpa.application.project.Project;
-import ch.ethz.origo.jerpa.application.project.SessionManager;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.BufferCreator;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectLoader;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectWriter;
+import ch.ethz.origo.juigle.application.exception.ProjectOperationException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
+import ch.ethz.origo.juigle.application.project.Project;
+import ch.ethz.origo.juigle.application.project.SessionManager;
 
 /**
  * 

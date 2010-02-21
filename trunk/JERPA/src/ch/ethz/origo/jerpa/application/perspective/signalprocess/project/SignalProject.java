@@ -9,13 +9,13 @@ import java.util.List;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.Averages;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.AveragingDataManager;
-import ch.ethz.origo.jerpa.application.project.Project;
-import ch.ethz.origo.jerpa.application.project.ProjectMementoCaretaker;
 import ch.ethz.origo.jerpa.data.Artefact;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.SignalViewerPanel;
+import ch.ethz.origo.juigle.application.project.Project;
+import ch.ethz.origo.juigle.application.project.ProjectMementoCaretaker;
 
 /**
  * Class for support Singnal processing projects.<br/>

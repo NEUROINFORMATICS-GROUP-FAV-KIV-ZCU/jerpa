@@ -1,7 +1,7 @@
 package ch.ethz.origo.jerpa.application.perspective.weka.project;
 
-import ch.ethz.origo.jerpa.application.project.Project;
-import ch.ethz.origo.jerpa.application.project.ProjectMementoCaretaker;
+import ch.ethz.origo.juigle.application.project.Project;
+import ch.ethz.origo.juigle.application.project.ProjectMementoCaretaker;
 
 /**
  * 

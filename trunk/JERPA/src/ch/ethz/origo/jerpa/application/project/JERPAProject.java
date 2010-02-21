@@ -1,10 +1,14 @@
 package ch.ethz.origo.jerpa.application.project;
 
+import ch.ethz.origo.juigle.application.project.Project;
+import ch.ethz.origo.juigle.application.project.ProjectMementoCaretaker;
+
 
 /**
  * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.0 10/25/2009 
+ * 
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.1.1 (2/21/2010) 
  * @since 0.1.0 (06/07/2009)
  * @see Project    
  */
