@@ -22,7 +22,7 @@ import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionMa
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalsSegmentation;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.AveragingDataManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
-import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Artefact;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Epoch;
@@ -42,7 +42,7 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 public class SignalsPanelProvider implements IObserver {
 
 	private SignalSessionManager session;
-	private SingnalPerspectiveObservable spObservable;
+	private SignalPerspectiveObservable spObservable;
 	private DrawingComponent drawingComponent;
 	private SignalsSegmentation signalsSegmentation;
 	private BaselineCorrection baselineCorrection;
@@ -85,7 +85,7 @@ public class SignalsPanelProvider implements IObserver {
 		baselineCorrection = this.session.getBaselineCorrection();
 		signalsPanel = new SignalsPanel(this);
 		setFirstVisibleChannel(0);
-		spObservable = (SingnalPerspectiveObservable) session.getSignalPerspectiveObservable();
+		spObservable = (SignalPerspectiveObservable) session.getSignalPerspectiveObservable();
 		spObservable.attach(this);
 	}
 
@@ -112,7 +112,7 @@ public class SignalsPanelProvider implements IObserver {
 		}
 
 		switch (msg) {
-		case SingnalPerspectiveObservable.MSG_PROJECT_CLOSED:
+		case SignalPerspectiveObservable.MSG_PROJECT_CLOSED:
 			setDrawingComponent();
 			signalsPanel.verticalScrollBar.setEnabled(false);
 			signalsPanel.horizontalScrollBar.setEnabled(false);
@@ -125,7 +125,7 @@ public class SignalsPanelProvider implements IObserver {
 			signalsPanel.playBT.setEnabled(false);
 			signalsPanel.stopBT.setEnabled(false);
 			break;
-		case SingnalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
+		case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
 			setDrawingComponent();
 			setNumberOfVisibleChannels(session.getCurrentProject()
 					.getSelectedChannels().size());
@@ -140,7 +140,7 @@ public class SignalsPanelProvider implements IObserver {
 					.isInvertedSignalsView());
 			break;
 
-		case SingnalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_START:
+		case SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_START:
 			setAllWindowControlsEnabled(false);
 			showPopupMenu = false;
 			signalsPanel.setPlayButtonIcon(getPauseIcon());
@@ -148,7 +148,7 @@ public class SignalsPanelProvider implements IObserver {
 			getDrawingComponent().startDrawing();
 			break;
 
-		case SingnalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_RESUME:
+		case SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_RESUME:
 			signalsPanel.setPlayButtonIcon(getPauseIcon());
 			showPopupMenu = false;
 			setAllWindowControlsEnabled(false);
@@ -156,7 +156,7 @@ public class SignalsPanelProvider implements IObserver {
 			getDrawingComponent().togglePause();
 			break;
 
-		case SingnalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_PAUSE:
+		case SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_PAUSE:
 			signalsPanel.setPlayButtonIcon(getPlayIcon());
 			setAllWindowControlsEnabled(true);
 			showPopupMenu = true;
@@ -164,7 +164,7 @@ public class SignalsPanelProvider implements IObserver {
 			getDrawingComponent().togglePause();
 			break;
 
-		case SingnalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_STOP:
+		case SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_STOP:
 			getDrawingComponent().stopDrawing();
 			showPopupMenu = true;
 			signalsPanel.setPlayButtonIcon(getPlayIcon());
@@ -173,11 +173,11 @@ public class SignalsPanelProvider implements IObserver {
 			selectedFunction = signalsPanel.getSelectedFunctionIndex();
 			break;
 
-		case SingnalPerspectiveObservable.MSG_CHANNEL_SELECTED:
+		case SignalPerspectiveObservable.MSG_CHANNEL_SELECTED:
 			recountChannels();
 			break;
 
-		case SingnalPerspectiveObservable.MSG_AUTOMATIC_ARTEFACT_SELECTION:
+		case SignalPerspectiveObservable.MSG_AUTOMATIC_ARTEFACT_SELECTION:
 			signalsSegmentation.addArtefacts(session.getAutoSelectionArtefact()
 					.getArtefacts());
 			drawingComponent.setDrawedArtefacts(signalsSegmentation
@@ -188,7 +188,7 @@ public class SignalsPanelProvider implements IObserver {
 			averageSelectedEpochs();
 			break;
 
-		case SingnalPerspectiveObservable.MSG_NEW_BUFFER:
+		case SignalPerspectiveObservable.MSG_NEW_BUFFER:
 			drawingComponent.setDataSource(((SignalProject) session
 					.getCurrentProject()).getBuffer(), ((SignalProject) session
 					.getCurrentProject()).getHeader());
@@ -197,7 +197,7 @@ public class SignalsPanelProvider implements IObserver {
 			drawingComponent.setDrawedEpochs(signalsSegmentation.getEpochsDraw());
 			break;
 
-		case SingnalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED:
+		case SignalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED:
 			drawingComponent.setInvertedView(((SignalProject) session
 					.getCurrentProject()).isInvertedSignalsView());
 			break;
@@ -254,7 +254,7 @@ public class SignalsPanelProvider implements IObserver {
 
 			if (changeEpochInterval) {
 				spObservable
-						.setState(SingnalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE);
+						.setState(SignalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE);
 				changeEpochInterval = false;
 			}
 
@@ -424,20 +424,20 @@ public class SignalsPanelProvider implements IObserver {
 		if (getDrawingComponent().isPaused()) {
 			if (getDrawingComponent().isRunning()) {
 				spObservable
-						.setState(SingnalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_RESUME);
+						.setState(SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_RESUME);
 			} else {
 				spObservable
-						.setState(SingnalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_START);
+						.setState(SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_START);
 			}
 		} else {
 			spObservable
-					.setState(SingnalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_PAUSE);
+					.setState(SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_PAUSE);
 		}
 	}
 
 	protected void stopPlayback() {
 		spObservable
-				.setState(SingnalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_STOP);
+				.setState(SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_STOP);
 	}
 
 	public JPanel getPanel() {
@@ -814,7 +814,7 @@ public class SignalsPanelProvider implements IObserver {
 					.frameToTime(baselineCorrectionEnd));
 			areaSelection = false;
 			spObservable
-					.setState(SingnalPerspectiveObservable.MSG_BASELINE_CORRECTION_INTERVAL_SELECTED);
+					.setState(SignalPerspectiveObservable.MSG_BASELINE_CORRECTION_INTERVAL_SELECTED);
 
 			break;
 		}
@@ -837,7 +837,7 @@ public class SignalsPanelProvider implements IObserver {
 			getDrawingComponent()
 					.setDrawedEpochs(signalsSegmentation.getEpochsDraw());
 			spObservable
-					.setState(SingnalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE);
+					.setState(SignalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE);
 			return true;
 		} else {
 			return false;
@@ -859,7 +859,7 @@ public class SignalsPanelProvider implements IObserver {
 			getDrawingComponent()
 					.setDrawedEpochs(signalsSegmentation.getEpochsDraw());
 			spObservable
-					.setState(SingnalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE);
+					.setState(SignalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE);
 			return true;
 		} else {
 			return false;
@@ -1026,7 +1026,7 @@ public class SignalsPanelProvider implements IObserver {
 		session.getCurrentProject().setAveragedEpochsIndexes(
 				getIndicesEpochsForAveraging());
 		spObservable
-				.setState(SingnalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE);
+				.setState(SignalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE);
 	}
 
 	/**

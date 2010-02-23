@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
-import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
@@ -31,7 +31,7 @@ public class SignalInfoProvider implements IObserver {
 		this.channelsInfoDataModel = new ChannelsInfoTableDataModel(session
 				.getCurrentHeader());
 		this.infoPanel = new SignalInfoPanel(this);
-		SingnalPerspectiveObservable.getInstance().attach(this);
+		SignalPerspectiveObservable.getInstance().attach(this);
 	}
 	@Override
 	public void update() {
@@ -54,7 +54,7 @@ public class SignalInfoProvider implements IObserver {
 		}
 
 		switch (msg) {
-		case SingnalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
+		case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
 			Header header = ((SignalProject)session.getCurrentProject()).getHeader();
 			globalInfoDataModel.setHeader(header);
 			channelsInfoDataModel.setHeader(header);
@@ -62,7 +62,7 @@ public class SignalInfoProvider implements IObserver {
 			infoPanel.refresh();
 			break;
 
-		case SingnalPerspectiveObservable.MSG_PROJECT_CLOSED:
+		case SignalPerspectiveObservable.MSG_PROJECT_CLOSED:
 			globalInfoDataModel.setHeader(null);
 			channelsInfoDataModel.setHeader(null);
 			infoPanel.setItemsEnabled(false);

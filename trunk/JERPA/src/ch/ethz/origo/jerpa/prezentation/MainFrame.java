@@ -87,7 +87,8 @@ public class MainFrame implements AppButtonsListener {
 	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {
 		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu();
 		mainMenu.setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
-		mainMenu.addHomePageItem(null, ConfigPropertiesLoader.getJerpaHomePage());
+		mainMenu.addHomePageItem(null, ConfigPropertiesLoader.getJERPAHomePage());
+		//mainMenu.addCalendarItem(null);
 		return mainMenu;
 	}
 

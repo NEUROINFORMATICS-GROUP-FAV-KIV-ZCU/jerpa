@@ -10,7 +10,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
-import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -30,7 +30,7 @@ import ch.ethz.origo.juigle.application.observers.IObserver;
 public class ChannelsPanelProvider implements IObserver {
 
 	private ChannelsPanel channelsPanel;
-	private SingnalPerspectiveObservable spObservable;
+	private SignalPerspectiveObservable spObservable;
 	private SignalSessionManager session;
 	private ArrayList<String> channelsNames;
 	private int countSelectedSignals;
@@ -48,7 +48,7 @@ public class ChannelsPanelProvider implements IObserver {
 		this.session = session;
 		channelsPanel = new ChannelsPanel(this);
 		countSelectedSignals = 0;
-		spObservable = SingnalPerspectiveObservable.getInstance();
+		spObservable = SignalPerspectiveObservable.getInstance();
 		spObservable.attach(this);
 	}
 
@@ -66,13 +66,13 @@ public class ChannelsPanelProvider implements IObserver {
 		}
 
 		switch (msg) {
-		case SingnalPerspectiveObservable.MSG_PROJECT_CLOSED:
+		case SignalPerspectiveObservable.MSG_PROJECT_CLOSED:
 			channelsPanel.electrodesPanel.removeAll();
 			channelsPanel.electrodesPanel.repaint();
 			channelsPanel.electrodesPanel.validate();
 			break;
 
-		case SingnalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
+		case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
 			setChannelsNames();
 			break;
 
@@ -143,7 +143,7 @@ public class ChannelsPanelProvider implements IObserver {
 	 */
 	protected void setVisibleChannels(ArrayList<Integer> selectedChannels) {
 		session.getCurrentProject().setSelectedChannels(selectedChannels);
-		spObservable.setState(SingnalPerspectiveObservable.MSG_CHANNEL_SELECTED);
+		spObservable.setState(SignalPerspectiveObservable.MSG_CHANNEL_SELECTED);
 	}
 
 	/**

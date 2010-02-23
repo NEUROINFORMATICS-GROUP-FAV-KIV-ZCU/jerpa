@@ -12,11 +12,11 @@ import org.jdesktop.swingx.JXPanel;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.AveragingDataManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
-import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
-import ch.ethz.origo.jerpa.application.project.SessionManager;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
+import ch.ethz.origo.juigle.application.project.SessionManager;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
 /**
@@ -37,7 +37,7 @@ public final class AveragingPanelProvider implements IObserver {
 	 * T��da pro komunikaci <code>AveragingWindowProvider</code>u se zbytkem
 	 * aplikace.
 	 */
-	private SingnalPerspectiveObservable observable;
+	private SignalPerspectiveObservable observable;
 	/**
 	 * Reference na prvek prezenta�n� vrstvy, prost�ednictv�m kter�ho p�ed�v�
 	 * prezenta�n� vrstv� data k zobrazen�.
@@ -62,7 +62,7 @@ public final class AveragingPanelProvider implements IObserver {
 	 *          Reference na t��du pro komunikaci
 	 *          <code>AveragingWindowProvider</code>u se zbytkem aplikace.
 	 */
-	public AveragingPanelProvider(SessionManager session, SingnalPerspectiveObservable observable) {
+	public AveragingPanelProvider(SessionManager session, SignalPerspectiveObservable observable) {
 		this.app = session;
 		this.observable = observable;
 		project = null;
@@ -165,7 +165,7 @@ public final class AveragingPanelProvider implements IObserver {
 		} catch (Exception exception) {
 			averagingPanel.showException(exception);
 		} finally {
-			observable.setState(SingnalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
+			observable.setState(SignalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
 		}
 	}
 
@@ -186,7 +186,7 @@ public final class AveragingPanelProvider implements IObserver {
 		} catch (Exception exception) {
 			averagingPanel.showException(exception);
 		} finally {
-			observable.setState(SingnalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
+			observable.setState(SignalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
 		}
 	}
 
@@ -209,7 +209,7 @@ public final class AveragingPanelProvider implements IObserver {
 		} catch (Exception exception) {
 			averagingPanel.showException(exception);
 		} finally {
-			observable.setState(SingnalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
+			observable.setState(SignalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
 		}
 	}
 
@@ -233,7 +233,7 @@ public final class AveragingPanelProvider implements IObserver {
 		} catch (Exception exception) {
 			averagingPanel.showException(exception);
 		} finally {
-			observable.setState(SingnalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
+			observable.setState(SignalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
 		}
 	}
 
@@ -270,7 +270,7 @@ public final class AveragingPanelProvider implements IObserver {
 	 * t��dou <code>ExportFrame</code>).
 	 */
 	void runAveragesExport() {
-		observable.setState(SingnalPerspectiveObservable.MSG_RUN_AVERAGES_EXPORT);
+		observable.setState(SignalPerspectiveObservable.MSG_RUN_AVERAGES_EXPORT);
 	}
 
 	/**
@@ -311,7 +311,7 @@ public final class AveragingPanelProvider implements IObserver {
 	 */
 	void setInvertedSignalsView(boolean invertedSignals) {
 		project.setInvertedSignalsView(invertedSignals);
-		observable.setState(SingnalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED);
+		observable.setState(SignalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED);
 	}
 
 	/**
@@ -367,7 +367,7 @@ public final class AveragingPanelProvider implements IObserver {
 					.getGroupEpochsDataSet());
 			averagingPanel.setCurrentEpochNumber(averagingDataManager
 					.getCurrentEpochNumber());
-			observable.setState(SingnalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
+			observable.setState(SignalPerspectiveObservable.MSG_NEW_AVERAGES_AVAILABLE);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			averagingPanel.showException(exception);
@@ -408,15 +408,15 @@ public final class AveragingPanelProvider implements IObserver {
 			int msg = ((Integer) object).intValue();
 
 			switch (msg) {
-			case SingnalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
+			case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
 				project = (SignalProject)app.getCurrentProject();
 				averagingDataManager.setProject(project);
 				averagingPanel.viewsSetupByProject();
-			case SingnalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE:
-			case SingnalPerspectiveObservable.MSG_NEW_BUFFER:
+			case SignalPerspectiveObservable.MSG_NEW_INDEXES_FOR_AVERAGING_AVAILABLE:
+			case SignalPerspectiveObservable.MSG_NEW_BUFFER:
 				averagingDataChange();
 				break;
-			case SingnalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED:
+			case SignalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED:
 				averagingPanel.setInvertedSignalsView(project.isInvertedSignalsView());
 				break;
 			}

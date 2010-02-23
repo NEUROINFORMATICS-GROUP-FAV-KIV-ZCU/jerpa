@@ -12,7 +12,7 @@ import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
  * @see JUIGLEObservable
  * @see AbstractJUIGLEObservable
  */
-public class SingnalPerspectiveObservable extends JUIGLEObservable {
+public class SignalPerspectiveObservable extends JUIGLEObservable {
 
 	public static final int MSG_SAVE = 1;
 	public static final int MSG_SAVE_AS = 2;
@@ -85,7 +85,7 @@ public class SingnalPerspectiveObservable extends JUIGLEObservable {
 	 */
 	public static final int MSG_MODAL_DIALOG_CLOSED = 22;
 	
-	private static SingnalPerspectiveObservable instance;
+	private static SignalPerspectiveObservable instance;
 	
 	/**
 	 * 
@@ -93,9 +93,9 @@ public class SingnalPerspectiveObservable extends JUIGLEObservable {
 	 * @version 0.1.0
 	 * @since 0.1.0
 	 */
-	public static synchronized SingnalPerspectiveObservable getInstance() {
+	public static synchronized SignalPerspectiveObservable getInstance() {
 		if (instance == null) {
-			instance = new SingnalPerspectiveObservable();
+			instance = new SignalPerspectiveObservable();
 		}
 		return instance;
 	}	

@@ -29,7 +29,7 @@ import ch.ethz.origo.juigle.prezentation.tables.JUIGLETreeTable;
 /**
  * 
  * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.2 (2/11/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
@@ -110,7 +110,7 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 									.getRoot()) {
 						setIcon(getDefaultClosedIcon());
 					} else if (!node.isLeaf()) {
-						setText("Filters");
+						setText(fr.getCategory());
 						
 					}
 				}

@@ -1,0 +1,790 @@
+package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
+
+import noname.JERPAUtils;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
+import ch.ethz.origo.jerpa.data.Channel;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
+
+/**
+ * Dialog pro nastaven� automatick�ho ozna�ov�n� artefakt�.
+ * 
+ * @author Petr - Soukal
+ * @author Vaclav Souhrada (v dot souhrada at gmail dot com)
+ * @version 0.1.1 (2/23/2010)
+ * @since 0.1.0 (2/18/2010)
+ * @see JDialog
+ * 
+ */
+public class ArtefactSelectionDialog extends JDialog {
+
+	/** Only for serialization */
+	private static final long serialVersionUID = 358489032609275934L;
+	private final short MIN_SPINN_VALUE = -100, MIN_SPINN_LOWER_LIMIT = -2000,
+			MIN_SPINN_UPPER_LIMIT = 0, MIN_SPINN_STEP = 1;
+	private final short MAX_SPINN_VALUE = 100, MAX_SPINN_LOWER_LIMIT = 0,
+			MAX_SPINN_UPPER_LIMIT = 2000, MAX_SPINN_STEP = 1;
+	private final short STEP_SPINN_VALUE = 100, STEP_SPINN_LOWER_LIMIT = 0,
+			STEP_SPINN_UPPER_LIMIT = 2000, STEP_SPINN_STEP = 1;
+	private final short DWIDTH = 360, DHEIGHT = 510;
+	private final double GRAD_CONST_WIDTH = 3, AMP_CONST_WIDTH = 3,
+			GRAD_CONST_HEIGHT = 2.5, AMP_CONST_HEIGHT = 3;
+	private final String DESCRIPTION_UNIT = "\u03bcV";
+	private final int BORDER_CONST = 5;
+
+	private SignalSessionManager session;
+	private ArrayList<String> allChannels;
+	private String[] allChannelsArray;
+
+	private JPanel mainPanel;
+	private JCheckBox gradientCritCHB;
+	private JCheckBox amplitudeCritCHB;
+	private JButton applyBT;
+	// gradient criterion
+	private JSpinner voltageStepSpinner;
+	private JList gradientListUnselectionChannels;
+	private JList gradientListSelectionChannels;
+	private JButton addGradientChannelBT;
+	private JButton removeGradientChannelBT;
+	private JCheckBox gradientIndividualChannels;
+
+	// amplitude criterion
+	private JSpinner minAmplitudeSpinner;
+	private JSpinner maxAmplitudeSpinner;
+	private JList amplitudeListUnselectionChannels;
+	private JList amplitudeListSelectionChannels;
+	private JButton addAmplitudeChannelBT;
+	private JButton removeAmplitudeChannelBT;
+	private JCheckBox amplitudeIndividualChannels;
+	private List<String> allChannelsInAmpUnselectList;
+	private List<String> allChannelsInAmpSelectList;
+	private List<String> allChannelsInGradUnselectList;
+	private List<String> allChannelsInGradSelectList;
+
+	/**
+	 * Vytv��� objekt t��dy.
+	 * 
+	 * @param session
+	 *          - current session
+	 */
+	public ArtefactSelectionDialog(final SignalSessionManager session) {
+		super();
+		this.setTitle("Automatic Artefact Selection");
+		this.session = session;
+
+		allChannelsInAmpUnselectList = new ArrayList<String>();
+		allChannelsInAmpSelectList = new ArrayList<String>();
+		allChannelsInGradUnselectList = new ArrayList<String>();
+		allChannelsInGradSelectList = new ArrayList<String>();
+
+		this.add(createInterior());
+		this.setSize(new Dimension(DWIDTH, DHEIGHT));
+		this.setResizable(false);
+		setChannelsName();
+	}
+
+	/**
+	 * Vytv��� hlavn� panel.
+	 * 
+	 * @return mainPanel.
+	 */
+	private JPanel createInterior() {
+		mainPanel = new JPanel(new BorderLayout());
+		mainPanel.add(createCenterPanel(), BorderLayout.CENTER);
+		mainPanel.add(createSouthPanel(), BorderLayout.SOUTH);
+
+		return mainPanel;
+	}
+
+	/**
+	 * Vytv��� panel se z�lo�kami.
+	 * 
+	 * @return centerPanel.
+	 */
+	private JPanel createCenterPanel() {
+		JPanel centerPanel = new JPanel(new BorderLayout());
+		JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane.addTab("Gradient Criterion", createGradientCriterionPanel());
+		tabbedPane.addTab("Amplitude Criterion", createAmplitudeCriterionPanel());
+
+		centerPanel.add(tabbedPane);
+
+		return centerPanel;
+	}
+
+	/**
+	 * Vytvr�n� panel do z�lo�ky pro gradientn� krit�rium.
+	 * 
+	 * @return gradientCriterionP.
+	 */
+	private JPanel createGradientCriterionPanel() {
+		JPanel gradientCriterionP = new JPanel(new BorderLayout());
+
+		gradientCritCHB = new JCheckBox("Check Gradient Criterion");
+		gradientCritCHB.addActionListener(new FunctionCriterionCheckBoxes());
+
+		JLabel voltageStepDescription = new JLabel(
+				"Maximum Allowed Voltage Step / Sampling Point");
+		voltageStepSpinner = new JSpinner(new SpinnerNumberModel(STEP_SPINN_VALUE,
+				STEP_SPINN_LOWER_LIMIT, STEP_SPINN_UPPER_LIMIT, STEP_SPINN_STEP));
+
+		JPanel northPanel = new JPanel(new BorderLayout());
+		northPanel.add(gradientCritCHB, BorderLayout.NORTH);
+		northPanel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.SOUTH);
+
+		JPanel centerPanel = new JPanel();
+		centerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder("Gradient Criterion Values"), BorderFactory
+				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
+						BORDER_CONST)));
+		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
+
+		JPanel voltStepDescriptPanel = new JPanel();
+		voltStepDescriptPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		voltStepDescriptPanel.add(voltageStepDescription);
+		voltStepDescriptPanel.setMaximumSize(new Dimension(voltStepDescriptPanel
+				.getPreferredSize().width,
+				voltStepDescriptPanel.getPreferredSize().height));
+
+		centerPanel.add(voltStepDescriptPanel);
+		JPanel voltageStepPanel = new JPanel();
+		voltageStepPanel.add(voltageStepSpinner);
+		voltageStepPanel.add(new JLabel(DESCRIPTION_UNIT));
+		voltageStepPanel.setMaximumSize(new Dimension(voltageStepPanel
+				.getPreferredSize().width, voltageStepPanel.getPreferredSize().height));
+		voltageStepPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		centerPanel.add(voltageStepPanel);
+
+		gradientCriterionP.add(northPanel, BorderLayout.NORTH);
+		gradientCriterionP.add(centerPanel, BorderLayout.CENTER);
+		gradientCriterionP.add(createGradientList(), BorderLayout.SOUTH);
+
+		return gradientCriterionP;
+	}
+
+	/**
+	 * Vytv��� panel se seznamy kan�l� pro m�d jednotliv�ch kan�l� gradientn�ho
+	 * krit�ria.
+	 * 
+	 * @return gradientListP.
+	 */
+	private JPanel createGradientList() {
+		JPanel gradientListP = new JPanel(new BorderLayout());
+
+		gradientListUnselectionChannels = new JList();
+		gradientListUnselectionChannels
+				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		gradientListUnselectionChannels.setLayoutOrientation(JList.VERTICAL);
+		gradientListUnselectionChannels.setVisibleRowCount(-1);
+
+		JScrollPane listUnselChannelsScroller = new JScrollPane(
+				gradientListUnselectionChannels);
+		listUnselChannelsScroller
+				.setPreferredSize(new Dimension((int) (DWIDTH / GRAD_CONST_WIDTH),
+						(int) (DHEIGHT / GRAD_CONST_HEIGHT)));
+
+		gradientListSelectionChannels = new JList();
+		gradientListSelectionChannels
+				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		gradientListSelectionChannels.setLayoutOrientation(JList.VERTICAL);
+		gradientListSelectionChannels.setVisibleRowCount(-1);
+
+		JScrollPane listSelChannelsScroller = new JScrollPane(
+				gradientListSelectionChannels);
+		listSelChannelsScroller
+				.setPreferredSize(new Dimension((int) (DWIDTH / GRAD_CONST_WIDTH),
+						(int) (DHEIGHT / GRAD_CONST_HEIGHT)));
+
+		removeGradientChannelBT = new JButton(">>");
+		removeGradientChannelBT.setAlignmentX(Component.CENTER_ALIGNMENT);
+		removeGradientChannelBT.addActionListener(new FunctionAddGradChannel());
+		addGradientChannelBT = new JButton("<<");
+		addGradientChannelBT.setAlignmentX(Component.CENTER_ALIGNMENT);
+		addGradientChannelBT.addActionListener(new FunctionRemoveGradChannel());
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
+		JLabel space = new JLabel();
+		space.setMaximumSize(new Dimension(
+				addGradientChannelBT.getPreferredSize().width,
+				(int) (DHEIGHT / GRAD_CONST_HEIGHT) / 3));
+		space.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(space);
+		buttonPanel.add(removeGradientChannelBT);
+		buttonPanel.add(addGradientChannelBT);
+
+		gradientIndividualChannels = new JCheckBox("Individual channels mode");
+		gradientIndividualChannels
+				.addActionListener(new FunctionGradIndividualChannels());
+
+		JPanel northPanel = new JPanel(new BorderLayout());
+		northPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder("Individual channels mode"), BorderFactory
+				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
+						BORDER_CONST)));
+
+		gradientListP.add(gradientIndividualChannels, BorderLayout.NORTH);
+		JPanel unselectionPanel = new JPanel(new BorderLayout());
+		unselectionPanel.add(new JLabel("Uncontrolled signals:"),
+				BorderLayout.NORTH);
+		unselectionPanel.add(listUnselChannelsScroller, BorderLayout.SOUTH);
+
+		JPanel selectionPanel = new JPanel(new BorderLayout());
+		selectionPanel.add(new JLabel("Controlled signals:"), BorderLayout.NORTH);
+		selectionPanel.add(listSelChannelsScroller, BorderLayout.SOUTH);
+
+		northPanel.add(selectionPanel, BorderLayout.WEST);
+		northPanel.add(unselectionPanel, BorderLayout.EAST);
+		northPanel.add(buttonPanel, BorderLayout.CENTER);
+		gradientListP.add(northPanel);
+		setGradIndividualChannelsEnabled(false);
+
+		return gradientListP;
+	}
+
+	/**
+	 * Vytvr�n� panel do z�lo�ky pro amplitudov� krit�rium.
+	 * 
+	 * @return amplitudeCriterionP.
+	 */
+	private JPanel createAmplitudeCriterionPanel() {
+		JPanel amplitudeCriterionP = new JPanel(new BorderLayout());
+
+		amplitudeCritCHB = new JCheckBox("Check Amplitude Criterion");
+		amplitudeCritCHB.addActionListener(new FunctionCriterionCheckBoxes());
+
+		JLabel minDescription = new JLabel("Mininum Allowed Amplitude");
+		minAmplitudeSpinner = new JSpinner(new SpinnerNumberModel(MIN_SPINN_VALUE,
+				MIN_SPINN_LOWER_LIMIT, MIN_SPINN_UPPER_LIMIT, MIN_SPINN_STEP));
+
+		JLabel maxDescription = new JLabel("Maximum Allowed Amplitude");
+
+		maxAmplitudeSpinner = new JSpinner(new SpinnerNumberModel(MAX_SPINN_VALUE,
+				MAX_SPINN_LOWER_LIMIT, MAX_SPINN_UPPER_LIMIT, MAX_SPINN_STEP));
+		maxAmplitudeSpinner.setPreferredSize(new Dimension(minAmplitudeSpinner
+				.getPreferredSize().width,
+				minAmplitudeSpinner.getPreferredSize().height));
+
+		JPanel northPanel = new JPanel(new BorderLayout());
+		northPanel.add(amplitudeCritCHB, BorderLayout.NORTH);
+		northPanel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.SOUTH);
+
+		JPanel centerPanel = new JPanel(new BorderLayout());
+		centerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder("Amplitude Criterion Values"), BorderFactory
+				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
+						BORDER_CONST)));
+		JPanel valuesPanel = new JPanel();
+		valuesPanel.setLayout(new BoxLayout(valuesPanel, BoxLayout.PAGE_AXIS));
+		JPanel minDescriptPanel = new JPanel();
+		minDescriptPanel.add(minDescription);
+		minDescriptPanel.setMaximumSize(new Dimension(minDescriptPanel
+				.getPreferredSize().width, minDescriptPanel.getPreferredSize().height));
+		minDescriptPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		valuesPanel.add(minDescriptPanel);
+		JPanel minAmpPanel = new JPanel();
+		minAmpPanel.add(minAmplitudeSpinner);
+		minAmpPanel.add(new JLabel(DESCRIPTION_UNIT));
+		minAmpPanel.setMaximumSize(new Dimension(
+				minAmpPanel.getPreferredSize().width,
+				minAmpPanel.getPreferredSize().height));
+		minAmpPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		valuesPanel.add(minAmpPanel);
+		JPanel maxDescriptPanel = new JPanel();
+		maxDescriptPanel.add(maxDescription);
+		maxDescriptPanel.setMaximumSize(new Dimension(maxDescriptPanel
+				.getPreferredSize().width, maxDescriptPanel.getPreferredSize().height));
+		maxDescriptPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		valuesPanel.add(maxDescriptPanel);
+		JPanel maxAmpPanel = new JPanel();
+		maxAmpPanel.add(maxAmplitudeSpinner);
+		maxAmpPanel.add(new JLabel(DESCRIPTION_UNIT));
+		maxAmpPanel.setMaximumSize(new Dimension(
+				maxAmpPanel.getPreferredSize().width,
+				maxAmpPanel.getPreferredSize().height));
+		maxAmpPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		valuesPanel.add(maxAmpPanel);
+		JPanel warningPanel = new JPanel(new BorderLayout());
+		warningPanel.add(new JLabel(JUIGLEGraphicsUtils
+				.createImageIcon(JERPAUtils.IMAGE_PATH + "warning.gif")),
+				BorderLayout.NORTH);
+		warningPanel
+				.add(
+						new JLabel(
+								"<html><p align=center>This criterion base-line<br>must be adjusted<br>correctly.</p></html>",
+								JLabel.CENTER), BorderLayout.SOUTH);
+		JPanel extensiblePanel = new JPanel();
+		extensiblePanel.add(warningPanel);
+
+		centerPanel.add(valuesPanel, BorderLayout.WEST);
+		centerPanel.add(extensiblePanel, BorderLayout.CENTER);
+
+		amplitudeCriterionP.add(northPanel, BorderLayout.NORTH);
+		amplitudeCriterionP.add(centerPanel, BorderLayout.CENTER);
+		amplitudeCriterionP.add(createAmplitudeList(), BorderLayout.SOUTH);
+
+		return amplitudeCriterionP;
+	}
+
+	/**
+	 * Vytv��� panel se seznamy kan�l� pro m�d jednotliv�ch kan�l� amplitudov�ho
+	 * krit�ria.
+	 * 
+	 * @return amplitudeListP.
+	 */
+	private JPanel createAmplitudeList() {
+		JPanel amplitudeListP = new JPanel(new BorderLayout());
+
+		amplitudeListUnselectionChannels = new JList();
+		amplitudeListUnselectionChannels
+				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		amplitudeListUnselectionChannels.setLayoutOrientation(JList.VERTICAL);
+		amplitudeListUnselectionChannels.setVisibleRowCount(-1);
+
+		JScrollPane listUnselChannelsScroller = new JScrollPane(
+				amplitudeListUnselectionChannels);
+		listUnselChannelsScroller.setPreferredSize(new Dimension(
+				(int) (DWIDTH / AMP_CONST_WIDTH), (int) (DHEIGHT / AMP_CONST_HEIGHT)));
+
+		amplitudeListSelectionChannels = new JList();
+		amplitudeListSelectionChannels
+				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		amplitudeListSelectionChannels.setLayoutOrientation(JList.VERTICAL);
+		amplitudeListSelectionChannels.setVisibleRowCount(-1);
+
+		JScrollPane listSelChannelsScroller = new JScrollPane(
+				amplitudeListSelectionChannels);
+		listSelChannelsScroller.setPreferredSize(new Dimension(
+				(int) (DWIDTH / AMP_CONST_WIDTH), (int) (DHEIGHT / AMP_CONST_HEIGHT)));
+
+		removeAmplitudeChannelBT = new JButton(">>");
+		removeAmplitudeChannelBT.setAlignmentX(Component.CENTER_ALIGNMENT);
+		removeAmplitudeChannelBT.addActionListener(new FunctionAddAmpChannel());
+		addAmplitudeChannelBT = new JButton("<<");
+		addAmplitudeChannelBT.setAlignmentX(Component.CENTER_ALIGNMENT);
+		addAmplitudeChannelBT.addActionListener(new FunctionRemoveAmpChannel());
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
+		JLabel space = new JLabel();
+		space.setMaximumSize(new Dimension(
+				addAmplitudeChannelBT.getPreferredSize().width,
+				(int) (DHEIGHT / AMP_CONST_HEIGHT) / 3));
+		space.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonPanel.add(space);
+		buttonPanel.add(removeAmplitudeChannelBT);
+		buttonPanel.add(addAmplitudeChannelBT);
+
+		amplitudeIndividualChannels = new JCheckBox("Individual channels mode");
+		amplitudeIndividualChannels
+				.addActionListener(new FunctionAmpIndividualChannels());
+
+		amplitudeListP.add(amplitudeIndividualChannels, BorderLayout.NORTH);
+
+		JPanel northPanel = new JPanel(new BorderLayout());
+		northPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder("Individual channels mode"), BorderFactory
+				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
+						BORDER_CONST)));
+
+		JPanel unselectionPanel = new JPanel(new BorderLayout());
+		unselectionPanel.add(new JLabel("Uncontrolled signals:"),
+				BorderLayout.NORTH);
+		unselectionPanel.add(listUnselChannelsScroller, BorderLayout.SOUTH);
+
+		JPanel selectionPanel = new JPanel(new BorderLayout());
+		selectionPanel.add(new JLabel("Controlled signals:"), BorderLayout.NORTH);
+		selectionPanel.add(listSelChannelsScroller, BorderLayout.SOUTH);
+
+		northPanel.add(selectionPanel, BorderLayout.WEST);
+		northPanel.add(unselectionPanel, BorderLayout.EAST);
+		northPanel.add(buttonPanel, BorderLayout.CENTER);
+		amplitudeListP.add(northPanel, BorderLayout.CENTER);
+		setAmpIndividualChannelsEnabled(false);
+
+		return amplitudeListP;
+	}
+
+	/**
+	 * Vytv��� panel s tla��tky.
+	 * 
+	 * @return southPanel.
+	 */
+	private JPanel createSouthPanel() {
+		JPanel southPanel = new JPanel();
+		applyBT = new JButton("Apply");
+		applyBT.setEnabled(false);
+		applyBT.addActionListener(new FunctionApplyBT());
+		JButton stornoBT = new JButton("Storno");
+		stornoBT.addActionListener(new FunctionStornoBT());
+
+		southPanel.add(applyBT);
+		southPanel.add(stornoBT);
+
+		return southPanel;
+	}
+
+	/**
+	 * Nastavuje povolen� tla��tek a seznam� s kan�ly modu jednotliv�ch kan�l�
+	 * gradientn�ho krit�ria.
+	 */
+	private void setGradIndividualChannelsEnabled(boolean enabled) {
+		gradientListUnselectionChannels.setEnabled(enabled);
+		gradientListSelectionChannels.setEnabled(enabled);
+
+		if (enabled) {
+			if (allChannelsInGradSelectList.size() > 0) {
+				removeGradientChannelBT.setEnabled(enabled);
+			}
+
+			if (allChannelsInGradUnselectList.size() > 0) {
+				addGradientChannelBT.setEnabled(enabled);
+			}
+		} else {
+			removeGradientChannelBT.setEnabled(enabled);
+			addGradientChannelBT.setEnabled(enabled);
+		}
+	}
+
+	/**
+	 * Nastavuje povolen� tla��tek a seznam� s kan�ly modu jednotliv�ch kan�l�
+	 * amplitudov�ho krit�ria.
+	 */
+	private void setAmpIndividualChannelsEnabled(boolean enabled) {
+		amplitudeListUnselectionChannels.setEnabled(enabled);
+		amplitudeListSelectionChannels.setEnabled(enabled);
+
+		if (enabled) {
+			if (allChannelsInAmpSelectList.size() > 0) {
+				removeAmplitudeChannelBT.setEnabled(enabled);
+			}
+
+			if (allChannelsInAmpUnselectList.size() > 0) {
+				addAmplitudeChannelBT.setEnabled(enabled);
+			}
+		} else {
+			removeAmplitudeChannelBT.setEnabled(enabled);
+			addAmplitudeChannelBT.setEnabled(enabled);
+		}
+	}
+
+	/**
+	 * Nastavuje viditelnost dialogu a jeho um�st�n� na monitoru.
+	 */
+	/*public void setActualLocationAndVisibility() {
+		mainWindow.setEnabled(false);
+		this.setLocationRelativeTo(mainWindow);
+		this.setVisible(true);
+	}*/
+
+	/**
+	 * Nastavuje jm�na v�ech kan�l� v souboru a vkl�d� je do seznamu pro
+	 * kontrolovan� kan�ly.
+	 */
+	public void setChannelsName() {
+		List<Channel> channels = session.getCurrentProject().getHeader()
+				.getChannels();
+
+		allChannels = new ArrayList<String>();
+
+		for (Channel channel : channels) {
+			allChannels.add(channel.getName());
+		}
+
+		allChannelsArray = allChannels.toArray(new String[allChannels.size()]);
+
+		gradientListSelectionChannels.setListData(allChannelsArray);
+		amplitudeListSelectionChannels.setListData(allChannelsArray);
+
+		allChannelsInGradSelectList = new ArrayList<String>(allChannels);
+		allChannelsInAmpSelectList = new ArrayList<String>(allChannels);
+
+	}
+
+	/**
+	 * Obsluhuje checkBox modu jednotliv�ch kan�l� pro gradientn� krit�rium.
+	 */
+	private class FunctionGradIndividualChannels implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (gradientIndividualChannels.isSelected()) {
+				setGradIndividualChannelsEnabled(true);
+			} else {
+				setGradIndividualChannelsEnabled(false);
+			}
+		}
+	}
+
+	/**
+	 * Obsluhuje tla��tko pro p�id�n� kan�lu ze seznamu kontrolovan�ch kan�l� do
+	 * seznamu nekontrolovan�ch kan�l� gradientn�ho krit�ria.
+	 */
+	private class FunctionAddGradChannel implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<String> selectChannels = new ArrayList<String>();
+
+			for (int i = 0; i < gradientListSelectionChannels.getSelectedValues().length; i++) {
+				selectChannels.add((String) gradientListSelectionChannels
+						.getSelectedValues()[i]);
+			}
+
+			for (int i = 0; i < allChannelsInGradUnselectList.size(); i++) {
+				selectChannels.add(allChannelsInGradUnselectList.get(i));
+			}
+
+			allChannelsInGradUnselectList = new ArrayList<String>(allChannels);
+			allChannelsInGradSelectList = new ArrayList<String>(allChannels);
+
+			allChannelsInGradUnselectList.retainAll(selectChannels);
+			allChannelsInGradSelectList.removeAll(selectChannels);
+
+			gradientListUnselectionChannels.setListData(allChannelsInGradUnselectList
+					.toArray(new String[allChannelsInGradUnselectList.size()]));
+			gradientListSelectionChannels.setListData(allChannelsInGradSelectList
+					.toArray(new String[allChannelsInGradSelectList.size()]));
+
+			if (allChannelsInGradSelectList.size() == 0) {
+				removeGradientChannelBT.setEnabled(false);
+			}
+
+			if (allChannelsInGradUnselectList.size() != 0) {
+				addGradientChannelBT.setEnabled(true);
+			}
+
+		}
+	}
+
+	/**
+	 * Obsluhuje tla��tko pro p�id�n� kan�lu ze seznamu nekontrolovan�ch kan�l� do
+	 * seznamu kontrolovan�ch kan�l� gradientn�ho krit�ria.
+	 */
+	private class FunctionRemoveGradChannel implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<String> selectChannels = new ArrayList<String>();
+
+			for (int i = 0; i < gradientListUnselectionChannels.getSelectedValues().length; i++) {
+				selectChannels.add((String) gradientListUnselectionChannels
+						.getSelectedValues()[i]);
+			}
+
+			for (int i = 0; i < allChannelsInGradSelectList.size(); i++) {
+				selectChannels.add(allChannelsInGradSelectList.get(i));
+			}
+
+			allChannelsInGradUnselectList = new ArrayList<String>(allChannels);
+			allChannelsInGradSelectList = new ArrayList<String>(allChannels);
+
+			allChannelsInGradUnselectList.removeAll(selectChannels);
+			allChannelsInGradSelectList.retainAll(selectChannels);
+
+			gradientListUnselectionChannels.setListData(allChannelsInGradUnselectList
+					.toArray(new String[allChannelsInGradUnselectList.size()]));
+			gradientListSelectionChannels.setListData(allChannelsInGradSelectList
+					.toArray(new String[allChannelsInGradSelectList.size()]));
+
+			if (allChannelsInGradSelectList.size() != 0) {
+				removeGradientChannelBT.setEnabled(true);
+			}
+
+			if (allChannelsInGradUnselectList.size() == 0) {
+				addGradientChannelBT.setEnabled(false);
+			}
+		}
+	}
+
+	/**
+	 * Obsluhuje checkBox modu jednotliv�ch kan�l� pro amplitudov� krit�rium.
+	 */
+	private class FunctionAmpIndividualChannels implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (amplitudeIndividualChannels.isSelected()) {
+				setAmpIndividualChannelsEnabled(true);
+			} else {
+				setAmpIndividualChannelsEnabled(false);
+			}
+		}
+	}
+
+	/**
+	 * Obsluhuje tla��tko pro p�id�n� kan�lu ze seznamu kontrolovan�ch kan�l� do
+	 * seznamu nekontrolovan�ch kan�l� amplitudov�ho krit�ria.
+	 */
+	private class FunctionAddAmpChannel implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<String> selectChannels = new ArrayList<String>();
+
+			for (int i = 0; i < amplitudeListSelectionChannels.getSelectedValues().length; i++) {
+				selectChannels.add((String) amplitudeListSelectionChannels
+						.getSelectedValues()[i]);
+			}
+
+			for (int i = 0; i < allChannelsInAmpUnselectList.size(); i++) {
+				selectChannels.add(allChannelsInAmpUnselectList.get(i));
+			}
+
+			allChannelsInAmpUnselectList = new ArrayList<String>(allChannels);
+			allChannelsInAmpSelectList = new ArrayList<String>(allChannels);
+
+			allChannelsInAmpUnselectList.retainAll(selectChannels);
+			allChannelsInAmpSelectList.removeAll(selectChannels);
+
+			amplitudeListUnselectionChannels.setListData(allChannelsInAmpUnselectList
+					.toArray(new String[allChannelsInAmpUnselectList.size()]));
+			amplitudeListSelectionChannels.setListData(allChannelsInAmpSelectList
+					.toArray(new String[allChannelsInAmpSelectList.size()]));
+
+			if (allChannelsInAmpSelectList.size() == 0) {
+				removeAmplitudeChannelBT.setEnabled(false);
+			}
+
+			if (allChannelsInAmpUnselectList.size() != 0) {
+				addAmplitudeChannelBT.setEnabled(true);
+			}
+		}
+	}
+
+	/**
+	 * Obsluhuje tla��tko pro p�id�n� kan�lu ze seznamu nekontrolovan�ch kan�l� do
+	 * seznamu kontrolovan�ch kan�l� amplitudov�ho krit�ria.
+	 */
+	private class FunctionRemoveAmpChannel implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<String> selectChannels = new ArrayList<String>();
+
+			for (int i = 0; i < amplitudeListUnselectionChannels.getSelectedValues().length; i++) {
+				selectChannels.add((String) amplitudeListUnselectionChannels
+						.getSelectedValues()[i]);
+			}
+
+			for (int i = 0; i < allChannelsInAmpSelectList.size(); i++) {
+				selectChannels.add(allChannelsInAmpSelectList.get(i));
+			}
+
+			allChannelsInAmpUnselectList = new ArrayList<String>(allChannels);
+			allChannelsInAmpSelectList = new ArrayList<String>(allChannels);
+
+			allChannelsInAmpUnselectList.removeAll(selectChannels);
+			allChannelsInAmpSelectList.retainAll(selectChannels);
+
+			amplitudeListUnselectionChannels.setListData(allChannelsInAmpUnselectList
+					.toArray(new String[allChannelsInAmpUnselectList.size()]));
+			amplitudeListSelectionChannels.setListData(allChannelsInAmpSelectList
+					.toArray(new String[allChannelsInAmpSelectList.size()]));
+
+			if (allChannelsInAmpSelectList.size() != 0) {
+				removeAmplitudeChannelBT.setEnabled(true);
+			}
+
+			if (allChannelsInAmpUnselectList.size() == 0) {
+				addAmplitudeChannelBT.setEnabled(false);
+			}
+		}
+	}
+
+	/**
+	 * Obsluhuje tla��tko pro vykon�n� automatick�ho ozna�ov�n� artefakt� vybran�m
+	 * krit�riem.
+	 */
+	private class FunctionApplyBT implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			if (gradientCritCHB.isSelected()) {
+				Integer voltageStepValue = (Integer) voltageStepSpinner.getValue();
+
+				if (gradientIndividualChannels.isSelected()
+						&& allChannelsInGradSelectList.size() != 0) {
+					int[] indicesSelectSignals = new int[allChannelsInGradSelectList
+							.size()];
+
+					for (int i = 0; i < indicesSelectSignals.length; i++) {
+						indicesSelectSignals[i] = allChannels
+								.indexOf(allChannelsInGradSelectList.get(i));
+					}
+
+					session.playAutomaticGradientArtefactSelection(voltageStepValue
+							.intValue(), indicesSelectSignals);
+
+				} else {
+					session.playAutomaticGradientArtefactSelection(voltageStepValue
+							.intValue(), null);
+				}
+			}
+
+			if (amplitudeCritCHB.isSelected()) {
+				Integer minAmplitudeValue = (Integer) minAmplitudeSpinner.getValue();
+				Integer maxAmplitudeValue = (Integer) maxAmplitudeSpinner.getValue();
+
+				if (amplitudeIndividualChannels.isSelected()
+						&& allChannelsInAmpSelectList.size() != 0) {
+					int[] indicesSelectSignals = new int[allChannelsInAmpSelectList
+							.size()];
+
+					for (int i = 0; i < indicesSelectSignals.length; i++) {
+						indicesSelectSignals[i] = allChannels
+								.indexOf(allChannelsInAmpSelectList.get(i));
+					}
+
+					session.playAutomaticAmplitudeArtefactSelection(minAmplitudeValue
+							.intValue(), maxAmplitudeValue.intValue(), indicesSelectSignals);
+
+				} else {
+					session.playAutomaticAmplitudeArtefactSelection(minAmplitudeValue
+							.intValue(), maxAmplitudeValue.intValue(), null);
+				}
+			}
+			session.sendArtefactSelectionMesage();
+			ArtefactSelectionDialog.this.setVisible(false);
+		}
+	}
+
+	/**
+	 * Obsluhuje checkBoxy jednotliv�ch krit�rii a podle ozna�en� jednoho z
+	 * krit�rii povoluje tla��tko applyBT.
+	 */
+	private class FunctionCriterionCheckBoxes implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (gradientCritCHB.isSelected() || amplitudeCritCHB.isSelected()) {
+				applyBT.setEnabled(true);
+			} else {
+				applyBT.setEnabled(false);
+			}
+		}
+	}
+
+	/**
+	 * Obsluhuje tla��tko pro stornov�n� akce a zav�en� dialogu.
+	 */
+	private class FunctionStornoBT implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ArtefactSelectionDialog.this.setVisible(false);
+		}
+	}
+}

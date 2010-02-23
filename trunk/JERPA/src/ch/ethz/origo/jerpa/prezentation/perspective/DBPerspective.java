@@ -4,13 +4,17 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.SwingUtilities;
+
+import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.prezentation.perspective.db.DbChooserDialog;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
@@ -38,6 +42,11 @@ public class DBPerspective extends Perspective {
 
 	public DBPerspective() {
 		resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.database.DBPerspective";
+	}
+	
+	@Override
+	public Icon getIcon() throws PerspectiveException {
+		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "database_48.png", 32, 32);
 	}
 
 	@Override

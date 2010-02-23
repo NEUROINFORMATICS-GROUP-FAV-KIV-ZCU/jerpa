@@ -11,8 +11,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
+import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
-import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SingnalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.BufferCreator;
 import ch.ethz.origo.jerpa.data.Epoch;
@@ -38,13 +38,13 @@ public class SignalSessionManager extends SessionManager {
 	private SignalsSegmentation signalsSegmentation;
 	private AutomaticArtefactSelection autoSelectionArtefact;
 	private BaselineCorrection baselineCorrection;
-	private SingnalPerspectiveObservable sigPerspObservable;
+	private SignalPerspectiveObservable sigPerspObservable;
 
 	public SignalSessionManager() {
 		signalsSegmentation = new SignalsSegmentation(this);
 		autoSelectionArtefact = new AutomaticArtefactSelection(this);
 		baselineCorrection = new BaselineCorrection(this);
-		sigPerspObservable = SingnalPerspectiveObservable.getInstance();
+		sigPerspObservable = SignalPerspectiveObservable.getInstance();
 	}
 
 	@Override
@@ -247,6 +247,63 @@ public class SignalSessionManager extends SessionManager {
 
 	public IObservable getSignalPerspectiveObservable() {
 		return sigPerspObservable;
+	}
+	
+	/**
+	 * Metoda volaj�c� metodu automatick�ho ozna�ov�n� artefakt� pomoc�
+	 * gradientn�ho krit�ria.
+	 * 
+	 * @param maxAllowedVoltageStep -
+	 *          krok maxim�ln�ho nap�t�, kter� ur�uje interval artefaktu.
+	 * @param indicesSelectSignals -
+	 *          pole testovan�ch kan�l�.
+	 */
+	public void playAutomaticGradientArtefactSelection(int maxAllowedVoltageStep,
+			int[] indicesSelectSignals) {
+		autoSelectionArtefact.gradientCriterion(maxAllowedVoltageStep,
+				indicesSelectSignals);
+	}
+
+	/**
+	 * Metoda volaj�c� metodu automatick�ho ozna�ov�n� artefakt� pomoc� krit�ria
+	 * amplitudy.
+	 * 
+	 * @param minAllowedAmplitude -
+	 *          minim�ln� nap�t�, kter� ur�uje spodn� mez intervalu artefaktu.
+	 * @param maxAllowedAmplitude -
+	 *          maxim�ln� nap�t�, kter� ur�uje horn� mez intervalu artefaktu.
+	 * @param indicesSelectSignals -
+	 *          pole testovan�ch kan�l�.
+	 */
+	public void playAutomaticAmplitudeArtefactSelection(int minAllowedAmplitude,
+			int maxAllowedAmplitude, int[] indicesSelectSignals) {
+		autoSelectionArtefact.amplitudeCriterion(minAllowedAmplitude,
+				maxAllowedAmplitude, indicesSelectSignals);
+	}
+
+	/**
+	 * Pos�l� zpr�vu o automatick�m ozna�en� artefakt�.
+	 */
+	public void sendArtefactSelectionMesage() {
+		SignalPerspectiveObservable.getInstance().setState(SignalPerspectiveObservable.MSG_AUTOMATIC_ARTEFACT_SELECTION);
+	}
+
+	/**
+	 * Metoda volaj�c� metodu pro opravu baseliny v zadan�m intervalu a n�sledn� o
+	 * tom pos�l� zpr�vu.
+	 */
+	public void applyBaselineCorrection(long startTimeStamp, long endTimeStamp) {
+		baselineCorrection.correction(startTimeStamp, endTimeStamp);
+		SignalPerspectiveObservable.getInstance().setState(SignalPerspectiveObservable.MSG_NEW_BUFFER);
+	}
+
+	/**
+	 * Metoda volaj�c� metodu pro opravu baseliny v cel� d�lce sign�l� a n�sledn�
+	 * o tom pos�l� zpr�vu.
+	 */
+	public void applyBaselineCorrection() {
+		baselineCorrection.correction();
+		SignalPerspectiveObservable.getInstance().setState(SignalPerspectiveObservable.MSG_NEW_BUFFER);
 	}
 
 }
