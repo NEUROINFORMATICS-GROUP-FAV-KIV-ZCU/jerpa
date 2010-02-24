@@ -17,8 +17,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 
 /**
  * Dialog pro opravu baseline
@@ -29,7 +32,7 @@ import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionMa
  * @since 0.1.0 (2/18/2010)
  * @see JDialog
  */
-public class BaselineCorrectionDialog extends JDialog {
+public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = 5759202735358682431L;
@@ -53,16 +56,17 @@ public class BaselineCorrectionDialog extends JDialog {
 	 * 
 	 * @param session
 	 *          - current signal session
+	 * @throws JUIGLELangException 
 	 */
-	public BaselineCorrectionDialog(final SignalSessionManager session) {
+	public BaselineCorrectionDialog(final SignalSessionManager session) throws JUIGLELangException {
 		super();
-		this.setTitle("Baseline Correction");
 		this.session = session;
 		this.add(createInterior());
 		this.setSize(new Dimension(DWIDTH, DHEIGHT));
 		// this.pack();
 		this.setResizable(false);
 		this.add(createInterior());
+		updateText();
 	}
 
 	/**
@@ -83,10 +87,10 @@ public class BaselineCorrectionDialog extends JDialog {
 		buttonGroup = new ButtonGroup();
 		FunctionRadioButtons radioAction = new FunctionRadioButtons();
 
-		totalLengthSignalsRB = new JRadioButton("Signals total length");
+		totalLengthSignalsRB = new JRadioButton(--);
 		totalLengthSignalsRB.setActionCommand(TOTAL_LENGTH_STRING);
 		totalLengthSignalsRB.addActionListener(radioAction);
-		intervalSignalsRB = new JRadioButton("Signals interval");
+		intervalSignalsRB = new JRadioButton(--);
 		intervalSignalsRB.setActionCommand(INTERVAL_STRING);
 		intervalSignalsRB.addActionListener(radioAction);
 		buttonGroup.add(totalLengthSignalsRB);
@@ -103,11 +107,11 @@ public class BaselineCorrectionDialog extends JDialog {
 		JPanel valuesPanel = new JPanel();
 		valuesPanel.setLayout(new BoxLayout(valuesPanel, BoxLayout.PAGE_AXIS));
 		valuesPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder("Signals Interval Values"), BorderFactory
+				.createTitledBorder(--), BorderFactory
 				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
 						BORDER_CONST)));
 
-		JLabel startIntervalLabel = new JLabel("Start interval:");
+		JLabel startIntervalLabel = new JLabel(--);
 		JPanel startIntervalLabelP = new JPanel();
 		startIntervalLabelP.add(startIntervalLabel);
 		startIntervalLabelP.setMaximumSize(new Dimension(startIntervalLabelP
@@ -247,5 +251,34 @@ public class BaselineCorrectionDialog extends JDialog {
 //			mainWindow.setEnabled(true);
 			BaselineCorrectionDialog.this.setVisible(false);
 		}
+	}
+
+	@Override
+	public String getResourceBundlePath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLocalizedResourceBundle(String path) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setResourceBundleKey(String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateText() throws JUIGLELangException {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				
+			}
+		});		
 	}
 }

@@ -96,7 +96,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private AveragingPanelProvider averagingPanelProvider;
 	private SignalsPanelProvider signalPanelProvider;
 	private ChannelsPanelProvider channelPanelProvider;
-	
+
 	private ArtefactSelectionDialog artefactSelectionDialog;
 	private BaselineCorrectionDialog baselineCorrectionDialog;
 
@@ -120,46 +120,52 @@ public class SignalPerspective extends Perspective implements IObserver {
 			channelPanelProvider = new ChannelsPanelProvider(sessionManager);
 
 			GridBagConstraints gbcSignalInfoProv = new GridBagConstraints();
-			gbcSignalInfoProv.gridx = 1;
-			gbcSignalInfoProv.gridy = 2;
-			// gbcSignalInfoProv.fill = GridBagConstraints.HORIZONTAL;
-			// gbcSignalInfoProv.gridwidth = GridBagConstraints.REMAINDER;
-			// gbcSignalInfoProv.gridheight = GridBagConstraints.REMAINDER;
-			// gbcSignalInfoProv.anchor = GridBagConstraints.WEST;
+			gbcSignalInfoProv.gridx = 0;
+			gbcSignalInfoProv.gridy = 1;
+			gbcSignalInfoProv.anchor = GridBagConstraints.CENTER;
+			gbcSignalInfoProv.fill = GridBagConstraints.BOTH;
+			gbcSignalInfoProv.weightx = 0.4;
+			gbcSignalInfoProv.weighty = 0.5;
 
 			GridBagConstraints gbcChannelProv = new GridBagConstraints();
 			gbcChannelProv.gridx = 0;
-			gbcChannelProv.gridy = GridBagConstraints.RELATIVE;
+			gbcChannelProv.gridy = 0;
+			gbcChannelProv.anchor = GridBagConstraints.CENTER;
+			gbcChannelProv.fill = GridBagConstraints.BOTH;
+			gbcChannelProv.weightx = 0.4;
+			gbcChannelProv.weighty = 0.5;
 			// gbcChannelProv.fill = GridBagConstraints.BOTH;
 			// gbcChannelProv.gridwidth = GridBagConstraints.REMAINDER;
 			// gbcChannelProv.gridheight = GridBagConstraints.REMAINDER;
-			gbcChannelProv.anchor = GridBagConstraints.WEST;
 
 			GridBagConstraints gbcSignalPanelProv = new GridBagConstraints();
-			gbcSignalPanelProv.gridx = 0;
+			gbcSignalPanelProv.gridx = 1;
 			gbcSignalPanelProv.gridy = 0;
-			// gbcSignalPanelProv.ipadx = 400;
+			 //gbcSignalPanelProv.ipadx = 700;
 			// gbcSignalPanelProv.ipady = 400;
-			gbcSignalPanelProv.anchor = GridBagConstraints.NORTH;
-			// gbcSignalPanelProv.fill = GridBagConstraints.BOTH;
+			gbcSignalPanelProv.anchor = GridBagConstraints.CENTER;
+			gbcSignalPanelProv.fill = GridBagConstraints.BOTH;
 			// gbcSignalPanelProv.gridwidth = 2;
 			// gbcSignalPanelProv.gridheight = 2;
-			// gbcSignalPanelProv.weightx = 0.0;
-			// gbcSignalPanelProv.weighty = 0.0;
+			gbcSignalPanelProv.weightx = 0.6;
+			gbcSignalPanelProv.weighty = 0.5;
 			gbcSignalPanelProv.insets = new Insets(0, 0, 0, 0);
 
 			GridBagConstraints gbcAveragingProv = new GridBagConstraints();
-			gbcAveragingProv.gridx = 0;
-			gbcAveragingProv.gridy = GridBagConstraints.RELATIVE;
+			gbcAveragingProv.gridx = 1;
+			gbcAveragingProv.gridy = 1;
+			gbcAveragingProv.anchor = GridBagConstraints.CENTER;
 			gbcAveragingProv.fill = GridBagConstraints.BOTH;
+			gbcAveragingProv.weightx = 0.6;
+			gbcAveragingProv.weighty = 0.5;
 			// gbcAveragingProv.gridwidth = 2;
 			// gbcAveragingProv.gridheight = GridBagConstraints.REMAINDER;
 			// gbcAveragingProv.anchor = GridBagConstraints.NORTH;
 
 			mainPanel.add(signalPanelProvider.getPanel(), gbcSignalPanelProv);
-			// mainPanel.add(averagingPanelProvider.getPanel(), gbcAveragingProv);
-			// mainPanel.add(channelPanelProvider.getPanel(), gbcChannelProv);
-			// mainPanel.add(signalInfoProvider.getPanel(), gbcSignalInfoProv);
+		  mainPanel.add(averagingPanelProvider.getPanel(), gbcAveragingProv);
+			mainPanel.add(channelPanelProvider.getPanel(), gbcChannelProv);
+			mainPanel.add(signalInfoProvider.getPanel(), gbcSignalInfoProv);
 		} catch (JUIGLELangException e) {
 			throw new PerspectiveException(e);
 		}
@@ -220,7 +226,20 @@ public class SignalPerspective extends Perspective implements IObserver {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+				// update menu text
 				menu.updateText();
+				try {
+					// update dialogs text
+					if (baselineCorrectionDialog != null) {
+						baselineCorrectionDialog.updateText();
+					}
+					if (artefactSelectionDialog != null) {
+						artefactSelectionDialog.updateText();
+					}
+				} catch (JUIGLELangException e) {
+					// FIXME JUIGLE or JERPA Exception Dialog
+					e.printStackTrace();
+				}
 			}
 		});
 	}
@@ -462,8 +481,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 */
 	private void makeUpdate(Object obj) {
 	}
-	
-	
 
 	/**
 	 * 
@@ -551,17 +568,22 @@ public class SignalPerspective extends Perspective implements IObserver {
 		};
 		return open;
 	}
-	
+
 	public void createNewArtefactDialog() {
 		artefactSelectionDialog = new ArtefactSelectionDialog(sessionManager);
-		baselineCorrectionDialog = new BaselineCorrectionDialog(sessionManager);
+		try {
+			baselineCorrectionDialog = new BaselineCorrectionDialog(sessionManager);
+		} catch (JUIGLELangException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
+
 	private void checkUndoableControls() {
 		Project project = sessionManager.getCurrentProject();
-//		undoButton.setEnabled(project.canUndo());
+		// undoButton.setEnabled(project.canUndo());
 		undoItem.setEnabled(project.canUndo());
-//		mainWindow.redoButton.setEnabled(project.canRedo());
+		// mainWindow.redoButton.setEnabled(project.canRedo());
 		redoItem.setEnabled(project.canRedo());
 	}
 
@@ -587,53 +609,54 @@ public class SignalPerspective extends Perspective implements IObserver {
 				saveFileItem.setEnabled(false);
 				saveAsFileItem.setEnabled(false);
 				closeFileItem.setEnabled(false);
-//FIXME				mainWindow.saveButton.setEnabled(false);
+				// FIXME mainWindow.saveButton.setEnabled(false);
 				autoArteSelItem.setEnabled(false);
 				baselineCorrItem.setEnabled(false);
-//FIXME				mainWindow.invertSignalsButton.setEnabled(false);
+				// FIXME mainWindow.invertSignalsButton.setEnabled(false);
 				break;
 
 			case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
 				checkUndoableControls();
-//FIXME addOpenedProjectsToMenu(sessionManager.getProjectsNames(), 0);
+				// FIXME addOpenedProjectsToMenu(sessionManager.getProjectsNames(), 0);
 				sessionManager.getAutoSelectionArtefact().setCurrentData();
 				sessionManager.getBaselineCorrection().setCurrentData();
 				saveAsFileItem.setEnabled(true);
-			//FIXME				mainWindow.saveButton.setEnabled(true);
+				// FIXME mainWindow.saveButton.setEnabled(true);
 				saveFileItem.setEnabled(true);
 				closeFileItem.setEnabled(true);
-			  autoArteSelItem.setEnabled(true);
+				autoArteSelItem.setEnabled(true);
 				baselineCorrItem.setEnabled(true);
 				createNewArtefactDialog();
-			//FIXME				mainWindow.invertSignalsButton.setEnabled(true);
-			//FIXME				mainWindow.invertSignalsButton.setSelected(sessionManager.getCurrentProject()
-				//		.isInvertedSignalsView());
+				// FIXME mainWindow.invertSignalsButton.setEnabled(true);
+				// FIXME
+				// mainWindow.invertSignalsButton.setSelected(sessionManager.getCurrentProject()
+				// .isInvertedSignalsView());
 				break;
 
 			case SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_RESUME:
 			case SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_START:
-			//FIXME				mainWindow.openButton.setEnabled(false);
+				// FIXME mainWindow.openButton.setEnabled(false);
 				openFileItem.setEnabled(false);
 				autoArteSelItem.setEnabled(false);
 				baselineCorrItem.setEnabled(false);
-			//FIXME			mainWindow.undoButton.setEnabled(false);
+				// FIXME mainWindow.undoButton.setEnabled(false);
 				undoItem.setEnabled(false);
-			//FIXME			mainWindow.redoButton.setEnabled(false);
+				// FIXME mainWindow.redoButton.setEnabled(false);
 				redoItem.setEnabled(false);
-			//FIXME		mainWindow.invertSignalsButton.setEnabled(false);
+				// FIXME mainWindow.invertSignalsButton.setEnabled(false);
 				break;
 
 			case SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_PAUSE:
 			case SignalPerspectiveObservable.MSG_SIGNAL_PLAYBACK_STOP:
-			//FIXME			mainWindow.openButton.setEnabled(true);
+				// FIXME mainWindow.openButton.setEnabled(true);
 				openFileItem.setEnabled(true);
 				autoArteSelItem.setEnabled(true);
 				baselineCorrItem.setEnabled(true);
-			//FIXME		mainWindow.undoButton.setEnabled(true);
+				// FIXME mainWindow.undoButton.setEnabled(true);
 				undoItem.setEnabled(true);
-			//FIXME		mainWindow.redoButton.setEnabled(true);
+				// FIXME mainWindow.redoButton.setEnabled(true);
 				redoItem.setEnabled(true);
-			//FIXME		mainWindow.invertSignalsButton.setEnabled(true);
+				// FIXME mainWindow.invertSignalsButton.setEnabled(true);
 				break;
 
 			case SignalPerspectiveObservable.MSG_UNDOABLE_COMMAND_INVOKED:
@@ -646,23 +669,24 @@ public class SignalPerspective extends Perspective implements IObserver {
 				break;
 
 			case SignalPerspectiveObservable.MSG_BASELINE_CORRECTION_INTERVAL_SELECTED:
-				baselineCorrectionDialog.setSpinnersValues(
-						sessionManager.getBaselineCorrection().getStartTimeStamp(), sessionManager.getBaselineCorrection()
-								.getEndTimeStamp());
+				baselineCorrectionDialog.setSpinnersValues(sessionManager
+						.getBaselineCorrection().getStartTimeStamp(), sessionManager
+						.getBaselineCorrection().getEndTimeStamp());
 				baselineCorrectionDialog.setActualLocationAndVisibility();
 				break;
 
 			case SignalPerspectiveObservable.MSG_SHOW_IMPORT_DIALOG:
-//				mainWindow.setEnabled(false);
+				// mainWindow.setEnabled(false);
 				break;
 
 			case SignalPerspectiveObservable.MSG_MODAL_DIALOG_CLOSED:
-//				mainWindow.setEnabled(true);
+				// mainWindow.setEnabled(true);
 				break;
 
 			case SignalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED:
-			//FIXME		mainWindow.invertSignalsButton.setSelected(sessionManager.getCurrentProject()
-					//	.isInvertedSignalsView());
+				// FIXME
+				// mainWindow.invertSignalsButton.setSelected(sessionManager.getCurrentProject()
+				// .isInvertedSignalsView());
 				break;
 			}
 		} else if (o instanceof LanguageObservable) {
