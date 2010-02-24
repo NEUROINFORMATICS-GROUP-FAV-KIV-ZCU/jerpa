@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -20,15 +21,17 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 
 /**
  * Dialog pro opravu baseline
  * 
  * @author Petr - Soukal
  * @author Vaclav Souhrada (v dot souhrada at gmail dot com)
- * @version 0.1.1 (2/23/2010)
+ * @version 0.1.2 (2/24/2010)
  * @since 0.1.0 (2/18/2010)
  * @see JDialog
  */
@@ -50,6 +53,18 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 	private JRadioButton intervalSignalsRB;
 	private JSpinner startInterval;
 	private JSpinner endInterval;
+	
+	private JLabel startIntervalLabel;
+	private JLabel endIntervalLabel;
+	
+	private JButton applyBT;
+	private JButton stornoBT;
+	
+	private ResourceBundle resource;
+	
+	private String resourcePath;
+	
+	private JPanel valuesPanel;
 
 	/**
 	 * Vytv��� objekt t��dy.
@@ -61,12 +76,15 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 	public BaselineCorrectionDialog(final SignalSessionManager session) throws JUIGLELangException {
 		super();
 		this.session = session;
+		this.setLocalizedResourceBundle(LangUtils
+				.getPerspectiveLangPathProp(LangUtils.SIGNAL_PERSP_LANG_FILE_KEY));
 		this.add(createInterior());
+		updateText();
 		this.setSize(new Dimension(DWIDTH, DHEIGHT));
 		// this.pack();
 		this.setResizable(false);
-		this.add(createInterior());
-		updateText();
+		this.setModal(true);
+		LanguageObservable.getInstance().attach(this);
 	}
 
 	/**
@@ -87,10 +105,10 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 		buttonGroup = new ButtonGroup();
 		FunctionRadioButtons radioAction = new FunctionRadioButtons();
 
-		totalLengthSignalsRB = new JRadioButton(--);
+		totalLengthSignalsRB = new JRadioButton();
 		totalLengthSignalsRB.setActionCommand(TOTAL_LENGTH_STRING);
 		totalLengthSignalsRB.addActionListener(radioAction);
-		intervalSignalsRB = new JRadioButton(--);
+		intervalSignalsRB = new JRadioButton();
 		intervalSignalsRB.setActionCommand(INTERVAL_STRING);
 		intervalSignalsRB.addActionListener(radioAction);
 		buttonGroup.add(totalLengthSignalsRB);
@@ -104,14 +122,10 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 	}
 
 	private JPanel createValuesPanel() {
-		JPanel valuesPanel = new JPanel();
+		valuesPanel = new JPanel();
 		valuesPanel.setLayout(new BoxLayout(valuesPanel, BoxLayout.PAGE_AXIS));
-		valuesPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder(--), BorderFactory
-				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
-						BORDER_CONST)));
 
-		JLabel startIntervalLabel = new JLabel(--);
+		startIntervalLabel = new JLabel();
 		JPanel startIntervalLabelP = new JPanel();
 		startIntervalLabelP.add(startIntervalLabel);
 		startIntervalLabelP.setMaximumSize(new Dimension(startIntervalLabelP
@@ -132,7 +146,7 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 								.getPreferredSize().height));
 		startIntervalPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		JLabel endIntervalLabel = new JLabel("End interval:");
+		endIntervalLabel = new JLabel();
 		JPanel endIntervalLabelP = new JPanel();
 		endIntervalLabelP.add(endIntervalLabel);
 		endIntervalLabelP
@@ -169,9 +183,9 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 	 */
 	private JPanel createSouthPanel() {
 		JPanel southPanel = new JPanel();
-		JButton applyBT = new JButton("Apply");
+		applyBT = new JButton();
 		applyBT.addActionListener(new FunctionApplyBT());
-		JButton stornoBT = new JButton("Storno");
+		stornoBT = new JButton();
 		stornoBT.addActionListener(new FunctionStornoBT());
 
 		southPanel.add(applyBT);
@@ -248,37 +262,47 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 	private class FunctionStornoBT implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-//			mainWindow.setEnabled(true);
 			BaselineCorrectionDialog.this.setVisible(false);
 		}
 	}
 
 	@Override
 	public String getResourceBundlePath() {
-		// TODO Auto-generated method stub
-		return null;
+		return resourcePath;
 	}
 
 	@Override
 	public void setLocalizedResourceBundle(String path) {
-		// TODO Auto-generated method stub
+		this.resourcePath = path;
+		this.resource = ResourceBundle.getBundle(resourcePath);
 		
 	}
 
 	@Override
 	public void setResourceBundleKey(String key) {
-		// TODO Auto-generated method stub
-		
+		// NOT USED FOR THIS CLASS
 	}
 
 	@Override
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
+
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				
+				setLocalizedResourceBundle(getResourceBundlePath());
+				setTitle(resource.getString("diag.bsln.correct.title"));
+				totalLengthSignalsRB.setText(resource.getString("diag.bsln.correct.length"));
+				intervalSignalsRB.setText(resource.getString("diag.bsln.correct.interv"));
+				valuesPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createTitledBorder(resource.getString("diag.bsln.correct.interv.value")), BorderFactory
+						.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
+								BORDER_CONST)));
+				startIntervalLabel.setText(resource.getString("diag.bsln.correct.interv.start"));
+				endIntervalLabel.setText(resource.getString("diag.bsln.correct.interv.end"));
+				applyBT.setText(resource.getString("diag.bsln.correct.butt.apply"));
+				stornoBT.setText(resource.getString("diag.bsln.correct.butt.storno"));
 			}
 		});		
 	}
+
 }

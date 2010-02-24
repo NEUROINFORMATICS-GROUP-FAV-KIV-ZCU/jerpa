@@ -103,6 +103,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
 		spObservable = SignalPerspectiveObservable.getInstance();
+		spObservable.attach(this);
 		sessionManager = new SignalSessionManager();
 		resourcePath = LangUtils
 				.getPerspectiveLangPathProp("perspective.signalprocessing.lang");
@@ -134,19 +135,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 			gbcChannelProv.fill = GridBagConstraints.BOTH;
 			gbcChannelProv.weightx = 0.4;
 			gbcChannelProv.weighty = 0.5;
-			// gbcChannelProv.fill = GridBagConstraints.BOTH;
-			// gbcChannelProv.gridwidth = GridBagConstraints.REMAINDER;
-			// gbcChannelProv.gridheight = GridBagConstraints.REMAINDER;
 
 			GridBagConstraints gbcSignalPanelProv = new GridBagConstraints();
 			gbcSignalPanelProv.gridx = 1;
 			gbcSignalPanelProv.gridy = 0;
-			 //gbcSignalPanelProv.ipadx = 700;
-			// gbcSignalPanelProv.ipady = 400;
 			gbcSignalPanelProv.anchor = GridBagConstraints.CENTER;
 			gbcSignalPanelProv.fill = GridBagConstraints.BOTH;
-			// gbcSignalPanelProv.gridwidth = 2;
-			// gbcSignalPanelProv.gridheight = 2;
 			gbcSignalPanelProv.weightx = 0.6;
 			gbcSignalPanelProv.weighty = 0.5;
 			gbcSignalPanelProv.insets = new Insets(0, 0, 0, 0);
@@ -158,9 +152,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 			gbcAveragingProv.fill = GridBagConstraints.BOTH;
 			gbcAveragingProv.weightx = 0.6;
 			gbcAveragingProv.weighty = 0.5;
-			// gbcAveragingProv.gridwidth = 2;
-			// gbcAveragingProv.gridheight = GridBagConstraints.REMAINDER;
-			// gbcAveragingProv.anchor = GridBagConstraints.NORTH;
 
 			mainPanel.add(signalPanelProvider.getPanel(), gbcSignalPanelProv);
 		  mainPanel.add(averagingPanelProvider.getPanel(), gbcAveragingProv);
@@ -228,18 +219,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 			public void run() {
 				// update menu text
 				menu.updateText();
-				try {
-					// update dialogs text
-					if (baselineCorrectionDialog != null) {
-						baselineCorrectionDialog.updateText();
-					}
-					if (artefactSelectionDialog != null) {
-						artefactSelectionDialog.updateText();
-					}
-				} catch (JUIGLELangException e) {
-					// FIXME JUIGLE or JERPA Exception Dialog
-					e.printStackTrace();
-				}
 			}
 		});
 	}
@@ -423,16 +402,25 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 */
 	private void setEditMenuActions() {
 		Action autoArtefactSelAct = new AbstractAction() {
-
 			/** Only for serialization */
 			private static final long serialVersionUID = -1644285485867277600L;
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				artefactSelectionDialog.setActualLocationAndVisibility();
+			}
+		};
+		Action baselineDialogAct = new AbstractAction() {
+			/** Only for serialization */
+			private static final long serialVersionUID = -1644285485867277600L;
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				baselineCorrectionDialog.setActualLocationAndVisibility();
 			}
 		};
 		autoArteSelItem.setAction(autoArtefactSelAct);
+		baselineCorrItem.setAction(baselineDialogAct);
 	}
 
 	/**
@@ -570,8 +558,8 @@ public class SignalPerspective extends Perspective implements IObserver {
 	}
 
 	public void createNewArtefactDialog() {
-		artefactSelectionDialog = new ArtefactSelectionDialog(sessionManager);
 		try {
+			artefactSelectionDialog = new ArtefactSelectionDialog(sessionManager);
 			baselineCorrectionDialog = new BaselineCorrectionDialog(sessionManager);
 		} catch (JUIGLELangException e) {
 			// TODO Auto-generated catch block

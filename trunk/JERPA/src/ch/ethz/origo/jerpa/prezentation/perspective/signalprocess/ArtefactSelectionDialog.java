@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -22,10 +23,15 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 
 import noname.JERPAUtils;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.data.Channel;
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
 /**
@@ -33,12 +39,12 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
  * 
  * @author Petr - Soukal
  * @author Vaclav Souhrada (v dot souhrada at gmail dot com)
- * @version 0.1.1 (2/23/2010)
+ * @version 0.1.2 (2/24/2010)
  * @since 0.1.0 (2/18/2010)
  * @see JDialog
  * 
  */
-public class ArtefactSelectionDialog extends JDialog {
+public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = 358489032609275934L;
@@ -48,7 +54,7 @@ public class ArtefactSelectionDialog extends JDialog {
 			MAX_SPINN_UPPER_LIMIT = 2000, MAX_SPINN_STEP = 1;
 	private final short STEP_SPINN_VALUE = 100, STEP_SPINN_LOWER_LIMIT = 0,
 			STEP_SPINN_UPPER_LIMIT = 2000, STEP_SPINN_STEP = 1;
-	private final short DWIDTH = 360, DHEIGHT = 510;
+	private final short DWIDTH = 360, DHEIGHT = 580;
 	private final double GRAD_CONST_WIDTH = 3, AMP_CONST_WIDTH = 3,
 			GRAD_CONST_HEIGHT = 2.5, AMP_CONST_HEIGHT = 3;
 	private final String DESCRIPTION_UNIT = "\u03bcV";
@@ -62,6 +68,7 @@ public class ArtefactSelectionDialog extends JDialog {
 	private JCheckBox gradientCritCHB;
 	private JCheckBox amplitudeCritCHB;
 	private JButton applyBT;
+	private JButton stornoBT;
 	// gradient criterion
 	private JSpinner voltageStepSpinner;
 	private JList gradientListUnselectionChannels;
@@ -82,27 +89,50 @@ public class ArtefactSelectionDialog extends JDialog {
 	private List<String> allChannelsInAmpSelectList;
 	private List<String> allChannelsInGradUnselectList;
 	private List<String> allChannelsInGradSelectList;
+	
+	private JLabel voltageStepDescription;
+	private JLabel unselectionLabel;
+	private JLabel selectionLabel;
+	private JLabel minDescription;
+  private JLabel maxDescription;
+  private JLabel warningLabel;
+
+	private ResourceBundle resource;
+	private String resourcePath;
+	
+	private String tab1 = "";
+	private String tab2 = "";
+	
+	private JTabbedPane tabbedPane;
+	
+	private JPanel centerPanel;
+	private JPanel northPanel;
+	private JPanel northPanel2;
 
 	/**
 	 * Vytv��� objekt t��dy.
 	 * 
 	 * @param session
 	 *          - current session
+	 * @throws JUIGLELangException 
 	 */
-	public ArtefactSelectionDialog(final SignalSessionManager session) {
+	public ArtefactSelectionDialog(final SignalSessionManager session) throws JUIGLELangException {
 		super();
-		this.setTitle("Automatic Artefact Selection");
 		this.session = session;
-
+		setLocalizedResourceBundle(LangUtils
+				.getPerspectiveLangPathProp(LangUtils.SIGNAL_PERSP_LANG_FILE_KEY));
 		allChannelsInAmpUnselectList = new ArrayList<String>();
 		allChannelsInAmpSelectList = new ArrayList<String>();
 		allChannelsInGradUnselectList = new ArrayList<String>();
 		allChannelsInGradSelectList = new ArrayList<String>();
-
+		unselectionLabel = new JLabel();
+		selectionLabel = new JLabel();
 		this.add(createInterior());
+		updateText();
 		this.setSize(new Dimension(DWIDTH, DHEIGHT));
 		this.setResizable(false);
 		setChannelsName();
+		LanguageObservable.getInstance().attach(this);
 	}
 
 	/**
@@ -125,9 +155,9 @@ public class ArtefactSelectionDialog extends JDialog {
 	 */
 	private JPanel createCenterPanel() {
 		JPanel centerPanel = new JPanel(new BorderLayout());
-		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.addTab("Gradient Criterion", createGradientCriterionPanel());
-		tabbedPane.addTab("Amplitude Criterion", createAmplitudeCriterionPanel());
+		tabbedPane = new JTabbedPane();
+		tabbedPane.addTab(" ", createGradientCriterionPanel());
+		tabbedPane.addTab(" ", createAmplitudeCriterionPanel());
 
 		centerPanel.add(tabbedPane);
 
@@ -142,11 +172,10 @@ public class ArtefactSelectionDialog extends JDialog {
 	private JPanel createGradientCriterionPanel() {
 		JPanel gradientCriterionP = new JPanel(new BorderLayout());
 
-		gradientCritCHB = new JCheckBox("Check Gradient Criterion");
+		gradientCritCHB = new JCheckBox();
 		gradientCritCHB.addActionListener(new FunctionCriterionCheckBoxes());
 
-		JLabel voltageStepDescription = new JLabel(
-				"Maximum Allowed Voltage Step / Sampling Point");
+		voltageStepDescription = new JLabel();
 		voltageStepSpinner = new JSpinner(new SpinnerNumberModel(STEP_SPINN_VALUE,
 				STEP_SPINN_LOWER_LIMIT, STEP_SPINN_UPPER_LIMIT, STEP_SPINN_STEP));
 
@@ -155,10 +184,6 @@ public class ArtefactSelectionDialog extends JDialog {
 		northPanel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.SOUTH);
 
 		JPanel centerPanel = new JPanel();
-		centerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder("Gradient Criterion Values"), BorderFactory
-				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
-						BORDER_CONST)));
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
 
 		JPanel voltStepDescriptPanel = new JPanel();
@@ -234,33 +259,37 @@ public class ArtefactSelectionDialog extends JDialog {
 		buttonPanel.add(removeGradientChannelBT);
 		buttonPanel.add(addGradientChannelBT);
 
-		gradientIndividualChannels = new JCheckBox("Individual channels mode");
+		gradientIndividualChannels = new JCheckBox();
 		gradientIndividualChannels
 				.addActionListener(new FunctionGradIndividualChannels());
 
-		JPanel northPanel = new JPanel(new BorderLayout());
-		northPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder("Individual channels mode"), BorderFactory
-				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
-						BORDER_CONST)));
+		northPanel2 = new JPanel(new BorderLayout());
 
 		gradientListP.add(gradientIndividualChannels, BorderLayout.NORTH);
 		JPanel unselectionPanel = new JPanel(new BorderLayout());
-		unselectionPanel.add(new JLabel("Uncontrolled signals:"),
+		unselectionPanel.add(unselectionLabel,
 				BorderLayout.NORTH);
 		unselectionPanel.add(listUnselChannelsScroller, BorderLayout.SOUTH);
 
 		JPanel selectionPanel = new JPanel(new BorderLayout());
-		selectionPanel.add(new JLabel("Controlled signals:"), BorderLayout.NORTH);
+		selectionPanel.add(selectionLabel, BorderLayout.NORTH);
 		selectionPanel.add(listSelChannelsScroller, BorderLayout.SOUTH);
 
-		northPanel.add(selectionPanel, BorderLayout.WEST);
-		northPanel.add(unselectionPanel, BorderLayout.EAST);
-		northPanel.add(buttonPanel, BorderLayout.CENTER);
-		gradientListP.add(northPanel);
+		northPanel2.add(selectionPanel, BorderLayout.WEST);
+		northPanel2.add(unselectionPanel, BorderLayout.EAST);
+		northPanel2.add(buttonPanel, BorderLayout.CENTER);
+		gradientListP.add(northPanel2);
 		setGradIndividualChannelsEnabled(false);
 
 		return gradientListP;
+	}
+	
+	/**
+	 * Nastavuje viditelnost dialogu a jeho um�st�n� na monitoru.
+	 */
+	public void setActualLocationAndVisibility() {
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
 	}
 
 	/**
@@ -271,15 +300,13 @@ public class ArtefactSelectionDialog extends JDialog {
 	private JPanel createAmplitudeCriterionPanel() {
 		JPanel amplitudeCriterionP = new JPanel(new BorderLayout());
 
-		amplitudeCritCHB = new JCheckBox("Check Amplitude Criterion");
+		amplitudeCritCHB = new JCheckBox();
 		amplitudeCritCHB.addActionListener(new FunctionCriterionCheckBoxes());
 
-		JLabel minDescription = new JLabel("Mininum Allowed Amplitude");
+		minDescription = new JLabel();
 		minAmplitudeSpinner = new JSpinner(new SpinnerNumberModel(MIN_SPINN_VALUE,
 				MIN_SPINN_LOWER_LIMIT, MIN_SPINN_UPPER_LIMIT, MIN_SPINN_STEP));
-
-		JLabel maxDescription = new JLabel("Maximum Allowed Amplitude");
-
+		maxDescription = new JLabel();
 		maxAmplitudeSpinner = new JSpinner(new SpinnerNumberModel(MAX_SPINN_VALUE,
 				MAX_SPINN_LOWER_LIMIT, MAX_SPINN_UPPER_LIMIT, MAX_SPINN_STEP));
 		maxAmplitudeSpinner.setPreferredSize(new Dimension(minAmplitudeSpinner
@@ -290,11 +317,7 @@ public class ArtefactSelectionDialog extends JDialog {
 		northPanel.add(amplitudeCritCHB, BorderLayout.NORTH);
 		northPanel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.SOUTH);
 
-		JPanel centerPanel = new JPanel(new BorderLayout());
-		centerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder("Amplitude Criterion Values"), BorderFactory
-				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
-						BORDER_CONST)));
+		centerPanel = new JPanel(new BorderLayout());
 		JPanel valuesPanel = new JPanel();
 		valuesPanel.setLayout(new BoxLayout(valuesPanel, BoxLayout.PAGE_AXIS));
 		JPanel minDescriptPanel = new JPanel();
@@ -329,11 +352,10 @@ public class ArtefactSelectionDialog extends JDialog {
 		warningPanel.add(new JLabel(JUIGLEGraphicsUtils
 				.createImageIcon(JERPAUtils.IMAGE_PATH + "warning.gif")),
 				BorderLayout.NORTH);
+		warningLabel = new JLabel();
+		warningLabel.setHorizontalAlignment(JLabel.CENTER);
 		warningPanel
-				.add(
-						new JLabel(
-								"<html><p align=center>This criterion base-line<br>must be adjusted<br>correctly.</p></html>",
-								JLabel.CENTER), BorderLayout.SOUTH);
+				.add(warningLabel, BorderLayout.SOUTH);
 		JPanel extensiblePanel = new JPanel();
 		extensiblePanel.add(warningPanel);
 
@@ -394,26 +416,21 @@ public class ArtefactSelectionDialog extends JDialog {
 		buttonPanel.add(space);
 		buttonPanel.add(removeAmplitudeChannelBT);
 		buttonPanel.add(addAmplitudeChannelBT);
-
-		amplitudeIndividualChannels = new JCheckBox("Individual channels mode");
+		amplitudeIndividualChannels = new JCheckBox();
 		amplitudeIndividualChannels
 				.addActionListener(new FunctionAmpIndividualChannels());
 
 		amplitudeListP.add(amplitudeIndividualChannels, BorderLayout.NORTH);
 
-		JPanel northPanel = new JPanel(new BorderLayout());
-		northPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder("Individual channels mode"), BorderFactory
-				.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
-						BORDER_CONST)));
+		northPanel = new JPanel(new BorderLayout());
 
 		JPanel unselectionPanel = new JPanel(new BorderLayout());
-		unselectionPanel.add(new JLabel("Uncontrolled signals:"),
+		unselectionPanel.add(unselectionLabel,
 				BorderLayout.NORTH);
 		unselectionPanel.add(listUnselChannelsScroller, BorderLayout.SOUTH);
 
 		JPanel selectionPanel = new JPanel(new BorderLayout());
-		selectionPanel.add(new JLabel("Controlled signals:"), BorderLayout.NORTH);
+		selectionPanel.add(selectionLabel, BorderLayout.NORTH);
 		selectionPanel.add(listSelChannelsScroller, BorderLayout.SOUTH);
 
 		northPanel.add(selectionPanel, BorderLayout.WEST);
@@ -432,10 +449,10 @@ public class ArtefactSelectionDialog extends JDialog {
 	 */
 	private JPanel createSouthPanel() {
 		JPanel southPanel = new JPanel();
-		applyBT = new JButton("Apply");
+		applyBT = new JButton();
 		applyBT.setEnabled(false);
 		applyBT.addActionListener(new FunctionApplyBT());
-		JButton stornoBT = new JButton("Storno");
+		stornoBT = new JButton();
 		stornoBT.addActionListener(new FunctionStornoBT());
 
 		southPanel.add(applyBT);
@@ -787,4 +804,61 @@ public class ArtefactSelectionDialog extends JDialog {
 			ArtefactSelectionDialog.this.setVisible(false);
 		}
 	}
+
+	@Override
+	public String getResourceBundlePath() {
+		return resourcePath;
+	}
+
+	@Override
+	public void setLocalizedResourceBundle(String path) {
+		this.resourcePath = path;
+		this.resource = ResourceBundle.getBundle(resourcePath);		
+	}
+
+	@Override
+	public void setResourceBundleKey(String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateText() throws JUIGLELangException {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				setLocalizedResourceBundle(getResourceBundlePath());
+				String channelMode = resource.getString("diag.artef.select.mode.indiv.channels");
+				setTitle(resource.getString("diag.artef.select.title"));
+				tabbedPane.setTitleAt(0, resource.getString("diag.artef.select.grad"));
+				tabbedPane.setTitleAt(1, resource.getString("diag.artef.select.amplit"));
+				gradientCritCHB.setText(resource.getString("diag.artef.select.grad.check"));
+				voltageStepDescription.setText(resource.getString("diag.artef.select.mavssp"));
+				gradientIndividualChannels.setText(channelMode);
+				unselectionLabel.setText(resource.getString("diag.artef.select.unselection"));
+				selectionLabel.setText(resource.getString("diag.artef.select.selection"));
+				amplitudeCritCHB.setText(resource.getString("diag.artef.select.amplitude.check"));
+				minDescription.setText(resource.getString("diag.artef.select.amplitude.min"));
+				maxDescription.setText(resource.getString("diag.artef.select.amplitude.max"));
+				warningLabel.setText(resource.getString("diag.artef.select.warning.label"));
+				amplitudeIndividualChannels.setText(channelMode);
+				applyBT.setText(resource.getString("diag.artef.select.butt.apply"));
+				stornoBT.setText(resource.getString("diag.artef.select.butt.storno"));
+				centerPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createTitledBorder(resource.getString("diag.artef.select.grad.value")), BorderFactory
+						.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
+								BORDER_CONST)));
+				northPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createTitledBorder(channelMode), BorderFactory
+						.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
+								BORDER_CONST)));
+				northPanel2.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createTitledBorder(channelMode), BorderFactory
+						.createEmptyBorder(BORDER_CONST, BORDER_CONST, BORDER_CONST,
+								BORDER_CONST)));
+			}
+		});
+	}
+	
 }
