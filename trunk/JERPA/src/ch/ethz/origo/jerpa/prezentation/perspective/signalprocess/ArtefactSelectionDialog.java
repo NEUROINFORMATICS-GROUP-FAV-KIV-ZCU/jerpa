@@ -26,6 +26,12 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
 import noname.JERPAUtils;
+
+import org.jdesktop.swingx.JXButton;
+import org.jdesktop.swingx.JXLabel;
+import org.jdesktop.swingx.JXList;
+import org.jdesktop.swingx.JXPanel;
+
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
@@ -64,38 +70,38 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 	private ArrayList<String> allChannels;
 	private String[] allChannelsArray;
 
-	private JPanel mainPanel;
+	private JXPanel mainPanel;
 	private JCheckBox gradientCritCHB;
 	private JCheckBox amplitudeCritCHB;
-	private JButton applyBT;
-	private JButton stornoBT;
+	private JXButton applyBT;
+	private JXButton stornoBT;
 	// gradient criterion
 	private JSpinner voltageStepSpinner;
-	private JList gradientListUnselectionChannels;
-	private JList gradientListSelectionChannels;
-	private JButton addGradientChannelBT;
-	private JButton removeGradientChannelBT;
+	private JXList gradientListUnselectionChannels;
+	private JXList gradientListSelectionChannels;
+	private JXButton addGradientChannelBT;
+	private JXButton removeGradientChannelBT;
 	private JCheckBox gradientIndividualChannels;
 
 	// amplitude criterion
 	private JSpinner minAmplitudeSpinner;
 	private JSpinner maxAmplitudeSpinner;
-	private JList amplitudeListUnselectionChannels;
+	private JXList amplitudeListUnselectionChannels;
 	private JList amplitudeListSelectionChannels;
-	private JButton addAmplitudeChannelBT;
-	private JButton removeAmplitudeChannelBT;
+	private JXButton addAmplitudeChannelBT;
+	private JXButton removeAmplitudeChannelBT;
 	private JCheckBox amplitudeIndividualChannels;
 	private List<String> allChannelsInAmpUnselectList;
 	private List<String> allChannelsInAmpSelectList;
 	private List<String> allChannelsInGradUnselectList;
 	private List<String> allChannelsInGradSelectList;
 	
-	private JLabel voltageStepDescription;
-	private JLabel unselectionLabel;
-	private JLabel selectionLabel;
-	private JLabel minDescription;
-  private JLabel maxDescription;
-  private JLabel warningLabel;
+	private JXLabel voltageStepDescription;
+	private JXLabel unselectionLabel;
+	private JXLabel selectionLabel;
+	private JXLabel minDescription;
+  private JXLabel maxDescription;
+  private JXLabel warningLabel;
 
 	private ResourceBundle resource;
 	private String resourcePath;
@@ -105,9 +111,9 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 	
 	private JTabbedPane tabbedPane;
 	
-	private JPanel centerPanel;
-	private JPanel northPanel;
-	private JPanel northPanel2;
+	private JXPanel centerPanel;
+	private JXPanel northPanel;
+	private JXPanel northPanel2;
 
 	/**
 	 * Vytv��� objekt t��dy.
@@ -125,8 +131,8 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 		allChannelsInAmpSelectList = new ArrayList<String>();
 		allChannelsInGradUnselectList = new ArrayList<String>();
 		allChannelsInGradSelectList = new ArrayList<String>();
-		unselectionLabel = new JLabel();
-		selectionLabel = new JLabel();
+		unselectionLabel = new JXLabel();
+		selectionLabel = new JXLabel();
 		this.add(createInterior());
 		updateText();
 		this.setSize(new Dimension(DWIDTH, DHEIGHT));
@@ -140,8 +146,8 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 	 * 
 	 * @return mainPanel.
 	 */
-	private JPanel createInterior() {
-		mainPanel = new JPanel(new BorderLayout());
+	private JXPanel createInterior() {
+		mainPanel = new JXPanel(new BorderLayout());
 		mainPanel.add(createCenterPanel(), BorderLayout.CENTER);
 		mainPanel.add(createSouthPanel(), BorderLayout.SOUTH);
 
@@ -153,8 +159,8 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 	 * 
 	 * @return centerPanel.
 	 */
-	private JPanel createCenterPanel() {
-		JPanel centerPanel = new JPanel(new BorderLayout());
+	private JXPanel createCenterPanel() {
+		JXPanel centerPanel = new JXPanel(new BorderLayout());
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addTab(" ", createGradientCriterionPanel());
 		tabbedPane.addTab(" ", createAmplitudeCriterionPanel());
@@ -169,24 +175,24 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 	 * 
 	 * @return gradientCriterionP.
 	 */
-	private JPanel createGradientCriterionPanel() {
-		JPanel gradientCriterionP = new JPanel(new BorderLayout());
+	private JXPanel createGradientCriterionPanel() {
+		JXPanel gradientCriterionP = new JXPanel(new BorderLayout());
 
 		gradientCritCHB = new JCheckBox();
 		gradientCritCHB.addActionListener(new FunctionCriterionCheckBoxes());
 
-		voltageStepDescription = new JLabel();
+		voltageStepDescription = new JXLabel();
 		voltageStepSpinner = new JSpinner(new SpinnerNumberModel(STEP_SPINN_VALUE,
 				STEP_SPINN_LOWER_LIMIT, STEP_SPINN_UPPER_LIMIT, STEP_SPINN_STEP));
 
-		JPanel northPanel = new JPanel(new BorderLayout());
+		JXPanel northPanel = new JXPanel(new BorderLayout());
 		northPanel.add(gradientCritCHB, BorderLayout.NORTH);
 		northPanel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.SOUTH);
 
-		JPanel centerPanel = new JPanel();
+		JXPanel centerPanel = new JXPanel();
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
 
-		JPanel voltStepDescriptPanel = new JPanel();
+		JXPanel voltStepDescriptPanel = new JXPanel();
 		voltStepDescriptPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		voltStepDescriptPanel.add(voltageStepDescription);
 		voltStepDescriptPanel.setMaximumSize(new Dimension(voltStepDescriptPanel
@@ -215,10 +221,10 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 	 * 
 	 * @return gradientListP.
 	 */
-	private JPanel createGradientList() {
-		JPanel gradientListP = new JPanel(new BorderLayout());
+	private JXPanel createGradientList() {
+		JXPanel gradientListP = new JXPanel(new BorderLayout());
 
-		gradientListUnselectionChannels = new JList();
+		gradientListUnselectionChannels = new JXList();
 		gradientListUnselectionChannels
 				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		gradientListUnselectionChannels.setLayoutOrientation(JList.VERTICAL);
@@ -230,7 +236,7 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 				.setPreferredSize(new Dimension((int) (DWIDTH / GRAD_CONST_WIDTH),
 						(int) (DHEIGHT / GRAD_CONST_HEIGHT)));
 
-		gradientListSelectionChannels = new JList();
+		gradientListSelectionChannels = new JXList();
 		gradientListSelectionChannels
 				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		gradientListSelectionChannels.setLayoutOrientation(JList.VERTICAL);
@@ -242,10 +248,10 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 				.setPreferredSize(new Dimension((int) (DWIDTH / GRAD_CONST_WIDTH),
 						(int) (DHEIGHT / GRAD_CONST_HEIGHT)));
 
-		removeGradientChannelBT = new JButton(">>");
+		removeGradientChannelBT = new JXButton(">>");
 		removeGradientChannelBT.setAlignmentX(Component.CENTER_ALIGNMENT);
 		removeGradientChannelBT.addActionListener(new FunctionAddGradChannel());
-		addGradientChannelBT = new JButton("<<");
+		addGradientChannelBT = new JXButton("<<");
 		addGradientChannelBT.setAlignmentX(Component.CENTER_ALIGNMENT);
 		addGradientChannelBT.addActionListener(new FunctionRemoveGradChannel());
 		JPanel buttonPanel = new JPanel();
@@ -263,7 +269,7 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 		gradientIndividualChannels
 				.addActionListener(new FunctionGradIndividualChannels());
 
-		northPanel2 = new JPanel(new BorderLayout());
+		northPanel2 = new JXPanel(new BorderLayout());
 
 		gradientListP.add(gradientIndividualChannels, BorderLayout.NORTH);
 		JPanel unselectionPanel = new JPanel(new BorderLayout());
@@ -303,10 +309,10 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 		amplitudeCritCHB = new JCheckBox();
 		amplitudeCritCHB.addActionListener(new FunctionCriterionCheckBoxes());
 
-		minDescription = new JLabel();
+		minDescription = new JXLabel();
 		minAmplitudeSpinner = new JSpinner(new SpinnerNumberModel(MIN_SPINN_VALUE,
 				MIN_SPINN_LOWER_LIMIT, MIN_SPINN_UPPER_LIMIT, MIN_SPINN_STEP));
-		maxDescription = new JLabel();
+		maxDescription = new JXLabel();
 		maxAmplitudeSpinner = new JSpinner(new SpinnerNumberModel(MAX_SPINN_VALUE,
 				MAX_SPINN_LOWER_LIMIT, MAX_SPINN_UPPER_LIMIT, MAX_SPINN_STEP));
 		maxAmplitudeSpinner.setPreferredSize(new Dimension(minAmplitudeSpinner
@@ -317,7 +323,7 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 		northPanel.add(amplitudeCritCHB, BorderLayout.NORTH);
 		northPanel.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.SOUTH);
 
-		centerPanel = new JPanel(new BorderLayout());
+		centerPanel = new JXPanel(new BorderLayout());
 		JPanel valuesPanel = new JPanel();
 		valuesPanel.setLayout(new BoxLayout(valuesPanel, BoxLayout.PAGE_AXIS));
 		JPanel minDescriptPanel = new JPanel();
@@ -352,7 +358,7 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 		warningPanel.add(new JLabel(JUIGLEGraphicsUtils
 				.createImageIcon(JERPAUtils.IMAGE_PATH + "warning.gif")),
 				BorderLayout.NORTH);
-		warningLabel = new JLabel();
+		warningLabel = new JXLabel();
 		warningLabel.setHorizontalAlignment(JLabel.CENTER);
 		warningPanel
 				.add(warningLabel, BorderLayout.SOUTH);
@@ -378,7 +384,7 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 	private JPanel createAmplitudeList() {
 		JPanel amplitudeListP = new JPanel(new BorderLayout());
 
-		amplitudeListUnselectionChannels = new JList();
+		amplitudeListUnselectionChannels = new JXList();
 		amplitudeListUnselectionChannels
 				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		amplitudeListUnselectionChannels.setLayoutOrientation(JList.VERTICAL);
@@ -389,7 +395,7 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 		listUnselChannelsScroller.setPreferredSize(new Dimension(
 				(int) (DWIDTH / AMP_CONST_WIDTH), (int) (DHEIGHT / AMP_CONST_HEIGHT)));
 
-		amplitudeListSelectionChannels = new JList();
+		amplitudeListSelectionChannels = new JXList();
 		amplitudeListSelectionChannels
 				.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		amplitudeListSelectionChannels.setLayoutOrientation(JList.VERTICAL);
@@ -400,10 +406,10 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 		listSelChannelsScroller.setPreferredSize(new Dimension(
 				(int) (DWIDTH / AMP_CONST_WIDTH), (int) (DHEIGHT / AMP_CONST_HEIGHT)));
 
-		removeAmplitudeChannelBT = new JButton(">>");
+		removeAmplitudeChannelBT = new JXButton(">>");
 		removeAmplitudeChannelBT.setAlignmentX(Component.CENTER_ALIGNMENT);
 		removeAmplitudeChannelBT.addActionListener(new FunctionAddAmpChannel());
-		addAmplitudeChannelBT = new JButton("<<");
+		addAmplitudeChannelBT = new JXButton("<<");
 		addAmplitudeChannelBT.setAlignmentX(Component.CENTER_ALIGNMENT);
 		addAmplitudeChannelBT.addActionListener(new FunctionRemoveAmpChannel());
 		JPanel buttonPanel = new JPanel();
@@ -422,14 +428,14 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 
 		amplitudeListP.add(amplitudeIndividualChannels, BorderLayout.NORTH);
 
-		northPanel = new JPanel(new BorderLayout());
+		northPanel = new JXPanel(new BorderLayout());
 
-		JPanel unselectionPanel = new JPanel(new BorderLayout());
+		JPanel unselectionPanel = new JXPanel(new BorderLayout());
 		unselectionPanel.add(unselectionLabel,
 				BorderLayout.NORTH);
 		unselectionPanel.add(listUnselChannelsScroller, BorderLayout.SOUTH);
 
-		JPanel selectionPanel = new JPanel(new BorderLayout());
+		JPanel selectionPanel = new JXPanel(new BorderLayout());
 		selectionPanel.add(selectionLabel, BorderLayout.NORTH);
 		selectionPanel.add(listSelChannelsScroller, BorderLayout.SOUTH);
 
@@ -448,11 +454,11 @@ public class ArtefactSelectionDialog extends JDialog implements ILanguage {
 	 * @return southPanel.
 	 */
 	private JPanel createSouthPanel() {
-		JPanel southPanel = new JPanel();
-		applyBT = new JButton();
+		JPanel southPanel = new JXPanel();
+		applyBT = new JXButton();
 		applyBT.setEnabled(false);
 		applyBT.addActionListener(new FunctionApplyBT());
-		stornoBT = new JButton();
+		stornoBT = new JXButton();
 		stornoBT.addActionListener(new FunctionStornoBT());
 
 		southPanel.add(applyBT);

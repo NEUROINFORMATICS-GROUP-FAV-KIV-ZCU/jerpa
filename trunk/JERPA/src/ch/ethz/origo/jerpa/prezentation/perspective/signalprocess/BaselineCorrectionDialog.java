@@ -20,6 +20,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
+import org.jdesktop.swingx.JXButton;
+import org.jdesktop.swingx.JXPanel;
+
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.ILanguage;
@@ -31,7 +34,7 @@ import ch.ethz.origo.juigle.application.observers.LanguageObservable;
  * 
  * @author Petr - Soukal
  * @author Vaclav Souhrada (v dot souhrada at gmail dot com)
- * @version 0.1.2 (2/24/2010)
+ * @version 0.1.3 (2/28/2010)
  * @since 0.1.0 (2/18/2010)
  * @see JDialog
  */
@@ -57,14 +60,14 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 	private JLabel startIntervalLabel;
 	private JLabel endIntervalLabel;
 	
-	private JButton applyBT;
-	private JButton stornoBT;
+	private JXButton applyBT;
+	private JXButton stornoBT;
 	
 	private ResourceBundle resource;
 	
 	private String resourcePath;
 	
-	private JPanel valuesPanel;
+	private JXPanel valuesPanel;
 
 	/**
 	 * Vytv��� objekt t��dy.
@@ -92,16 +95,16 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 	 * 
 	 * @return mainPanel.
 	 */
-	private JPanel createInterior() {
-		JPanel mainPanel = new JPanel(new BorderLayout());
+	private JXPanel createInterior() {
+		JXPanel mainPanel = new JXPanel(new BorderLayout());
 		mainPanel.add(createCenterPanel(), BorderLayout.CENTER);
 		mainPanel.add(createSouthPanel(), BorderLayout.SOUTH);
 
 		return mainPanel;
 	}
 
-	private JPanel createCenterPanel() {
-		JPanel centerPanel = new JPanel(new BorderLayout());
+	private JXPanel createCenterPanel() {
+		JXPanel centerPanel = new JXPanel(new BorderLayout());
 		buttonGroup = new ButtonGroup();
 		FunctionRadioButtons radioAction = new FunctionRadioButtons();
 
@@ -121,8 +124,8 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 		return centerPanel;
 	}
 
-	private JPanel createValuesPanel() {
-		valuesPanel = new JPanel();
+	private JXPanel createValuesPanel() {
+		valuesPanel = new JXPanel();
 		valuesPanel.setLayout(new BoxLayout(valuesPanel, BoxLayout.PAGE_AXIS));
 
 		startIntervalLabel = new JLabel();
@@ -183,9 +186,9 @@ public class BaselineCorrectionDialog extends JDialog implements ILanguage {
 	 */
 	private JPanel createSouthPanel() {
 		JPanel southPanel = new JPanel();
-		applyBT = new JButton();
+		applyBT = new JXButton();
 		applyBT.addActionListener(new FunctionApplyBT());
-		stornoBT = new JButton();
+		stornoBT = new JXButton();
 		stornoBT.addActionListener(new FunctionStornoBT());
 
 		southPanel.add(applyBT);
