@@ -190,13 +190,11 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 	@Override
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
-
 			@Override
 			public void run() {
 				setLocalizedResourceBundle(getResourceBundlePath());
 								
 			}
-			
 		});		
 	}
 
