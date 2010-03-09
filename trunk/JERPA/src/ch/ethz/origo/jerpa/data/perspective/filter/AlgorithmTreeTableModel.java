@@ -4,6 +4,8 @@
 package ch.ethz.origo.jerpa.data.perspective.filter;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,18 +13,23 @@ import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
+import noname.ConfigPropertiesLoader;
+
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.data.ClassFinder;
 import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
+import ch.ethz.origo.juigle.plugin.Pluggable;
+import ch.ethz.origo.juigle.plugin.PluginEngine;
+import ch.ethz.origo.juigle.plugin.exception.PluginEngineException;
 
 /**
  * 
  * 
- * @author Vaclav Souhrada
- * @version 0.3.0 (2/11/2010)
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.3.2 (3/09/2010)
  * @since 0.1.0 (11/26/09)
  * @see JUIGLETreeTableModel
  * 
@@ -31,50 +38,56 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = -1729007145954323938L;
-	
+
 	private static final int NUM_OF_COLUMNS = 3;
-	
+
 	private ResourceBundle resource;
 	private String resourcePath;
-	
+
+	private static final String PLUGIN_FILE = "config/plugins.xml";
+
+	/** List of algorithms */
+	private Map<String, Class<?>> listOfAlgorithms;// FIXME NOT USED YET
+	private Set<AlgorithmRecord> treeOfFilters;
+
 	public AlgorithmTreeTableModel(String resourceBundlePath) {
 		setLocalizedResourceBundle(resourceBundlePath);
 		LanguageObservable.getInstance().attach(this);
 	}
 
+	private List<Pluggable> getPlugins() {
+		PluginEngine plugEngine = PluginEngine.getInstance();
+		try {
+			plugEngine.setCurrentVersion(ConfigPropertiesLoader
+					.getAppMajorVersionAsInt(), ConfigPropertiesLoader
+					.getAppMinorVersionAsInt(), ConfigPropertiesLoader
+					.getAppRevisionVersionAsInt());
+			plugEngine.init(AlgorithmTreeTableModel.PLUGIN_FILE, null);
+			// plugEngine.startPluggables();
+		} catch (PluginEngineException e) {
+			// FIXME propagovat chybu vis
+			e.printStackTrace();
+		}
+		return plugEngine.getAllCorrectPluggables();
+	}
+
 	@Override
 	public void fillByValues() {
-		Set<AlgorithmRecord> treeOfFilters = new TreeSet<AlgorithmRecord>();
-		ClassFinder cf = new ClassFinder();
-		Vector<Class<?>> listOfSubclasses = cf
-				.findSubclasses("ch.ethz.origo.jerpa.data.algorithms.IAlgorithmDescriptor");
-		for (Class<?> item : listOfSubclasses) {
-			try {
-				AlgorithmRecord fr = new AlgorithmRecord();
-				Field author = item.getDeclaredField("AUTHOR");
-				Field version = item.getDeclaredField("VERSION");
-				Field name = item.getDeclaredField("NAME");
-				Field category = item.getDeclaredField("CATEGORY");
-				author.setAccessible(true);
-				version.setAccessible(true);
-				name.setAccessible(true);
-				category.setAccessible(true);
-				fr.setAuthor((String) author.get(null));
-				fr.setName((String) name.get(null));
-				fr.setVersion((String) version.get(null));
-				fr.setCategory((String) category.get(null));
-				fr.setAlgorithmClass(item);
-				treeOfFilters.add(fr);
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		treeOfFilters = new TreeSet<AlgorithmRecord>();
+		// fillValues();
+		List<Pluggable> listOfPlugins = getPlugins();
+
+		for (Pluggable plug : listOfPlugins) {
+			AlgorithmRecord fr = new AlgorithmRecord();
+			fr.setAuthor(plug.getAuthorName());
+			fr.setName(plug.getPluginName());
+			fr.setVersion(plug.getPluginVersion());
+			fr.setCategory(plug.getCategory());
+			// fr.setAlgorithmClass();
+			treeOfFilters.add(fr);
+			// listOfAlgorithms.put(fr.getName(), item);
 		}
+
 		String prevLast = "";
 		String currentLast = "";
 
@@ -98,6 +111,41 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 			}
 		}
 		setRoot(root);
+	}
+
+	private void fillValues() {
+		treeOfFilters = new TreeSet<AlgorithmRecord>();
+		ClassFinder cf = new ClassFinder();
+		Vector<Class<?>> listOfSubclasses = cf
+				.findSubclasses("ch.ethz.origo.jerpa.data.algorithms.IAlgorithm");
+		for (Class<?> item : listOfSubclasses) {
+			try {
+				AlgorithmRecord fr = new AlgorithmRecord();
+				Field author = item.getDeclaredField("AUTHOR");
+				Field version = item.getDeclaredField("VERSION");
+				Field name = item.getDeclaredField("NAME");
+				Field category = item.getDeclaredField("CATEGORY");
+				author.setAccessible(true);
+				version.setAccessible(true);
+				name.setAccessible(true);
+				category.setAccessible(true);
+				fr.setAuthor((String) author.get(null));
+				fr.setName((String) name.get(null));
+				fr.setVersion((String) version.get(null));
+				fr.setCategory((String) category.get(null));
+				fr.setAlgorithmClass(item);
+				treeOfFilters.add(fr);
+				listOfAlgorithms.put(fr.getName(), item);
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -157,7 +205,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 				default:
 					break;
 				}
-				
+
 			}
 
 			return toBeDisplayed;
@@ -184,7 +232,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 	@Override
 	public void setResourceBundleKey(String key) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -193,9 +241,8 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 			@Override
 			public void run() {
 				setLocalizedResourceBundle(getResourceBundlePath());
-								
 			}
-		});		
+		});
 	}
 
 }
