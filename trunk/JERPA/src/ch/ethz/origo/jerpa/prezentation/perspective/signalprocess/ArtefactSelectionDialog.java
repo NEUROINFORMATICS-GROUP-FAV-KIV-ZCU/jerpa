@@ -25,7 +25,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
-import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXButton;
 import org.jdesktop.swingx.JXLabel;
@@ -34,6 +33,7 @@ import org.jdesktop.swingx.JXPanel;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.data.Channel;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;

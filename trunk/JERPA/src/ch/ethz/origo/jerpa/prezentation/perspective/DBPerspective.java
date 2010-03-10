@@ -7,10 +7,10 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 
-import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXTaskPane;
 
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.prezentation.perspective.db.DbChooserDialog;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;

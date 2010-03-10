@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXPanel;
 
@@ -14,6 +13,7 @@ import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.Avera
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.project.SessionManager;

@@ -15,12 +15,12 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectWriter;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.ArtefactSelectionDialog;

@@ -22,8 +22,8 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
-import noname.ConfigPropertiesLoader;
 import noname.PerspectiveLoader;
+import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.listener.AppButtonsEvent;

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nezarazeno.IPerspectiveLoader;
+import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
+import ch.ethz.origo.jerpa.data.JERPAFileNameFilter;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 

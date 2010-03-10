@@ -6,11 +6,11 @@ import javax.swing.Icon;
 import javax.swing.JScrollPane;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.data.perspective.filter.AlgorithmRecord;
 import ch.ethz.origo.jerpa.data.perspective.filter.AlgorithmTreeTableModel;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
@@ -40,6 +40,11 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 	/** Only for serialization */
 	private static final long serialVersionUID = -3671126854840073832L;
 	
+	/**
+	 * Construct algorithm perspective.
+	 * Attach perspective to perspective observable and set up 
+	 * resource bundle path for localization.
+	 */
 	public AlgorithmPerspective() {
 		perspectiveObservable.attach(this);
 		resourcePath = LangUtils.getPerspectiveLangPathProp("perspective.algorithmmanager.lang");
@@ -114,7 +119,6 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 						
 					}
 				}
-
 				return this;
 			};
 		});

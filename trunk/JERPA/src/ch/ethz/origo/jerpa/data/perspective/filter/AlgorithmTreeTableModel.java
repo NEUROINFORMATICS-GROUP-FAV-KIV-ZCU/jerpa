@@ -3,23 +3,19 @@
  */
 package ch.ethz.origo.jerpa.data.perspective.filter;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
-import noname.ConfigPropertiesLoader;
-
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
+import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import ch.ethz.origo.juigle.data.ClassFinder;
 import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
 import ch.ethz.origo.juigle.plugin.Pluggable;
 import ch.ethz.origo.juigle.plugin.PluginEngine;
@@ -29,7 +25,7 @@ import ch.ethz.origo.juigle.plugin.exception.PluginEngineException;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.2 (3/09/2010)
+ * @version 0.3.3 (3/10/2010)
  * @since 0.1.0 (11/26/09)
  * @see JUIGLETreeTableModel
  * 
@@ -112,7 +108,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 		}
 		setRoot(root);
 	}
-
+/*
 	private void fillValues() {
 		treeOfFilters = new TreeSet<AlgorithmRecord>();
 		ClassFinder cf = new ClassFinder();
@@ -146,7 +142,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public int getColumnCount() {

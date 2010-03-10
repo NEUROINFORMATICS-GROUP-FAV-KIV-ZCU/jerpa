@@ -1,4 +1,4 @@
-package noname;
+package ch.ethz.origo.jerpa.data;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -9,7 +9,7 @@ import ch.ethz.origo.jerpa.application.exception.PropertiesException;
  * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.3 (2/14/2010)
+ * @version 0.1.4 (3/09/2010)
  * @since 0.1.0 (7/18/09)
  * 
  */
@@ -74,6 +74,33 @@ public class ConfigPropertiesLoader {
 	 */
 	public static String getAppRevisionVersion() {
 		return properties.getProperty("jerpa.application.version.revision");
+	}
+	
+	/**
+	 * Return Major version of application as Integer
+	 * 
+	 * @return major version of application as Integer
+	 */
+	public static int getAppMajorVersionAsInt() {
+		return Integer.valueOf(properties.getProperty("jerpa.application.version.major"));
+	}
+
+	/**
+	 * 
+	 * 
+	 * @return minor version of application as Integer
+	 */
+	public static int getAppMinorVersionAsInt() {
+		return Integer.valueOf(properties.getProperty("jerpa.application.version.minor"));
+	}
+
+	/**
+	 * 
+	 * 
+	 * @return revision version of application as Integer
+	 */
+	public static int getAppRevisionVersionAsInt() {
+		return Integer.valueOf(properties.getProperty("jerpa.application.version.revision"));
 	}
 	
 	public static String getAppCopyright() {

@@ -25,11 +25,11 @@ package ch.ethz.origo.jerpa.application;
 
 import javax.swing.SwingUtilities;
 
-import noname.ConfigPropertiesLoader;
 
 import org.apache.log4j.Logger;
 
 import ch.ethz.origo.jerpa.application.exception.PropertiesException;
+import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
 
 /**

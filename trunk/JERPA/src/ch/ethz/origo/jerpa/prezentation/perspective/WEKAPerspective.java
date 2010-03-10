@@ -2,11 +2,11 @@ package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import javax.swing.Icon;
 
-import noname.JERPAUtils;
 
 import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.application.perspective.weka.project.WEKAProject;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
