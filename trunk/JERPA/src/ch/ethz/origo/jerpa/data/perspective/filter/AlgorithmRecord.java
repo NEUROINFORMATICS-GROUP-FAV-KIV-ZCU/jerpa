@@ -1,12 +1,13 @@
 package ch.ethz.origo.jerpa.data.perspective.filter;
 
 import ch.ethz.origo.juigle.data.tables.Record;
+import ch.ethz.origo.juigle.plugin.Pluggable;
 
 /**
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.2.0 (2/11/2010)
+ * @version 0.2.1 (3/13/2010)
  * @since JERPA version 0.1.0 (11/29/09)
  * @see Record
  * @see Comparable
@@ -17,9 +18,10 @@ public class AlgorithmRecord extends Record implements
 	private String name;
 	private String author;
 	private String description;
+	private String basicDescription;
 	private String version;
 	private String category;
-	private Class<?> algorithmClass;
+	private Pluggable plugin;
 
 	/**
 	 * Return name of algorithm
@@ -79,6 +81,25 @@ public class AlgorithmRecord extends Record implements
 	}
 
 	/**
+	 * Return basic description of algorithm
+	 * 
+	 * @return basic description of algorithm as String
+	 */
+	public String getBasicDescription() {
+		return basicDescription;
+	}
+
+	/**
+	 * Set algorithm BASIC description
+	 * 
+	 * @param basic
+	 *          description of algorithm
+	 */
+	public void setBasicDescription(String basicDescription) {
+		this.basicDescription = basicDescription;
+	}
+
+	/**
 	 * Return current algorithm version
 	 * 
 	 * @return version of algorithm
@@ -117,13 +138,13 @@ public class AlgorithmRecord extends Record implements
 	}
 
 	/**
-	 * Set Class of algorithm
+	 * Set Plugin class <code>Pluggable</code> of algorithm
 	 * 
 	 * @param algorithmClass
 	 *          class
 	 */
-	public void setAlgorithmClass(Class<?> algorithmClass) {
-		this.algorithmClass = algorithmClass;
+	public void setAlgorithmClass(Pluggable algorithmClass) {
+		this.plugin = algorithmClass;
 	}
 
 	/**
@@ -131,13 +152,13 @@ public class AlgorithmRecord extends Record implements
 	 * 
 	 * @return class of algorithm
 	 */
-	public Class<?> getAlgorithmClass() {
-		return algorithmClass;
+	public Pluggable getAlgorithmClass() {
+		return plugin;
 	}
 
 	@Override
 	public String toString() {
-		return name + " " + author + " " + version + " " + category;
+		return name + " - " + author + " - " + version + " - " + category;
 	}
 
 	@Override

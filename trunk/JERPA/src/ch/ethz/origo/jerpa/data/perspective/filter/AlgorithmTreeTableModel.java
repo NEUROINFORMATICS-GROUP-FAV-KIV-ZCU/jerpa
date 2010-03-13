@@ -1,13 +1,13 @@
-/**
- * 
- */
 package ch.ethz.origo.jerpa.data.perspective.filter;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
+import java.util.Vector;
+import java.util.Map.Entry;
 
 import javax.swing.SwingUtilities;
 
@@ -16,6 +16,7 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.data.ClassFinder;
 import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
 import ch.ethz.origo.juigle.plugin.Pluggable;
 import ch.ethz.origo.juigle.plugin.PluginEngine;
@@ -25,7 +26,7 @@ import ch.ethz.origo.juigle.plugin.exception.PluginEngineException;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.3 (3/10/2010)
+ * @version 0.3.2 (3/09/2010)
  * @since 0.1.0 (11/26/09)
  * @see JUIGLETreeTableModel
  * 
@@ -35,16 +36,17 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 	/** Only for serialization */
 	private static final long serialVersionUID = -1729007145954323938L;
 
-	private static final int NUM_OF_COLUMNS = 3;
+	private static final int NUM_OF_COLUMNS = 4;
 
 	private ResourceBundle resource;
 	private String resourcePath;
 
+	private PluginEngine plugEngine;
+
 	private static final String PLUGIN_FILE = "config/plugins.xml";
 
 	/** List of algorithms */
-	private Map<String, Class<?>> listOfAlgorithms;// FIXME NOT USED YET
-	private Set<AlgorithmRecord> treeOfFilters;
+	private Map<String, AlgorithmRecord> treeOfFilters;
 
 	public AlgorithmTreeTableModel(String resourceBundlePath) {
 		setLocalizedResourceBundle(resourceBundlePath);
@@ -52,14 +54,13 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 	}
 
 	private List<Pluggable> getPlugins() {
-		PluginEngine plugEngine = PluginEngine.getInstance();
+		plugEngine = PluginEngine.getInstance();
 		try {
 			plugEngine.setCurrentVersion(ConfigPropertiesLoader
 					.getAppMajorVersionAsInt(), ConfigPropertiesLoader
 					.getAppMinorVersionAsInt(), ConfigPropertiesLoader
 					.getAppRevisionVersionAsInt());
-			plugEngine.init(AlgorithmTreeTableModel.PLUGIN_FILE, null);
-			// plugEngine.startPluggables();
+			plugEngine.init(AlgorithmTreeTableModel.PLUGIN_FILE);
 		} catch (PluginEngineException e) {
 			// FIXME propagovat chybu vis
 			e.printStackTrace();
@@ -69,7 +70,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 
 	@Override
 	public void fillByValues() {
-		treeOfFilters = new TreeSet<AlgorithmRecord>();
+		treeOfFilters = new TreeMap<String, AlgorithmRecord>();
 		// fillValues();
 		List<Pluggable> listOfPlugins = getPlugins();
 
@@ -79,8 +80,9 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 			fr.setName(plug.getPluginName());
 			fr.setVersion(plug.getPluginVersion());
 			fr.setCategory(plug.getCategory());
-			// fr.setAlgorithmClass();
-			treeOfFilters.add(fr);
+			fr.setBasicDescription(plug.getPluginBasicDescription());
+			fr.setAlgorithmClass(plug);
+			treeOfFilters.put(plug.getPluginName(), fr);
 			// listOfAlgorithms.put(fr.getName(), item);
 		}
 
@@ -90,27 +92,39 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 		FilterTreeTableNode currentNameNode = null;
 		DefaultMutableTreeTableNode root = new FilterTreeTableNode(
 				new AlgorithmRecord());
-		for (AlgorithmRecord item : treeOfFilters) {
-			currentLast = item.getCategory();
+		Set<Entry<String, AlgorithmRecord>> map = treeOfFilters.entrySet();
+		for (Entry<String, AlgorithmRecord> item : map) {
+			currentLast = item.getValue().getCategory();
 			if (currentLast.equals(prevLast)) {
-				currentNameNode.add(new FilterTreeTableNode(item));
+				currentNameNode.add(new FilterTreeTableNode(item.getValue()));
 			} else {
 				if (currentNameNode != null) {
 					root.add(currentNameNode);
 				}
 				AlgorithmRecord fr = new AlgorithmRecord();
-				fr.setCategory(item.getCategory());
+				fr.setCategory(currentLast);
 				currentNameNode = new FilterTreeTableNode(fr);
-				currentNameNode.add(new FilterTreeTableNode(item));
+				currentNameNode.add(new FilterTreeTableNode(item.getValue()));
 				prevLast = currentLast;
 				root.add(currentNameNode);
 			}
 		}
 		setRoot(root);
 	}
-/*
+
+	/**
+	 * Return instance of current <code>PlugEngine</code> for this algorithm tree
+	 * table model.
+	 * 
+	 * @return instance of current <code>PlugEngine</code> for this algorithm tree
+	 *         table model.
+	 */
+	public PluginEngine getPlugEngineTreeTabModel() {
+		return plugEngine;
+	}
+
 	private void fillValues() {
-		treeOfFilters = new TreeSet<AlgorithmRecord>();
+		// treeOfFilters = new TreeSet<AlgorithmRecord>();
 		ClassFinder cf = new ClassFinder();
 		Vector<Class<?>> listOfSubclasses = cf
 				.findSubclasses("ch.ethz.origo.jerpa.data.algorithms.IAlgorithm");
@@ -129,9 +143,8 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 				fr.setName((String) name.get(null));
 				fr.setVersion((String) version.get(null));
 				fr.setCategory((String) category.get(null));
-				fr.setAlgorithmClass(item);
-				treeOfFilters.add(fr);
-				listOfAlgorithms.put(fr.getName(), item);
+				// fr.setAlgorithmClass(item);
+				// treeOfFilters.add(fr);
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
@@ -142,7 +155,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 				e.printStackTrace();
 			}
 		}
-	}*/
+	}
 
 	@Override
 	public int getColumnCount() {
@@ -161,6 +174,9 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 			break;
 		case 2:
 			name = resource.getString("table.column.author");
+			break;
+		case 3:
+			name = resource.getString("table.column.basic.desc");
 			break;
 		default:
 			name = "n/a";
@@ -198,18 +214,22 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 				case 2:
 					toBeDisplayed = fr.getAuthor();
 					break;
+				case 3:
+					if (fr.getBasicDescription() != null) {
+						toBeDisplayed = fr.getBasicDescription();
+					} else {
+						toBeDisplayed = "";
+					}
 				default:
 					break;
 				}
-
 			}
-
 			return toBeDisplayed;
 		}
 
 		@Override
 		public int getColumnCount() {
-			return 3;
+			return AlgorithmTreeTableModel.NUM_OF_COLUMNS;
 		}
 
 	}
@@ -228,7 +248,6 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 	@Override
 	public void setResourceBundleKey(String key) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
