@@ -45,7 +45,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 
 	private static final String PLUGIN_FILE = "config/plugins.xml";
 
-	/** List of algorithms */
+	/** Map of algorithms */
 	private Map<String, AlgorithmRecord> treeOfFilters;
 
 	public AlgorithmTreeTableModel(String resourceBundlePath) {

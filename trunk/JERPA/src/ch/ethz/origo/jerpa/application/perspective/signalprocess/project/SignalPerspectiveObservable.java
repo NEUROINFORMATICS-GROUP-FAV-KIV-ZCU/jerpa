@@ -85,6 +85,8 @@ public class SignalPerspectiveObservable extends JUIGLEObservable {
 	 */
 	public static final int MSG_MODAL_DIALOG_CLOSED = 22;
 	
+	public static final int MSG_SEND_CURRENT_PROJECT = 23;
+	
 	private static SignalPerspectiveObservable instance;
 	
 	/**
@@ -98,6 +100,10 @@ public class SignalPerspectiveObservable extends JUIGLEObservable {
 			instance = new SignalPerspectiveObservable();
 		}
 		return instance;
-	}	
+	}
+	
+	public void sendObjectToObservers(Object object) {
+		notifyObserver(object);
+	}
 	
 }

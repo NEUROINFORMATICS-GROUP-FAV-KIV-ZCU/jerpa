@@ -186,7 +186,6 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 
 	@Override
 	public void update(IObservable o, Object state) {
-		// TODO Auto-generated method stub
 
 	}
 	

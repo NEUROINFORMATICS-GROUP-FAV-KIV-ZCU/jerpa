@@ -51,7 +51,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.2 (2/23/2010)
+ * @version 0.3.3 (3/14/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -202,10 +202,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 		}
 	}
 
-	/*
-	 * @Override public String getResourceBundlePath() { return
-	 * SignalPerspective.resourcePath; }
-	 */
 	public Icon getIcon() {
 		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
 				+ "icon.gif", "aaaaaaaaaaaaaa");
@@ -675,6 +671,9 @@ public class SignalPerspective extends Perspective implements IObserver {
 				// FIXME
 				// mainWindow.invertSignalsButton.setSelected(sessionManager.getCurrentProject()
 				// .isInvertedSignalsView());
+				break;
+			case SignalPerspectiveObservable.MSG_SEND_CURRENT_PROJECT:
+				spObservable.sendObjectToObservers(sessionManager.getCurrentProject());
 				break;
 			}
 		} else if (o instanceof LanguageObservable) {
