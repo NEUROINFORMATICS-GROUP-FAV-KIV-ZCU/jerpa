@@ -1,7 +1,11 @@
 package ch.ethz.origo.jerpa.data;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+
+import org.apache.log4j.PropertyConfigurator;
 
 import ch.ethz.origo.jerpa.application.exception.PropertiesException;
 
@@ -9,14 +13,14 @@ import ch.ethz.origo.jerpa.application.exception.PropertiesException;
  * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.4 (3/09/2010)
+ * @version 0.1.5 (3/17/2010)
  * @since 0.1.0 (7/18/09)
  * 
  */
 public class ConfigPropertiesLoader {
 
 	/** Configuration file */
-	private static final String PROPERTY_FILE = "config.properties";
+	private static final String PROPERTY_FILE = "config/config.properties";
 
 	private static boolean isLoaded = false;
 
@@ -31,7 +35,8 @@ public class ConfigPropertiesLoader {
 	public static void loadProperties() throws PropertiesException {
 		if (!ConfigPropertiesLoader.isLoaded) {
 			try {
-				properties.load(ClassLoader.getSystemResourceAsStream(PROPERTY_FILE));
+				properties.load(new FileInputStream(new File(PROPERTY_FILE)));
+				PropertyConfigurator.configure(properties);
 			} catch (IOException e) {
 				throw new PropertiesException(ConfigPropertiesLoader.class.getName()
 						+ " - cannot read config properties", e);
