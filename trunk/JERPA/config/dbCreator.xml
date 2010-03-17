@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entities>
+	<entity name="Person">
+		<attributes>
+			<attribute name="Person_id" type="Integer" isNull="no" isPK="yes" />
+			<attribute name="Givenname" type="Varchar" size="50"/>
+			<attribute name="Surname" type="Varchar" size="50" isNull="no"/>
+			<attribute name="Date_Of_Birth" type="Date" />
+			<attribute name="Gender" type="Char" size="1" isNull="no"/>
+			<attribute name="Email" type="Varchar" size="50"/>
+			<attribute name="Phone_Number" type="Varchar" size="20"/>
+			<attribute name="Note" type="Varchar" size="255"/>
+			<attribute name="Username" type="Varchar" size="50" isUnique="yes"/>
+			<attribute name="Password" type="Varchar" size="50"/>
+			<attribute name="Authority" type="Varchar" size="50"/>			
+		</attributes>
+	</entity>
+	<entity name="Experiment">
+		<attributes>
+			<attribute name="Experiment_id" type="Integer" isNull="no" isPK="yes"/>
+			<attribute name="Owner_id" type="Integer" isNull="no" isFK="yes"/>
+			<attribute name="Subject_person_id" type="Integer" isNull="no" isFK="yes"/>
+			<attribute name="Scenario_id" type="Integer" isNull="no" isFK="yes"/>
+			<attribute name="Weather_id" type="Integer" isNull="no" isFK="yes"/>
+			<attribute name="Research_group_id" type="Integer" isNull="no" isFK="yes"/>
+			<attribute name="Start_time" type="Date"/>
+			<attribute name="End_time" type="Date"/>
+			<attribute name="Temperature" type="Smallint"/>
+			<attribute name="WeatherNote" type="Varchar" size="255"/>
+		</attributes>
+	</entity>
+</entities>

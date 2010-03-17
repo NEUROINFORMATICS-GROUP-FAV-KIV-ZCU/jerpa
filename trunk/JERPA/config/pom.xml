@@ -1,11 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" encoding="UTF-8">
   <modelVersion>4.0.0</modelVersion>
   <groupId>JERPA</groupId>
   <artifactId>JERPA</artifactId>
   <packaging>jar</packaging>
   <name>Java Event-Related Potential Analysis</name>
-  <version>0.0.1-dev</version>
+  <version>0.1.0</version>
   <description>Java Event-Related Potential Analysis is ........</description>
+  <developers>
+  	<developer>
+  		<id>vsouhrada</id>
+  		<name>Vaclav Souhrada</name>
+  		<email>v.souhrada at gmail.com</email>
+  	</developer>
+  </developers>
   <organization>
   	<name>University of West Bohemia, Department of Computer Science and Engineering, Pilsen, Czech Republic</name>
   </organization>

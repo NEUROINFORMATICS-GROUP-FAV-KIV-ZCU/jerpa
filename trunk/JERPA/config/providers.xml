@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<providers>
+
+  <provider name="POSTGRES_8_2">
+    <drivername>POSTGRES_8_2</drivername>
+    <host>localhost</host>
+    <database>eeg</database>
+    <user>postgres</user>
+    <password>manager</password>
+  </provider>
+
+  <provider name="FIREBIRD">
+    <drivername>FIREBIRD</drivername>
+    <host>localhost</host>
+    <database>D:\\Database\\Firebird\\Data\\T301.fdb</database>
+    <user>sysdba</user>
+    <password>masterkey</password>
+  </provider>
+  
+ </providers>
