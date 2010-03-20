@@ -13,7 +13,7 @@ import ch.ethz.origo.jerpa.application.exception.PropertiesException;
  * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.5 (3/17/2010)
+ * @version 0.1.6 (3/20/2010)
  * @since 0.1.0 (7/18/09)
  * 
  */
@@ -139,15 +139,6 @@ public class ConfigPropertiesLoader {
 	 */
 	public static String[] getListOfSupportedFileFormats() {
 		return properties.getProperty("jerpa.extension.files").trim().split(",");
-	}
-
-	/**
-	 * Get property - relative path to perspectives
-	 * 
-	 * @return relative path where are perspectives store
-	 */
-	public static String getPerspectivesStoragePath() {
-		return properties.getProperty("jerpa.perspective.path");
 	}
 
 	/**

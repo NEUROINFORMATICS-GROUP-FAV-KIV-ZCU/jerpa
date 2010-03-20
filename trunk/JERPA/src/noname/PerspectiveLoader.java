@@ -1,12 +1,10 @@
 package noname;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import nezarazeno.IPerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
-import ch.ethz.origo.jerpa.data.JERPAFileNameFilter;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
@@ -14,13 +12,12 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.0 (07/18/09)
+ * @version 0.1.1 (3/20/2010)
  * @since 0.1.0 (07/18/09)
  * @see IPerspectiveLoader
  */
 public class PerspectiveLoader implements IPerspectiveLoader {
 	// TODO MOZNA PRERADIT DO JUIGLE
-	private String path;
 	
 	private String defaultPerspectiveName;
 	
@@ -33,7 +30,6 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 	 * @throws PerspectiveException 
 	 */
 	public PerspectiveLoader() throws PerspectiveException {
-		this.path = ConfigPropertiesLoader.getPerspectivesStoragePath();
 		this.defaultPerspectiveName = ConfigPropertiesLoader.getDefaultPerspective().trim();
 		loadPerspectives();
 	}
@@ -48,15 +44,13 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 	private void loadPerspectives() throws PerspectiveException {
 		perspectives = new ArrayList<Perspective>();
 		String[] perspectivesName = ConfigPropertiesLoader.getListOfPerspective();
-		File fileDir = new File(path);
-		File[] files = fileDir.listFiles(new JERPAFileNameFilter(perspectivesName));
 		ClassLoader loader = PerspectiveLoader.class.getClassLoader();
-		for (File file : files) {
+		
+		for (String name : perspectivesName) {
 			try {
-				String classNameWithoutExts = file.getName().substring(0, file.getName().lastIndexOf("."));
 				Perspective prsvClass = (Perspective) loader.loadClass(ConfigPropertiesLoader.getPerspectivePackagePath() +
-						"." + classNameWithoutExts).newInstance();
-				checkIfPerspectiveIsDefault(prsvClass, classNameWithoutExts);
+						"." + name).newInstance();
+				checkIfPerspectiveIsDefault(prsvClass, name);
 				perspectives.add(prsvClass);
 			} catch (InstantiationException e) {
 				throw new PerspectiveException(PerspectiveLoader.class.getName(), e);
@@ -66,6 +60,7 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 				throw new PerspectiveException(PerspectiveLoader.class.getName(), e);
 			}
 		}
+		
 	}
 
 	private void checkIfPerspectiveIsDefault(Perspective perspective, String className) {
