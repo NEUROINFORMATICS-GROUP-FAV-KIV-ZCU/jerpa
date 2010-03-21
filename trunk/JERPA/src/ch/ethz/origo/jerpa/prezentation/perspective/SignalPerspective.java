@@ -32,6 +32,7 @@ import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.BaselineCorrec
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.SignalsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.AveragingPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.importdialog.ImportDialogProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
@@ -66,7 +67,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	/** Only for serialization */
 	private static final long serialVersionUID = 3313465073940475745L;
 
-	//
+	// file menu items
 	private JUIGLEMenuItem fileMenu;
 	private JUIGLEMenuItem openFileItem;
 	private JUIGLEMenuItem saveFileItem;
@@ -75,27 +76,29 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem importItem;
 	private JUIGLEMenuItem exportItem;
 	private JUIGLEMenuItem exitItem;
-	//
+	// edit menu items
 	private JUIGLEMenuItem editMenu;
 	private JUIGLEMenuItem undoItem;
 	private JUIGLEMenuItem redoItem;
 	private JUIGLEMenuItem baselineCorrItem;
 	private JUIGLEMenuItem autoArteSelItem;
-	//
+	// view menu items
 	private JUIGLEMenuItem viewMenu;
 	private JUIGLEMenuItem channelItem;
 	private JUIGLEMenuItem editInfoWinItem;
 	private JUIGLEMenuItem signalsWinItem;
 	private JUIGLEMenuItem averagingWinItem;
-	//
+	// help menu items
 	private JUIGLEMenuItem helpItem;
 	private JUIGLEMenuItem keyboardShortcutItem;
 	private JUIGLEMenuItem aboutItem;
-
+	// Grid bag constraints for mains panels
 	private GridBagConstraints gbcSignalPanelProv;
 	private GridBagConstraints gbcAveragingProv;
 	private GridBagConstraints gbcSignalInfoProv;
+	private GridBagConstraints gbcChannelProv;
 
+	/** Session manager for this perspective */
 	private SignalSessionManager sessionManager;
 
 	private SignalPerspectiveObservable spObservable;
@@ -108,6 +111,9 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private ArtefactSelectionDialog artefactSelectionDialog;
 	private BaselineCorrectionDialog baselineCorrectionDialog;
 
+	/**
+	 * Default constructor. Initializes required objects.
+	 */
 	public SignalPerspective() {
 		perspectiveObservable.attach(this);
 		spObservable = SignalPerspectiveObservable.getInstance();
@@ -136,7 +142,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 			gbcSignalInfoProv.weightx = 0.4;
 			gbcSignalInfoProv.weighty = 0.5;
 
-			GridBagConstraints gbcChannelProv = new GridBagConstraints();
+			gbcChannelProv = new GridBagConstraints();
 			gbcChannelProv.gridx = 0;
 			gbcChannelProv.gridy = 0;
 			gbcChannelProv.anchor = GridBagConstraints.CENTER;
@@ -201,8 +207,8 @@ public class SignalPerspective extends Perspective implements IObserver {
 			menu.addItem(initAndGetViewMenuItem());
 			menu.addItem(initAndGetHelpMenuItem());
 			menu.addMenuSeparator();
-			//menu.addHeaderHideButton(true);
-			//menu.addFooterHideButton(true);
+			menu.addHeaderHideButton(true);
+			menu.addFooterHideButton(true);
 			// menuTitledPanel.add(menu);
 			menuTaskPane.add(menu);
 		} catch (JUIGLEMenuException e1) {
@@ -322,6 +328,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		signalsWinItem.setAction(getSignalViewAction());
 		averagingWinItem.setAction(getAveragePanelViewAction());
 		editInfoWinItem.setAction(getSignalInfoPanelViewAction());
+		channelItem.setAction(getChannelPanelViewAction());
 		//
 		viewMenu.addSubItem(channelItem);
 		viewMenu.addSubItem(editInfoWinItem);
@@ -332,6 +339,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	}
 
 	/**
+	 * 
 	 * 
 	 * @return
 	 * @since 0.1.0
@@ -356,6 +364,8 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	/**
 	 * 
+	 * 
+	 * @version 0.1.2 (3/20/2010)
 	 * @since 0.1.1
 	 */
 	private void setFileMenuActions() {
@@ -388,10 +398,25 @@ public class SignalPerspective extends Perspective implements IObserver {
 				}
 			}
 		};
+		Action importAct = new AbstractAction() {
+			/** Only for serialization */
+			private static final long serialVersionUID = 5259515978643788611L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					new ImportDialogProvider(sessionManager);
+				} catch (PerspectiveException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		
 		openFileItem.setAction(getOpenFileAction());
 		saveFileItem.setAction(saveAction);
 		saveAsFileItem.setAction(saveAsAct);
-
+		importItem.setAction(importAct);
 	}
 
 	/**
@@ -462,8 +487,9 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	/**
 	 * 
+	 * 
 	 * @throws JUIGLEMenuException
-	 * @version 0.1.0 (2/14/2010)
+	 * @version 0.1.1 (3/20/2010)
 	 * @since 0.2.1 (2/14/2010)
 	 */
 	private void addOpenedFunctionsToMenu() {
@@ -481,8 +507,16 @@ public class SignalPerspective extends Perspective implements IObserver {
 					averagePanelItem.setAction(getAveragePanelViewAction());
 					infoPanelItem.setAction(getSignalInfoPanelViewAction());
 					// tooltip
-					signalPanelItem.setToolTipText(getLocalizedString("toolbar.view.signalwin"));
+					signalPanelItem
+							.setToolTipText(getLocalizedString("toolbar.view.signalwin"));
 					signalPanelItem.setToolTipResourceBundleKey("toolbar.view.signalwin");
+					infoPanelItem
+							.setToolTipText(getLocalizedString("toolbar.view.infowin"));
+					infoPanelItem.setToolTipResourceBundleKey("toolbar.view.infowin");
+					averagePanelItem
+							.setToolTipText(getLocalizedString("toolbar.view.averagewin"));
+					averagePanelItem
+							.setToolTipResourceBundleKey("toolbar.view.averagewin");
 					// init images
 					signalPanelItem.setIcon(JUIGLEGraphicsUtils.createImageIcon(
 							JERPAUtils.IMAGE_PATH + "icon.gif", 24, 24));
@@ -510,10 +544,11 @@ public class SignalPerspective extends Perspective implements IObserver {
 	public void update(IObservable o, Object state) {
 		makeUpdate(o, state);
 	}
-	
+
 	private Action getSignalViewAction() {
 		Action signPanelShow = new AbstractAction() {
 			private static final long serialVersionUID = 5222085948094114535L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				openComponentInDialog(signalPanelProvider.getPanel(),
@@ -522,10 +557,11 @@ public class SignalPerspective extends Perspective implements IObserver {
 		};
 		return signPanelShow;
 	}
-	
+
 	private Action getAveragePanelViewAction() {
 		Action averagePanelShow = new AbstractAction() {
 			private static final long serialVersionUID = 5222085948094114535L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				openComponentInDialog(averagingPanelProvider.getPanel(),
@@ -534,14 +570,26 @@ public class SignalPerspective extends Perspective implements IObserver {
 		};
 		return averagePanelShow;
 	}
-	
+
+	private Action getChannelPanelViewAction() {
+		Action channelPanelShow = new AbstractAction() {
+			private static final long serialVersionUID = 5222085948094114535L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				openComponentInDialog(channelPanelProvider.getPanel(), gbcChannelProv);
+			}
+		};
+		return channelPanelShow;
+	}
+
 	private Action getSignalInfoPanelViewAction() {
 		Action signalInfoPanelShow = new AbstractAction() {
 			private static final long serialVersionUID = 5222085948094114535L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				openComponentInDialog(signalInfoProvider.getPanel(),
-						gbcSignalInfoProv);
+				openComponentInDialog(signalInfoProvider.getPanel(), gbcSignalInfoProv);
 			}
 		};
 		return signalInfoPanelShow;
@@ -616,7 +664,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		JXDialog dialog = new JXDialog(component);
 		dialog.setSize(800, 600);
 		dialog.setAlwaysOnTop(true);
-		//dialog.pack();
+		// dialog.pack();
 		dialog.setLocation(JUIGLEGraphicsUtils.getCenterPosition(dialog));
 		dialog.setVisible(true);
 		dialog.addWindowListener(new WindowAdapter() {
@@ -735,10 +783,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 			case SignalPerspectiveObservable.MSG_SHOW_IMPORT_DIALOG:
 				// mainWindow.setEnabled(false);
+			// FIXME not used yet
 				break;
 
 			case SignalPerspectiveObservable.MSG_MODAL_DIALOG_CLOSED:
 				// mainWindow.setEnabled(true);
+			// FIXME not used yet
 				break;
 
 			case SignalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED:

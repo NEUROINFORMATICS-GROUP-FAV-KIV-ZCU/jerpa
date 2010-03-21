@@ -26,17 +26,18 @@ import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.NioInputStream;
-import ch.ethz.origo.juigle.application.project.Project;
+import ch.ethz.origo.juigle.application.exception.ProjectOperationException;
+import ch.ethz.origo.juigle.application.project.IProjectLoader;
 
 /**
  * Class for setting project from file.
  * 
  * @author Jiri Kucera
  * @author Vaclav Souhrada
- * @version 0.1.1 (2/21/2010)
+ * @version 0.1.2 (3/21/2010)
  * @since 0.1.0 (01/17/2010)
  */
-public class SignalProjectLoader {
+public class SignalProjectLoader implements IProjectLoader {
 
 	private File file;
 	private Header header;
@@ -59,7 +60,7 @@ public class SignalProjectLoader {
 		numberOfChannels = -1;
 	}
 
-	public Project loadProject() throws IOException, CorruptedFileException {
+	public SignalProject loadProject() throws ProjectOperationException {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setValidating(false);
@@ -67,24 +68,25 @@ public class SignalProjectLoader {
 			Document doc = builder.parse(file);
 
 			extractProject(doc);
+			loadData();
 		} catch (SAXException ex) {
-			throw new CorruptedFileException("SAXException at "
-					+ SignalProjectLoader.class.getName());
+			throw new ProjectOperationException(new CorruptedFileException("SAXException at "
+					+ SignalProjectLoader.class.getName()));
 		} catch (ParserConfigurationException ex) {
-			throw new CorruptedFileException("ParserConfigurationException at "
-					+ SignalProjectLoader.class.getName());
+			throw new ProjectOperationException(new CorruptedFileException("ParserConfigurationException at "
+					+ SignalProjectLoader.class.getName()));
 		} catch (NullPointerException e) {
-			// System.out.println(e.getMessage());
-			// System.out.println(e.getLocalizedMessage());
-			throw new CorruptedFileException("Error parsing meta-file.");
+			throw new ProjectOperationException(new CorruptedFileException("Error parsing meta-file."));
 		} catch (NumberFormatException e) {
-			throw new CorruptedFileException(e.getMessage());
+			throw new ProjectOperationException(new CorruptedFileException(e.getMessage()));
+		} catch (CorruptedFileException e) {
+			throw new ProjectOperationException("JERPA011", e);
+		} catch (IOException e) {
+			throw new ProjectOperationException("JERPA011", e);
 		}
 
-		loadData();
-
 		if (project == null) {
-			throw new CorruptedFileException("Project null.");
+			throw new ProjectOperationException("Project null.");
 		} else {
 			return project;
 		}

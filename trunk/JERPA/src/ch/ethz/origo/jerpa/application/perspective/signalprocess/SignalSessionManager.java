@@ -28,7 +28,7 @@ import ch.ethz.origo.juigle.application.project.SessionManager;
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.2.0 (2/21/2010)
+ * @version 0.2.2 (3/21/2010)
  * @since 0.1.0 (11/18/09)
  * @see SessionManager
  * 
@@ -94,13 +94,7 @@ public class SignalSessionManager extends SessionManager {
 		SignalProjectLoader loader;
 		SignalProject project = null;
 		loader = new SignalProjectLoader(file);
-		try {
-			project = (SignalProject) loader.loadProject();
-		} catch (IOException e) {
-			throw new ProjectOperationException("JERPA011", e);
-		} catch (CorruptedFileException e) {
-			throw new ProjectOperationException("JERPA011", e);
-		}
+		project = (SignalProject) loader.loadProject();
 		addProject(project);
 	}
 	
@@ -220,11 +214,11 @@ public class SignalSessionManager extends SessionManager {
 		} catch (NullPointerException e) {
 			throw new ProjectOperationException(e);
 		} catch (IOException e) {
-			throw new ProjectOperationException(e);
+			throw new ProjectOperationException("Error while appending averages", e);
 		} catch (CorruptedFileException ex) {
 			throw new ProjectOperationException(ex);
 		} catch (InvalidFrameIndexException e) {
-			throw new ProjectOperationException(e);
+			throw new ProjectOperationException("Iternal error while appending average", e);
 		}
 	}
 

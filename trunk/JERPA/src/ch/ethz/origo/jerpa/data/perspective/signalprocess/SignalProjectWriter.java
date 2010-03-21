@@ -39,7 +39,7 @@ import ch.ethz.origo.juigle.application.project.IProjectWriter;
  * 
  * @author Jiri Kucera
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (2/21/2010)
+ * @version 0.1.1 (3/21/2010)
  * @since 0.1.0 (2/21/2010)
  * @see IProjectWriter
  */
@@ -51,7 +51,7 @@ public class SignalProjectWriter implements IProjectWriter {
 	
 	public SignalProjectWriter() {
 		encoding = "utf-8";
-		cfgFile = "jerpproject.xml";		
+		cfgFile = "jerpaproject.xml";		
 	}
 
 	public SignalProjectWriter(SignalProject project) {
