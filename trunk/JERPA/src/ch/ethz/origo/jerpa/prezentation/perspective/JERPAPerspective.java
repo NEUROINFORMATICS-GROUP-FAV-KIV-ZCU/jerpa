@@ -5,13 +5,16 @@ import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXTaskPane;
 
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
@@ -21,8 +24,9 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.1 01/16/2010
+ * @version 0.1.2 (3/21/2010)
  * @since 0.1.0 (05/18/09)
+ * @see Perspective
  * 
  */
 public final class JERPAPerspective extends Perspective {
@@ -45,6 +49,11 @@ public final class JERPAPerspective extends Perspective {
 	@Override
 	public String getRBPerspectiveTitleKey() {
 		return "perspective.jerpa.title";
+	}
+	
+	@Override
+	public Icon getIcon() throws PerspectiveException {
+		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "configure-48.png");
 	}
 
 	@Override

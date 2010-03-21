@@ -34,6 +34,7 @@ import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.Aver
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.importdialog.ImportDialogProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.output.ExportFrameProvider;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
@@ -56,7 +57,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.4 (3/20/2010)
+ * @version 0.3.5 (3/21/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -74,7 +75,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem saveAsFileItem;
 	private JUIGLEMenuItem closeFileItem;
 	private JUIGLEMenuItem importItem;
-	private JUIGLEMenuItem exportItem;
 	private JUIGLEMenuItem exitItem;
 	// edit menu items
 	private JUIGLEMenuItem editMenu;
@@ -110,6 +110,8 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	private ArtefactSelectionDialog artefactSelectionDialog;
 	private BaselineCorrectionDialog baselineCorrectionDialog;
+	
+	private ExportFrameProvider efp;
 
 	/**
 	 * Default constructor. Initializes required objects.
@@ -119,6 +121,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		spObservable = SignalPerspectiveObservable.getInstance();
 		spObservable.attach(this);
 		sessionManager = new SignalSessionManager();
+		efp = new ExportFrameProvider(sessionManager);
 		resourcePath = LangUtils
 				.getPerspectiveLangPathProp("perspective.signalprocessing.lang");
 	}
@@ -209,6 +212,9 @@ public class SignalPerspective extends Perspective implements IObserver {
 			menu.addMenuSeparator();
 			menu.addHeaderHideButton(true);
 			menu.addFooterHideButton(true);
+			//menu.addMenuSeparator();
+			initAndAddToolbarItems();
+			menu.addMenuSeparator();
 			// menuTitledPanel.add(menu);
 			menuTaskPane.add(menu);
 		} catch (JUIGLEMenuException e1) {
@@ -247,7 +253,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 		saveAsFileItem = new JUIGLEMenuItem();
 		closeFileItem = new JUIGLEMenuItem();
 		importItem = new JUIGLEMenuItem();
-		exportItem = new JUIGLEMenuItem();
 		exitItem = new JUIGLEMenuItem();
 		// set Resource bundles
 		fileMenu.setResourceBundleKey("menu.file");
@@ -256,7 +261,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 		saveAsFileItem.setResourceBundleKey("menu.saveAs");
 		closeFileItem.setResourceBundleKey("menu.close.project");
 		importItem.setResourceBundleKey("menu.import");
-		exportItem.setResourceBundleKey("menu.export");
 		exitItem.setResourceBundleKey("menu.exit");
 		// set actions to menu items
 		setFileMenuActions();
@@ -271,7 +275,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 		fileMenu.addSubItem(saveAsFileItem);
 		fileMenu.addSubItem(closeFileItem);
 		fileMenu.addSubItem(importItem);
-		fileMenu.addSubItem(exportItem);
 		fileMenu.addSubItem(exitItem);
 
 		return fileMenu;
@@ -369,35 +372,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 * @since 0.1.1
 	 */
 	private void setFileMenuActions() {
-		Action saveAction = new AbstractAction() {
-			/** Only for serialization */
-			private static final long serialVersionUID = -1644285485867277600L;
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					sessionManager.saveFile(new SignalProjectWriter());
-				} catch (ProjectOperationException e1) {
-					JUIGLErrorInfoUtils.showErrorDialog("Project Error",
-							JUIGLEErrorParser.getJUIGLEErrorMessage(e1.getMessage()), e1,
-							java.util.logging.Level.WARNING);
-				}
-			}
-		};
-		Action saveAsAct = new AbstractAction() {
-			/** Only for serialization */
-			private static final long serialVersionUID = 5259515978643788611L;
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					sessionManager.saveAsFile();
-				} catch (ProjectOperationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
 		Action importAct = new AbstractAction() {
 			/** Only for serialization */
 			private static final long serialVersionUID = 5259515978643788611L;
@@ -414,9 +388,62 @@ public class SignalPerspective extends Perspective implements IObserver {
 		};
 		
 		openFileItem.setAction(getOpenFileAction());
-		saveFileItem.setAction(saveAction);
-		saveAsFileItem.setAction(saveAsAct);
+		saveFileItem.setAction(getSaveAction());
+		saveAsFileItem.setAction(getSaveAsAction());
 		importItem.setAction(importAct);
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @return
+	 * 
+	 * @version 0.1.0 (3/21/2010)
+	 * @since 0.3.5 (3/21/2010)
+	 */
+	private Action getSaveAction() {
+		Action saveAction = new AbstractAction() {
+			/** Only for serialization */
+			private static final long serialVersionUID = -1644285485867277600L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					sessionManager.saveFile(new SignalProjectWriter());
+				} catch (ProjectOperationException e1) {
+					JUIGLErrorInfoUtils.showErrorDialog("Project Error",
+							JUIGLEErrorParser.getJUIGLEErrorMessage(e1.getMessage()), e1,
+							java.util.logging.Level.WARNING);
+				}
+			}
+		};
+		return saveAction;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @return
+	 * 
+	 * @version 0.1.0 (3/21/2010)
+	 * @since 0.3.5 (3/21/2010)
+	 */
+	private Action getSaveAsAction() {
+		Action saveAsAct = new AbstractAction() {
+			/** Only for serialization */
+			private static final long serialVersionUID = 5259515978643788611L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					sessionManager.saveAsFile();
+				} catch (ProjectOperationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		return saveAsAct;
 	}
 
 	/**
@@ -484,6 +511,43 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 */
 	private void makeUpdate(Object obj) {
 	}
+	
+	/**
+	 * 
+	 * @version 0.1.0 (3/21/2010)
+	 * @since 0.3.5 (3/21/2010)
+	 */
+	private void initAndAddToolbarItems() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				JUIGLEMenuItem openTBItem = new JUIGLEMenuItem();
+				JUIGLEMenuItem saveTBItem = new JUIGLEMenuItem();
+				// set actions
+				openTBItem.setAction(getOpenFileAction());
+				saveTBItem.setAction(getSaveAction());
+				// set tooltip
+				openTBItem.setToolTipText(getLocalizedString("toolbar.open.tooltip"));
+				openTBItem.setToolTipResourceBundleKey("toolbar.open.tooltip");
+				saveTBItem.setToolTipText(getLocalizedString("toolbar.save.tooltip"));
+				saveTBItem.setToolTipResourceBundleKey("toolbar.save.tooltip");
+				// set icons
+				try {
+					openTBItem.setIcon(JUIGLEGraphicsUtils.createImageIcon(
+							JERPAUtils.IMAGE_PATH + "folder_48.png", 32, 32));
+					saveTBItem.setIcon(JUIGLEGraphicsUtils.createImageIcon(
+							JERPAUtils.IMAGE_PATH + "save_48.png", 32, 32));
+				} catch (PerspectiveException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				menu.addItem(openTBItem);
+				menu.addItem(saveTBItem);
+				menu.revalidate();
+				menu.repaint();
+			}
+		});
+	}
 
 	/**
 	 * 
@@ -497,7 +561,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 			@Override
 			public void run() {
 				try {
-					menu.addMenuSeparator();
 					JUIGLEMenuItem signalPanelItem = new JUIGLEMenuItem();
 					JUIGLEMenuItem infoPanelItem = new JUIGLEMenuItem();
 					JUIGLEMenuItem channelPanelItem = new JUIGLEMenuItem();
@@ -524,13 +587,14 @@ public class SignalPerspective extends Perspective implements IObserver {
 							JERPAUtils.IMAGE_PATH + "info-48.png", 24, 24));
 					averagePanelItem.setIcon(JUIGLEGraphicsUtils.createImageIcon(
 							JERPAUtils.IMAGE_PATH + "averages32.png", 24, 24));
+					menu.addMenuSeparator();
 					menu.addItem(signalPanelItem);
 					menu.addItem(infoPanelItem);
 					menu.addItem(averagePanelItem);
-				} catch (JUIGLEMenuException e) {
+				} catch (PerspectiveException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (PerspectiveException e) {
+				} catch (JUIGLEMenuException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
