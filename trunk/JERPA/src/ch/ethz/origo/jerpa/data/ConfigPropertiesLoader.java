@@ -7,13 +7,13 @@ import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import ch.ethz.origo.jerpa.application.exception.PropertiesException;
+import ch.ethz.origo.juigle.application.exception.PropertiesException;
 
 /**
  * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.6 (3/20/2010)
+ * @version 0.1.7 (3/24/2010)
  * @since 0.1.0 (7/18/09)
  * 
  */

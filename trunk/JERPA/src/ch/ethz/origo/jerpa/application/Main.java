@@ -23,20 +23,22 @@
  */
 package ch.ethz.origo.jerpa.application;
 
-import javax.swing.SwingUtilities;
+import java.util.Locale;
 
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-import ch.ethz.origo.jerpa.application.exception.PropertiesException;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
+import ch.ethz.origo.juigle.application.LanguagePropertiesLoader;
+import ch.ethz.origo.juigle.application.exception.PropertiesException;
 
 /**
  * Main class of this application. Contains main method for application startup.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 04/16/2009
+ * @version 0.1.0 (3/24/2010)
  * @since 0.1.0 (04/16/2009 - JERPA birthday)
  * 
  */
@@ -51,7 +53,9 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		try {
+			LanguagePropertiesLoader.loadProperties();
 			ConfigPropertiesLoader.loadProperties();
+			setLocale(LanguagePropertiesLoader.getApplicationLocale());
 		} catch (PropertiesException e) {
 			Main.rootLogger.warn(e.getMessage(), e.getCause());
 			// TODO udelat hromadne nahrani properties, asi pres interface
@@ -65,5 +69,15 @@ public class Main {
 				// new TestMainFrame();
 			}
 		});
+	}
+
+	private static void setLocale(String applicationLocale) {
+		Locale locale = null;
+		if (applicationLocale.equals("eng")) {
+			locale = new Locale("en");
+		} else if (applicationLocale.equals("cze")) {
+			locale = new Locale("cs","CZ");
+		}
+		Locale.setDefault(locale);
 	}
 }

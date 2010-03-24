@@ -219,8 +219,9 @@ public class BufferCreator {
 	 * @return N�zev do�asn�ho souboru v�etn� cesty.
 	 */
 	protected static String generateTmpFileName() {
+		//java.io.tmpdir
 		Date d = new Date();
-		String fileName = new String(System.getProperty("java.io.tmpdir") + "eeg"
+		String fileName = new String(System.getProperty("user.dir") + "eeg"
 				+ d.getTime() + ".tmp");
 		JERPAUtils.addFileToDeleteList(fileName);
 		return fileName;
