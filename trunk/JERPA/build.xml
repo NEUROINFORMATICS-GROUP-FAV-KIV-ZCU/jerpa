@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="JERPA" default="makejar" basedir=".">
+
+	<!-- domovský adresář bundelu -->
+	<property name="projecthome" value="." />
+
+	<!-- verze bundle -->
+	<property name="version" value="0.1.0" />
+
+	<!-- symbolický název bundelu -->
+	<property name="jarname" value="${ant.project.name}" />
+
+	<!-- autor -->
+	<property name="author" value="Vaclav Souhrada" />
+
+	<property name="src" location="${projecthome}/src" />
+	<property name="build" location="${projecthome}/bin" />
+	<property name="dist" location="${projecthome}/dist" />
+	<property name="lib" location="${projecthome}/lib" />
+
+	<property name="runloc" location="${dist}" />
+
+	<property name="buildfilename" value="${jarname}-${version}.jar" />
+
+	<path id="bnd.classpath">
+		<pathelement location="${dist}/${buildfilename}" />
+	</path>
+
+	<path id="compile.class.path">
+		<fileset dir=".">
+			<include name="lib/**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${build}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<manifestclasspath property="lib.list" jarfile="${dist}/${buildfilename}">
+		<classpath refid="compile.class.path" />
+	</manifestclasspath>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src}" destdir="${build}" classpathref="compile.class.path" debug="on">
+			<compilerarg value="-Xlint:none" />
+		</javac>
+	</target>
+	
+	<target name="copy_img" depends="compile">
+			<copy todir="${build}/ch/ethz/origo/jerpa/data/images/">
+				<fileset dir="${src}/ch/ethz/origo/jerpa/data/images/" />
+			</copy>	
+		</target>
+
+
+	<target name="makejar" description="generate the distribution" depends="copy_img">
+		<mkdir dir="${dist}" />
+		<jar jarfile="${dist}/${buildfilename}" basedir="${build}">
+			<manifest>
+				<attribute name="Main-Class" value="ch.ethz.origo.jerpa.application.Main" />
+				<attribute name="Class-Path" value="${lib.list}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- automatický úklid po kompilaci a vytvoření bundelu-->
+	<target name="autoclean">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+
+	<!-- ručně prováděný úklid -->
+	<target name="clean">
+		<antcall target="autoclean" />
+		<delete dir="${dist}" />
+	</target>
+
+	<target name="run">
+		<echo message="Starting.." />
+		<java jar="${runloc}/${buildfilename}" fork="true" dir="${projecthome}">
+		</java>
+		<echo message="Shutting down..." />
+	</target>
+</project>
