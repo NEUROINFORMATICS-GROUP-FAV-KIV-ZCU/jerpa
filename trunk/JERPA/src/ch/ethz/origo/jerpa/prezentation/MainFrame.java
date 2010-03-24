@@ -24,10 +24,12 @@ package ch.ethz.origo.jerpa.prezentation;
 
 import noname.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
-import ch.ethz.origo.juigle.application.listener.AppButtonsEvent;
-import ch.ethz.origo.juigle.application.listener.AppButtonsListener;
+import ch.ethz.origo.juigle.application.observers.IObservable;
+import ch.ethz.origo.juigle.application.observers.IObserver;
+import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
 
@@ -35,12 +37,14 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.1.2 (1/24/2010)
+ * @version 0.1.3 (3/24/2010)
  * @since 0.1.0 (05/07/2009)
  */
-public class MainFrame implements AppButtonsListener {
-	
+public class MainFrame implements IObserver {
+
 	public static int HEIGHT;
+
+	private JUIGLEFrame mainFrame;
 
 	/**
 	 * Initialize main graphic frame
@@ -48,6 +52,7 @@ public class MainFrame implements AppButtonsListener {
 	public MainFrame() {
 		try {
 			initGui();
+			JUIGLEObservable.getInstance().attach(this);
 		} catch (PerspectiveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,7 +63,7 @@ public class MainFrame implements AppButtonsListener {
 	 * Initialize GUI
 	 * 
 	 * @throws PerspectiveException
-	 * @version 0.2.0 (10/18/09) 
+	 * @version 0.2.0 (10/18/09)
 	 * @since 0.1.0
 	 */
 	private void initGui() throws PerspectiveException {
@@ -71,40 +76,64 @@ public class MainFrame implements AppButtonsListener {
 		titleBuff.append(".");
 		titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
 		// create frame
-		JUIGLEFrame mainFrame = new JUIGLEFrame(
+		mainFrame = new JUIGLEFrame(
 				titleBuff.toString(),
 				ClassLoader
 						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
 		mainFrame.addMainMenu(getMainMenu());
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance());
-		mainFrame.setVisible(true);	
+		mainFrame.setVisible(true);
 		mainFrame.setFullScreen(true);
 		MainFrame.HEIGHT = mainFrame.getHeight();
 		// PerspectiveLoader<T>
 	}
-	
+
 	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {
 		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu();
 		mainMenu.setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
 		mainMenu.addHomePageItem(null, ConfigPropertiesLoader.getJERPAHomePage());
-		//mainMenu.addCalendarItem(null);
+		// mainMenu.addCalendarItem(null);
 		return mainMenu;
 	}
 
 	@Override
-	public void closeAppButton(AppButtonsEvent e) {
+	public void update() {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void maximalizeAppButton(AppButtonsEvent e) {
+	public void update(Object state) {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void minimalizelizeAppButton(AppButtonsEvent e) {
+	public void update(IObservable o, Object state) {
+		if ((o instanceof JUIGLEObservable) && (state instanceof Integer)) {
+			int msg = (Integer) state;
 
+			switch (msg) {
+			case JUIGLEObservable.MSG_APPLICATION_CLOSING:
+				appClosing();
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	private void appClosing() {
+		JERPAUtils.deleteFilesFromDeleteList();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		mainFrame.dispose();
 	}
 
 }

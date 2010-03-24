@@ -68,8 +68,7 @@ public class SignalsPanelProvider implements IObserver {
 	private boolean changeEpochInterval = false;
 	private boolean showPopupMenu = false;
 	private Color colorSelection;
-	// private Header header;
-	// private Buffer buffer;
+
 	private int numberOfDrawableChannels; // Po�et vybran�ch sign�l� (tedy t�ch,
 	// kter� mohou, ale nemus� b�t
 	// zobrazeny)

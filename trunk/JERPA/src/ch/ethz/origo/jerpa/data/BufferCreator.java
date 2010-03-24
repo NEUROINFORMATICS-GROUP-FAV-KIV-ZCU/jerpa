@@ -19,7 +19,7 @@ import ch.ethz.origo.jerpa.data.formats.VdefLoader;
  * 
  * @author Jiri Kucera
  * @author Vaclav Souhrada
- * @version 0.1.0 (01/17/2010)
+ * @version 0.1.1 (3/23/2010)
  * @since 0.1.0 (01/17/2010)
  */
 public class BufferCreator {
@@ -37,6 +37,8 @@ public class BufferCreator {
 	private File tmpFile;
 	private File inputFile;
 	private NioOutputStream ost;
+	
+	
 
 	/**
 	 * Konstruktor pro vytvo�en� pr�zdn�ho do�asn�ho souboru.<br/> Header by
@@ -220,6 +222,7 @@ public class BufferCreator {
 		Date d = new Date();
 		String fileName = new String(System.getProperty("java.io.tmpdir") + "eeg"
 				+ d.getTime() + ".tmp");
+		JERPAUtils.addFileToDeleteList(fileName);
 		return fileName;
 	}
 

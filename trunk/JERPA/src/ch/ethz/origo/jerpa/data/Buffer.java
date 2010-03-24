@@ -379,6 +379,10 @@ public class Buffer extends Observable {
 		tmpFile.delete();
 		closed = true;
 	}
+	
+	public long getNumOfSamples() {
+		return numberOfSamples;
+	}
 }
 // FIXME osetrit ve vsech metodach presazeni konce nebo zacatku souboru (kalwi -
 // osobne to udelam)
