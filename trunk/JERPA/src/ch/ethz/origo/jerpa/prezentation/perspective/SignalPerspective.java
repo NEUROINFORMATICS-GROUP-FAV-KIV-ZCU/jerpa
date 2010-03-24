@@ -41,6 +41,7 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.exception.ProjectOperationException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
+import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.application.project.Project;
 import ch.ethz.origo.juigle.data.JUIGLEErrorParser;
@@ -57,7 +58,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.5 (3/21/2010)
+ * @version 0.3.6 (3/24/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -110,7 +111,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	private ArtefactSelectionDialog artefactSelectionDialog;
 	private BaselineCorrectionDialog baselineCorrectionDialog;
-	
+
 	private ExportFrameProvider efp;
 
 	/**
@@ -212,7 +213,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 			menu.addMenuSeparator();
 			menu.addHeaderHideButton(true);
 			menu.addFooterHideButton(true);
-			//menu.addMenuSeparator();
+			// menu.addMenuSeparator();
 			initAndAddToolbarItems();
 			menu.addMenuSeparator();
 			// menuTitledPanel.add(menu);
@@ -368,7 +369,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	/**
 	 * 
 	 * 
-	 * @version 0.1.2 (3/20/2010)
+	 * @version 0.1.3 (3/24/2010)
 	 * @since 0.1.1
 	 */
 	private void setFileMenuActions() {
@@ -386,13 +387,23 @@ public class SignalPerspective extends Perspective implements IObserver {
 				}
 			}
 		};
-		
+		// init exit app action
+		Action exitAct = new AbstractAction() {
+			private static final long serialVersionUID = -1644285485867277600L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JUIGLEObservable.getInstance().setState(
+						JUIGLEObservable.MSG_APPLICATION_CLOSING);
+			}
+		};
 		openFileItem.setAction(getOpenFileAction());
 		saveFileItem.setAction(getSaveAction());
 		saveAsFileItem.setAction(getSaveAsAction());
 		importItem.setAction(importAct);
+		exitItem.setAction(exitAct);
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -419,7 +430,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		};
 		return saveAction;
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -511,7 +522,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 */
 	private void makeUpdate(Object obj) {
 	}
-	
+
 	/**
 	 * 
 	 * @version 0.1.0 (3/21/2010)
@@ -847,12 +858,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 			case SignalPerspectiveObservable.MSG_SHOW_IMPORT_DIALOG:
 				// mainWindow.setEnabled(false);
-			// FIXME not used yet
+				// FIXME not used yet
 				break;
 
 			case SignalPerspectiveObservable.MSG_MODAL_DIALOG_CLOSED:
 				// mainWindow.setEnabled(true);
-			// FIXME not used yet
+				// FIXME not used yet
 				break;
 
 			case SignalPerspectiveObservable.MSG_INVERTED_SIGNALS_VIEW_CHANGED:
