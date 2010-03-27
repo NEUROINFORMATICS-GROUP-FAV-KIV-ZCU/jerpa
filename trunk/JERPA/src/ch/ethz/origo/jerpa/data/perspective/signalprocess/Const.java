@@ -1,4 +1,4 @@
-package ch.ethz.origo.jerpa.application;
+package ch.ethz.origo.jerpa.data.perspective.signalprocess;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -10,16 +10,12 @@ import java.awt.Font;
  * @author Petr Soukal
  * @author Tomas Rondik
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 11/17/2009 
- * @since 0.1.0
+ * @version 0.1.1 (3/27/2010) 
+ * @since 0.1.0 (11/17/2009)
  */
 public class Const {
 		
 	// FIXME Tuto tridu mozna sloucit s JERPAUtils
-	/**
-	 * N�zev aplikace.
-	 */
-	public static final String APP_NAME = "jERP Studio";
 
 	/**
 	 * Koncovka souboru ve form�tu ascii.

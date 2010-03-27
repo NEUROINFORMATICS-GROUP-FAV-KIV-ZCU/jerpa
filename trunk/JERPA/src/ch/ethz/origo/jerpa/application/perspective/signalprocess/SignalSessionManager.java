@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
@@ -17,6 +16,7 @@ import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.BufferCreator;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectLoader;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectWriter;
 import ch.ethz.origo.juigle.application.exception.ProjectOperationException;

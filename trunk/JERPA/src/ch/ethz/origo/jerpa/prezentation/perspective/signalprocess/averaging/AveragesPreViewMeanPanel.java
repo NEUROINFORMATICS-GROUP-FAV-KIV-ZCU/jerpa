@@ -8,8 +8,8 @@ import java.awt.LayoutManager;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.EpochDataSet;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 
 /**
  * Pr�m�rovac� panel pro pou�it� v pohledu <code>AveragesPreView</code>.

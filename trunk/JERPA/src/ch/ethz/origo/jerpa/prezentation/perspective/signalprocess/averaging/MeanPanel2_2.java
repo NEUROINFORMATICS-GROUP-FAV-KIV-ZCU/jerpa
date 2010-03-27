@@ -10,9 +10,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.ObjectBroadcaster;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.EpochDataSet;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 
 /**
  * Komponenta zobrazuj�c� pr�m�rov�n� jednoho sign�lu v epo�e. V komponent� je

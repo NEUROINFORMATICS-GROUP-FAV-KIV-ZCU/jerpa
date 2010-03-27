@@ -36,10 +36,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.Averages;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.AveragingDataManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.EpochDataSet;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.juigle.prezentation.SpringUtilities;
 
 /**

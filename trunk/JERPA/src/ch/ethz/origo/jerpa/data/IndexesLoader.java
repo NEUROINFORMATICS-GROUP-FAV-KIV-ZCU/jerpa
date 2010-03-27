@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.origo.jerpa.application.Const;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 
 /**
  * Nahr�v� ze vstupn�ho souboru indexy epoch, kter� maj� b�t zahrnuty/odstran�ny

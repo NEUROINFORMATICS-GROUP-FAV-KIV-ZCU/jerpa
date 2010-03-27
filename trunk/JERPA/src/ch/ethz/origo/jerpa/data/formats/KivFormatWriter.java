@@ -13,10 +13,10 @@ import java.util.GregorianCalendar;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 
 /**
  * Modul pro z�pis BrainStudio form�tu.

@@ -18,10 +18,10 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 
 /**
  * Komponenta zaji��uj�c� vykreslov�n� EEG sign�lu, epoch, artefakt� apod.

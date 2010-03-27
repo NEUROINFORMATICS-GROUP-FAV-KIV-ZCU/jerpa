@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.BaselineCorrection;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
@@ -27,6 +26,7 @@ import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;

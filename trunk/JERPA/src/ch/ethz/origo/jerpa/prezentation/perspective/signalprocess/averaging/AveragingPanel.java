@@ -17,10 +17,10 @@ import javax.swing.JToolBar;
 
 import org.jdesktop.swingx.JXPanel;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.InsufficientDataException;
 import ch.ethz.origo.jerpa.application.exception.InvalidFrameIndexException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.EpochDataSet;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
 
 /**

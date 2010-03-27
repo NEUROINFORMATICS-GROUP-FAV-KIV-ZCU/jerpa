@@ -9,8 +9,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.EpochDataSet;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.SignalViewerPanel;
 
 /**

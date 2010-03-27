@@ -20,9 +20,9 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.Averages;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.EpochDataSet;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 
 /**
  * Pohled slou��c� k pr�m�rov�n� sign�l�. Umo��uje pohyb v epoch�ch vp�ed a

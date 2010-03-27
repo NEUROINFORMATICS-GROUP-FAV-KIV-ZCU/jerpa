@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.data.formats.DataFormatLoader;
 import ch.ethz.origo.jerpa.data.formats.EdfFormatLoader;
 import ch.ethz.origo.jerpa.data.formats.GeneratorLoader;
 import ch.ethz.origo.jerpa.data.formats.KivFormatLoader;
 import ch.ethz.origo.jerpa.data.formats.VdefLoader;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 
 /**
  * T��da pro vytv��en� <code>Buffer</code>u a na��t�n� dat z form�tov�ch

@@ -7,10 +7,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.data.Buffer;
 import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 
 /**
  * Modul pro z�pis EDF souboru.<br/> Nepodporuje rozd�ln� vzorkovac� frekvence.

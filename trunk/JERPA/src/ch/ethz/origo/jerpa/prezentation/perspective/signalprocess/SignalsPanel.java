@@ -27,8 +27,8 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 
-import ch.ethz.origo.jerpa.application.Const;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
