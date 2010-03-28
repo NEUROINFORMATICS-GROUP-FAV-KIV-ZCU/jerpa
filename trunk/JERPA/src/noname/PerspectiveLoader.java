@@ -6,13 +6,16 @@ import java.util.List;
 import nezarazeno.IPerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
+import ch.ethz.origo.juigle.plugin.Pluggable;
+import ch.ethz.origo.juigle.plugin.PluginEngine;
+import ch.ethz.origo.juigle.plugin.exception.PluginEngineException;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
  * 
  * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.1 (3/20/2010)
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.1.2 (3/28/2010)
  * @since 0.1.0 (07/18/09)
  * @see IPerspectiveLoader
  */
@@ -24,6 +27,7 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 	private static PerspectiveLoader loader;
 	
 	private List<Perspective> perspectives;
+	
 
 	/**
 	 * Default constructor - initialize variables
@@ -60,7 +64,23 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 				throw new PerspectiveException(PerspectiveLoader.class.getName(), e);
 			}
 		}
-		
+		// now load perspectives from plugins
+		PluginEngine plugEngine = PluginEngine.getInstance();
+			try {
+				plugEngine.setCurrentVersion(ConfigPropertiesLoader
+						.getAppMajorVersionAsInt(), ConfigPropertiesLoader
+						.getAppMinorVersionAsInt(), ConfigPropertiesLoader
+						.getAppRevisionVersionAsInt());
+				plugEngine.init(ConfigPropertiesLoader.getPerspectivePluginXMLLocation());
+				for (Pluggable plugin : plugEngine.getAllCorrectPluggables()) {
+					perspectives.add((Perspective) plugin);
+				}
+				plugEngine.startPluggables();
+			} catch (PluginEngineException e) {
+				//FIXME vyhodit lepsi chybu
+				throw new PerspectiveException(e);
+			}
+	
 	}
 
 	private void checkIfPerspectiveIsDefault(Perspective perspective, String className) {

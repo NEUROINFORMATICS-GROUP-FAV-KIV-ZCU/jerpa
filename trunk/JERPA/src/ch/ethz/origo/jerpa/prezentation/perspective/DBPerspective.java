@@ -24,7 +24,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 10/16/2010
+ * @version 0.1.1 (3/28/2010)
  * @since 0.1.0 (10/16/2010)
  * @see Perspective
  * 
@@ -45,7 +45,7 @@ public class DBPerspective extends Perspective {
 	}
 	
 	@Override
-	public Icon getIcon() throws PerspectiveException {
+	public Icon getPerspectiveIcon() throws PerspectiveException {
 		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "database_48.png", 32, 32);
 	}
 

@@ -13,7 +13,7 @@ import ch.ethz.origo.juigle.application.exception.PropertiesException;
  * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.7 (3/24/2010)
+ * @version 0.1.8 (3/28/2010)
  * @since 0.1.0 (7/18/09)
  * 
  */
@@ -177,6 +177,17 @@ public class ConfigPropertiesLoader {
 	 */
 	public static String getJERPAHomePage() {
 		return properties.getProperty("jerpa.homepage");
+	}
+	
+	/**
+	 * Return path of perspective plugins xml
+	 * 
+	 * @return path of perspective plugins xml 
+	 * @version 0.1.1 (3/28/2010)
+	 * @since 0.1.8 (3/28/2010)
+	 */
+	public static String getPerspectivePluginXMLLocation() {
+		return properties.getProperty("plugin.perspective.xml");
 	}
 
 	/** Only for test */
