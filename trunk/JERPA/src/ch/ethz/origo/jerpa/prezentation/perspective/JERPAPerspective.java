@@ -1,16 +1,19 @@
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.juigle.application.exception.DataStoreException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -19,6 +22,7 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
+import ch.ethz.origo.juigle.prezentation.tables.PluginsTreeTable;
 
 /**
  * 
@@ -50,10 +54,11 @@ public final class JERPAPerspective extends Perspective {
 	public String getRBPerspectiveTitleKey() {
 		return "perspective.jerpa.title";
 	}
-	
+
 	@Override
 	public Icon getPerspectiveIcon() throws PerspectiveException {
-		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "configure-48.png");
+		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
+				+ "configure-48.png");
 	}
 
 	@Override
@@ -66,22 +71,6 @@ public final class JERPAPerspective extends Perspective {
 		if (menuTaskPane == null) {
 			menuTaskPane = new JXTaskPane();
 			menuTaskPane.setOpaque(false);
-			/*
-			 * final Paint menuBackground =
-			 * JUIGLEGraphicsUtilities.createBackgroundTexture( new Color(0, 100,
-			 * 137), new Color(104, 255, 222), 35); Painter<Component> p = new
-			 * Painter<Component>() {
-			 * 
-			 * @Override public void paint(Graphics2D g, Component c, int width, int
-			 * height) { Graphics2D g2d = g;
-			 * g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-			 * RenderingHints.VALUE_ANTIALIAS_ON); g2d.setPaint(menuBackground);
-			 * 
-			 * if (JUIGLEFrame.getFrameState() != JXFrame.MAXIMIZED_BOTH) {
-			 * g2d.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), 20, 20); } else {
-			 * g2d.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), 40, 40); } } };
-			 * menuTitledPane.setBackgroundPainter(p);
-			 */
 
 			// initalize menu
 			menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP,
@@ -90,12 +79,22 @@ public final class JERPAPerspective extends Perspective {
 			menu.setRollover(true);
 			// initialize menu items
 			initAndAddMenuItems();
-			/*
-			 * try { helpItem .setIcon(ImageIO .read(ClassLoader
-			 * .getSystemResourceAsStream
-			 * ("ch/ethz/origo/jerpa/data/images/icon.gif"))); }
-			 */
 		}
+	}
+
+	@Override
+	public void initPerspectivePanel() throws PerspectiveException {
+		super.initPerspectivePanel();
+		mainPanel.setLayout(new BorderLayout());
+		try {
+			PluginsTreeTable pluginsTable = new PluginsTreeTable();
+			JScrollPane sp = new JScrollPane(pluginsTable);
+			mainPanel.add(sp, BorderLayout.CENTER);
+		} catch (DataStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
