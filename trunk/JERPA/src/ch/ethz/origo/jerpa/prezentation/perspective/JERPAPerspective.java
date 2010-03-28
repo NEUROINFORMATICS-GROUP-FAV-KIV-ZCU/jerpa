@@ -42,6 +42,7 @@ public final class JERPAPerspective extends Perspective {
 
 	private JUIGLEMenuItem languageMenu;
 
+	private JUIGLEMenuItem viewMenu;
 	private JUIGLEMenuItem helpMenu;
 	private JUIGLEMenuItem aboutItem;
 	
@@ -73,7 +74,6 @@ public final class JERPAPerspective extends Perspective {
 		if (menuTaskPane == null) {
 			menuTaskPane = new JXTaskPane();
 			menuTaskPane.setOpaque(false);
-
 			// initalize menu
 			menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP,
 					resourcePath);
@@ -88,17 +88,6 @@ public final class JERPAPerspective extends Perspective {
 	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
 		mainPanel.setLayout(new BorderLayout());
-		try {
-			pluginsTable = new PluginsTreeTable();
-			JScrollPane sp = new JScrollPane(pluginsTable);
-			mainPanel.add(sp, BorderLayout.CENTER);
-			mainPanel.revalidate();
-			mainPanel.repaint();
-		} catch (DataStoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	/**
@@ -111,7 +100,7 @@ public final class JERPAPerspective extends Perspective {
 			// add items to menu
 			menu.addItem(initAndGetLangueageMenuItem());
 			// menu.addItem(initAndGetHelpMenuItem());
-			// menu.addItem(initAndGetPluginMenuItem());
+		 menu.addItem(initAndGetViewMenuItem());
 			menu.addMenuSeparator();
 			// menu.addHeaderHideButton(true);
 			// menu.addFooterHideButton();
@@ -122,9 +111,39 @@ public final class JERPAPerspective extends Perspective {
 		}
 	}
 
-	private JUIGLEMenuItem initAndGetPluginMenuItem() {
-		// TODO Auto-generated method stub
-		return null;
+	private JUIGLEMenuItem initAndGetViewMenuItem() {
+		viewMenu = new JUIGLEMenuItem(getLocalizedString("menu.view"));
+		JUIGLEMenuItem pluginsItem = new JUIGLEMenuItem();
+		// initialize resource bundle keys
+		pluginsItem.setResourceBundleKey("menu.view.plugins");
+		viewMenu.setResourceBundleKey("menu.view");
+		// add actions to items
+		pluginsItem.setAction(getViewPluginsAction());
+		// add items to view menu
+		viewMenu.addSubItem(pluginsItem);
+		return viewMenu;
+	}
+
+	private Action getViewPluginsAction() {
+		Action pluginAct = new AbstractAction() {
+			/** */
+			private static final long serialVersionUID = -3956658187607985009L;
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				mainPanel.removeAll();
+				try {
+					pluginsTable = new PluginsTreeTable();
+					JScrollPane sp = new JScrollPane(pluginsTable);
+					mainPanel.add(sp, BorderLayout.CENTER);
+					mainPanel.revalidate();
+					mainPanel.repaint();
+				} catch (DataStoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		return pluginAct;
 	}
 
 	private JUIGLEMenuItem initAndGetHelpMenuItem() {

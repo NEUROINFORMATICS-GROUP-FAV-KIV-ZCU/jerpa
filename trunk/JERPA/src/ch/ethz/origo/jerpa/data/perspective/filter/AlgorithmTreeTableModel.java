@@ -13,20 +13,19 @@ import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
-import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.data.ClassFinder;
 import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
 import ch.ethz.origo.juigle.plugin.Pluggable;
 import ch.ethz.origo.juigle.plugin.PluginEngine;
-import ch.ethz.origo.juigle.plugin.exception.PluginEngineException;
 
 /**
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.2 (3/09/2010)
+ * @version 0.3.3 (3/28/2010)
  * @since 0.1.0 (11/26/09)
  * @see JUIGLETreeTableModel
  * 
@@ -43,8 +42,6 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 
 	private PluginEngine plugEngine;
 
-	private static final String PLUGIN_FILE = "config/plugins.xml";
-
 	/** Map of algorithms */
 	private Map<String, AlgorithmRecord> treeOfFilters;
 
@@ -55,23 +52,12 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 
 	private List<Pluggable> getPlugins() {
 		plugEngine = PluginEngine.getInstance();
-		try {
-			plugEngine.setCurrentVersion(ConfigPropertiesLoader
-					.getAppMajorVersionAsInt(), ConfigPropertiesLoader
-					.getAppMinorVersionAsInt(), ConfigPropertiesLoader
-					.getAppRevisionVersionAsInt());
-			plugEngine.init(AlgorithmTreeTableModel.PLUGIN_FILE);
-		} catch (PluginEngineException e) {
-			// FIXME propagovat chybu vis
-			e.printStackTrace();
-		}
-		return plugEngine.getAllCorrectPluggables();
+		return plugEngine.getAllCorrectPluggables(JERPAUtils.PLUGIN_ALGORITHMS_KEY);
 	}
 
 	@Override
 	public void fillByValues() {
 		treeOfFilters = new TreeMap<String, AlgorithmRecord>();
-		// fillValues();
 		List<Pluggable> listOfPlugins = getPlugins();
 
 		for (Pluggable plug : listOfPlugins) {
@@ -83,7 +69,6 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 			fr.setBasicDescription(plug.getPluginBasicDescription());
 			fr.setAlgorithmClass(plug);
 			treeOfFilters.put(plug.getPluginName(), fr);
-			// listOfAlgorithms.put(fr.getName(), item);
 		}
 
 		String prevLast = "";
@@ -123,6 +108,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 		return plugEngine;
 	}
 
+	@Deprecated
 	private void fillValues() {
 		// treeOfFilters = new TreeSet<AlgorithmRecord>();
 		ClassFinder cf = new ClassFinder();

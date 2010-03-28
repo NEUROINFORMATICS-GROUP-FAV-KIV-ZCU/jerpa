@@ -33,12 +33,14 @@ import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
 import ch.ethz.origo.juigle.application.LanguagePropertiesLoader;
 import ch.ethz.origo.juigle.application.exception.PropertiesException;
+import ch.ethz.origo.juigle.plugin.PluginEngine;
+import ch.ethz.origo.juigle.plugin.exception.PluginEngineException;
 
 /**
  * Main class of this application. Contains main method for application startup.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (3/24/2010)
+ * @version 0.1.1 (3/28/2010)
  * @since 0.1.0 (04/16/2009 - JERPA birthday)
  * 
  */
@@ -56,9 +58,18 @@ public class Main {
 			LanguagePropertiesLoader.loadProperties();
 			ConfigPropertiesLoader.loadProperties();
 			setLocale(LanguagePropertiesLoader.getApplicationLocale());
+			PluginEngine plugEngine = PluginEngine.getInstance();
+			plugEngine.setCurrentVersion(ConfigPropertiesLoader
+					.getAppMajorVersionAsInt(), ConfigPropertiesLoader
+					.getAppMinorVersionAsInt(), ConfigPropertiesLoader
+					.getAppRevisionVersionAsInt());
+			plugEngine.init(ConfigPropertiesLoader.getPluginXMLLocation());
 		} catch (PropertiesException e) {
 			Main.rootLogger.warn(e.getMessage(), e.getCause());
 			// TODO udelat hromadne nahrani properties, asi pres interface
+			e.printStackTrace();
+		} catch (PluginEngineException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -76,7 +87,7 @@ public class Main {
 		if (applicationLocale.equals("eng")) {
 			locale = new Locale("en");
 		} else if (applicationLocale.equals("cze")) {
-			locale = new Locale("cs","CZ");
+			locale = new Locale("cs", "CZ");
 		}
 		Locale.setDefault(locale);
 	}

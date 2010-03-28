@@ -186,8 +186,8 @@ public class ConfigPropertiesLoader {
 	 * @version 0.1.1 (3/28/2010)
 	 * @since 0.1.8 (3/28/2010)
 	 */
-	public static String getPerspectivePluginXMLLocation() {
-		return properties.getProperty("plugin.perspective.xml");
+	public static String getPluginXMLLocation() {
+		return properties.getProperty("plugin.xml.path");
 	}
 
 	/** Only for test */

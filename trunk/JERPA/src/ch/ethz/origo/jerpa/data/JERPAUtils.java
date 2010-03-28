@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.2 (3/24/2010)
+ * @version 0.1.3 (3/28/2010)
  * @since 0.1.0 (07/18/09)
  */
 public class JERPAUtils {
@@ -16,6 +16,9 @@ public class JERPAUtils {
 	public static final String JAVA_EXTENSION = ".java";
 	
 	public static final String IMAGE_PATH = "ch/ethz/origo/jerpa/data/images/";
+	
+	public static final String PLUGIN_PERSPECTIVES_KEY = "Perspective";
+	public static final String PLUGIN_ALGORITHMS_KEY = "Algorithms";
 
 	private static List<String> listOfFilesToDelete;
 	
