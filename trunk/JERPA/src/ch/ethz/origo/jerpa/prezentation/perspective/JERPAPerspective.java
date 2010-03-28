@@ -44,6 +44,8 @@ public final class JERPAPerspective extends Perspective {
 
 	private JUIGLEMenuItem helpMenu;
 	private JUIGLEMenuItem aboutItem;
+	
+	private PluginsTreeTable pluginsTable;
 
 	@Override
 	public String getTitle() {
@@ -87,9 +89,11 @@ public final class JERPAPerspective extends Perspective {
 		super.initPerspectivePanel();
 		mainPanel.setLayout(new BorderLayout());
 		try {
-			PluginsTreeTable pluginsTable = new PluginsTreeTable();
+			pluginsTable = new PluginsTreeTable();
 			JScrollPane sp = new JScrollPane(pluginsTable);
 			mainPanel.add(sp, BorderLayout.CENTER);
+			mainPanel.revalidate();
+			mainPanel.repaint();
 		} catch (DataStoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
