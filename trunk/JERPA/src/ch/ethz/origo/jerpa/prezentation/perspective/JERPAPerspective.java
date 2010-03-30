@@ -8,7 +8,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXTaskPane;
 
@@ -28,7 +27,7 @@ import ch.ethz.origo.juigle.prezentation.tables.PluginsTreeTable;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.3 (3/28/2010)
+ * @version 0.1.4 (3/29/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * 
@@ -187,12 +186,11 @@ public final class JERPAPerspective extends Perspective {
 	@Override
 	public void updateText() {
 		super.updateText();
-		SwingUtilities.invokeLater(new Runnable() {
+		/*SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				menu.updateText();
 			}
-		});
+		});*/
 	}
 
 }

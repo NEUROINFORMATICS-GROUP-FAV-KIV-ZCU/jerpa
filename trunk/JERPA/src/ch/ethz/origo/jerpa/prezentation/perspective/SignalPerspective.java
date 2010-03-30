@@ -231,13 +231,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 	@Override
 	public void updateText() {
 		super.updateText();
-		SwingUtilities.invokeLater(new Runnable() {
+		/*SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				// update menu text
-				menu.updateText();
+
 			}
-		});
+		});*/
 	}
 
 	/**

@@ -37,7 +37,7 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.1.3 (3/24/2010)
+ * @version 0.1.4 (3/29/2010)
  * @since 0.1.0 (05/07/2009)
  */
 public class MainFrame implements IObserver {
@@ -82,7 +82,7 @@ public class MainFrame implements IObserver {
 						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
 		mainFrame.addMainMenu(getMainMenu());
-		mainFrame.setPerspectives(PerspectiveLoader.getInstance());
+		mainFrame.setPerspectives(PerspectiveLoader.getInstance(), "menu.main.perspectives");
 		mainFrame.setVisible(true);
 		mainFrame.setFullScreen(true);
 		MainFrame.HEIGHT = mainFrame.getHeight();
@@ -90,8 +90,7 @@ public class MainFrame implements IObserver {
 	}
 
 	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {
-		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu();
-		mainMenu.setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
+		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu(LangUtils.MAIN_FILE_PATH);
 		mainMenu.addHomePageItem(null, ConfigPropertiesLoader.getJERPAHomePage());
 		// mainMenu.addCalendarItem(null);
 		return mainMenu;

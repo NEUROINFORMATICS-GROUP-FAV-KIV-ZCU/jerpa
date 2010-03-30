@@ -5,8 +5,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.SwingUtilities;
-
 
 import org.jdesktop.swingx.JXTaskPane;
 
@@ -24,7 +22,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.1 (3/28/2010)
+ * @version 0.1.2 (3/29/2010)
  * @since 0.1.0 (10/16/2010)
  * @see Perspective
  * 
@@ -66,12 +64,12 @@ public class DBPerspective extends Perspective {
 	@Override
 	public void updateText() {
 		super.updateText();
-		SwingUtilities.invokeLater(new Runnable() {
+		/*SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				menu.updateText();
 			}
-		});
+		});*/
 	}
 
 	/**
