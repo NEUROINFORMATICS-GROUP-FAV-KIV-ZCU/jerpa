@@ -18,15 +18,22 @@
 	<entity name="Experiment">
 		<attributes>
 			<attribute name="Experiment_id" type="Integer" isNull="no" isPK="yes"/>
-			<attribute name="Owner_id" type="Integer" isNull="no" isFK="yes"/>
-			<attribute name="Subject_person_id" type="Integer" isNull="no" isFK="yes"/>
-			<attribute name="Scenario_id" type="Integer" isNull="no" isFK="yes"/>
-			<attribute name="Weather_id" type="Integer" isNull="no" isFK="yes"/>
-			<attribute name="Research_group_id" type="Integer" isNull="no" isFK="yes"/>
+			<attribute name="Owner_id" type="Integer" isNull="no"/>
+			<attribute name="Subject_person_id" type="Integer" isNull="no"/>
+			<attribute name="Scenario_id" type="Integer" isNull="no"/>
+			<attribute name="Weather_id" type="Integer" isNull="no"/>
+			<attribute name="Research_group_id" type="Integer" isNull="no"/>
 			<attribute name="Start_time" type="Date"/>
 			<attribute name="End_time" type="Date"/>
 			<attribute name="Temperature" type="Smallint"/>
 			<attribute name="WeatherNote" type="Varchar" size="255"/>
 		</attributes>
+		<foreignkeys>
+			<foreignkey name="Owner_id" parent=""/>
+			<foreignkey name="Subject_person_id" parent=""/>
+			<foreignkey name="Scenario_id" parent=""/>
+			<foreignkey name="Weather_id" parent=""/>
+			<foreignkey name="Research_group_id" parent=""/>
+		</foreignkeys>
 	</entity>
 </entities>
