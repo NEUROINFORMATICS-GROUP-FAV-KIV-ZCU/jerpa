@@ -17,6 +17,7 @@
 	<property name="build" location="${projecthome}/bin" />
 	<property name="dist" location="${projecthome}/dist" />
 	<property name="lib" location="${projecthome}/lib" />
+	<property name="plugins" location="${projecthome}/plugins" />
 
 	<property name="runloc" location="${dist}" />
 
