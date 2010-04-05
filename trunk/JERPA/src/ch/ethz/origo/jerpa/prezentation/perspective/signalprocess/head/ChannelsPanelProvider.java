@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
@@ -24,8 +25,9 @@ import ch.ethz.origo.juigle.application.observers.IObserver;
  * 
  * @author Petr Soukal
  * @author Vaclav Souhrada
- * @version 0.2.0 (1/30/2010)
+ * @version 0.2.1 (4/05/2010)
  * @since 0.1.0 (1/30/2010)
+ * @see IObserver
  */
 public class ChannelsPanelProvider implements IObserver {
 
@@ -42,9 +44,10 @@ public class ChannelsPanelProvider implements IObserver {
 	 *          - j�dro aplikace udr�uj�c� vztah mezi aplika�n� a prezenta�n�
 	 *          vrstvou.
 	 * @param guiController
-	 * @throws JUIGLELangException 
+	 * @throws JUIGLELangException
 	 */
-	public ChannelsPanelProvider(SignalSessionManager session) throws JUIGLELangException {
+	public ChannelsPanelProvider(SignalSessionManager session)
+			throws JUIGLELangException {
 		this.session = session;
 		channelsPanel = new ChannelsPanel(this);
 		countSelectedSignals = 0;
@@ -58,7 +61,6 @@ public class ChannelsPanelProvider implements IObserver {
 	@Override
 	public void update(IObservable o, Object arg) {
 		int msg;
-
 		if (arg instanceof java.lang.Integer) {
 			msg = ((Integer) arg).intValue();
 		} else {
@@ -67,11 +69,16 @@ public class ChannelsPanelProvider implements IObserver {
 
 		switch (msg) {
 		case SignalPerspectiveObservable.MSG_PROJECT_CLOSED:
-			channelsPanel.electrodesPanel.removeAll();
-			channelsPanel.electrodesPanel.repaint();
-			channelsPanel.electrodesPanel.validate();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					channelsPanel.electrodesPanel.removeAll();
+					channelsPanel.electrodesPanel.repaint();
+					channelsPanel.electrodesPanel.validate();
+				}
+			});
 			break;
-
 		case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
 			setChannelsNames();
 			break;

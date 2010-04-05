@@ -1,6 +1,7 @@
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -133,8 +134,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		mainPanel.setLayout(new GridBagLayout());
 		try {
 			signalInfoProvider = new SignalInfoProvider(sessionManager);
-			averagingPanelProvider = new AveragingPanelProvider(sessionManager,
-					SignalPerspectiveObservable.getInstance());
+			averagingPanelProvider = new AveragingPanelProvider(sessionManager);
 			signalPanelProvider = new SignalsPanelProvider(sessionManager);
 			channelPanelProvider = new ChannelsPanelProvider(sessionManager);
 
@@ -171,10 +171,10 @@ public class SignalPerspective extends Perspective implements IObserver {
 			gbcAveragingProv.weightx = 0.6;
 			gbcAveragingProv.weighty = 0.5;
 
+			mainPanel.add(signalInfoProvider.getPanel(), gbcSignalInfoProv);
+			mainPanel.add(channelPanelProvider.getPanel(), gbcChannelProv);
 			mainPanel.add(signalPanelProvider.getPanel(), gbcSignalPanelProv);
 			mainPanel.add(averagingPanelProvider.getPanel(), gbcAveragingProv);
-			mainPanel.add(channelPanelProvider.getPanel(), gbcChannelProv);
-			mainPanel.add(signalInfoProvider.getPanel(), gbcSignalInfoProv);
 		} catch (JUIGLELangException e) {
 			throw new PerspectiveException(e);
 		}
@@ -736,7 +736,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private void openComponentInDialog(final JComponent component,
 			final GridBagConstraints gbcPosition) {
 		JXDialog dialog = new JXDialog(component);
-		dialog.setSize(800, 600);
+		dialog.setMinimumSize(new Dimension(800, 600));
 		dialog.setAlwaysOnTop(true);
 		// dialog.pack();
 		dialog.setLocation(JUIGLEGraphicsUtils.getCenterPosition(dialog));

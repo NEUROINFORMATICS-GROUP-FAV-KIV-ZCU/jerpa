@@ -25,8 +25,9 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
  * 
  * @author Tomas Rondik
  * @author Vaclav Souhrada
- * @version 0.2.0 (2/03/2010)
+ * @version 0.2.1 (4/05/2010)
  * @since 0.1.0 (1/31/2010)
+ * @see IObserver
  */
 public final class AveragingPanelProvider implements IObserver {
 	/**
@@ -62,9 +63,10 @@ public final class AveragingPanelProvider implements IObserver {
 	 *          Reference na t��du pro komunikaci
 	 *          <code>AveragingWindowProvider</code>u se zbytkem aplikace.
 	 */
-	public AveragingPanelProvider(SessionManager session, SignalPerspectiveObservable observable) {
+	public AveragingPanelProvider(SessionManager session) {
 		this.app = session;
-		this.observable = observable;
+		this.observable = SignalPerspectiveObservable.getInstance();
+		this.observable.attach(this);
 		project = null;
 		averagingDataManager = new AveragingDataManager(project);
 		averagingPanel = new AveragingPanel(this);

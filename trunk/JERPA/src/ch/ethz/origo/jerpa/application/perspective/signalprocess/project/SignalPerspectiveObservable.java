@@ -6,8 +6,8 @@ import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
 /**
  * 
  * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
- * @version 0.1.0 10/18/09
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.1.1 (4/01/2010)
  * @since 0.1.0 (08/15/09)
  * @see JUIGLEObservable
  * @see AbstractJUIGLEObservable
