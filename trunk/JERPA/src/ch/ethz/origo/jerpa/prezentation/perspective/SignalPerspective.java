@@ -44,7 +44,6 @@ import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import ch.ethz.origo.juigle.application.project.Project;
 import ch.ethz.origo.juigle.data.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFileChooser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
@@ -59,7 +58,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.6 (3/24/2010)
+ * @version 0.3.8 (4/17/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -80,8 +79,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem exitItem;
 	// edit menu items
 	private JUIGLEMenuItem editMenu;
-	private JUIGLEMenuItem undoItem;
-	private JUIGLEMenuItem redoItem;
 	private JUIGLEMenuItem baselineCorrItem;
 	private JUIGLEMenuItem autoArteSelItem;
 	// view menu items
@@ -287,21 +284,15 @@ public class SignalPerspective extends Perspective implements IObserver {
 	 */
 	private JUIGLEMenuItem initAndGetEditMenuItem() {
 		editMenu = new JUIGLEMenuItem(getLocalizedString("menu.edit"));
-		undoItem = new JUIGLEMenuItem();
-		redoItem = new JUIGLEMenuItem();
 		baselineCorrItem = new JUIGLEMenuItem();
 		autoArteSelItem = new JUIGLEMenuItem();
 		//
 		editMenu.setResourceBundleKey("menu.edit");
-		undoItem.setResourceBundleKey("menu.edit.undo");
-		redoItem.setResourceBundleKey("menu.edit.redo");
 		baselineCorrItem.setResourceBundleKey("menu.edit.baselinecorrection");
 		autoArteSelItem.setResourceBundleKey("menu.edit.autoselarte");
 		//
 		setEditMenuActions();
 		//
-		editMenu.addSubItem(undoItem);
-		editMenu.addSubItem(redoItem);
 		editMenu.addSubItem(baselineCorrItem);
 		editMenu.addSubItem(autoArteSelItem);
 
@@ -457,6 +448,8 @@ public class SignalPerspective extends Perspective implements IObserver {
 	}
 
 	/**
+	 * 
+	 * @version 0.1.2 (4/14/2010)
 	 * @since 0.1.0
 	 */
 	private void setEditMenuActions() {
@@ -478,8 +471,27 @@ public class SignalPerspective extends Perspective implements IObserver {
 				baselineCorrectionDialog.setActualLocationAndVisibility();
 			}
 		};
+		/*Action undo = new AbstractAction() {	
+			private static final long serialVersionUID = 5757513024618899851L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sessionManager.undo();
+			}	
+		};
+		Action redo = new AbstractAction() {	
+			private static final long serialVersionUID = -3728905182946743343L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sessionManager.redo();
+			}
+		};*/
+		
 		autoArteSelItem.setAction(autoArtefactSelAct);
 		baselineCorrItem.setAction(baselineDialogAct);
+		/*undoItem.setAction(undo);
+		redoItem.setAction(redo);*/
 	}
 
 	/**
@@ -759,19 +771,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 		});
 	}
 
-	private void checkUndoableControls() {
-		Project project = sessionManager.getCurrentProject();
-		// undoButton.setEnabled(project.canUndo());
-		undoItem.setEnabled(project.canUndo());
-		// mainWindow.redoButton.setEnabled(project.canRedo());
-		redoItem.setEnabled(project.canRedo());
-	}
-
 	/**
+	 * 
 	 * 
 	 * @param object
 	 * @param state
-	 * @version 0.1.0
+	 * @version 0.1.1 (4/17/2010)
 	 * @since 0.2.0
 	 */
 	private void makeUpdate(IObservable o, Object state) {
@@ -796,7 +801,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 				break;
 
 			case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
-				checkUndoableControls();
 				// FIXME addOpenedProjectsToMenu(sessionManager.getProjectsNames(), 0);
 				sessionManager.getAutoSelectionArtefact().setCurrentData();
 				sessionManager.getBaselineCorrection().setCurrentData();
@@ -820,9 +824,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 				autoArteSelItem.setEnabled(false);
 				baselineCorrItem.setEnabled(false);
 				// FIXME mainWindow.undoButton.setEnabled(false);
-				undoItem.setEnabled(false);
 				// FIXME mainWindow.redoButton.setEnabled(false);
-				redoItem.setEnabled(false);
 				// FIXME mainWindow.invertSignalsButton.setEnabled(false);
 				break;
 
@@ -833,14 +835,12 @@ public class SignalPerspective extends Perspective implements IObserver {
 				autoArteSelItem.setEnabled(true);
 				baselineCorrItem.setEnabled(true);
 				// FIXME mainWindow.undoButton.setEnabled(true);
-				undoItem.setEnabled(true);
 				// FIXME mainWindow.redoButton.setEnabled(true);
-				redoItem.setEnabled(true);
 				// FIXME mainWindow.invertSignalsButton.setEnabled(true);
 				break;
 
 			case SignalPerspectiveObservable.MSG_UNDOABLE_COMMAND_INVOKED:
-				checkUndoableControls();
+					/* Do nothing yet - not implemented */
 				break;
 
 			case SignalPerspectiveObservable.MSG_NEW_BUFFER:
