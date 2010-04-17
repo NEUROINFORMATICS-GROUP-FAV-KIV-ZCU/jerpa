@@ -5,7 +5,7 @@
 	<property name="projecthome" value="." />
 
 	<!-- verze bundle -->
-	<property name="version" value="0.1.0" />
+	<property name="version" value="1.0" />
 
 	<!-- symbolický název bundelu -->
 	<property name="jarname" value="${ant.project.name}" />
