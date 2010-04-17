@@ -19,6 +19,7 @@ import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectLoader;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectWriter;
+import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.output.ExportFrameProvider;
 import ch.ethz.origo.juigle.application.exception.ProjectOperationException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.project.Project;
@@ -28,7 +29,7 @@ import ch.ethz.origo.juigle.application.project.SessionManager;
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.2.2 (3/21/2010)
+ * @version 0.2.3 (4/17/2010)
  * @since 0.1.0 (11/18/09)
  * @see SessionManager
  * 
@@ -45,6 +46,7 @@ public class SignalSessionManager extends SessionManager {
 		autoSelectionArtefact = new AutomaticArtefactSelection(this);
 		baselineCorrection = new BaselineCorrection(this);
 		sigPerspObservable = SignalPerspectiveObservable.getInstance();
+		new ExportFrameProvider(this);
 	}
 
 	@Override

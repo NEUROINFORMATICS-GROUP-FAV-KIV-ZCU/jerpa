@@ -1,15 +1,20 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.output;
 
 import java.awt.Color;
+import java.util.ResourceBundle;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.AveragingDataManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalProject;
 import ch.ethz.origo.jerpa.data.Header;
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 
 /**
  * Programov� rozhran� pro komunikaci mezi aplika�n� vrstvou a ��st� prezenta�n�
@@ -17,10 +22,12 @@ import ch.ethz.origo.juigle.application.observers.IObserver;
  * 
  * @author Tomas Rondik (jERP Studio)
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (3/21/2010)
+ * @version 0.2.0 (4/17/2010)
  * @since 0.1.0 (3/21/2010)
+ * @see IObserver
+ * @see ILanguage
  */
-public final class ExportFrameProvider implements IObserver {
+public final class ExportFrameProvider implements ILanguage, IObserver {
 	/**
 	 * Reference na t��du poskytuj�c� reference na projekty.
 	 */
@@ -44,6 +51,10 @@ public final class ExportFrameProvider implements IObserver {
 	 */
 	private AveragingDataManager averagingDataManager;
 
+	private ResourceBundle resourceBundle;
+
+	private String resourceBundlePath;
+
 	/**
 	 * Vytv��� komunika�n� rozhran� pro komunikaci mezi aplika�n� a prezenta�n�
 	 * vrstvou v ��sti export v�sledk�.
@@ -57,6 +68,9 @@ public final class ExportFrameProvider implements IObserver {
 		selectedTabProjectIndex = app.getCurrentProjectIndex();
 		selectedTabProject = app.getCurrentProject();
 		SignalPerspectiveObservable.getInstance().attach(this);
+		LanguageObservable.getInstance().attach((ILanguage) this);
+		this.setLocalizedResourceBundle(LangUtils
+				.getPerspectiveLangPathProp(LangUtils.SIGNAL_PERSP_LANG_FILE_KEY));
 		averagingDataManager = new AveragingDataManager(selectedTabProject);
 	}
 
@@ -70,7 +84,8 @@ public final class ExportFrameProvider implements IObserver {
 	 */
 	void setSelectedTabProjectIndex(int selectedTabProjectIndex) {
 		this.selectedTabProjectIndex = selectedTabProjectIndex;
-		selectedTabProject = (SignalProject)app.getProject(this.selectedTabProjectIndex);
+		selectedTabProject = (SignalProject) app
+				.getProject(this.selectedTabProjectIndex);
 		averagingDataManager.setProject(selectedTabProject);
 	}
 
@@ -90,7 +105,7 @@ public final class ExportFrameProvider implements IObserver {
 			} catch (Exception exception) {
 				exportFrame.showException(exception);
 				exception.printStackTrace(); // TODO - lad�c� v�pis, do fin�ln� verze
-																			// odstranit
+				// odstranit
 			}
 		}
 	}
@@ -98,7 +113,8 @@ public final class ExportFrameProvider implements IObserver {
 	/**
 	 * Zp�sobuje zobrazen� exportn�ho okna (realizov�no t��dou
 	 * <code>ExportFrame</code>).
-	 * @throws PerspectiveException 
+	 * 
+	 * @throws PerspectiveException
 	 */
 	private void showExportFrame() throws PerspectiveException {
 		if (exportFrame != null) {
@@ -125,11 +141,11 @@ public final class ExportFrameProvider implements IObserver {
 			switch (msg) {
 			case SignalPerspectiveObservable.MSG_RUN_AVERAGES_EXPORT:
 				try {
-						showExportFrame();
-					} catch (PerspectiveException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					showExportFrame();
+				} catch (PerspectiveException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
 				if (exportFrame != null && exportFrame.isVisible())
@@ -159,8 +175,8 @@ public final class ExportFrameProvider implements IObserver {
 	/**
 	 * Vrac� referenci na atribut <code>gui</code>.
 	 * 
-	 * @return T��da pro komunikaci <code>ExportFrameProvider</code>u se
-	 *         zbytkem aplikace.
+	 * @return T��da pro komunikaci <code>ExportFrameProvider</code>u se zbytkem
+	 *         aplikace.
 	 */
 	public SignalSessionManager getSignalSessionManager() {
 		return app;
@@ -325,8 +341,8 @@ public final class ExportFrameProvider implements IObserver {
 	 * Vrac� zp�sob zobrazen� sign�l� v <b>SignalViewer</b>ech v exportn�m okn�.
 	 * 
 	 * @param modeOfRepresentationInExport
-	 *          zp�sob zobrazen� sign�l�. N�kter� z konstant t��dy <i>SignalViewer</i>,
-	 *          kter� ur�uje zp�sob zobrazen� sign�lu.
+	 *          zp�sob zobrazen� sign�l�. N�kter� z konstant t��dy
+	 *          <i>SignalViewer</i>, kter� ur�uje zp�sob zobrazen� sign�lu.
 	 */
 	void setModeOfRepresentation(int modeOfRepresentationInExport) {
 		selectedTabProject
@@ -404,13 +420,47 @@ public final class ExportFrameProvider implements IObserver {
 	@Override
 	public void update() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void update(Object state) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public String getResourceBundlePath() {
+		return resourceBundlePath;
+	}
+
+	@Override
+	public void setLocalizedResourceBundle(String path) {
+		this.resourceBundlePath = path;
+		this.resourceBundle = ResourceBundle.getBundle(path);
+
+	}
+
+	@Override
+	public void setResourceBundleKey(String key) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateText() throws JUIGLELangException {
+		setLocalizedResourceBundle(resourceBundlePath);
+	}
+
+	/**
+	 * Return instance of the current resource bundle for Export gui.
+	 * 
+	 * @return instance of the current resource bundle for Export gui
+	 * @version 0.1.0 (4/17/2010)
+	 * @since 0.2.0 (4/17/2010)
+	 */
+	public ResourceBundle getResourceBundle() {
+		return resourceBundle;
 	}
 
 }

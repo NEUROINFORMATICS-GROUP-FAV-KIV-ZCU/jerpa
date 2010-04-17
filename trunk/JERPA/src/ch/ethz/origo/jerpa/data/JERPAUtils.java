@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.3 (3/28/2010)
+ * @version 0.1.4 (4/17/2010)
  * @since 0.1.0 (07/18/09)
  */
 public class JERPAUtils {

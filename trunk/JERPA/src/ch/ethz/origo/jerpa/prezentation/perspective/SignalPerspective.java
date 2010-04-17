@@ -35,7 +35,6 @@ import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.averaging.Aver
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.head.ChannelsPanelProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.importdialog.ImportDialogProvider;
 import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.info.SignalInfoProvider;
-import ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.output.ExportFrameProvider;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
@@ -110,8 +109,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private ArtefactSelectionDialog artefactSelectionDialog;
 	private BaselineCorrectionDialog baselineCorrectionDialog;
 
-	private ExportFrameProvider efp;
-
 	/**
 	 * Default constructor. Initializes required objects.
 	 */
@@ -120,7 +117,6 @@ public class SignalPerspective extends Perspective implements IObserver {
 		spObservable = SignalPerspectiveObservable.getInstance();
 		spObservable.attach(this);
 		sessionManager = new SignalSessionManager();
-		efp = new ExportFrameProvider(sessionManager);
 		resourcePath = LangUtils
 				.getPerspectiveLangPathProp("perspective.signalprocessing.lang");
 	}

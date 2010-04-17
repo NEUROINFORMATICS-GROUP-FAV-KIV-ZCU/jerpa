@@ -14,6 +14,7 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -39,22 +40,31 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.log4j.Logger;
+
 import ch.ethz.origo.jerpa.application.exception.InsufficientDataException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.EpochDataSet;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
+import ch.ethz.origo.juigle.data.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 /**
  * T��da realizuj�c� okno exportu v�sledk�.
  * 
  * @author Tomas Rondik (jERP Studio)
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (3/21/2010)
+ * @version 0.2.0 (4/17/2010)
  * @since 0.1.0 (3/21/2010)
  */
 @SuppressWarnings("serial")
 final class ExportFrame extends JFrame {
+
+	private Logger logger = Logger.getLogger(ExportFrame.class);
+	
+	private static final String RBKEY_FRAME_TITLE = "avg.frame.export.title";
 	/**
 	 * Reference na programov� rozhran� mezi prezenta�n� a aplika�n� vrstvou.
 	 */
@@ -92,6 +102,7 @@ final class ExportFrame extends JFrame {
 	 * tisknout.
 	 */
 	private PrintRequestAttributeSet printRequest;
+	
 
 	/**
 	 * Vytv��� nov� okno exportu v�sledk�.
@@ -99,12 +110,18 @@ final class ExportFrame extends JFrame {
 	 * @param exportFrameProvider
 	 *          Reference na programov� rozhran� mezi prezenta�n� a aplika�n�
 	 *          vrstvou.
-	 * @throws PerspectiveException 
+	 * @throws PerspectiveException
 	 */
-	ExportFrame(ExportFrameProvider exportFrameProvider) throws PerspectiveException {
-		super("jERP Averages export");
-		this.setIconImage(JUIGLEGraphicsUtils.getImage(JERPAUtils.IMAGE_PATH + "icon.gif"));
+	ExportFrame(ExportFrameProvider exportFrameProvider)
+			throws PerspectiveException {
+		this.setIconImage(JUIGLEGraphicsUtils.getImage(JERPAUtils.IMAGE_PATH
+				+ "icon.gif"));
 		this.exportFrameProvider = exportFrameProvider;
+		try {
+			this.setTitle(getLocalizedText(ExportFrame.RBKEY_FRAME_TITLE));
+		} catch (Exception e) {
+			showErrorResourceBundleDialog(ExportFrame.RBKEY_FRAME_TITLE, e);
+		}
 		printerAttributesInit();
 		this.setLayout(layoutInit());
 		this.getContentPane().add(createInside(), BorderLayout.CENTER);
@@ -217,17 +234,18 @@ final class ExportFrame extends JFrame {
 	 * Vytv��� n�strojovou li�tu pro �pravy vzhledu a export v�sledn�ch pr�m�r�.
 	 * 
 	 * @return N�strojov� li�ta.
-	 * @throws PerspectiveException 
+	 * @throws PerspectiveException
 	 */
 	private Container createToolBar() throws PerspectiveException {
 		JToolBar toolBarJTB = new JToolBar();
 		saveAsJB = new JButton();
 		saveAsJB.setToolTipText("Save As");
-		saveAsJB.setIcon(JUIGLEGraphicsUtils.createImageIcon(
-				JERPAUtils.IMAGE_PATH + "save_48.png", 32, 32));
+		saveAsJB.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
+				+ "save_48.png", 32, 32));
 		printJB = new JButton();
 		printJB.setToolTipText("Print");
-		printJB.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "Print_32.png"));
+		printJB.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
+				+ "Print_32.png"));
 
 		channelsEditJB = new JButton("Select channels to export");
 		imageSettingsJB = new JButton("Image settings");
@@ -339,8 +357,8 @@ final class ExportFrame extends JFrame {
 	}
 
 	/**
-	 * Nastavuje po��tek soustavy sou�adnic zobrazova�� pr�m�ru (<code>SignalViewer</code>�)
-	 * v aktu�ln� z�lo�ce.
+	 * Nastavuje po��tek soustavy sou�adnic zobrazova�� pr�m�ru (
+	 * <code>SignalViewer</code>�) v aktu�ln� z�lo�ce.
 	 * 
 	 * @param coordinateBasicOriginFrame
 	 *          Pozice po��tku soustavy sou�adnic.
@@ -535,7 +553,8 @@ final class ExportFrame extends JFrame {
 	 */
 	private void imageSettings() {
 		Object[] selectionValues = { "Save", "Cancel" };
-		SettingsPanel colorPanel = new SettingsPanel(this);
+		SettingsPanel colorPanel;
+		colorPanel = new SettingsPanel(this);
 		int choice = JOptionPane.showOptionDialog(this, (Object) colorPanel,
 				"Image settings", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE,
 				null, selectionValues, selectionValues[1]);
@@ -571,4 +590,28 @@ final class ExportFrame extends JFrame {
 			imageSettings();
 		}
 	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 * @version 0.1.0 (4/17/2010)
+	 * @since 0.2.0 (4/17/2010)
+	 */
+	private String getLocalizedText(String key) throws Exception {
+		return exportFrameProvider.getResourceBundle().getString(key);
+	}
+	
+	private void showErrorResourceBundleDialog(String key, Exception exp) {
+		JUIGLELangException e = new JUIGLELangException("JG003:" + key + ":"
+				+ exportFrameProvider.getResourceBundlePath(), exp);
+		String errorMSG = JUIGLEErrorParser.getJUIGLEErrorMessage(e.getMessage());
+		// display error GUI
+		JUIGLErrorInfoUtils.showErrorDialog("Error dialog", errorMSG, e,
+				Level.WARNING);
+		logger.warn(errorMSG, e);
+		e.printStackTrace();
+	}
+	
 }
