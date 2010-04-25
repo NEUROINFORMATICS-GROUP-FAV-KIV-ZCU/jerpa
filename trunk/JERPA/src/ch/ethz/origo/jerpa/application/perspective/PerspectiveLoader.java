@@ -1,4 +1,4 @@
-package noname;
+package ch.ethz.origo.jerpa.application.perspective;
 
 import java.util.ArrayList;
 import java.util.List;

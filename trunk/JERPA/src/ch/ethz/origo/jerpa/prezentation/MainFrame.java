@@ -22,7 +22,7 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
-import noname.PerspectiveLoader;
+import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
