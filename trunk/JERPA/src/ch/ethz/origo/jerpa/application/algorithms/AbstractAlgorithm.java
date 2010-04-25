@@ -1,4 +1,4 @@
-package ch.ethz.origo.jerpa.data.algorithms;
+package ch.ethz.origo.jerpa.application.algorithms;
 
 import ch.ethz.origo.juigle.plugin.AbstractPlugin;
 
