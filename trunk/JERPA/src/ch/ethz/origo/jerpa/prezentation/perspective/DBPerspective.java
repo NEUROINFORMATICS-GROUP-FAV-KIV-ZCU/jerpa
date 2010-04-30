@@ -13,9 +13,9 @@ import ch.ethz.origo.jerpa.prezentation.perspective.db.DbChooserDialog;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
-import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
-import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
-import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenu;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**

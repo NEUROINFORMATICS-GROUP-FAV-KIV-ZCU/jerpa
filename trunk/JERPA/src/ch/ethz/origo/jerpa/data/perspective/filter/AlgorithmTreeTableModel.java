@@ -14,12 +14,12 @@ import javax.swing.SwingUtilities;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.juigle.application.ClassFinder;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import ch.ethz.origo.juigle.data.ClassFinder;
-import ch.ethz.origo.juigle.data.tables.model.JUIGLETreeTableModel;
 import ch.ethz.origo.juigle.plugin.Pluggable;
 import ch.ethz.origo.juigle.plugin.PluginEngine;
+import ch.ethz.origo.juigle.prezentation.tables.model.JUIGLETreeTableModel;
 
 /**
  * 

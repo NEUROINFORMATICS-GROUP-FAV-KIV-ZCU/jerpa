@@ -31,7 +31,7 @@ import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
-import ch.ethz.origo.juigle.prezentation.JUIGLEMainMenu;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
 
 /**
  * 
@@ -79,9 +79,9 @@ public class MainFrame implements IObserver {
 		mainFrame = new JUIGLEFrame(
 				titleBuff.toString(),
 				ClassLoader
-						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
+						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_ion.png"));
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
-		mainFrame.addMainMenu(getMainMenu());
+		mainFrame.setMainMenu(getMainMenu());
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance(), "menu.main.perspectives");
 		mainFrame.setVisible(true);
 		mainFrame.setFullScreen(true);

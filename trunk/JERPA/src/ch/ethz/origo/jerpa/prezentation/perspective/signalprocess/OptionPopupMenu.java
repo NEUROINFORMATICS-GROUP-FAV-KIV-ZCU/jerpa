@@ -11,7 +11,7 @@ import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
 
 /**
  * T��da vytv��ej�c� popup-menu, kter� umo��uje funkce segmentace sign�l� a

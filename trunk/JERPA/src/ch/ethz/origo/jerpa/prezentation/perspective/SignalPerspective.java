@@ -46,11 +46,11 @@ import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.data.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFileChooser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
-import ch.ethz.origo.juigle.prezentation.JUIGLEMenu;
-import ch.ethz.origo.juigle.prezentation.JUIGLEMenuItem;
-import ch.ethz.origo.juigle.prezentation.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import ch.ethz.origo.juigle.prezentation.dialogs.AboutDialog;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenu;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**

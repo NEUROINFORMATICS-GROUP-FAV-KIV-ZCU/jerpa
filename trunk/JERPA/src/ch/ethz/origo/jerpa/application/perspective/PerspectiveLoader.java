@@ -3,9 +3,9 @@ package ch.ethz.origo.jerpa.application.perspective;
 import java.util.ArrayList;
 import java.util.List;
 
-import nezarazeno.IPerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.juigle.application.IPerspectiveLoader;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.plugin.Pluggable;
 import ch.ethz.origo.juigle.plugin.PluginEngine;

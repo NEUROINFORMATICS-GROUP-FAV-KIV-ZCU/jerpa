@@ -3,12 +3,13 @@ package ch.ethz.origo.jerpa.prezentation.perspective.db;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
-import notUsedYet.JUIGLELoginPane;
 
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.JXLoginPane;
 import org.jdesktop.swingx.auth.LoginEvent;
 import org.jdesktop.swingx.auth.LoginListener;
+
+import ch.ethz.origo.juigle.prezentation.database.JUIGLELoginPane;
 
 /**
  * 
