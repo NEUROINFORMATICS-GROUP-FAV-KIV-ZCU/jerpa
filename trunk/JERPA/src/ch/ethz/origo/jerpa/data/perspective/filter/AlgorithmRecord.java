@@ -1,7 +1,7 @@
 package ch.ethz.origo.jerpa.data.perspective.filter;
 
 import ch.ethz.origo.juigle.data.tables.Record;
-import ch.ethz.origo.juigle.plugin.Pluggable;
+import ch.ethz.origo.juigle.plugin.IPluggable;
 
 /**
  * 
@@ -21,7 +21,7 @@ public class AlgorithmRecord extends Record implements
 	private String basicDescription;
 	private String version;
 	private String category;
-	private Pluggable plugin;
+	private IPluggable plugin;
 
 	/**
 	 * Return name of algorithm
@@ -143,7 +143,7 @@ public class AlgorithmRecord extends Record implements
 	 * @param algorithmClass
 	 *          class
 	 */
-	public void setAlgorithmClass(Pluggable algorithmClass) {
+	public void setAlgorithmClass(IPluggable algorithmClass) {
 		this.plugin = algorithmClass;
 	}
 
@@ -152,7 +152,7 @@ public class AlgorithmRecord extends Record implements
 	 * 
 	 * @return class of algorithm
 	 */
-	public Pluggable getAlgorithmClass() {
+	public IPluggable getAlgorithmClass() {
 		return plugin;
 	}
 

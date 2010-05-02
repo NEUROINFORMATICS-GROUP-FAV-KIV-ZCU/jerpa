@@ -7,7 +7,7 @@ import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.juigle.application.IPerspectiveLoader;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
-import ch.ethz.origo.juigle.plugin.Pluggable;
+import ch.ethz.origo.juigle.plugin.IPluggable;
 import ch.ethz.origo.juigle.plugin.PluginEngine;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
@@ -68,7 +68,7 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 		}
 		// now load perspectives from plugins
 		PluginEngine plugEngine = PluginEngine.getInstance();
-		for (Pluggable plugin : plugEngine.getAllCorrectPluggables(JERPAUtils.PLUGIN_PERSPECTIVES_KEY)) {
+		for (IPluggable plugin : plugEngine.getAllCorrectPluggables(JERPAUtils.PLUGIN_PERSPECTIVES_KEY)) {
 			perspectives.add((Perspective) plugin);
 			plugEngine.startPluggable(plugin);
 		}

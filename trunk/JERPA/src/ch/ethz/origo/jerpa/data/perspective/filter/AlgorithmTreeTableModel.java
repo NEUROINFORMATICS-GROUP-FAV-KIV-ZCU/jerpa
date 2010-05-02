@@ -17,7 +17,7 @@ import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.juigle.application.ClassFinder;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import ch.ethz.origo.juigle.plugin.Pluggable;
+import ch.ethz.origo.juigle.plugin.IPluggable;
 import ch.ethz.origo.juigle.plugin.PluginEngine;
 import ch.ethz.origo.juigle.prezentation.tables.model.JUIGLETreeTableModel;
 
@@ -50,7 +50,7 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 		LanguageObservable.getInstance().attach(this);
 	}
 
-	private List<Pluggable> getPlugins() {
+	private List<IPluggable> getPlugins() {
 		plugEngine = PluginEngine.getInstance();
 		return plugEngine.getAllCorrectPluggables(JERPAUtils.PLUGIN_ALGORITHMS_KEY);
 	}
@@ -58,9 +58,9 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 	@Override
 	public void fillByValues() {
 		treeOfFilters = new TreeMap<String, AlgorithmRecord>();
-		List<Pluggable> listOfPlugins = getPlugins();
+		List<IPluggable> listOfPlugins = getPlugins();
 
-		for (Pluggable plug : listOfPlugins) {
+		for (IPluggable plug : listOfPlugins) {
 			AlgorithmRecord fr = new AlgorithmRecord();
 			fr.setAuthor(plug.getAuthorName());
 			fr.setName(plug.getPluginName());

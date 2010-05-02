@@ -79,7 +79,7 @@ public class MainFrame implements IObserver {
 		mainFrame = new JUIGLEFrame(
 				titleBuff.toString(),
 				ClassLoader
-						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_ion.png"));
+						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
 		mainFrame.setMainMenu(getMainMenu());
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance(), "menu.main.perspectives");

@@ -45,9 +45,9 @@ import org.apache.log4j.Logger;
 import ch.ethz.origo.jerpa.application.exception.InsufficientDataException;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.averaging.EpochDataSet;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
-import ch.ethz.origo.juigle.data.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
