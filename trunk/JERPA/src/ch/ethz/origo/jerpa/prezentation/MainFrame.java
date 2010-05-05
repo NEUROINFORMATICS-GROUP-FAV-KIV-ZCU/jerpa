@@ -22,15 +22,19 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
+import java.util.logging.Level;
+
 import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
+import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
 
 /**
@@ -54,7 +58,8 @@ public class MainFrame implements IObserver {
 			initGui();
 			JUIGLEObservable.getInstance().attach(this);
 		} catch (PerspectiveException e) {
-			// TODO Auto-generated catch block
+			String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(), LangUtils.JERPA_ERROR_LIST_PATH);
+			JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e, Level.WARNING);
 			e.printStackTrace();
 		}
 	}

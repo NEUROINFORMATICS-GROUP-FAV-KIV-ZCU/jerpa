@@ -38,8 +38,7 @@ public class ConfigPropertiesLoader {
 				properties.load(new FileInputStream(new File(PROPERTY_FILE)));
 				PropertyConfigurator.configure(properties);
 			} catch (IOException e) {
-				throw new PropertiesException(ConfigPropertiesLoader.class.getName()
-						+ " - cannot read config properties", e);
+				throw new PropertiesException("JERPA002:" + PROPERTY_FILE, e);
 			}
 			isLoaded = true;
 		}

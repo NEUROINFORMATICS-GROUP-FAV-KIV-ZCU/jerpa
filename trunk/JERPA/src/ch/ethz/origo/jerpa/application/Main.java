@@ -24,17 +24,21 @@
 package ch.ethz.origo.jerpa.application;
 
 import java.util.Locale;
+import java.util.logging.Level;
 
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
+import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.application.LanguagePropertiesLoader;
 import ch.ethz.origo.juigle.application.exception.PropertiesException;
 import ch.ethz.origo.juigle.plugin.PluginEngine;
 import ch.ethz.origo.juigle.plugin.exception.PluginEngineException;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 /**
  * Main class of this application. Contains main method for application startup.
@@ -65,6 +69,8 @@ public class Main {
 					.getAppRevisionVersionAsInt());
 			plugEngine.init(ConfigPropertiesLoader.getPluginXMLLocation());
 		} catch (PropertiesException e) {
+			String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(), LangUtils.JERPA_ERROR_LIST_PATH);
+			JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e, Level.WARNING);
 			Main.rootLogger.warn(e.getMessage(), e.getCause());
 			// TODO udelat hromadne nahrani properties, asi pres interface
 			e.printStackTrace();

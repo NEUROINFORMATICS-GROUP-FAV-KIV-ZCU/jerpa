@@ -15,7 +15,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.2 (3/28/2010)
+ * @version 0.1.3 (5/04/2010)
  * @since 0.1.0 (07/18/09)
  * @see IPerspectiveLoader
  */
@@ -59,11 +59,11 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 				checkIfPerspectiveIsDefault(prsvClass, name);
 				perspectives.add(prsvClass);
 			} catch (InstantiationException e) {
-				throw new PerspectiveException(PerspectiveLoader.class.getName(), e);
+				throw new PerspectiveException("JERPA023:" + perspectivesName, e);
 			} catch (IllegalAccessException e) {
-				throw new PerspectiveException(PerspectiveLoader.class.getName(), e);
+				throw new PerspectiveException("JERPA023:" + perspectivesName, e);
 			} catch (ClassNotFoundException e) {
-				throw new PerspectiveException(PerspectiveLoader.class.getName(), e);
+				throw new PerspectiveException("JERPA023:" + perspectivesName, e);
 			}
 		}
 		// now load perspectives from plugins
