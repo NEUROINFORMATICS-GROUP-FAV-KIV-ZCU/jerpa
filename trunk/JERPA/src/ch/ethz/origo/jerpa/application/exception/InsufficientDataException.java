@@ -24,7 +24,8 @@
 package ch.ethz.origo.jerpa.application.exception;
 
 /**
- * Vyj�mka popisuj�c� v�skyt neposta�uj�c�ch dat.
+ * 
+ * This error message informs you of incomplete data.
  * 
  * @author Tomas Rondik
  * @author Vaclav Souhrada

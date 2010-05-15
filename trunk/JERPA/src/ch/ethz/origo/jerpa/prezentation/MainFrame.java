@@ -38,11 +38,13 @@ import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
 
 /**
- * 
+ * Main Frame (GUI) of application JERPA. It is based on the 
+ * class from <code>JUIGLE</code> called <code>JUIGLEFrame</code>.
  * 
  * @author Vaclav Souhrada
  * @version 0.1.4 (3/29/2010)
  * @since 0.1.0 (05/07/2009)
+ * @see IObserver
  */
 public class MainFrame implements IObserver {
 

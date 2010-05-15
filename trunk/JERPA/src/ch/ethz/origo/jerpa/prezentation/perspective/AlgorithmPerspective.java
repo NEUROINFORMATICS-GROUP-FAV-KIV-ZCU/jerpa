@@ -55,7 +55,9 @@ import ch.ethz.origo.juigle.prezentation.tables.JUIGLETreeTable;
 import ch.ethz.origo.juigle.prezentation.tables.model.JUIGLETreeTableModel;
 
 /**
- * 
+ * Class represented Perspective for application <code>JERPA</code>. This 
+ * perspective offers list of all available methods for EEG processing 
+ * and each of methods can be apply on the EEG record. 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.3 (3/13/2010)
@@ -83,16 +85,25 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 				.getPerspectiveLangPathProp("perspective.algorithmmanager.lang");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getTitle() {
 		return resource.getString(getRBPerspectiveTitleKey());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getRBPerspectiveTitleKey() {
 		return "perspective.title";
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void initPerspectiveMenuPanel() throws PerspectiveException {
 		if (menuTaskPane == null) {
@@ -117,6 +128,9 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
@@ -157,6 +171,11 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 		mainPanel.add(sp, BorderLayout.CENTER);
 	}
 
+	/**
+	 * Return icon of this perspective
+	 * @return icon of this perspective
+	 * @throws PerspectiveException
+	 */
 	public Icon getIcon() throws PerspectiveException {
 		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
 				+ "filterPerspectiveIcon.png", 32, 32);

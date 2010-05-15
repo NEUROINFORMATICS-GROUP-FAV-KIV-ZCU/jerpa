@@ -28,9 +28,9 @@ import java.io.FilenameFilter;
 
 
 /**
+ * File filter by name. This is for filtering unsupported data formats.
  * 
- * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.0 07/18/09
  * @since 0.1.0
  * @see FilenameFilter
@@ -47,11 +47,18 @@ public class JERPAFileNameFilter implements FilenameFilter {
 	public JERPAFileNameFilter() {
 		// do nothing
 	}
-	
+
+	/**
+	 * Set up array with name of files.
+	 * @param filesName array with name of files
+	 */
 	public JERPAFileNameFilter(String[] filesName) {
 		this.files = filesName;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean accept(File dir, String name) {
 		if (name.endsWith(JERPAUtils.JAVA_EXTENSION)) {

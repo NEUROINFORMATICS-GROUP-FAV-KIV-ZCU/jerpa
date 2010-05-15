@@ -26,60 +26,75 @@ package ch.ethz.origo.jerpa.application.project;
 import ch.ethz.origo.juigle.application.project.Project;
 import ch.ethz.origo.juigle.application.project.ProjectMementoCaretaker;
 
-
 /**
- * 
+ * Class represented the main project of the application <strong>JERPA</strong>.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.1 (2/21/2010) 
+ * @version 0.1.1 (2/21/2010)
  * @since 0.1.0 (06/07/2009)
- * @see Project    
+ * @see Project
  */
 public class JERPAProject extends Project {
-	
-	
 
 	@Override
 	public ProjectMementoCaretaker createMemento() {
 		JERPAProject project = new JERPAProject();
-		
+
 		return new ProjectMementoCaretaker(project);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setMemento(ProjectMementoCaretaker memento) {
-		JERPAProject state = (JERPAProject)memento.getState();
-		
+		JERPAProject state = (JERPAProject) memento.getState();
+
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void openFile() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void saveFile() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void closeBuffers() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setName(String name) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

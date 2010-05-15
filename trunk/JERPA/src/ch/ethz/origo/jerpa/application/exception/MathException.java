@@ -24,6 +24,15 @@
 
 package ch.ethz.origo.jerpa.application.exception;
 
+/**
+ * This error message informs to you about bad mathematical operation.
+ * 
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.1.0 (2/21/2010)
+ * @since  0.1.0 (2/21/2010)
+ * @see org.apache.commons.math.MathException
+ * 
+ */
 public class MathException extends org.apache.commons.math.MathException {
 
 	/** Only for serialization */

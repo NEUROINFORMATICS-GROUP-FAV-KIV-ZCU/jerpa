@@ -27,7 +27,9 @@ import ch.ethz.origo.juigle.data.tables.Record;
 import ch.ethz.origo.juigle.plugin.IPluggable;
 
 /**
- * 
+ * Object as envelope of record, which contains informations about 
+ * current plugin. Plugins represents EEG processing method are inserted 
+ * to this class.
  * 
  * @author Vaclav Souhrada
  * @version 0.2.1 (3/13/2010)

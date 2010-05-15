@@ -45,11 +45,15 @@ import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 
 /**
+ * Thiss class construct and display instance of <code>JXTreeTable</code> form
+ * library <code>SwingX</code>. Table constains list of all method for EEG
+ * processing.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.1 (3/14/2010)
  * @since 0.1.0 (3/13/2010)
  * @see ILanguage
+ * @see IObserver
  * 
  */
 public class AlgorithmTreeTableProvider implements ILanguage, IObserver {
@@ -78,6 +82,9 @@ public class AlgorithmTreeTableProvider implements ILanguage, IObserver {
 		});
 	}
 
+	/**
+	 * This method is called, when user select method for EEG processing.
+	 */
 	public void applyAlgorithm() {
 		TreePath selp = treeTable.getTreeSelectionModel().getSelectionPath();
 		if (selp == null) {
@@ -99,7 +106,7 @@ public class AlgorithmTreeTableProvider implements ILanguage, IObserver {
 
 					SignalPerspectiveObservable.getInstance().setState(
 							SignalPerspectiveObservable.MSG_SEND_CURRENT_PROJECT);
-					//FIXME zvazit toto vlakno je nejspise zbytecne
+					// FIXME zvazit toto vlakno je nejspise zbytecne
 					Thread algThread = new Thread(new Runnable() {
 						@Override
 						public void run() {
@@ -142,11 +149,17 @@ public class AlgorithmTreeTableProvider implements ILanguage, IObserver {
 				getLocalizedText("table.dialog.warning"), JOptionPane.ERROR_MESSAGE);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLocalizedResourceBundle(String path) {
 		this.resourceBundlePath = path;
@@ -154,12 +167,18 @@ public class AlgorithmTreeTableProvider implements ILanguage, IObserver {
 
 	}
 
+	/**
+	 * {@inheritDoc} NOT IMPLEMENTED FOR THIS CLASS
+	 */
 	@Override
 	public void setResourceBundleKey(String key) {
 		/* NOT IMPLEMENTED */
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void updateText() throws JUIGLELangException {
 		setLocalizedResourceBundle(getResourceBundlePath());
@@ -169,18 +188,27 @@ public class AlgorithmTreeTableProvider implements ILanguage, IObserver {
 		return resourceBundle.getString(key);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void update() {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void update(Object state) {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void update(IObservable o, Object state) {
 		if (o instanceof SignalPerspectiveObservable) {

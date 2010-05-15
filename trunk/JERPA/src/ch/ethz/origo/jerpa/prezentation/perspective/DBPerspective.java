@@ -42,7 +42,8 @@ import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
- * 
+ * NOT USED YET. This perspective is completed, but application and 
+ * data layers are not complete implemented.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.2 (3/29/2010)

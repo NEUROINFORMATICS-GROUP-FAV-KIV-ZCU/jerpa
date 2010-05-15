@@ -24,9 +24,9 @@
 package ch.ethz.origo.jerpa.application.exception;
 
 /**
+ * This error message informs to you about invalid number of the frame index.
  * 
- * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.0 11/18/09
  * @since 0.1.0 (05/18/09)
  * @see Exception
@@ -55,7 +55,7 @@ public class InvalidFrameIndexException extends Exception {
 	public InvalidFrameIndexException(Throwable cause) {
 		super(cause);
 	}
-	
+
 	/**
 	 * Constructs a new InvalidFrameException exception with the specified detail
 	 * message.
@@ -65,7 +65,7 @@ public class InvalidFrameIndexException extends Exception {
 	 *          {@link #getMessage()} method).
 	 */
 	public InvalidFrameIndexException(String message) {
-		
+
 	}
 
 	/**

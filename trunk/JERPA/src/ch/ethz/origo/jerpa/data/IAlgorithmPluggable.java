@@ -25,6 +25,15 @@ package ch.ethz.origo.jerpa.data;
 
 import ch.ethz.origo.juigle.plugin.IPluggable;
 
+/**
+ * Interface which have to implemented all plugins which 
+ * representing some algorithms (method) for EEG processing.
+ * 
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.1.0 (3/13/2010)
+ * @since 0.1.0 (3/13/2010)
+ * @see IPluggable
+ */
 public interface IAlgorithmPluggable extends IPluggable {
 
 }

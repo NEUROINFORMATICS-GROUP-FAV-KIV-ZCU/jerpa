@@ -58,7 +58,7 @@ import ch.ethz.origo.juigle.application.exception.ProjectWriterException;
 import ch.ethz.origo.juigle.application.project.IProjectWriter;
 
 /**
- * T��da pro ukl�d�n� projektu do souboru.
+ * Class for project save to the file.
  * 
  * @author Jiri Kucera
  * @author Vaclav Souhrada (v.souhrada at gmail.com)

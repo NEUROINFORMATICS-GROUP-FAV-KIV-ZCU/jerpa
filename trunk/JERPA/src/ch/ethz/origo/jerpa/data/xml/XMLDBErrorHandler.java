@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * 
+ * Basic class for XML handler errors.
  * 
  * @author Vaclav Souhrada
  * @version 0.1.0 (2/7/2010)
@@ -37,18 +37,27 @@ import org.xml.sax.SAXParseException;
  */
 public class XMLDBErrorHandler implements ErrorHandler {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void error(SAXParseException exception) throws SAXException {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void fatalError(SAXParseException exception) throws SAXException {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void warning(SAXParseException exception) throws SAXException {
 		// TODO Auto-generated method stub

@@ -35,7 +35,9 @@ import ch.ethz.origo.juigle.plugin.PluginEngine;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
- * 
+ * This class loading all perspectives to the application. As first this 
+ * class loading integrated perspectives. (This must be added to the configure file). 
+ * Next loader loading classes (perspectives) as Plugin Engine.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.3 (5/04/2010)

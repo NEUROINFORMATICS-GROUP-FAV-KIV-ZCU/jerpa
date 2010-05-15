@@ -47,7 +47,10 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 import ch.ethz.origo.juigle.prezentation.tables.PluginsTreeTable;
 
 /**
- * 
+ * Class represented Perspective for application <code>JERPA</code>. This 
+ * Perspective offers different tools (GUI) for JERPA settings. Current version 
+ * contains option for change language and display list of all available or 
+ * unavailable plugins. 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.4 (3/29/2010)

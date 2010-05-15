@@ -34,7 +34,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * 
+ * XML parser of database model from XML file.
+ * <strong>!!!Implmentation of this class is not completed!!!</strong>
  * @author Vaclav Souhrada
  * @version 0.1.0 (2/7/2010)
  * @since 0.1.0 (2/7/2010)
@@ -42,6 +43,10 @@ import org.xml.sax.SAXException;
  */
 public class XMLDBParser {
 
+	/**
+	 * 
+	 * @param file
+	 */
 	public void parser(File file) {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -63,6 +68,11 @@ public class XMLDBParser {
 
 	}
 
+	/**
+	 * This methdod should parse database and call main method 
+	 * for building database model and creating SQL scripts.
+	 * @param doc
+	 */
 	private void parseAndCreateDatabase(Document doc) {
 				
 	}

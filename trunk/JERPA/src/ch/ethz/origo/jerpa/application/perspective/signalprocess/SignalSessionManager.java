@@ -49,7 +49,10 @@ import ch.ethz.origo.juigle.application.project.Project;
 import ch.ethz.origo.juigle.application.project.SessionManager;
 
 /**
- * 
+ * This class is Session Manager for perspective 
+ * called Signal Processing. Contains all main method for 
+ * handling of signal such as playing signal record, send selected 
+ * artefacts, save/load project.
  * 
  * @author Vaclav Souhrada
  * @version 0.2.3 (4/17/2010)
@@ -72,6 +75,9 @@ public class SignalSessionManager extends SessionManager {
 		new ExportFrameProvider(this);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void loadFile(File file) throws ProjectOperationException {
 		BufferCreator loader;
@@ -114,6 +120,9 @@ public class SignalSessionManager extends SessionManager {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void loadProject(File file) throws ProjectOperationException {
 		SignalProjectLoader loader;
@@ -123,6 +132,10 @@ public class SignalSessionManager extends SessionManager {
 		addProject(project);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void saveAsFile() throws ProjectOperationException {
 		Project project = getCurrentProject();
 		if (project == null) {
@@ -301,7 +314,7 @@ public class SignalSessionManager extends SessionManager {
 	}
 
 	/**
-	 * Pos�l� zpr�vu o automatick�m ozna�en� artefakt�.
+	 * This method sending message about automatic selected artefact.
 	 */
 	public void sendArtefactSelectionMesage() {
 		SignalPerspectiveObservable.getInstance().setState(SignalPerspectiveObservable.MSG_AUTOMATIC_ARTEFACT_SELECTION);

@@ -25,7 +25,7 @@ package ch.ethz.origo.jerpa.application.algorithms;
 
 /**
  * This interface have to implement all methods / algorithms. If not, than
- * filter not be used.
+ * filter will not be used.
  * 
  * @author Vaclav Souhrada
  * @version 0.3.3 (3/07/2010)

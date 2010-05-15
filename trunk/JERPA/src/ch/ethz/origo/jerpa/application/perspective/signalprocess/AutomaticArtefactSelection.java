@@ -30,7 +30,8 @@ import ch.ethz.origo.jerpa.data.Artefact;
 import ch.ethz.origo.jerpa.data.Buffer;
 
 /**
- * T��da pro automatick� ozna�ov�n� artefakt�.
+ * 
+ * This class providing automatic artefact selection.
  * 
  * @author Petr - Soukal (jERP Studio)
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
@@ -58,7 +59,7 @@ public class AutomaticArtefactSelection {
 	}
 
 	/**
-	 * Nastavuje data aktu�ln�ho projektu.
+	 * Set up current project
 	 */
 	public void setCurrentData() {
 		channelsCount = appCore.getCurrentProject().getHeader().getChannels()
@@ -188,7 +189,9 @@ public class AutomaticArtefactSelection {
 	}
 
 	/**
-	 * @return artefacts - arrayList artefakt�.
+	 * Return list of artefacts.
+	 * 
+	 * @return artefacts - arrayList of artefacts.
 	 */
 	public ArrayList<Artefact> getArtefacts() {
 		return artefacts;

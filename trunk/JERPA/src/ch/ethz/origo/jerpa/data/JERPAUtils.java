@@ -28,7 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ * Class contains utilities which are used by application. Next 
+ * contains static methods provided some utilities for application and 
+ * also contains main constants.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.4 (4/17/2010)
@@ -36,18 +38,20 @@ import java.util.List;
  */
 public class JERPAUtils {
 	
+	/** Extension of java classes */
 	public static final String JAVA_EXTENSION = ".java";
-	
+	/** Path to application used images */
 	public static final String IMAGE_PATH = "ch/ethz/origo/jerpa/data/images/";
-	
+	/** PLUGIN key for perspective */
 	public static final String PLUGIN_PERSPECTIVES_KEY = "Perspective";
+	/** PLUGIN key for algorithms for EEG processing */
 	public static final String PLUGIN_ALGORITHMS_KEY = "Algorithms";
 
 	private static List<String> listOfFilesToDelete;
 	
 	/**
 	 * Add full file name (path + file name) to list which contains the list of 
-	 * all files, which will be deleted while aplication is closing.
+	 * all files, which will be deleted while application is closing.
 	 * 
 	 * @param file full file name (path + file name)
 	 * @version 0.1.0 (3/24/2010)
@@ -60,6 +64,9 @@ public class JERPAUtils {
 		listOfFilesToDelete.add(file);
 	}
 	
+	/**
+	 * This method delete all created files from list.
+	 */
 	public static void deleteFilesFromDeleteList() {
 		if (listOfFilesToDelete != null) {
 			for (String fileName : listOfFilesToDelete) {
@@ -68,5 +75,4 @@ public class JERPAUtils {
 			}			
 		}
 	}
-	
 }

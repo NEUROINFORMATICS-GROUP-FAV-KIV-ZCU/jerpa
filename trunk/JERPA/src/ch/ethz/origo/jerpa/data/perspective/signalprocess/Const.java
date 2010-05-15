@@ -27,7 +27,8 @@ import java.awt.Color;
 import java.awt.Font;
 
 /**
- * Obsahuje konstanty pou��van� v aplikaci.
+ * Contains all constants need by application. It is from old 
+ * software called <strong>jERP Studio</strong>.
  * 
  * @author Jiri Kucera
  * @author Petr Soukal

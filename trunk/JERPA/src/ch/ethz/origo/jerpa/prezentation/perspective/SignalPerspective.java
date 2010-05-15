@@ -77,7 +77,10 @@ import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
- * 
+ * Class represented Perspective for application <code>JERPA</code>. This 
+ * is the main perspective of application JERPA. Contains component for display 
+ * EEG signals and tools for automatic artefact selection, baseline correction, 
+ * EEG signals info and a lot of others functions.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.3.8 (4/17/2010)

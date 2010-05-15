@@ -41,7 +41,7 @@ import ch.ethz.origo.juigle.application.project.Project;
 import ch.ethz.origo.juigle.application.project.ProjectMementoCaretaker;
 
 /**
- * Class for support Singnal processing projects.<br/>
+ * Class for support Signal processing projects.<br/>
  * <br/>
  * V t�to t��d� jsou ulo�eny stavov� prom�nn� zachycuj�c� aktu�ln� stav
  * projektu. Stavov� prom�nn� mus� b�t ulo�eny/obnoveny podle vzoru v metod�ch

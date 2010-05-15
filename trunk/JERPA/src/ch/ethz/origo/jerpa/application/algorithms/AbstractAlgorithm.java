@@ -25,7 +25,20 @@ package ch.ethz.origo.jerpa.application.algorithms;
 
 import ch.ethz.origo.juigle.plugin.AbstractPlugin;
 
-public abstract class AbstractAlgorithm extends AbstractPlugin implements IAlgorithm {
+/**
+ * This is abstract class for all plugins, which will be implemented some method
+ * for EEG processing. In the current version - this class only extends
+ * <code> AbstractPlugin</code> and implemented interface called 
+ * <code>IAlgorithm</code>.
+ * 
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
+ * @version 0.1.0 (03/03/2010)
+ * @since 0.1.0 (03/03/2010)
+ * @see AbstractPlugin
+ * @see IAlgorithm
+ * 
+ */
+public abstract class AbstractAlgorithm extends AbstractPlugin implements
+		IAlgorithm {
 
-	
 }

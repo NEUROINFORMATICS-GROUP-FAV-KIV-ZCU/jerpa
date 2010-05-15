@@ -24,9 +24,10 @@
 package ch.ethz.origo.jerpa.application.exception;
 
 /**
+ * This error message informs to you about incompatible Look & 
+ * Feel, which application trying set up.
  * 
- * 
- * @author Vaclav Souhrada (v.souhrada@gmail.com)
+ * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.0 07/12/09
  * @since 0.1.0 (05/18/09)
  * @see Exception

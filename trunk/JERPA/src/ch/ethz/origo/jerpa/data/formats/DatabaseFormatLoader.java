@@ -32,6 +32,8 @@ import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 
 /**
+ * Data loader from database. Class is not completed implemented 
+ * now.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.0.1 (11/25/09)

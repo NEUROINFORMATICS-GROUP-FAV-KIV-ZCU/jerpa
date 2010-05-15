@@ -45,7 +45,8 @@ import ch.ethz.origo.juigle.plugin.PluginEngine;
 import ch.ethz.origo.juigle.prezentation.tables.model.JUIGLETreeTableModel;
 
 /**
- * 
+ * Construct model for algorithm perspective. This model 
+ * contains all available method for EEG processing
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.3.3 (3/28/2010)
@@ -68,6 +69,12 @@ public class AlgorithmTreeTableModel extends JUIGLETreeTableModel {
 	/** Map of algorithms */
 	private Map<String, AlgorithmRecord> treeOfFilters;
 
+	/**
+	 * Set up localization string for this table model.
+	 * 
+	 * @param resourceBundlePath
+	 *          path to the localized file
+	 */
 	public AlgorithmTreeTableModel(String resourceBundlePath) {
 		setLocalizedResourceBundle(resourceBundlePath);
 		LanguageObservable.getInstance().attach(this);

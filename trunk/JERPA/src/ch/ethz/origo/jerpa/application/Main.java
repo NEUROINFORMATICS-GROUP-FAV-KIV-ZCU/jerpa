@@ -88,6 +88,10 @@ public class Main {
 		});
 	}
 
+	/**
+	 * Set application locale
+	 * @param applicationLocale name of locale
+	 */
 	private static void setLocale(String applicationLocale) {
 		Locale locale = null;
 		if (applicationLocale.equals("eng")) {

@@ -24,7 +24,9 @@
 package ch.ethz.origo.jerpa.application.exception;
 
 /**
- * V�jimka signalizuj�c� po�kozenou logickou strukturu na��tan�ho souboru.
+ * 
+ * This exception informs to you about corrupted logic structure of loading 
+ * file.
  * 
  * @author Vaclav Souhrada
  * @version 0.1.0 (01/17/2010)
