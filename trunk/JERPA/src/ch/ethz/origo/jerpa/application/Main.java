@@ -23,6 +23,7 @@
  */
 package ch.ethz.origo.jerpa.application;
 
+import java.awt.image.BufferedImage;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -31,14 +32,18 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
 import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.application.LanguagePropertiesLoader;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.exception.PropertiesException;
 import ch.ethz.origo.juigle.plugin.PluginEngine;
 import ch.ethz.origo.juigle.plugin.exception.PluginEngineException;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import ch.ethz.origo.juigle.prezentation.splashscreen.SplashScreen;
 
 /**
  * Main class of this application. Contains main method for application startup.
@@ -59,38 +64,78 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		try {
-			LanguagePropertiesLoader.loadProperties();
-			ConfigPropertiesLoader.loadProperties();
-			setLocale(LanguagePropertiesLoader.getApplicationLocale());
-			PluginEngine plugEngine = PluginEngine.getInstance();
-			plugEngine.setCurrentVersion(ConfigPropertiesLoader
-					.getAppMajorVersionAsInt(), ConfigPropertiesLoader
-					.getAppMinorVersionAsInt(), ConfigPropertiesLoader
-					.getAppRevisionVersionAsInt());
-			plugEngine.init(ConfigPropertiesLoader.getPluginXMLLocation());
-		} catch (PropertiesException e) {
-			String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(), LangUtils.JERPA_ERROR_LIST_PATH);
-			JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e, Level.WARNING);
-			Main.rootLogger.warn(e.getMessage(), e.getCause());
-			// TODO udelat hromadne nahrani properties, asi pres interface
-			e.printStackTrace();
-		} catch (PluginEngineException e) {
+			BufferedImage image = JUIGLEGraphicsUtils
+			.getImage(JERPAUtils.IMAGE_PATH + "Jerpa_logo.png");
+			final SplashScreen splashScreen = new SplashScreen(image);
+			final Thread config = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						LanguagePropertiesLoader.loadProperties();
+						ConfigPropertiesLoader.loadProperties();
+						setLocale(LanguagePropertiesLoader.getApplicationLocale());
+						PluginEngine plugEngine = PluginEngine.getInstance();
+						plugEngine.setCurrentVersion(ConfigPropertiesLoader
+								.getAppMajorVersionAsInt(), ConfigPropertiesLoader
+								.getAppMinorVersionAsInt(), ConfigPropertiesLoader
+								.getAppRevisionVersionAsInt());
+						plugEngine.init(ConfigPropertiesLoader.getPluginXMLLocation());
+					} catch (PropertiesException e) {
+						String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
+								LangUtils.JERPA_ERROR_LIST_PATH);
+						JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e,
+								Level.WARNING);
+						Main.rootLogger.warn(e.getMessage(), e.getCause());
+						// TODO udelat hromadne nahrani properties, asi pres interface
+						e.printStackTrace();
+					} catch (PluginEngineException e) {
+						//TODO
+						Main.rootLogger.warn(e.getMessage(), e.getCause());
+						e.printStackTrace();
+					}
+				}
+			});
+			Thread splash = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					splashScreen.show();
+					try {
+						config.join();
+						Thread.sleep(2000);
+						splashScreen.close();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						Main.rootLogger.warn(e.getMessage(), e.getCause());
+						e.printStackTrace();
+					}
+				}
+			});
+			splash.start();
+			config.start();
+			splash.join();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					new MainFrame();
+				}
+			});
+			
+		} catch (PerspectiveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Main.rootLogger.warn(e.getMessage(), e.getCause());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			Main.rootLogger.warn(e.getMessage(), e.getCause());
+			e.printStackTrace();
 		}
-
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				new MainFrame();
-				// new TestMainFrame();
-			}
-		});
 	}
-
+	
 	/**
 	 * Set application locale
-	 * @param applicationLocale name of locale
+	 * 
+	 * @param applicationLocale
+	 *          name of locale
 	 */
 	private static void setLocale(String applicationLocale) {
 		Locale locale = null;
