@@ -22,9 +22,11 @@
  */
 package ch.ethz.origo.jerpa.prezentation;
 
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -32,12 +34,14 @@ import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
+import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
@@ -50,16 +54,20 @@ import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
  * <code>JUIGLE</code> called <code>JUIGLEFrame</code>.
  * 
  * @author Vaclav Souhrada
- * @version 0.1.4 (3/29/2010)
+ * @version 0.1.5 (5/20/2010)
  * @since 0.1.0 (05/07/2009)
  * @see IObserver
  */
-public class MainFrame implements IObserver {
+public class MainFrame implements IObserver, ILanguage {
 
 	/** HEIGHT of application frame */
 	public static int HEIGHT;
 
 	private JUIGLEFrame mainFrame;
+	
+	private ResourceBundle mainJERPAresource;
+	
+	private String mainJERPAResourcePath;
 
 	private Logger logger = Logger.getLogger(MainFrame.class);
 
@@ -68,13 +76,18 @@ public class MainFrame implements IObserver {
 	 */
 	public MainFrame() {
 		try {
+			setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
 			initGui();
+			updateText();
+			LanguageObservable.getInstance().attach((ILanguage)this);
 			JUIGLEObservable.getInstance().attach(this);
 		} catch (PerspectiveException e) {
 			String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
 					LangUtils.JERPA_ERROR_LIST_PATH);
 			JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e, Level.WARNING);
-			logger.error(e);
+			logger.error(e.getMessage(), e);
+		} catch (JUIGLELangException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -99,7 +112,6 @@ public class MainFrame implements IObserver {
 				titleBuff.toString(),
 				ClassLoader
 						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
-		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
 		mainFrame.setMainMenu(getMainMenu());
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance(),
 				"menu.main.perspectives");
@@ -184,6 +196,35 @@ public class MainFrame implements IObserver {
 		}
 		mainFrame.dispose();
 		System.exit(0);
+	}
+
+	@Override
+	public String getResourceBundlePath() {
+		return mainJERPAResourcePath;
+	}
+
+	@Override
+	public void setLocalizedResourceBundle(String path) {
+		this.mainJERPAResourcePath = path;
+		this.mainJERPAresource = ResourceBundle.getBundle(path);
+		
+	}
+
+	@Override
+	public void setResourceBundleKey(String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateText() throws JUIGLELangException {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				setLocalizedResourceBundle(getResourceBundlePath());
+				mainFrame.setCopyrightTitle(mainJERPAresource.getString("jerpa.application.copyright"));
+			}
+		});		
 	}
 
 }

@@ -36,6 +36,8 @@ import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.LanguagePropertiesLoader;
 import ch.ethz.origo.juigle.application.exception.DataStoreException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
@@ -195,8 +197,10 @@ public final class JERPAPerspective extends Perspective {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource().equals(cz)) {
 					Locale.setDefault(new Locale("cs", "CZ"));
+					LanguagePropertiesLoader.writeLangProperty(ILanguage.CZECH);
 				} else if (e.getSource().equals(en)) {
 					Locale.setDefault(new Locale("en"));
+					LanguagePropertiesLoader.writeLangProperty(ILanguage.ENGLISH);
 				}
 				updateText();
 				LanguageObservable.getInstance().setState(

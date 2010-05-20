@@ -35,6 +35,7 @@ import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.jerpa.prezentation.MainFrame;
+import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.application.LanguagePropertiesLoader;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
@@ -130,9 +131,9 @@ public class Main {
 	 */
 	private static void setLocale(String applicationLocale) {
 		Locale locale = null;
-		if (applicationLocale.equals("eng")) {
+		if (applicationLocale.equals(ILanguage.ENGLISH)) {
 			locale = new Locale("en");
-		} else if (applicationLocale.equals("cze")) {
+		} else if (applicationLocale.equals(ILanguage.CZECH)) {
 			locale = new Locale("cs", "CZ");
 		}
 		Locale.setDefault(locale);
