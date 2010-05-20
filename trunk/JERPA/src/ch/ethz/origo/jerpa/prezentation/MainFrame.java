@@ -24,22 +24,30 @@ package ch.ethz.origo.jerpa.prezentation;
 
 import java.util.logging.Level;
 
+import javax.swing.JDialog;
+
+import org.apache.log4j.Logger;
+
 import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import ch.ethz.origo.juigle.prezentation.dialogs.AboutDialog;
+import ch.ethz.origo.juigle.prezentation.dialogs.AboutRecord;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
 
 /**
- * Main Frame (GUI) of application JERPA. It is based on the 
- * class from <code>JUIGLE</code> called <code>JUIGLEFrame</code>.
+ * Main Frame (GUI) of application JERPA. It is based on the class from
+ * <code>JUIGLE</code> called <code>JUIGLEFrame</code>.
  * 
  * @author Vaclav Souhrada
  * @version 0.1.4 (3/29/2010)
@@ -48,9 +56,12 @@ import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
  */
 public class MainFrame implements IObserver {
 
+	/** HEIGHT of application frame */
 	public static int HEIGHT;
 
 	private JUIGLEFrame mainFrame;
+
+	private Logger logger = Logger.getLogger(MainFrame.class);
 
 	/**
 	 * Initialize main graphic frame
@@ -60,9 +71,10 @@ public class MainFrame implements IObserver {
 			initGui();
 			JUIGLEObservable.getInstance().attach(this);
 		} catch (PerspectiveException e) {
-			String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(), LangUtils.JERPA_ERROR_LIST_PATH);
+			String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
+					LangUtils.JERPA_ERROR_LIST_PATH);
 			JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e, Level.WARNING);
-			e.printStackTrace();
+			logger.error(e);
 		}
 	}
 
@@ -89,7 +101,8 @@ public class MainFrame implements IObserver {
 						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
 		mainFrame.setCopyrightTitle(ConfigPropertiesLoader.getAppCopyright());
 		mainFrame.setMainMenu(getMainMenu());
-		mainFrame.setPerspectives(PerspectiveLoader.getInstance(), "menu.main.perspectives");
+		mainFrame.setPerspectives(PerspectiveLoader.getInstance(),
+				"menu.main.perspectives");
 		mainFrame.setVisible(true);
 		mainFrame.setFullScreen(true);
 		MainFrame.HEIGHT = mainFrame.getHeight();
@@ -99,6 +112,11 @@ public class MainFrame implements IObserver {
 	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {
 		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu(LangUtils.MAIN_FILE_PATH);
 		mainMenu.addHomePageItem(null, ConfigPropertiesLoader.getJERPAHomePage());
+		try {
+			mainMenu.addAboutItem(null, getAboutDialog(), null);
+		} catch (JUIGLELangException e) {
+			logger.warn(e.getMessage(), e);
+		}
 		// mainMenu.addCalendarItem(null);
 		return mainMenu;
 	}
@@ -130,16 +148,42 @@ public class MainFrame implements IObserver {
 			}
 		}
 	}
+	
+	/**
+	 * Return about dialog
+	 * @return about dialog
+	 * @throws JUIGLELangException
+	 */
+	private JDialog getAboutDialog() throws JUIGLELangException {
+		AboutDialog ad = new AboutDialog(LangUtils
+				.getPerspectiveLangPathProp("about.dialog.lang"), JUIGLEGraphicsUtils
+				.createImageIcon(JERPAUtils.IMAGE_PATH + "Jerpa_icon.png"), true);
+		
+		String[] authors = ConfigPropertiesLoader.getListOfAuthors();
+		String[] contributions = ConfigPropertiesLoader.getListOfContributions();
+		AboutRecord ar = new AboutRecord();
+		for (String auth : authors) {
+			ar.addAuthor(auth);
+		}
+		for (String contri : contributions) {
+			ar.addContribution(contri);
+		}
+		ad.setAboutRecord(ar);
+		return ad;
+	}
 
+	/**
+	 * Close application
+	 */
 	private void appClosing() {
 		JERPAUtils.deleteFilesFromDeleteList();
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn(e);
 		}
 		mainFrame.dispose();
+		System.exit(0);
 	}
 
 }

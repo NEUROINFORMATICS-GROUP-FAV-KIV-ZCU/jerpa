@@ -32,6 +32,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
@@ -72,6 +73,8 @@ public final class JERPAPerspective extends Perspective {
 	private JUIGLEMenuItem aboutItem;
 	
 	private PluginsTreeTable pluginsTable;
+	
+	private Logger logger = Logger.getLogger(JERPAPerspective.class);
 
 	@Override
 	public String getTitle() {
@@ -126,9 +129,9 @@ public final class JERPAPerspective extends Perspective {
 			menu.addItem(initAndGetLangueageMenuItem());
 			// menu.addItem(initAndGetHelpMenuItem());
 		 menu.addItem(initAndGetViewMenuItem());
-			menu.addMenuSeparator();
-			// menu.addHeaderHideButton(true);
-			// menu.addFooterHideButton();
+		 menu.addMenuSeparator();
+		 menu.addHeaderHideButton(false);
+		 menu.addFooterHideButton(false);
 			// menuTitledPanel.add(menu);
 			menuTaskPane.add(menu);
 		} catch (JUIGLEMenuException e1) {
@@ -164,7 +167,7 @@ public final class JERPAPerspective extends Perspective {
 					mainPanel.repaint();
 				} catch (DataStoreException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 		};

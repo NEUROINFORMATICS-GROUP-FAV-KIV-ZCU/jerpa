@@ -85,13 +85,9 @@ public class Main {
 								LangUtils.JERPA_ERROR_LIST_PATH);
 						JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e,
 								Level.WARNING);
-						Main.rootLogger.warn(e.getMessage(), e.getCause());
-						// TODO udelat hromadne nahrani properties, asi pres interface
-						e.printStackTrace();
+						Main.rootLogger.warn(e.getMessage(), e);
 					} catch (PluginEngineException e) {
-						//TODO
-						Main.rootLogger.warn(e.getMessage(), e.getCause());
-						e.printStackTrace();
+						Main.rootLogger.warn(e.getMessage(), e);
 					}
 				}
 			});
@@ -101,12 +97,10 @@ public class Main {
 					splashScreen.show();
 					try {
 						config.join();
-						Thread.sleep(2000);
+						Thread.sleep(1000);
 						splashScreen.close();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						Main.rootLogger.warn(e.getMessage(), e.getCause());
-						e.printStackTrace();
+						Main.rootLogger.error(e.getMessage(), e);
 					}
 				}
 			});
@@ -121,16 +115,13 @@ public class Main {
 			});
 			
 		} catch (PerspectiveException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Main.rootLogger.warn(e.getMessage(), e.getCause());
+			Main.rootLogger.warn(e);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			Main.rootLogger.warn(e.getMessage(), e.getCause());
-			e.printStackTrace();
+			Main.rootLogger.error(e.getMessage(), e);
 		}
-	}
 	
+	}
+
 	/**
 	 * Set application locale
 	 * 

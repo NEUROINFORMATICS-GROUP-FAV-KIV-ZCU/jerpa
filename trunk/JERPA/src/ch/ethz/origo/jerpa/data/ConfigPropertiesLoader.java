@@ -36,7 +36,7 @@ import ch.ethz.origo.juigle.application.exception.PropertiesException;
  * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.8 (3/28/2010)
+ * @version 0.1.9 (5/19/2010)
  * @since 0.1.0 (7/18/09)
  * 
  */
@@ -188,6 +188,28 @@ public class ConfigPropertiesLoader {
 	 */
 	public static String[] getListOfPerspective() {
 		return properties.getProperty("jerpa.perspective.list").split(",");
+	}
+	
+	/**
+	 * Get property - list of all authors
+	 * 
+	 * @return list of all authors from config. file
+	 * @version 0.1.0 (5/19/2010)
+	 * @since 0.1.9 (5/19/2010)
+	 */
+	public static String[] getListOfAuthors() {
+		return properties.getProperty("jerpa.authors").split(",");
+	}
+	
+	/**
+	 * Get property - list of contributions
+	 * 
+	 * @return list of all contributions from config. file
+	 * @version 0.1.0 (5/19/2010)
+	 * @since 0.1.9 (5/19/2010)
+	 */
+	public static String[] getListOfContributions() {
+		return properties.getProperty("jerpa.contributions").split(",");
 	}
 	
 	/**

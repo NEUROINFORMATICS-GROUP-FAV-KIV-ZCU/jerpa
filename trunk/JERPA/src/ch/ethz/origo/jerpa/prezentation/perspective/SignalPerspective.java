@@ -70,7 +70,6 @@ import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFileChooser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
-import ch.ethz.origo.juigle.prezentation.dialogs.AboutDialog;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
@@ -529,7 +528,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						new AboutDialog();
+						//new AboutDialog();
 					}
 				});
 			}
