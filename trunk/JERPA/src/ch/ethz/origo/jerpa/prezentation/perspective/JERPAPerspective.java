@@ -54,7 +54,7 @@ import ch.ethz.origo.juigle.prezentation.tables.PluginsTreeTable;
  * unavailable plugins. 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.4 (3/29/2010)
+ * @version 0.1.5 (5/20/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * 

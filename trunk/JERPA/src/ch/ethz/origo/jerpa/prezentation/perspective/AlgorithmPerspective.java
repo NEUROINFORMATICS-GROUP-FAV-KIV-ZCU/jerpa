@@ -55,12 +55,12 @@ import ch.ethz.origo.juigle.prezentation.tables.JUIGLETreeTable;
 import ch.ethz.origo.juigle.prezentation.tables.model.JUIGLETreeTableModel;
 
 /**
- * Class represented Perspective for application <code>JERPA</code>. This 
- * perspective offers list of all available methods for EEG processing 
- * and each of methods can be apply on the EEG record. 
+ * Class represented Perspective for application <code>JERPA</code>. This
+ * perspective offers list of all available methods for EEG processing and each
+ * of methods can be apply on the EEG record.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.3 (3/13/2010)
+ * @version 0.1.4 (5/20/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -72,7 +72,7 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 
 	private JUIGLEMenuItem algorithmMenu;
 	private JUIGLEMenuItem applyAlgItem;
-	
+
 	private AlgorithmTreeTableProvider attp;
 
 	/**
@@ -173,10 +173,11 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 
 	/**
 	 * Return icon of this perspective
+	 * 
 	 * @return icon of this perspective
 	 * @throws PerspectiveException
 	 */
-	public Icon getIcon() throws PerspectiveException {
+	public Icon getPerspectiveIcon() throws PerspectiveException {
 		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
 				+ "filterPerspectiveIcon.png", 32, 32);
 	}
@@ -196,16 +197,17 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 			applyAlgItem.setResourceBundleKey("menu.algorithm.apply");
 			// set actions for subitems
 			setAlgorithmMenuActions();
-		  // add subitems to file menu
+			// add subitems to file menu
 			algorithmMenu.addSubItem(applyAlgItem);
 		}
 		return algorithmMenu;
 	}
-	
+
 	private void setAlgorithmMenuActions() {
 		Action applyAct = new AbstractAction() {
 			/** Only for serialization */
 			private static final long serialVersionUID = 1988403661055144409L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				attp.applyAlgorithm();
@@ -230,7 +232,7 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 	public void update(IObservable o, Object state) {
 
 	}
-	
+
 	@Override
 	public void updateText() {
 		super.updateText();

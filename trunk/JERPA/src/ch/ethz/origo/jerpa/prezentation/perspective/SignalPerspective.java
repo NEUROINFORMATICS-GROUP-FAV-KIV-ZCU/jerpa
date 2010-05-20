@@ -48,6 +48,7 @@ import org.jdesktop.swingx.JXTaskPane;
 
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.SignalSessionManager;
 import ch.ethz.origo.jerpa.application.perspective.signalprocess.project.SignalPerspectiveObservable;
+import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.SignalProjectWriter;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
@@ -70,19 +71,21 @@ import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFileChooser;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import ch.ethz.origo.juigle.prezentation.dialogs.AboutDialog;
+import ch.ethz.origo.juigle.prezentation.dialogs.AboutRecord;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
- * Class represented Perspective for application <code>JERPA</code>. This 
- * is the main perspective of application JERPA. Contains component for display 
- * EEG signals and tools for automatic artefact selection, baseline correction, 
- * EEG signals info and a lot of others functions.
+ * Class represented Perspective for application <code>JERPA</code>. This is the
+ * main perspective of application JERPA. Contains component for display EEG
+ * signals and tools for automatic artefact selection, baseline correction, EEG
+ * signals info and a lot of others functions.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.8 (4/17/2010)
+ * @version 0.3.9 (5/20/2010)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -92,6 +95,8 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = 3313465073940475745L;
+
+	private static final String RB_RESOURCE_KEY = "perspective.signalprocessing.lang";
 
 	// file menu items
 	private JUIGLEMenuItem fileMenu;
@@ -113,7 +118,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem averagingWinItem;
 	// help menu items
 	private JUIGLEMenuItem helpItem;
-	private JUIGLEMenuItem keyboardShortcutItem;
+	// private JUIGLEMenuItem keyboardShortcutItem;
 	private JUIGLEMenuItem aboutItem;
 	// Grid bag constraints for mains panels
 	private GridBagConstraints gbcSignalPanelProv;
@@ -143,7 +148,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 		spObservable.attach(this);
 		sessionManager = new SignalSessionManager();
 		resourcePath = LangUtils
-				.getPerspectiveLangPathProp("perspective.signalprocessing.lang");
+				.getPerspectiveLangPathProp(SignalPerspective.RB_RESOURCE_KEY);
 	}
 
 	@Override
@@ -241,20 +246,21 @@ public class SignalPerspective extends Perspective implements IObserver {
 		}
 	}
 
-	public Icon getIcon() {
+	public Icon getPerspectiveIcon() {
 		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
-				+ "icon.gif", "aaaaaaaaaaaaaa");
+				+ "icon.gif");
 	}
 
 	@Override
 	public void updateText() {
 		super.updateText();
-		/*SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-
-			}
-		});*/
+		/*
+		 * SwingUtilities.invokeLater(new Runnable() {
+		 * 
+		 * @Override public void run() {
+		 * 
+		 * } });
+		 */
 	}
 
 	/**
@@ -355,24 +361,31 @@ public class SignalPerspective extends Perspective implements IObserver {
 
 	/**
 	 * 
+	 * Get items of menu Help.
+	 * 
+	 *TODO : enable keyboard shortcut item
 	 * 
 	 * @return
 	 * @since 0.1.0
 	 */
 	private JUIGLEMenuItem initAndGetHelpMenuItem() {
 		helpItem = new JUIGLEMenuItem(getLocalizedString("menu.help"));
-		keyboardShortcutItem = new JUIGLEMenuItem();
+		// keyboardShortcutItem = new JUIGLEMenuItem();
 		aboutItem = new JUIGLEMenuItem();
 		//
-		keyboardShortcutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
-				KeyEvent.CTRL_MASK));
+		/*
+		 * keyboardShortcutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+		 * KeyEvent.CTRL_MASK));
+		 */
 		//
 		helpItem.setResourceBundleKey("menu.help");
-		keyboardShortcutItem.setResourceBundleKey("menu.help.keyboard.shortcuts");
+		/*
+		 * keyboardShortcutItem.setResourceBundleKey("menu.help.keyboard.shortcuts");
+		 */
 		aboutItem.setResourceBundleKey("menu.help.about.signalprocessing");
 		//
 		setHelpMenuActions();
-		helpItem.addSubItem(keyboardShortcutItem);
+		// helpItem.addSubItem(keyboardShortcutItem);
 		helpItem.addSubItem(aboutItem);
 		return helpItem;
 	}
@@ -492,27 +505,23 @@ public class SignalPerspective extends Perspective implements IObserver {
 				baselineCorrectionDialog.setActualLocationAndVisibility();
 			}
 		};
-		/*Action undo = new AbstractAction() {	
-			private static final long serialVersionUID = 5757513024618899851L;
+		/*
+		 * Action undo = new AbstractAction() { private static final long
+		 * serialVersionUID = 5757513024618899851L;
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * sessionManager.undo(); } }; Action redo = new AbstractAction() { private
+		 * static final long serialVersionUID = -3728905182946743343L;
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) {
+		 * sessionManager.redo(); } };
+		 */
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				sessionManager.undo();
-			}	
-		};
-		Action redo = new AbstractAction() {	
-			private static final long serialVersionUID = -3728905182946743343L;
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				sessionManager.redo();
-			}
-		};*/
-		
 		autoArteSelItem.setAction(autoArtefactSelAct);
 		baselineCorrItem.setAction(baselineDialogAct);
-		/*undoItem.setAction(undo);
-		redoItem.setAction(redo);*/
+		/*
+		 * undoItem.setAction(undo); redoItem.setAction(redo);
+		 */
 	}
 
 	/**
@@ -528,7 +537,26 @@ public class SignalPerspective extends Perspective implements IObserver {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						//new AboutDialog();
+						AboutDialog ad;
+						try {
+							ad = new AboutDialog(LangUtils
+									.getPerspectiveLangPathProp(SignalPerspective.RB_RESOURCE_KEY), JUIGLEGraphicsUtils
+									.createImageIcon(JERPAUtils.IMAGE_PATH + "Jerpa_icon.png"), true);
+							String[] authors = ConfigPropertiesLoader.getListOfAuthors();
+							String[] contributions = ConfigPropertiesLoader.getListOfContributions();
+							AboutRecord ar = new AboutRecord();
+							for (String auth : authors) {
+								ar.addAuthor(auth);
+							}
+							for (String contri : contributions) {
+								ar.addContribution(contri);
+							}
+							ad.setAboutRecord(ar);
+							ad.setVisible(true);
+						} catch (JUIGLELangException e) {
+							SignalPerspective.logger.error(e.getMessage(), e);
+						}
+						
 					}
 				});
 			}
@@ -861,7 +889,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 				break;
 
 			case SignalPerspectiveObservable.MSG_UNDOABLE_COMMAND_INVOKED:
-					/* Do nothing yet - not implemented */
+				/* Do nothing yet - not implemented */
 				break;
 
 			case SignalPerspectiveObservable.MSG_NEW_BUFFER:
