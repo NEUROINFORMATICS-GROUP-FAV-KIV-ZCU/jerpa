@@ -21,7 +21,7 @@
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
  */
-package noname;
+package ch.ethz.origo.jerpa.data;
 
 /**
  * Class contains mathematical operations.
