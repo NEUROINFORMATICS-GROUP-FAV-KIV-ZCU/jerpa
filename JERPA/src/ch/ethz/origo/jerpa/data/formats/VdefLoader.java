@@ -37,6 +37,7 @@ import ch.ethz.origo.jerpa.data.Channel;
 import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.NioInputStream;
+import ch.ethz.origo.juigle.application.JUIGLEFileUtils;
 
 /**
  * T��da VdefLoader obsahuje v�echny metody pro parsov�n� vstupn�ch soubor� a
@@ -180,10 +181,9 @@ public class VdefLoader implements DataFormatLoader {
 		try {
 			File fileMarker = new File(this.markerFile);
 			if (!fileMarker.exists()) {
-				this.markerFile = this.headerFile.getAbsolutePath().substring(0,
-						this.headerFile.getAbsolutePath().lastIndexOf("\\") + 1)
-						+ this.markerFile;
-				fileMarker = new File(this.markerFile);
+				fileMarker = new File(JUIGLEFileUtils
+						.getSameAbsolutePathAsOtherFile(headerFile)
+						+ this.markerFile);
 			}
 			FileReader fr = new FileReader(fileMarker);
 			BufferedReader in = new BufferedReader(fr);
@@ -238,10 +238,7 @@ public class VdefLoader implements DataFormatLoader {
 	private void loadBinaryEEG() {
 		File fileEEG = new File(this.eegFile);
 		if (!fileEEG.exists()) {
-			this.eegFile = this.headerFile.getAbsolutePath().substring(0,
-					this.headerFile.getAbsolutePath().lastIndexOf("\\") + 1)
-					+ this.eegFile;
-			fileEEG = new File(this.eegFile);
+			fileEEG = new File(JUIGLEFileUtils.getSameAbsolutePathAsOtherFile(headerFile) + this.eegFile);
 		}
 		long length = fileEEG.length();
 		byte[] bytess = new byte[(int) length];
@@ -249,7 +246,7 @@ public class VdefLoader implements DataFormatLoader {
 		NioInputStream input;
 
 		try {
-			input = new NioInputStream(this.eegFile);
+			input = new NioInputStream(fileEEG);
 			if (length > Integer.MAX_VALUE) {
 				this.data = new byte[0];
 				return;
