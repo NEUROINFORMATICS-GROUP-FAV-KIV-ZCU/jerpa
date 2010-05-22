@@ -541,7 +541,7 @@ public class SignalPerspective extends Perspective implements IObserver {
 						try {
 							ad = new AboutDialog(LangUtils
 									.getPerspectiveLangPathProp(SignalPerspective.RB_RESOURCE_KEY), JUIGLEGraphicsUtils
-									.createImageIcon(JERPAUtils.IMAGE_PATH + "Jerpa_icon.png"), true);
+									.createImageIcon(JERPAUtils.IMAGE_PATH + "signaly.gif"), true);
 							String[] authors = ConfigPropertiesLoader.getListOfAuthors();
 							String[] contributions = ConfigPropertiesLoader.getListOfContributions();
 							AboutRecord ar = new AboutRecord();
