@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--!DOCTYPE drivers SYSTEM "dtd/drivers.dtd" -->
+<drivers>
+
+  <driver name="POSTGRES_8_2">
+    <driverclass>ch.ethz.origo.juigle.application.database.drivers.PostgreSQLDriver</driverclass>
+    <url>./lib/jdbc/postgresql/current/postgresql-8.2dev-501.jdbc3.jar</url>
+    <classname>org.postgresql.Driver</classname>
+    <connectionstring>jdbc:postgresql://{host}:{port}/{database}</connectionstring>
+  </driver>
+
+  <driver name="ORA_10_2_THIN">
+    <driverclass>ch.ethz.origo.juigle.application.database.drivers.OracleDriver</driverclass>
+    <url>./lib/jdbc/oracle/10.2.0/ojdbc14.jar</url>
+    <classname>oracle.jdbc.OracleDriver</classname>
+    <connectionstring>jdbc:oracle:thin:@{host}:{port}:{database}</connectionstring>
+  </driver>
+
+  <driver name="ORA_11_1_THIN">
+    <driverclass>ch.ethz.origo.juigle.application.database.drivers.OracleDriver</driverclass>
+    <url>./lib/jdbc/oracle/11.1.0/ojdbc5.jar</url>
+    <classname>oracle.jdbc.OracleDriver</classname>
+    <connectionstring>jdbc:oracle:thin:@{host}:{port}:{database}</connectionstring>
+  </driver>
+
+  <driver name="MSSQL2005">
+    <driverclass>ch.ethz.origo.juigle.application.database.drivers.MSSQLDriver</driverclass>
+    <url>./lib/jdbc/mssql-2005/current/sqljdbc.jar</url>
+    <classname>com.microsoft.sqlserver.jdbc.SQLServerDriver</classname>
+    <connectionstring>jdbc:sqlserver://{host}:{port};databaseName={database}</connectionstring>
+  </driver>
+
+  <driver name="FIREBIRD">
+    <driverclass>ch.ethz.origo.juigle.application.database.drivers.FirebirdDriver</driverclass>
+    <url>./lib/jdbc/firebird/current/firebirdsql-full.jar</url>
+    <classname>org.firebirdsql.jdbc.FBDriver</classname>
+    <connectionstring>jdbc:firebirdsql:{host}/{port}:{database}</connectionstring>
+  </driver>
+
+</drivers>
