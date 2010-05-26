@@ -40,6 +40,7 @@ import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
+import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
 
 /**
  * Rozhran� mezi aplika�n� a prezenta�n� vrstvou. Slou�� pro komunikaci mezi
@@ -92,6 +93,7 @@ public class ChannelsPanelProvider implements IObserver {
 
 		switch (msg) {
 		case SignalPerspectiveObservable.MSG_PROJECT_CLOSED:
+		case PerspectiveObservable.MSG_PROJECT_CLOSED:
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

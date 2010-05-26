@@ -421,11 +421,20 @@ public class SignalPerspective extends Perspective implements IObserver {
 						JUIGLEObservable.MSG_APPLICATION_CLOSING);
 			}
 		};
+		Action closeFileAct = new AbstractAction() {
+			private static final long serialVersionUID = -1644285485867277600L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				sessionManager.closeFile();
+			}
+		};
 		openFileItem.setAction(getOpenFileAction());
 		saveFileItem.setAction(getSaveAction());
 		saveAsFileItem.setAction(getSaveAsAction());
 		importItem.setAction(importAct);
 		exitItem.setAction(exitAct);
+		closeFileItem.setAction(closeFileAct);
 	}
 
 	/**

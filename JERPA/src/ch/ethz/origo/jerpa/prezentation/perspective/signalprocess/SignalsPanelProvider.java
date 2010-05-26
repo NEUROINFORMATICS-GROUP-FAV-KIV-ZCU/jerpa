@@ -53,6 +53,7 @@ import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
 import ch.ethz.origo.juigle.application.observers.IObserver;
+import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
 /**
@@ -135,6 +136,7 @@ public class SignalsPanelProvider implements IObserver {
 
 		switch (msg) {
 		case SignalPerspectiveObservable.MSG_PROJECT_CLOSED:
+		case PerspectiveObservable.MSG_PROJECT_CLOSED:
 			setDrawingComponent();
 			signalsPanel.verticalScrollBar.setEnabled(false);
 			signalsPanel.horizontalScrollBar.setEnabled(false);
@@ -148,6 +150,7 @@ public class SignalsPanelProvider implements IObserver {
 			signalsPanel.stopBT.setEnabled(false);
 			break;
 		case SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
+		case PerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED:
 			setDrawingComponent();
 			setNumberOfVisibleChannels(session.getCurrentProject()
 					.getSelectedChannels().size());
