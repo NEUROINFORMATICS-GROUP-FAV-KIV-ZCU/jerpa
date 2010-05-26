@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="JERPA" default="makejar" basedir=".">
 
-	<!-- domovský adresář bundelu -->
+	<!-- domovský adresář jaru -->
 	<property name="projecthome" value="." />
 
-	<!-- verze bundle -->
-	<property name="version" value="1.0" />
+	<!-- verze jaru -->
+	<property name="version" value="1.0.1" />
 
-	<!-- symbolický název bundelu -->
+	<!-- symbolický název jaru -->
 	<property name="jarname" value="${ant.project.name}" />
 
 	<!-- autor -->
