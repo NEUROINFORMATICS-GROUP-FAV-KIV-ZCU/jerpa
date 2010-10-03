@@ -31,7 +31,7 @@
 		</plugin>
 	</category>
 	<category name="Perspective">
-		<plugin enabled="true" hidden="false" update="false">
+		<plugin enabled="false" hidden="false" update="false">
 			<source>plugins/perspective</source>
 			<class>prezentation.WEKAPersp</class>
 		</plugin>

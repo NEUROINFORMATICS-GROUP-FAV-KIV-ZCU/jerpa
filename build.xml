@@ -17,7 +17,9 @@
 	<property name="build" location="${projecthome}/bin" />
 	<property name="dist" location="${projecthome}/dist" />
 	<property name="lib" location="${projecthome}/lib" />
+	<property name="config" location="${projecthome}/config" />
 	<property name="plugins" location="${projecthome}/plugins" />
+	<property name="configDirName" location="config" />
 
 	<property name="runloc" location="${dist}" />
 
@@ -47,13 +49,12 @@
 			<compilerarg value="-Xlint:none" />
 		</javac>
 	</target>
-	
-	<target name="copy_img" depends="compile">
-			<copy todir="${build}/ch/ethz/origo/jerpa/data/images/">
-				<fileset dir="${src}/ch/ethz/origo/jerpa/data/images/" />
-			</copy>	
-		</target>
 
+	<target name="copy_img" depends="compile">
+		<copy todir="${build}/ch/ethz/origo/jerpa/data/images/">
+			<fileset dir="${src}/ch/ethz/origo/jerpa/data/images/" />
+		</copy>
+	</target>
 
 	<target name="makejar" description="generate the distribution" depends="copy_img">
 		<mkdir dir="${dist}" />
@@ -63,6 +64,12 @@
 				<attribute name="Class-Path" value="${lib.list}" />
 			</manifest>
 		</jar>
+		<copy todir="${dist}/config">
+			<fileset dir="${config}/" />
+		</copy>
+		<copy todir="${dist}/plugins">
+			<fileset dir="${plugins}/" />
+		</copy>
 	</target>
 
 	<!-- automatický úklid po kompilaci a vytvoření bundelu-->
