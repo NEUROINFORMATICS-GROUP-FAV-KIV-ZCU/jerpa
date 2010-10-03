@@ -111,7 +111,7 @@ public class MainFrame implements IObserver, ILanguage {
 		mainFrame = new JUIGLEFrame(
 				titleBuff.toString(),
 				ClassLoader
-						.getSystemResourceAsStream("ch/ethz/origo/jerpa/data/images/Jerpa_icon.png"));
+						.getSystemResourceAsStream(JERPAUtils.IMAGE_PATH + "Jerpa_icon.png"));
 		mainFrame.setMainMenu(getMainMenu());
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance(),
 				"menu.main.perspectives");
