@@ -1,15 +1,18 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
-	
-	* (10/05/2010)
+ * (10/14/2010)
+  	 # 169
+		 ADDED  : Added target for generating Javadoc by ANT build.xml
+		
+ * (10/05/2010)
   	 # 165
-  	 	+ Added a new version of library JUIGLE -> JUIGLE-1.0.1-SNAPSHOT
-	
-	* (10/03/2010)
+  	 	 ADDED   : New version of library JUIGLE -> JUIGLE-1.0.1-SNAPSHOT
+	  
+ * (10/03/2010)
   	 # 163
-  	 	+ Fixed build.xml -> not all of the main files and directories was copied to the dist directory
+  	 	 FIXED   : build.xml -> not all of the main files and directories was copied to the dist directory
 	
-	* (5/22/2010)
+ * (5/22/2010)
 	 # 142
-		+ Fixed bug with load VHDR files under operating system UNIX (vsouhrada)
+		 FIXED   : Bug with load VHDR files under operating system UNIX (vsouhrada)

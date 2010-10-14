@@ -19,6 +19,7 @@
 	<property name="config" location="${projecthome}/config" />
 	<property name="lib" location="${projecthome}/lib" />
 	<property name="plugins" location="${projecthome}/plugins" />
+	<property name="dir.javadoc" location="${projecthome}/docs/javadoc" />
 
 	<property name="runloc" location="${dist}" />
 
@@ -90,4 +91,15 @@
 		</java>
 		<echo message="Shutting down..." />
 	</target>
+
+	<target name="javadoc">
+		<javadoc excludepackagenames="ch.ethz.origo.jerpa.test" access="public" destdir="${dir.javadoc}" author="true" version="true" use="true" windowtitle="${jarname}-${version}" doctitle="${jarname}-${version} Javadoc">
+
+			<fileset dir="${src}" defaultexcludes="yes">
+				<include name="**/*.java" />
+				<exclude name="ch/ethz/origo/jerpa/test/**/*.java" />
+			</fileset>
+		</javadoc>
+	</target>
+
 </project>
