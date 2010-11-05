@@ -1,9 +1,15 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+ * (11/05/2010)
+  	 # 170
+  	 	 REMOVED : Package called noname.
+  	 	 REMOVED : Source code of JFreeChart library.
+		 CHANGED : On a new version of the JUIGLE library -> JUIGLE-1.0.1
+ 
  * (10/14/2010)
   	 # 169
-		 ADDED  : Added target for generating Javadoc by ANT build.xml
+		 ADDED   : Added target for generating Javadoc by ANT build.xml
 		
  * (10/05/2010)
   	 # 165
