@@ -286,6 +286,9 @@ public class SignalPerspective extends Perspective implements IObserver {
 		closeFileItem.setResourceBundleKey("menu.close.project");
 		importItem.setResourceBundleKey("menu.import");
 		exitItem.setResourceBundleKey("menu.exit");
+		// add menu separator
+		closeFileItem.addSeparator();
+		importItem.addSeparator();
 		// set actions to menu items
 		setFileMenuActions();
 		// add key accelerators to items
