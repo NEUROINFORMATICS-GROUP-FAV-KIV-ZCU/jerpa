@@ -24,65 +24,57 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.db;
 
 import org.jdesktop.swingx.auth.LoginEvent;
-import org.jdesktop.swingx.auth.LoginListener;
 
-import ch.ethz.origo.juigle.prezentation.database.JUIGLELoginPane;
+import ch.ethz.origo.juigle.application.db.Database;
+import ch.ethz.origo.juigle.prezentation.database.DatabaseDialog;
 
 /**
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.1.0 (1/28/2010)
- * @since 0.1.0 (1/28/2010)
- * @see 
- * @see LoginListener
- *
+ * @version 0.2.0.00 (11/14/2010)
+ * @since 1.0.0 (1/28/2010)
+ * @see DatabaseDialog
+ * 
  */
-public class LoginDialog extends JUIGLELoginPane implements LoginListener {
+public class LoginDialog extends DatabaseDialog {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = -8148301402485470747L;
-	
-	private String title;
-	
-	public LoginDialog(String title) {
-		this.title = title;
-		initialize();
-	}
 
-	private void initialize() {
-		JUIGLELoginPane.JXLoginFrame frame = JUIGLELoginPane.showLoginFrame(this);
-	  frame.setTitle(title);
-	  frame.setAlwaysOnTop(true);
-	  frame.setVisible(true);
-	}
-	
-	public static void main(String[] args) {
-		LoginDialog ld = new LoginDialog("Nazdar koco");
+	public LoginDialog(Database database) {
+		super(database);
 	}
 
 	@Override
 	public void loginCanceled(LoginEvent source) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void loginFailed(LoginEvent source) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void loginStarted(LoginEvent source) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void loginSucceeded(LoginEvent source) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	/** Only for test */
+	public static void main(String[] args) {
+		Database db = new Database();
+		db.connect("", "");
+		LoginDialog ld = new LoginDialog(db);
 	}
 
 }
