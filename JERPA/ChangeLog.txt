@@ -1,6 +1,10 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (11/16/2010)
+  	 # 173
+  	 	 ADDED   : New version of library JUIGLE -> JUIGLE-1.0.2-SNAPSHOT.
+	  
  * (11/06/2010)
   	 # 172
   	 	 ADDED   : Perspective called Database Manager. Only for testing now. Not completed yet.
