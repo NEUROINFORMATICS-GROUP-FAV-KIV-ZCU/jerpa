@@ -5,27 +5,27 @@
 			<source>plugins/algorithms</source>
 			<class>pilsner.fastica.FastICAProvider</class>
 		</plugin>
-		<plugin enabled="false" hidden="false" update="false">
+		<plugin enabled="true" hidden="false" update="false">
 			<source>plugins/algorithms</source>
 			<class>pilsner.matchingPursuit.FourierMPProvider</class>
 		</plugin>
-		<plugin enabled="false" hidden="false" update="false">
+		<plugin enabled="true" hidden="false" update="false">
 			<source>plugins/algorithms</source>
 			<class>pilsner.dwt.FastDaubechies2</class>
 		</plugin>
-		<plugin enabled="false" hidden="false" update="false">
+		<plugin enabled="true" hidden="false" update="false">
 			<source>plugins/algorithms</source>
 			<class>pilsner.dwt.FastDaubechies4</class>
 		</plugin>
-		<plugin enabled="false" hidden="false" update="false">
+		<plugin enabled="true" hidden="false" update="false">
 			<source>plugins/algorithms</source>
 			<class>pilsner.dwt.FastDaubechies8</class>
 		</plugin>
-		<plugin enabled="false" hidden="false" update="false">
+		<plugin enabled="true" hidden="false" update="false">
 			<source>plugins/algorithms</source>
 			<class>pilsner.dwt.FastHaar</class>
 		</plugin>
-		<plugin enabled="false" hidden="false" update="false">
+		<plugin enabled="true" hidden="false" update="false">
 			<source>plugins/algorithms</source>
 			<class>pilsner.dwt.FastSymmlet4</class>
 		</plugin>
