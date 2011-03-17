@@ -1,6 +1,14 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (03/17/2011)
+     # 174
+       CHANGED : minor modification and update of JERPALang in lib directory
+       CHANGED : ededb perspective added to config.properties
+       CHANGED : correction of bug in PerspectiveLoader, when exception show perspective field as string instead of the perspective name.
+       ADEDD   : EDEDBPerspective.java - only new file for testing so far
+       ADEDD   : ededb_48.png image for EDEDBPerspective  
+  
   * (11/16/2010)
   	 # 173
   	 	 ADDED   : New version of library JUIGLE -> JUIGLE-1.0.2-SNAPSHOT.

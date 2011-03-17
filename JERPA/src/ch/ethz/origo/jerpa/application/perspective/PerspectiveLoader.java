@@ -84,11 +84,11 @@ public class PerspectiveLoader implements IPerspectiveLoader {
 				checkIfPerspectiveIsDefault(prsvClass, name);
 				perspectives.add(prsvClass);
 			} catch (InstantiationException e) {
-				throw new PerspectiveException("JERPA023:" + perspectivesName, e);
+				throw new PerspectiveException("JERPA023:" + name, e);
 			} catch (IllegalAccessException e) {
-				throw new PerspectiveException("JERPA023:" + perspectivesName, e);
+				throw new PerspectiveException("JERPA023:" + name, e);
 			} catch (ClassNotFoundException e) {
-				throw new PerspectiveException("JERPA023:" + perspectivesName, e);
+				throw new PerspectiveException("JERPA023:" + name, e);
 			}
 		}
 		// now load perspectives from plugins
