@@ -6,6 +6,10 @@ package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginInfo;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Tables;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
@@ -13,7 +17,10 @@ import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
+import java.awt.BorderLayout;
 import javax.swing.Icon;
+import javax.swing.JSplitPane;
+import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXTaskPane;
 
 /**
@@ -107,5 +114,24 @@ public class EDEDBPerspective extends Perspective {
         ededbMenu.addSubItem(delete);
 
         return ededbMenu;
+    }
+
+    @Override
+    public void initPerspectivePanel() throws PerspectiveException {
+        super.initPerspectivePanel();
+        mainPanel.setLayout(new BorderLayout());
+        
+        Tables tables = new Tables(session);
+        JXPanel sidebar = new JXPanel(new BorderLayout());
+        
+        LoginInfo loginInfo = new LoginInfo(session);        
+        Toolbar toolbar = new Toolbar(session, tables);
+        
+        sidebar.add(loginInfo, BorderLayout.NORTH);
+        sidebar.add(toolbar, BorderLayout.CENTER);
+        
+        mainPanel.add(tables, BorderLayout.CENTER);
+        mainPanel.add(sidebar, BorderLayout.EAST);
+
     }
 }

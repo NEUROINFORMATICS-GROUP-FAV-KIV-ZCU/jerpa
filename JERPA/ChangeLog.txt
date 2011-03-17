@@ -1,7 +1,18 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
-  * (03/17/2011)
+  * (03/17/2011) Petr Miko
+     # 176
+       CHANGED: JERPALang update of translations for EDEDBPerspective etc.
+       ADDED  : Packages "ededb" and "tables" in "ch.ethz.origo.jerpa.prezentation.perspective" with java files for EDEDB. However, in case of changing language, localized texts won't update till next app's fresh start - have to figure out why and how to solve that.  
+  
+  * (03/17/2011) Petr Miko
+     # 175
+       ADDED   : EDEDClient - new "library" for JERPA allowing using webservice in EEG/ERP Database. Also added in jar form into lib directory of JERPA trunk.
+       CHANGED : Update of JERPALang
+       CHANGED : Minor changes in EDEDBPerspective.java  
+  
+  * (03/17/2011) Petr Miko
      # 174
        CHANGED : minor modification and update of JERPALang in lib directory
        CHANGED : ededb perspective added to config.properties
