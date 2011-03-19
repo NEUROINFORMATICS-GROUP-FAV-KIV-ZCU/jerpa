@@ -1,8 +1,9 @@
-package ch.ethz.origo.jerpa.prezentation.perspective.ededb.tables;
+package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import javax.swing.table.AbstractTableModel;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,6 +120,6 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
     public void updateText() throws JUIGLELangException {
         //not implemented
-        
+                
     }
 }

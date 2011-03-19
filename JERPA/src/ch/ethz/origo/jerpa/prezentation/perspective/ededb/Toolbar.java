@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
-import org.jdesktop.swingx.JXButton;
 import org.jdesktop.swingx.JXPanel;
 
 /**
@@ -20,19 +19,20 @@ public class Toolbar extends JXPanel implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    private JXButton connectButton, disconnectButton, downloadButton, chooseFolder;
-    private JRadioButton ownerButton, subjectButton;
+    
+    private Controller controller;
     private EDEDSession session;
-    private Tables tables;
-    private Rights rights;
-
-    public Toolbar(EDEDSession session, Tables tables) {
+    
+    private JButton connectButton, disconnectButton, downloadButton, chooseFolder;
+    private JRadioButton ownerButton, subjectButton;
+    
+    public Toolbar(Controller controller, EDEDSession session) {
         super();
 
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         this.session = session;
-        this.tables = tables;
+        this.controller = controller;
 
         JPanel buttonBar = new JPanel();
         JPanel radioBar = new JPanel();
@@ -73,26 +73,25 @@ public class Toolbar extends JXPanel implements ILanguage {
 
     private void createButtons() {
 
-        connectButton = new JXButton(resource.getString("sidebar.ededb.toolbar.connect"));
-        disconnectButton = new JXButton(resource.getString("sidebar.ededb.toolbar.disconnect"));
-        downloadButton = new JXButton(resource.getString("sidebar.ededb.toolbar.download"));
-        chooseFolder = new JXButton(resource.getString("sidebar.ededb.toolbar.changedir"));
+        connectButton = new JButton(resource.getString("sidebar.ededb.toolbar.connect"));
+        disconnectButton = new JButton(resource.getString("sidebar.ededb.toolbar.disconnect"));
+        downloadButton = new JButton(resource.getString("sidebar.ededb.toolbar.download"));
+        chooseFolder = new JButton(resource.getString("sidebar.ededb.toolbar.choosedir"));
         ownerButton = new JRadioButton(resource.getString("sidebar.ededb.toolbar.owner"));
         subjectButton = new JRadioButton(resource.getString("sidebar.ededb.toolbar.subject"));
 
         ButtonGroup group = new ButtonGroup();
-        rights = Rights.OWNER;
+        
+        controller.setRights(Rights.OWNER);
 
         group.add(ownerButton);
         group.add(subjectButton);
 
-        /*connectButton.addActionListener(actions.actionConnect);
-        disconnectButton.addActionListener(actions.actionDisconnect);
-        disconnectButton.setVisible(false);
+        connectButton.addActionListener(controller.getActionConnect());
+        disconnectButton.addActionListener(controller.getActionDisconnect());
+        downloadButton.addActionListener(controller.getActionDownloadSelected());
+        chooseFolder.addActionListener(controller.getActionChooseDownloadFolder());
         
-        downloadButton.addActionListener(actions.actionDownloadSelected);
-        chooseFolder.addActionListener(actions.actionChooseDownloadFolder);*/
-
         disconnectButton.setVisible(false);
 
         ownerButton.addActionListener(new ActionListener() {
@@ -100,8 +99,8 @@ public class Toolbar extends JXPanel implements ILanguage {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ownerButton.setSelected(true);
-                //tables.updateExpTable();
-                rights = Rights.OWNER;
+                controller.setRights(Rights.OWNER);
+                controller.update();
             }
         });
 
@@ -110,18 +109,10 @@ public class Toolbar extends JXPanel implements ILanguage {
             @Override
             public void actionPerformed(ActionEvent e) {
                 subjectButton.setSelected(true);
-                //tables.updateExpTable();
-                rights = Rights.SUBJECT;
+                controller.setRights(Rights.SUBJECT);
+                controller.update();
             }
         });
-    }
-
-    public Rights getRightsSelected() {
-        if (subjectButton.isSelected()) {
-            return Rights.SUBJECT;
-        } else {
-            return Rights.OWNER;
-        }
     }
 
     public void updateButtonsVisibility() {

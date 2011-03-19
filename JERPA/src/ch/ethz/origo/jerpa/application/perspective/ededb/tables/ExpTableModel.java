@@ -1,4 +1,4 @@
-package ch.ethz.origo.jerpa.prezentation.perspective.ededb.tables;
+package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 
 import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
 import ch.ethz.origo.juigle.application.ILanguage;
