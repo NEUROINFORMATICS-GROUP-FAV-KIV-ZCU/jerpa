@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import java.awt.BorderLayout;
@@ -20,7 +21,7 @@ import org.jdesktop.swingx.JXPanel;
  *
  * @author Petr Miko
  */
-class FirstRun extends JXPanel implements ILanguage {
+public class FirstRun extends JXPanel implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;

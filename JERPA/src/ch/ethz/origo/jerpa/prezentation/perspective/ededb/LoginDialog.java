@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -12,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ResourceBundle;
 import javax.xml.ws.WebServiceException;
 import org.jdesktop.swingx.JXLabel;
@@ -40,7 +42,8 @@ public class LoginDialog implements ILanguage {
     public void createDialog() {
         final JDialog dialog = new JDialog();
 
-        JXPanel canvas = new JXPanel(new BorderLayout());
+        JXPanel canvas = new JXPanel();
+        canvas.setLayout(new BoxLayout(canvas, BoxLayout.PAGE_AXIS));
         JXPanel labelPane = new JXPanel(new GridLayout(0, 1));
         JXPanel fieldPane = new JXPanel(new GridLayout(0, 1));
         JXPanel buttonPane = new JXPanel(new FlowLayout());
@@ -51,6 +54,10 @@ public class LoginDialog implements ILanguage {
         info.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         info.setBackground(canvas.getBackground());
         info.setForeground(canvas.getForeground());
+
+        final JProgressBar progress = new JProgressBar();
+        progress.setIndeterminate(true);
+        progress.setVisible(false);
 
         usernameField = new JFormattedTextField();
         passwordField = new JPasswordField();
@@ -79,29 +86,55 @@ public class LoginDialog implements ILanguage {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                String tempUsername;
-                String tempPassword;
+                final String tempUsername;
+                final String tempPassword;
 
                 if (usernameField.getText().length() > 0 && passwordField.getPassword().length > 0) {
 
                     tempUsername = usernameField.getText();
                     tempPassword = new String(passwordField.getPassword());
-                    try {
-                        session.userLogIn(tempUsername, tempPassword);
 
-                        controller.update();
-                        dialog.dispose();
-                    } catch (WebServiceException ex) {
-                        JUIGLErrorInfoUtils.showErrorDialog(
-                                resource.getString("logindialog.ededb.errors.credentials.desc"),
-                                resource.getString("logindialog.ededb.errors.credentials.text"),
-                                ex);
-                    } catch (ConnectException ex) {
-                        JUIGLErrorInfoUtils.showErrorDialog(
-                                resource.getString("logindialog.ededb.errors.connection.desc"),
-                                resource.getString("logindialog.ededb.errors.connection.text"),
-                                ex);
-                    }
+                    Thread loginThread = new Thread(new Runnable() {
+
+                        public void run() {
+                            try {
+                                session.userLogIn(tempUsername, tempPassword);
+                                controller.update();
+                                dialog.dispose();
+                            } catch (WebServiceException ex) {
+
+                                if (ex.getCause().getClass() == IOException.class) {
+                                    JUIGLErrorInfoUtils.showErrorDialog(
+                                            resource.getString("logindialog.ededb.errors.credentials.desc"),
+                                            resource.getString("logindialog.ededb.errors.credentials.text"),
+                                            ex);
+                                } else if (ex.getCause().getClass() == ConnectException.class) {
+                                    JUIGLErrorInfoUtils.showErrorDialog(
+                                            resource.getString("logindialog.ededb.errors.connection.desc"),
+                                            resource.getString("logindialog.ededb.errors.connection.text"),
+                                            ex);
+                                }
+                            } catch (ConnectException ex) {
+                                JUIGLErrorInfoUtils.showErrorDialog(
+                                        resource.getString("logindialog.ededb.errors.connection.desc"),
+                                        resource.getString("logindialog.ededb.errors.connection.text"),
+                                        ex);
+                            }
+
+                            progress.setVisible(false);
+                        }
+                    });
+
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            progress.setVisible(true);
+                        }
+                    });
+
+                    loginThread.start();
+
                 } else {
                     JOptionPane.showMessageDialog(
                             new JFrame(),
@@ -149,11 +182,16 @@ public class LoginDialog implements ILanguage {
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
 
+        JXPanel center = new JXPanel();
+        center.setLayout(new BoxLayout(center, BoxLayout.LINE_AXIS));
+        center.add(labelPane);
+        center.add(fieldPane);
+
         canvas.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        canvas.add(info, BorderLayout.NORTH);
-        canvas.add(labelPane, BorderLayout.CENTER);
-        canvas.add(fieldPane, BorderLayout.LINE_END);
-        canvas.add(buttonPane, BorderLayout.SOUTH);
+        canvas.add(info);
+        canvas.add(center);
+        canvas.add(buttonPane);
+        canvas.add(progress);
 
         dialog.setTitle(resource.getString("logindialog.ededb.title"));
         dialog.setResizable(false);

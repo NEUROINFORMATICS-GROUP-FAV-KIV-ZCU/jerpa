@@ -3,7 +3,6 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
-import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import javax.swing.table.AbstractTableModel;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +17,8 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     private String resourceBundlePath;
     private LinkedList<DataRowModel> data;
     private LinkedList<String> columnNames;
+    
+    private final int UNIT = 1024;
 
     public DataTableModel() {
         super();
@@ -43,9 +44,10 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
     private void initColumns() {
         columnNames = new LinkedList<String>();
-        columnNames.add("table.ededb.datatable.download");
+        columnNames.add("table.ededb.datatable.action");
         columnNames.add("table.ededb.datatable.filename");
         columnNames.add("table.ededb.datatable.mime");
+        columnNames.add("table.ededb.datatable.size");
         columnNames.add("table.ededb.datatable.localcopy");
     }
     
@@ -68,17 +70,15 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return data.get(rowIndex).isToDownload();
+                return data.get(rowIndex).isSelected();
             case 1:
                 return data.get(rowIndex).getFileInfo().getFilename();
             case 2:
                 return data.get(rowIndex).getFileInfo().getMimeType();
-            case 3:
-                if (data.get(rowIndex).isDownloaded()) {
-                    return resource.getString("table.ededb.datatable.state.yes");
-                } else {
-                    return resource.getString("table.ededb.datatable.state.no");
-                }
+            case 3: 
+                return countFileSize(data.get(rowIndex).getFileInfo().getLength());
+            case 4:
+                return data.get(rowIndex).getDownloaded();
             default:
                 return false;
         }
@@ -87,8 +87,10 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     @Override
     public void setValueAt(Object object, int rowIndex, int columnIndex) {
         if (columnIndex == 0) {
-            data.get(rowIndex).setToDownload((Boolean) object);
+            data.get(rowIndex).setSelected((Boolean) object);
         }
+        else if(columnIndex == getColumnCount() - 1)
+            data.get(rowIndex).setDownloaded((String) object);
 
     }
 
@@ -97,7 +99,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         return (columnIndex == 0);
     }
 
-    public void addRow(DataFileInfo fileInfo, boolean downloaded) {
+    public void addRow(DataFileInfo fileInfo, String downloaded) {
         data.add(new DataRowModel(fileInfo, downloaded));
     }
 
@@ -121,5 +123,17 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     public void updateText() throws JUIGLELangException {
         //not implemented
                 
+    }
+
+    private String countFileSize(long length) {
+        
+    if (length < UNIT)
+        return length + " B";
+    
+    int exp = (int) (Math.log(length) / Math.log(UNIT));
+    String pre = "KMGTPE".charAt(exp-1) + "i";
+    
+    return String.format("%.1f %sB", length / Math.pow(UNIT, exp), pre);
+        
     }
 }

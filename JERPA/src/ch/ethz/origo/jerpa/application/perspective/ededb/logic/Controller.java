@@ -1,13 +1,21 @@
-package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
+package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionChooseDownloadPath;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionConnect;
+import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDeleteSelected;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDisconnect;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDownloadSelected;
+import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionOpenDownloadPath;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
+import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.FirstRun;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginDialog;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginInfo;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Tables;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.awt.BorderLayout;
 import java.io.File;
@@ -33,9 +41,11 @@ public class Controller {
     private Toolbar toolbar;
     private Rights rights;
     private ActionDownloadSelected actionDownloadSelected;
+    private ActionDeleteSelected actionDeleteSelected;
     private ActionDisconnect actionDisconnect;
     private ActionConnect actionConnect;
     private ActionChooseDownloadPath actionChooseDownloadFolder;
+    private ActionOpenDownloadPath actionOpenDownloadPath;
     private String downloadPath;
     private boolean firstRun;
     private JXPanel mainPanel;
@@ -71,7 +81,9 @@ public class Controller {
         actionConnect = new ActionConnect(loginDialog);
         actionDisconnect = new ActionDisconnect(this, session);
         actionDownloadSelected = new ActionDownloadSelected(this, session);
+        actionDeleteSelected = new ActionDeleteSelected(this, session);
         actionChooseDownloadFolder = new ActionChooseDownloadPath(this, session);
+        actionOpenDownloadPath = new ActionOpenDownloadPath(this);
     }
 
     public void update() {
@@ -79,6 +91,12 @@ public class Controller {
         loginInfo.updateLoginInfo();
         tables.updateExpTable();
         toolbar.updateButtonsVisibility();
+    }
+    
+    public void repaintAll(){
+        tables.repaint();
+        toolbar.repaint();
+        loginInfo.repaint();
     }
 
     public JXPanel initGraphics() {
@@ -107,6 +125,10 @@ public class Controller {
     public ActionChooseDownloadPath getActionChooseDownloadFolder() {
         return actionChooseDownloadFolder;
     }
+    
+    public ActionDeleteSelected getActionDeleteSelected() {
+        return actionDeleteSelected;
+    }
 
     public ActionConnect getActionConnect() {
         return actionConnect;
@@ -119,6 +141,10 @@ public class Controller {
     public ActionDownloadSelected getActionDownloadSelected() {
         return actionDownloadSelected;
     }
+    
+    public ActionOpenDownloadPath getActionOpenDownloadPath() {
+        return actionOpenDownloadPath;
+    }
 
     public Rights getRights() {
         return rights;
@@ -128,8 +154,8 @@ public class Controller {
         this.rights = rights;
     }
 
-    public List<DataRowModel> getSelectedFilesToDownload() {
-        return tables.getFileDataToDownload();
+    public List<DataRowModel> getSelectedFiles() {
+        return tables.getSelectedFiles();
     }
 
     private void initDownloadPath() {
@@ -156,7 +182,7 @@ public class Controller {
                 config.createNewFile();
             } catch (IOException ex) {
                 JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
-                    ex.getMessage(),ex);
+                        ex.getMessage(), ex);
             }
         }
 
@@ -168,10 +194,10 @@ public class Controller {
             outPropStream.close();
         } catch (FileNotFoundException ex) {
             JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
-                    ex.getMessage(),ex);
+                    ex.getMessage(), ex);
         } catch (IOException ex) {
             JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
-                    ex.getMessage(),ex);
+                    ex.getMessage(), ex);
         }
 
     }
@@ -186,5 +212,17 @@ public class Controller {
 
     public boolean isFirstRun() {
         return firstRun;
+    }
+
+    public boolean isAlreadyDownloaded(DataFileInfo info) {
+
+        String path = getDownloadPath() + File.separator
+                + session.getUsername() + File.separator
+                + info.getExperimentId() + " - " + info.getScenarioName()
+                + File.separator + info.getFilename();
+
+        File file = new File(path);
+        return file.exists() && file.length() == info.getLength();
+
     }
 }

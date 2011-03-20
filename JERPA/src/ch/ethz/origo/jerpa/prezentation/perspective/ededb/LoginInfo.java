@@ -1,10 +1,10 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import java.util.ResourceBundle;
-import org.apache.commons.lang.WordUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -14,10 +14,9 @@ import org.jdesktop.swingx.JXPanel;
  * @author Petr Miko
  */
 public class LoginInfo extends JXPanel implements ILanguage {
-    
+
     private ResourceBundle resource;
     private String resourceBundlePath;
-
     private JTextArea usernameText;
     private JTextArea directoryText;
     private EDEDSession session;
@@ -25,7 +24,7 @@ public class LoginInfo extends JXPanel implements ILanguage {
 
     public LoginInfo(Controller controller, EDEDSession session) {
         super();
-        
+
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -36,11 +35,12 @@ public class LoginInfo extends JXPanel implements ILanguage {
         directoryText = createArea(resource.getString("sidebar.ededb.info.title.downloaddir"));
 
         usernameText.setText(resource.getString("sidebar.ededb.info.text.notloggedin"));
-        
-        if(controller.isFirstRun())
+
+        if (controller.isFirstRun()) {
             directoryText.setText(resource.getString("sidebar.ededb.info.text.dirnotset"));
-        else
+        } else {
             directoryText.setText(controller.getDownloadPath());
+        }
 
         this.add(usernameText);
         this.add(directoryText);
@@ -63,15 +63,17 @@ public class LoginInfo extends JXPanel implements ILanguage {
     }
 
     public void updateLoginInfo() {
-        if (session.isConnected())
+        if (session.isConnected()) {
             usernameText.setText(session.getUsername());
-        else
+        } else {
             usernameText.setText(resource.getString("sidebar.ededb.info.text.notloggedin"));
+        }
 
-        if(controller.isFirstRun())
+        if (controller.isFirstRun()) {
             directoryText.setText(resource.getString("sidebar.ededb.info.text.dirnotset"));
-        else
+        } else {
             directoryText.setText(controller.getDownloadPath());
+        }
     }
 
     public void setLocalizedResourceBundle(String path) {
@@ -88,8 +90,6 @@ public class LoginInfo extends JXPanel implements ILanguage {
     }
 
     public void updateText() throws JUIGLELangException {
-        usernameText = createArea(resource.getString("sidebar.ededb.info.title.username"));
-        directoryText = createArea(resource.getString("sidebar.ededb.info.title.downloaddir"));
-        updateLoginInfo();
+        //not implemented yet
     }
 }

@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
@@ -144,29 +145,28 @@ public class Tables extends JSplitPane implements ILanguage {
 
             assert dataFileInfos != null;
             for (DataFileInfo info : dataFileInfos) {
-                boolean downloaded = isAlreadyDownloaded(info.getExperimentId(), info.getScenarioName(), info.getFilename());
-                dataModel.addRow(info, downloaded);
+                boolean downloaded = controller.isAlreadyDownloaded(info);
+                
+                if(downloaded)
+                    dataModel.addRow(info, resource.getString("table.ededb.datatable.state.yes"));
+                else
+                    dataModel.addRow(info, resource.getString("table.ededb.datatable.state.no"));
             }
         }
     }
 
-    public List<DataRowModel> getFileDataToDownload() {
+    public List<DataRowModel> getSelectedFiles() {
         List<DataRowModel> data = dataModel.getData();
         ArrayList<DataRowModel> selectedFiles = new ArrayList<DataRowModel>();
 
         for (DataRowModel row : data) {
-            if (row.isToDownload()) {
+            if (row.isSelected()) {
                 selectedFiles.add(row);
             }
         }
-
         return selectedFiles;
     }
-
-    private boolean isAlreadyDownloaded(int experimentId, String scenarioName, String filename) {
-
-        return false;
-    }
+    
 
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;

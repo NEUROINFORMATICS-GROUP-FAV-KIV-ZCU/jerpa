@@ -7,33 +7,33 @@ import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
  */
 public class DataRowModel {
 
-    private boolean toDownload;
+    private boolean selected;
     private DataFileInfo fileInfo;
-    private boolean downloaded;
+    private String downloaded;
 
-    public DataRowModel(DataFileInfo fileInfo, boolean downloaded){
-        toDownload = false;
+    public DataRowModel(DataFileInfo fileInfo, String downloaded){
+        selected = false;
         this.fileInfo = fileInfo;
         this.downloaded = downloaded;
     }
 
-    public boolean isToDownload() {
-        return toDownload;
+    public boolean isSelected() {
+        return selected;
     }
 
-    public void setToDownload(boolean toDownload) {
-        this.toDownload = toDownload;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public DataFileInfo getFileInfo() {
         return fileInfo;
     }
 
-    public boolean isDownloaded() {
+    public String getDownloaded() {
         return downloaded;
     }
 
-    public void setDownloaded(boolean downloaded) {
+    public void setDownloaded(String downloaded) {
         this.downloaded = downloaded;
     }
 }
