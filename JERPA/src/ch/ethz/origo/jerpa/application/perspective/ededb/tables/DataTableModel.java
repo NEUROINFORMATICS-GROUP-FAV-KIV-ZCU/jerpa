@@ -3,10 +3,12 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import javax.swing.table.AbstractTableModel;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.swing.SwingUtilities;
 
 /**
  * @author Petr Miko
@@ -19,9 +21,15 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     private LinkedList<String> columnNames;
     
     private final int UNIT = 1024;
+    public static final int ACTION_COLUMN = 0;
+    public static final int NAME_COLUMN = 1;
+    public static final int MIME_COLUMN = 2;
+    public static final int SIZE_COLUMN = 3;
+    public static final int DOWNLOADED_COLUMN = 4;
 
     public DataTableModel() {
         super();
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
         initColumns();
         data = new LinkedList<DataRowModel>();
@@ -117,14 +125,19 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     }
 
     public void setResourceBundleKey(String string) {
-        //not implemented
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        //not implemented
-                
-    }
+        SwingUtilities.invokeLater(new Runnable() {
 
+            @Override
+            public void run() {
+                fireTableStructureChanged();
+            }
+        });
+
+    }
     private String countFileSize(long length) {
         
     if (length < UNIT)

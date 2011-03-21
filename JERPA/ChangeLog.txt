@@ -2,6 +2,10 @@
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
   * (3/21/2011) vsouhrada
+  	 # 181
+  	 	 CHANGED : Corrected traslation in EDEDB. FileDownload threads are now synchronized.
+  
+  * (3/21/2011) vsouhrada
   	 # 180
   	 	 ADDED   : A New version of The JUIGLE library -> JUIGLE-1.0.2-SNAPSHOT and sources JUIGLE-1.0.2-SNAPSHOT-src. 
   	 	 

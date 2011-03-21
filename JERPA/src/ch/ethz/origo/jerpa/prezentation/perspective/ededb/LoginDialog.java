@@ -4,6 +4,7 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.net.ConnectException;
 
@@ -31,8 +32,22 @@ public class LoginDialog implements ILanguage {
     private JFormattedTextField usernameField;
     private JPasswordField passwordField;
 
+    private JDialog dialog;
+    private JTextArea info;
+    private JLabel usernameLabel;
+    private JLabel passwordLabel;
+    private JButton okButton, cancelButton;
+
+    private String inputsErrorText;
+    private String inputsErrorDesc;
+    private String credentialsErrorText;
+    private String credentialsErrorDesc;
+    private String connectionErrorText;
+    private String connectionErrorDesc;
+
     public LoginDialog(Controller controller, EDEDSession session) {
 
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         this.controller = controller;
@@ -40,7 +55,7 @@ public class LoginDialog implements ILanguage {
     }
 
     public void createDialog() {
-        final JDialog dialog = new JDialog();
+        dialog = new JDialog();
 
         JXPanel canvas = new JXPanel();
         canvas.setLayout(new BoxLayout(canvas, BoxLayout.PAGE_AXIS));
@@ -48,7 +63,9 @@ public class LoginDialog implements ILanguage {
         JXPanel fieldPane = new JXPanel(new GridLayout(0, 1));
         JXPanel buttonPane = new JXPanel(new FlowLayout());
 
-        JTextArea info = new JTextArea(resource.getString("logindialog.ededb.caution"));
+        updateErrorTexts();
+
+        info = new JTextArea(resource.getString("logindialog.ededb.caution"));
         info.setEditable(false);
         info.setFocusable(false);
         info.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -62,8 +79,8 @@ public class LoginDialog implements ILanguage {
         usernameField = new JFormattedTextField();
         passwordField = new JPasswordField();
 
-        JLabel usernameLabel = new JXLabel(resource.getString("logindialog.ededb.username"));
-        JLabel passwordLabel = new JXLabel(resource.getString("logindialog.ededb.password"));
+        usernameLabel = new JXLabel(resource.getString("logindialog.ededb.username"));
+        passwordLabel = new JXLabel(resource.getString("logindialog.ededb.password"));
         usernameLabel.setLabelFor(usernameField);
         passwordLabel.setLabelFor(passwordField);
 
@@ -78,8 +95,8 @@ public class LoginDialog implements ILanguage {
         fieldPane.add(usernameField);
         fieldPane.add(passwordField);
 
-        final JButton okButton = new JButton(resource.getString("logindialog.ededb.buttons.ok"));
-        final JButton cancelButton = new JButton(resource.getString("logindialog.ededb.buttons.cancel"));
+        okButton = new JButton(resource.getString("logindialog.ededb.buttons.ok"));
+        cancelButton = new JButton(resource.getString("logindialog.ededb.buttons.cancel"));
 
         okButton.addActionListener(new ActionListener() {
 
@@ -105,19 +122,19 @@ public class LoginDialog implements ILanguage {
 
                                 if (ex.getCause().getClass() == IOException.class) {
                                     JUIGLErrorInfoUtils.showErrorDialog(
-                                            resource.getString("logindialog.ededb.errors.credentials.desc"),
-                                            resource.getString("logindialog.ededb.errors.credentials.text"),
+                                            credentialsErrorDesc,
+                                            credentialsErrorText,
                                             ex);
                                 } else if (ex.getCause().getClass() == ConnectException.class) {
                                     JUIGLErrorInfoUtils.showErrorDialog(
-                                            resource.getString("logindialog.ededb.errors.connection.desc"),
-                                            resource.getString("logindialog.ededb.errors.connection.text"),
+                                            connectionErrorDesc,
+                                            connectionErrorText,
                                             ex);
                                 }
                             } catch (ConnectException ex) {
                                 JUIGLErrorInfoUtils.showErrorDialog(
-                                        resource.getString("logindialog.ededb.errors.connection.desc"),
-                                        resource.getString("logindialog.ededb.errors.connection.text"),
+                                        connectionErrorDesc,
+                                        connectionErrorText,
                                         ex);
                             }
 
@@ -138,8 +155,8 @@ public class LoginDialog implements ILanguage {
                 } else {
                     JOptionPane.showMessageDialog(
                             new JFrame(),
-                            resource.getString("logindialog.ededb.errors.inputs.text"),
-                            resource.getString("logindialog.ededb.errors.inputs.desc"),
+                            inputsErrorText,
+                            inputsErrorDesc,
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -211,10 +228,32 @@ public class LoginDialog implements ILanguage {
     }
 
     public void setResourceBundleKey(String string) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                dialog.setTitle(resource.getString("logindialog.ededb.title"));
+                info.setText(resource.getString("logindialog.ededb.caution"));
+                usernameLabel.setText(resource.getString("logindialog.ededb.username"));
+                passwordLabel.setText(resource.getString("logindialog.ededb.password"));
+                okButton.setText(resource.getString("logindialog.ededb.buttons.ok"));
+                cancelButton.setText(resource.getString("logindialog.ededb.buttons.cancel"));
+                updateErrorTexts();
+            }
+        });
+
+    }
+
+    private void updateErrorTexts() {
+        inputsErrorText = resource.getString("logindialog.ededb.errors.inputs.text");
+        inputsErrorDesc = resource.getString("logindialog.ededb.errors.inputs.desc");
+        credentialsErrorText = resource.getString("logindialog.ededb.errors.credentials.text");
+        credentialsErrorDesc = resource.getString("logindialog.ededb.errors.credentials.desc");
+        connectionErrorText = resource.getString("logindialog.ededb.errors.connection.text");
+        connectionErrorDesc = resource.getString("logindialog.ededb.errors.connection.desc");
     }
 }

@@ -3,15 +3,17 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import javax.swing.table.AbstractTableModel;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
+import javax.swing.SwingUtilities;
 
 /**
  * @author Petr Miko
  */
 public class ExpTableModel extends AbstractTableModel implements ILanguage {
-    
+
     private ResourceBundle resource;
     private String resourceBundlePath;
     private LinkedList<ExperimentInfo> data;
@@ -19,13 +21,15 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
     public static final int ID_COLUMN = 0;
     public static final int NAME_COLUMN = 1;
 
-    public ExpTableModel(){
+    public ExpTableModel() {
         super();
+
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
         initColumns();
         data = new LinkedList<ExperimentInfo>();
     }
-    
+
     private void initColumns() {
         columnNames = new LinkedList<String>();
         columnNames.add("table.ededb.exptable.expid");
@@ -44,26 +48,29 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
     @Override
     public String getColumnName(int columnIndex) {
-            return resource.getString(columnNames.get(columnIndex));
-        }
+        return resource.getString(columnNames.get(columnIndex));
+    }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (columnIndex == ID_COLUMN) return data.get(rowIndex).getExperimentId();
-        else return data.get(rowIndex).getScenarioName();
+        if (columnIndex == ID_COLUMN) {
+            return data.get(rowIndex).getExperimentId();
+        } else {
+            return data.get(rowIndex).getScenarioName();
+        }
     }
 
     @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex){
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
     }
 
-    public void insertRow(ExperimentInfo experiment){
+    public void insertRow(ExperimentInfo experiment) {
         data.add(experiment);
         fireTableDataChanged();
     }
 
-    public void clear(){
+    public void clear() {
         data.clear();
         fireTableDataChanged();
     }
@@ -78,10 +85,17 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
     }
 
     public void setResourceBundleKey(String string) {
-        //not implemented
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        //not implemented
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                fireTableStructureChanged();
+            }
+        });
+
     }
 }

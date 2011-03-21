@@ -3,6 +3,7 @@ package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import org.jdesktop.swingx.JXPanel;
 
@@ -27,20 +29,25 @@ public class FirstRun extends JXPanel implements ILanguage {
     private String resourceBundlePath;
     private Controller controller;
 
+    private JButton choose;
+    private JTextArea text;
+    private TitledBorder titledBorder;
+
     public FirstRun(final Controller controller) {
         super();
 
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         this.controller = controller;
         this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
-        TitledBorder titledBorder = new TitledBorder(resource.getString("firstrun.ededb.title"));
+        titledBorder = new TitledBorder(resource.getString("firstrun.ededb.title"));
         titledBorder.setTitleJustification(TitledBorder.CENTER);
         
         JScrollPane textPane = new JScrollPane();
 
-        JTextArea text = new JTextArea(resource.getString("firstrun.ededb.text"));
+        text = new JTextArea(resource.getString("firstrun.ededb.text"));
         text.setBackground(this.getBackground());
         text.setForeground(this.getForeground());
         text.setEditable(false);
@@ -51,7 +58,7 @@ public class FirstRun extends JXPanel implements ILanguage {
         
         textPane.getViewport().add(text);
         
-        JButton choose = new JButton(resource.getString("firstrun.ededb.choosedir"));
+        choose = new JButton(resource.getString("firstrun.ededb.choosedir"));
 
         choose.addActionListener(new ActionListener() {
 
@@ -89,10 +96,18 @@ public class FirstRun extends JXPanel implements ILanguage {
     }
 
     public void setResourceBundleKey(String string) {
-        //not implemented
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        //not implemented
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                titledBorder.setTitle(resource.getString("firstrun.ededb.title"));
+                text.setText(resource.getString("firstrun.ededb.text"));
+                choose.setText(resource.getString("firstrun.ededb.choosedir"));
+            }
+        });
     }
 }

@@ -6,6 +6,7 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.FileDownload;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,10 +26,17 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
     private Controller controller;
     private EDEDSession session;
 
+    private String emptyText, emptyDesc;
+    private String existenceTextPart1, existenceTextPart2, existenceDesc;
+
+
     public ActionDownloadSelected(Controller controller, EDEDSession session) {
         super();
-        
+
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+
+        initTexts();
         
         this.controller = controller;
         this.session = session;
@@ -44,8 +52,8 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
                     if (filesToDownload.isEmpty()) {
                         JOptionPane.showMessageDialog(
                             new JFrame(),
-                            resource.getString("actiondownload.ededb.empty.text"),
-                            resource.getString("actiondownload.ededb.empty.desc"),
+                            emptyText,
+                            emptyDesc,
                             JOptionPane.INFORMATION_MESSAGE);
                     }
 
@@ -55,10 +63,10 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
                             int retValue = JOptionPane.showConfirmDialog(
                                     null,
-                                    resource.getString("actiondownload.ededb.existence.text.part1")
+                                    existenceTextPart1
                                     + file.getFileInfo().getFilename()
-                                    + resource.getString("actiondownload.ededb.existence.text.part2"),
-                                    resource.getString("actiondownload.ededb.existence.desc"),
+                                    + existenceTextPart2,
+                                    existenceDesc,
                                     JOptionPane.YES_NO_OPTION);
 
                             if (retValue == JOptionPane.NO_OPTION) {
@@ -101,10 +109,26 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
     }
 
     public void setResourceBundleKey(String string) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                initTexts();
+            }
+        });
+
+    }
+
+    public void initTexts(){
+        emptyText = resource.getString("actiondownload.ededb.empty.text");
+        emptyDesc = resource.getString("actiondownload.ededb.empty.desc");
+
+        existenceTextPart1 = resource.getString("actiondownload.ededb.existence.text.part1");
+        existenceTextPart2 = resource.getString("actiondownload.ededb.existence.text.part2");
+        existenceDesc = resource.getString("actiondownload.ededb.existence.desc");
     }
 }

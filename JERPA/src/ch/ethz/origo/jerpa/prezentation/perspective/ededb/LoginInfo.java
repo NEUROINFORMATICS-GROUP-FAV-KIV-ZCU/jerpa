@@ -4,6 +4,7 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.util.ResourceBundle;
 
 import javax.swing.*;
@@ -22,17 +23,30 @@ public class LoginInfo extends JXPanel implements ILanguage {
     private EDEDSession session;
     private Controller controller;
 
+    private TitledBorder usernameBorder;
+    private TitledBorder directoryBorder;
+
     public LoginInfo(Controller controller, EDEDSession session) {
         super();
 
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.session = session;
         this.controller = controller;
 
-        usernameText = createArea(resource.getString("sidebar.ededb.info.title.username"));
-        directoryText = createArea(resource.getString("sidebar.ededb.info.title.downloaddir"));
+        usernameText = createArea();
+        directoryText = createArea();
+
+        usernameBorder = new TitledBorder(resource.getString("sidebar.ededb.info.title.username"));
+        directoryBorder = new TitledBorder(resource.getString("sidebar.ededb.info.title.downloaddir"));
+
+        usernameBorder.setTitleJustification(TitledBorder.CENTER);
+        directoryBorder.setTitleJustification(TitledBorder.CENTER);
+
+        usernameText.setBorder(usernameBorder);
+        directoryText.setBorder(directoryBorder);
 
         usernameText.setText(resource.getString("sidebar.ededb.info.text.notloggedin"));
 
@@ -46,17 +60,13 @@ public class LoginInfo extends JXPanel implements ILanguage {
         this.add(directoryText);
     }
 
-    private JTextArea createArea(String title) {
+    private JTextArea createArea() {
         JTextArea area = new JTextArea();
 
         area.setFocusable(false);
         area.setBackground(this.getBackground());
         area.setForeground(this.getForeground());
 
-        TitledBorder titledBorder = new TitledBorder(title);
-        titledBorder.setTitleJustification(TitledBorder.CENTER);
-
-        area.setBorder(titledBorder);
         area.setWrapStyleWord(true);
 
         return area;
@@ -86,10 +96,19 @@ public class LoginInfo extends JXPanel implements ILanguage {
     }
 
     public void setResourceBundleKey(String string) {
-        //not implemented
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        //not implemented yet
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                usernameBorder.setTitle(resource.getString("sidebar.ededb.info.title.username"));
+                directoryBorder.setTitle(resource.getString("sidebar.ededb.info.title.downloaddir"));
+
+                updateLoginInfo();
+            }
+        });
     }
 }

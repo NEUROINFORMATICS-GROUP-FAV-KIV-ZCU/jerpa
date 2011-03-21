@@ -5,6 +5,7 @@ import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,17 +21,16 @@ public class Toolbar extends JXPanel implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    
     private Controller controller;
     private EDEDSession session;
-    
     private JButton connectButton, disconnectButton, downloadButton, chooseFolderButton,
-            openFolderButton,deleteFileButton,analyseFileButton;
+            openFolderButton, deleteFileButton, analyseFileButton;
     private JRadioButton ownerButton, subjectButton;
-    
+
     public Toolbar(Controller controller, EDEDSession session) {
         super();
 
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         this.session = session;
@@ -63,17 +63,17 @@ public class Toolbar extends JXPanel implements ILanguage {
         butBarConstrains.gridy = 1;
         butBarConstrains.gridwidth = 2;
         buttonBar.add(openFolderButton, butBarConstrains);
-        
+
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 2;
         butBarConstrains.gridwidth = 2;
         buttonBar.add(chooseFolderButton, butBarConstrains);
-        
+
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 5;
         butBarConstrains.gridwidth = 2;
         buttonBar.add(analyseFileButton, butBarConstrains);
-        
+
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 6;
         butBarConstrains.gridwidth = 2;
@@ -90,18 +90,20 @@ public class Toolbar extends JXPanel implements ILanguage {
 
     private void createButtons() {
 
-        connectButton = new JButton(resource.getString("sidebar.ededb.toolbar.connect"));
-        disconnectButton = new JButton(resource.getString("sidebar.ededb.toolbar.disconnect"));
-        downloadButton = new JButton(resource.getString("sidebar.ededb.toolbar.download"));
-        openFolderButton = new JButton(resource.getString("sidebar.ededb.toolbar.opendir"));
-        chooseFolderButton = new JButton(resource.getString("sidebar.ededb.toolbar.choosedir"));
-        analyseFileButton = new JButton(resource.getString("sidebar.ededb.toolbar.analysefile"));
-        deleteFileButton = new JButton(resource.getString("sidebar.ededb.toolbar.deletefile"));
-        ownerButton = new JRadioButton(resource.getString("sidebar.ededb.toolbar.owner"));
-        subjectButton = new JRadioButton(resource.getString("sidebar.ededb.toolbar.subject"));
+        connectButton = new JButton();
+        disconnectButton = new JButton();
+        downloadButton = new JButton();
+        openFolderButton = new JButton();
+        chooseFolderButton = new JButton();
+        analyseFileButton = new JButton();
+        deleteFileButton = new JButton();
+        ownerButton = new JRadioButton();
+        subjectButton = new JRadioButton();
+
+        updateButtonsText();
 
         ButtonGroup group = new ButtonGroup();
-        
+
         controller.setRights(Rights.OWNER);
 
         group.add(ownerButton);
@@ -113,7 +115,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         deleteFileButton.addActionListener(controller.getActionDeleteSelected());
         chooseFolderButton.addActionListener(controller.getActionChooseDownloadFolder());
         openFolderButton.addActionListener(controller.getActionOpenDownloadPath());
-        
+
         disconnectButton.setVisible(false);
 
         ownerButton.addActionListener(new ActionListener() {
@@ -148,6 +150,18 @@ public class Toolbar extends JXPanel implements ILanguage {
         }
     }
 
+    public void updateButtonsText() {
+        connectButton.setText(resource.getString("sidebar.ededb.toolbar.connect"));
+        disconnectButton.setText(resource.getString("sidebar.ededb.toolbar.disconnect"));
+        downloadButton.setText(resource.getString("sidebar.ededb.toolbar.download"));
+        openFolderButton.setText(resource.getString("sidebar.ededb.toolbar.opendir"));
+        chooseFolderButton.setText(resource.getString("sidebar.ededb.toolbar.choosedir"));
+        analyseFileButton.setText(resource.getString("sidebar.ededb.toolbar.analysefile"));
+        deleteFileButton.setText(resource.getString("sidebar.ededb.toolbar.deletefile"));
+        ownerButton.setText(resource.getString("sidebar.ededb.toolbar.owner"));
+        subjectButton.setText(resource.getString("sidebar.ededb.toolbar.subject"));
+    }
+
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
@@ -158,10 +172,17 @@ public class Toolbar extends JXPanel implements ILanguage {
     }
 
     public void setResourceBundleKey(String string) {
-        //not implemented
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        // not implemented
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                updateButtonsText();
+            }
+        });
+
     }
 }

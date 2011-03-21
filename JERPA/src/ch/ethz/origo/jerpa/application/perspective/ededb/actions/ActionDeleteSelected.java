@@ -5,13 +5,16 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -24,9 +27,17 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
     private Controller controller;
     private EDEDSession session;
 
+    private String tableValueNo;
+    private String warningTextPart1, warningTextPart2, warningDesc;
+    private String noLocalText, noLocalDesc;
+    private String errorText, errorDesc;
+
     public ActionDeleteSelected(Controller controller, EDEDSession session) {
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
+        initTexts();
+        
         this.controller = controller;
         this.session = session;
     }
@@ -37,10 +48,8 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
 
         if (!selected.isEmpty()) {
             int retValue = JOptionPane.showConfirmDialog(new JFrame(),
-                    resource.getString("actiondelete.ededb.warning.text.part1")
-                    + " " + selected.size() + " "
-                    + resource.getString("actiondelete.ededb.warning.text.part2"),
-                    resource.getString("actiondelete.ededb.warning.desc"),
+                    warningTextPart1 + " " + selected.size() + " " + warningTextPart2,
+                    warningDesc,
                     JOptionPane.WARNING_MESSAGE);
 
             if (retValue == JOptionPane.CANCEL_OPTION) {
@@ -62,8 +71,8 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
                 if (!temp.exists()) {
                     JOptionPane.showMessageDialog(
                             new JFrame(),
-                            resource.getString("actiondelete.ededb.nolocal.text"),
-                            resource.getString("actiondelete.ededb.nolocal.desc"),
+                            noLocalText,
+                            noLocalDesc,
                             JOptionPane.ERROR_MESSAGE);
                     controller.repaintAll();
                     continue;
@@ -72,12 +81,12 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
                 boolean success = temp.delete();
 
                 if (success) {
-                    file.setDownloaded(resource.getString("table.ededb.datatable.state.no"));
+                    file.setDownloaded(tableValueNo);
                 } else {
                     JOptionPane.showMessageDialog(
                             new JFrame(),
-                            resource.getString("actiondelete.ededb.error.text"),
-                            resource.getString("actiondelete.ededb.error.desc"),
+                            errorText,
+                            errorDesc,
                             JOptionPane.ERROR_MESSAGE);
                 }
 
@@ -96,10 +105,30 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
     }
 
     public void setResourceBundleKey(String string) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                initTexts();
+            }
+        });
+
+    }
+
+    private void initTexts(){
+
+        tableValueNo = resource.getString("table.ededb.datatable.state.no");
+        warningTextPart1 = resource.getString("actiondelete.ededb.warning.text.part1");
+        warningTextPart2 = resource.getString("actiondelete.ededb.warning.text.part2");
+        warningDesc = resource.getString("actiondelete.ededb.warning.desc");
+        noLocalText = resource.getString("actiondelete.ededb.nolocal.text");
+        noLocalDesc = resource.getString("actiondelete.ededb.nolocal.desc");
+        errorText = resource.getString("actiondelete.ededb.error.text");
+        errorDesc = resource.getString("actiondelete.ededb.error.desc");
+
     }
 }

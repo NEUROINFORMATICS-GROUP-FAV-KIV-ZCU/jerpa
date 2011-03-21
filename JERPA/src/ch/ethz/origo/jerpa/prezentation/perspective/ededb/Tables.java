@@ -10,6 +10,7 @@ import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -32,10 +33,21 @@ public class Tables extends JSplitPane implements ILanguage {
     private Controller controller;
     private EDEDSession session;
 
+    private String tableValueYes;
+    private String tableValueNo;
+    private String expInfoText;
+    private String expInfoDesc;
+    private String errorConnectionText;
+    private String errorConnectionDesc;
+    private String errorRangeDesc;
+
     public Tables(Controller controller, EDEDSession session) {
         super();
 
+        LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+
+        initTexts();
 
         this.controller = controller;
         this.session = session;
@@ -104,8 +116,8 @@ public class Tables extends JSplitPane implements ILanguage {
             if (availableExperiments != null) {
                 JOptionPane.showMessageDialog(
                         new JFrame(),
-                        availableExperiments.size() + " " + resource.getString("tables.ededb.exp.info.text"),
-                        resource.getString("tables.ededb.exp.info.desc"),
+                        availableExperiments.size() + " " + expInfoText,
+                        expInfoDesc,
                         JOptionPane.INFORMATION_MESSAGE);
                 expModel.clear();
 
@@ -117,8 +129,8 @@ public class Tables extends JSplitPane implements ILanguage {
             } else {
                 JOptionPane.showMessageDialog(
                         new JFrame(),
-                        resource.getString("tables.ededb.exp.connection.text"),
-                        resource.getString("tables.ededb.exp.connection.desc"),
+                        errorConnectionText,
+                        errorConnectionDesc,
                         JOptionPane.ERROR_MESSAGE);
             }
         } else {
@@ -136,7 +148,7 @@ public class Tables extends JSplitPane implements ILanguage {
             } catch (Exception e) {
 
                 JUIGLErrorInfoUtils.showErrorDialog(
-                        resource.getString("tables.ededb.data.exception.desc"),
+                        errorRangeDesc,
                         e.getMessage(),
                         e);
             }
@@ -146,11 +158,12 @@ public class Tables extends JSplitPane implements ILanguage {
             assert dataFileInfos != null;
             for (DataFileInfo info : dataFileInfos) {
                 boolean downloaded = controller.isAlreadyDownloaded(info);
-                
-                if(downloaded)
-                    dataModel.addRow(info, resource.getString("table.ededb.datatable.state.yes"));
-                else
-                    dataModel.addRow(info, resource.getString("table.ededb.datatable.state.no"));
+
+                if (downloaded) {
+                    dataModel.addRow(info, tableValueYes);
+                } else {
+                    dataModel.addRow(info, tableValueNo);
+                }
             }
         }
     }
@@ -166,7 +179,6 @@ public class Tables extends JSplitPane implements ILanguage {
         }
         return selectedFiles;
     }
-    
 
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
@@ -178,10 +190,28 @@ public class Tables extends JSplitPane implements ILanguage {
     }
 
     public void setResourceBundleKey(String string) {
-        //not implemented
+        throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     public void updateText() throws JUIGLELangException {
-        //not implemented
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                initTexts();
+            }
+        });
+
+    }
+
+    private void initTexts(){
+        tableValueYes = resource.getString("table.ededb.datatable.state.yes");
+        tableValueNo = resource.getString("table.ededb.datatable.state.no");
+
+        expInfoText = resource.getString("tables.ededb.exp.info.text");
+        expInfoDesc = resource.getString("tables.ededb.exp.info.desc");
+        errorConnectionText = resource.getString("tables.ededb.exp.connection.text");
+        errorConnectionDesc = resource.getString("tables.ededb.exp.connection.desc");
+        errorRangeDesc = resource.getString("tables.ededb.data.exception.desc");
     }
 }
