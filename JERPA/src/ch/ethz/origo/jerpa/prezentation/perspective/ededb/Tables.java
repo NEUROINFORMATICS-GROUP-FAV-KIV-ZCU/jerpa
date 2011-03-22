@@ -32,7 +32,6 @@ public class Tables extends JSplitPane implements ILanguage {
     private DataTableModel dataModel;
     private Controller controller;
     private EDEDSession session;
-
     private String tableValueYes;
     private String tableValueNo;
     private String expInfoText;
@@ -75,7 +74,9 @@ public class Tables extends JSplitPane implements ILanguage {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                updateDataTable(expTable.getSelectedRow());
+                if (!e.getValueIsAdjusting()) {
+                    updateDataTable(expTable.getSelectedRow());
+                }
             }
         });
 
@@ -104,68 +105,92 @@ public class Tables extends JSplitPane implements ILanguage {
 
     public void updateExpTable() {
 
-        if (session.isConnected()) {
-            java.util.List<ExperimentInfo> availableExperiments;
+        Thread updateExpThread = new Thread(new Runnable() {
 
-            if (controller.getRights() == Rights.SUBJECT) {
-                availableExperiments = session.getService().getAvailableExperimentsWithRights(Rights.SUBJECT);
-            } else {
-                availableExperiments = session.getService().getAvailableExperimentsWithRights(Rights.OWNER);
-            }
+            public void run() {
+                if (session.isConnected()) {
+                    java.util.List<ExperimentInfo> availableExperiments;
 
-            if (availableExperiments != null) {
-                JOptionPane.showMessageDialog(
-                        new JFrame(),
-                        availableExperiments.size() + " " + expInfoText,
-                        expInfoDesc,
-                        JOptionPane.INFORMATION_MESSAGE);
-                expModel.clear();
+                    if (controller.getRights() == Rights.SUBJECT) {
+                        availableExperiments = session.getService().getAvailableExperimentsWithRights(Rights.SUBJECT);
+                    } else {
+                        availableExperiments = session.getService().getAvailableExperimentsWithRights(Rights.OWNER);
+                    }
 
-                for (ExperimentInfo availableExperiment : availableExperiments) {
-                    expModel.insertRow(availableExperiment);
+                    Working.hide();
+
+                    if (availableExperiments != null) {
+                        JOptionPane.showMessageDialog(
+                                new JFrame(),
+                                availableExperiments.size() + " " + expInfoText,
+                                expInfoDesc,
+                                JOptionPane.INFORMATION_MESSAGE);
+                        expModel.clear();
+
+                        for (ExperimentInfo availableExperiment : availableExperiments) {
+                            expModel.insertRow(availableExperiment);
+                        }
+
+                        dataModel.clear();
+                    } else {
+                        JOptionPane.showMessageDialog(
+                                new JFrame(),
+                                errorConnectionText,
+                                errorConnectionDesc,
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    clearExpTable();
+                    clearDataTable();
                 }
 
-                dataModel.clear();
-            } else {
-                JOptionPane.showMessageDialog(
-                        new JFrame(),
-                        errorConnectionText,
-                        errorConnectionDesc,
-                        JOptionPane.ERROR_MESSAGE);
+                Working.hide();
             }
-        } else {
-            clearExpTable();
-            clearDataTable();
-        }
+        });
+
+        Working.show();
+        updateExpThread.start();
+
     }
 
-    public void updateDataTable(int row) {
-        java.util.List<DataFileInfo> dataFileInfos = null;
-        if (row >= 0 && row <= dataModel.getRowCount()) {
-            try {
-                int expId = Integer.parseInt(expModel.getValueAt(row, ExpTableModel.ID_COLUMN).toString());
-                dataFileInfos = session.getService().getExperimentDataFilesWhereExpId(expId);
-            } catch (Exception e) {
+    public void updateDataTable(final int row) {
 
-                JUIGLErrorInfoUtils.showErrorDialog(
-                        errorRangeDesc,
-                        e.getMessage(),
-                        e);
-            }
+        Thread updateDataThread = new Thread(new Runnable() {
 
-            dataModel.clear();
+            public void run() {
+                java.util.List<DataFileInfo> dataFileInfos = null;
+                if (row >= 0 && row <= dataModel.getRowCount()) {
+                    try {
+                        int expId = Integer.parseInt(expModel.getValueAt(row, ExpTableModel.ID_COLUMN).toString());
+                        dataFileInfos = session.getService().getExperimentDataFilesWhereExpId(expId);
+                    } catch (Exception e) {
 
-            assert dataFileInfos != null;
-            for (DataFileInfo info : dataFileInfos) {
-                boolean downloaded = controller.isAlreadyDownloaded(info);
+                        JUIGLErrorInfoUtils.showErrorDialog(
+                                errorRangeDesc,
+                                e.getMessage(),
+                                e);
+                    }
 
-                if (downloaded) {
-                    dataModel.addRow(info, tableValueYes);
-                } else {
-                    dataModel.addRow(info, tableValueNo);
+                    dataModel.clear();
+
+                    assert dataFileInfos != null;
+                    for (DataFileInfo info : dataFileInfos) {
+                        boolean downloaded = controller.isAlreadyDownloaded(info);
+
+                        if (downloaded) {
+                            dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY);
+                        } else {
+                            dataModel.addRow(info, DataRowModel.NO_LOCAL_COPY);
+                        }
+                    }
                 }
+
+                Working.hide();
             }
-        }
+        });
+
+        Working.show();
+        updateDataThread.start();
     }
 
     public List<DataRowModel> getSelectedFiles() {
@@ -204,7 +229,7 @@ public class Tables extends JSplitPane implements ILanguage {
 
     }
 
-    private void initTexts(){
+    private void initTexts() {
         tableValueYes = resource.getString("table.ededb.datatable.state.yes");
         tableValueNo = resource.getString("table.ededb.datatable.state.no");
 

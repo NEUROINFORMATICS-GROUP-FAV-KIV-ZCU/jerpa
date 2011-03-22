@@ -29,7 +29,7 @@ public class EDEDBPerspective extends Perspective {
     private Controller controller;
     private JUIGLEMenuItem connect;
     private JUIGLEMenuItem disconnect;
-    private JUIGLEMenuItem download;
+    private JUIGLEMenuItem downloadFile;
     private JUIGLEMenuItem chooseDir;
     private JUIGLEMenuItem openDir;
     private JUIGLEMenuItem analyseFile;
@@ -96,26 +96,22 @@ public class EDEDBPerspective extends Perspective {
 
         connect = new JUIGLEMenuItem();
         disconnect = new JUIGLEMenuItem();
-        download = new JUIGLEMenuItem();
         openDir = new JUIGLEMenuItem();
         chooseDir = new JUIGLEMenuItem();
 
         ededbMenu.setResourceBundleKey("menu.ededb.title");
         connect.setResourceBundleKey("menu.ededb.connect");
         disconnect.setResourceBundleKey("menu.ededb.disconnect");
-        download.setResourceBundleKey("menu.ededb.download");
         openDir.setResourceBundleKey("menu.ededb.opendir");
         chooseDir.setResourceBundleKey("menu.ededb.choosedir");
         
         connect.setAction(controller.getActionConnect());
         disconnect.setAction(controller.getActionDisconnect());
-        download.setAction(controller.getActionDownloadSelected());
         chooseDir.setAction(controller.getActionChooseDownloadFolder());
         openDir.setAction(controller.getActionOpenDownloadPath());
         
         ededbMenu.addSubItem(connect);
         ededbMenu.addSubItem(disconnect);
-        ededbMenu.addSubItem(download);
         ededbMenu.addSubItem(chooseDir);
         ededbMenu.addSubItem(openDir);
         
@@ -125,13 +121,19 @@ public class EDEDBPerspective extends Perspective {
     private JUIGLEMenuItem createEdedbMenu2() {
         ededbMenu2 = new JUIGLEMenuItem(getLocalizedString("menu2.ededb.title"));
 
+        downloadFile = new JUIGLEMenuItem();
         analyseFile = new JUIGLEMenuItem();
         deleteFile = new JUIGLEMenuItem();
 
         ededbMenu2.setResourceBundleKey("menu2.ededb.title");
+        downloadFile.setResourceBundleKey("menu2.ededb.download");
         analyseFile.setResourceBundleKey("menu2.ededb.analysefile");
         deleteFile.setResourceBundleKey("menu2.ededb.delete");
 
+        downloadFile.setAction(controller.getActionDownloadSelected());
+        deleteFile.setAction(controller.getActionDeleteSelected());
+
+        ededbMenu2.addSubItem(downloadFile);
         ededbMenu2.addSubItem(analyseFile);
         ededbMenu2.addSubItem(deleteFile);
         
@@ -148,8 +150,8 @@ public class EDEDBPerspective extends Perspective {
         
         connect.setVisible(!session.isConnected() && !controller.isFirstRun());
         disconnect.setVisible(session.isConnected() && !controller.isFirstRun());
-        download.setVisible(session.isConnected() && !controller.isFirstRun());
-        
+        downloadFile.setVisible(session.isConnected() && !controller.isFirstRun());
+        analyseFile.setVisible(session.isConnected() && !controller.isFirstRun());
+        deleteFile.setVisible(session.isConnected() && !controller.isFirstRun());
     }
-
 }

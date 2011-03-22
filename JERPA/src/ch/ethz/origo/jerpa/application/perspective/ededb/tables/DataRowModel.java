@@ -9,9 +9,13 @@ public class DataRowModel {
 
     private boolean selected;
     private DataFileInfo fileInfo;
-    private String downloaded;
+    private int downloaded;
 
-    public DataRowModel(DataFileInfo fileInfo, String downloaded){
+    public static final int NO_LOCAL_COPY = 0;
+    public static final int HAS_LOCAL_COPY = 1;
+    public static final int DOWNLOADING = 2;
+
+    public DataRowModel(DataFileInfo fileInfo, int downloaded){
         selected = false;
         this.fileInfo = fileInfo;
         this.downloaded = downloaded;
@@ -29,11 +33,11 @@ public class DataRowModel {
         return fileInfo;
     }
 
-    public String getDownloaded() {
+    public int getDownloaded() {
         return downloaded;
     }
 
-    public void setDownloaded(String downloaded) {
+    public void setDownloaded(int downloaded) {
         this.downloaded = downloaded;
     }
 }

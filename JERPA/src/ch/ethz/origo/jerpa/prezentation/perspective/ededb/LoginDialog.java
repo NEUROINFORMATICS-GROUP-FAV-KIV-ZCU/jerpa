@@ -138,6 +138,9 @@ public class LoginDialog implements ILanguage {
                                         ex);
                             }
 
+                            okButton.setEnabled(true);
+                            cancelButton.setEnabled(true);
+
                             progress.setVisible(false);
                         }
                     });
@@ -146,6 +149,8 @@ public class LoginDialog implements ILanguage {
 
                         @Override
                         public void run() {
+                            okButton.setEnabled(false);
+                            cancelButton.setEnabled(false);
                             progress.setVisible(true);
                         }
                     });
@@ -212,6 +217,7 @@ public class LoginDialog implements ILanguage {
 
         dialog.setTitle(resource.getString("logindialog.ededb.title"));
         dialog.setResizable(false);
+        dialog.setAlwaysOnTop(true);
         dialog.add(canvas);
         dialog.pack();
         dialog.setVisible(true);

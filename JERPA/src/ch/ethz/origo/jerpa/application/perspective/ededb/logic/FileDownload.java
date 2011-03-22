@@ -24,13 +24,10 @@ public class FileDownload extends Thread implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    
     private DataRowModel rowData;
     private Controller controller;
     private EDEDSession session;
-
     private String errorText, errorDesc;
-    private String tableValueDownloading, tableValueYes;
 
     public FileDownload(Controller controller, EDEDSession session, DataRowModel rowData) {
         super();
@@ -67,42 +64,42 @@ public class FileDownload extends Thread implements ILanguage {
                     this.join();
                 } catch (InterruptedException e) {
                     JUIGLErrorInfoUtils.showErrorDialog(
-                                e.getMessage(),
-                                e.getLocalizedMessage(),
-                                e);
+                            e.getMessage(),
+                            e.getLocalizedMessage(),
+                            e);
                 }
                 return;
             }
         }
 
-        rowData.setDownloaded(tableValueDownloading);
+        rowData.setDownloaded(DataRowModel.DOWNLOADING);
         try {
             fstream = new FileOutputStream(new File(path
                     + File.separator + rowData.getFileInfo().getFilename()));
             fstream.write(session.getService().getDataFileBinaryWhereFileId(rowData.getFileInfo().getFileId()));
             fstream.close();
 
-            rowData.setDownloaded(tableValueYes);
+            rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
             controller.repaintAll();
             this.join();
         } catch (FileNotFoundException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
-                                e.getMessage(),
-                                e.getLocalizedMessage(),
-                                e);
+                    e.getMessage(),
+                    e.getLocalizedMessage(),
+                    e);
         } catch (IOException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
-                                e.getMessage(),
-                                e.getLocalizedMessage(),
-                                e);
+                    e.getMessage(),
+                    e.getLocalizedMessage(),
+                    e);
         } catch (InterruptedException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
-                                e.getMessage(),
-                                e.getLocalizedMessage(),
-                                e);
+                    e.getMessage(),
+                    e.getLocalizedMessage(),
+                    e);
         }
     }
-    
+
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
@@ -127,13 +124,9 @@ public class FileDownload extends Thread implements ILanguage {
 
     }
 
-    private void initTexts(){
+    private void initTexts() {
 
         errorText = resource.getString("filedownload.ededb.error.text");
         errorDesc = resource.getString("filedownload.ededb.error.desc");
-
-        tableValueDownloading = resource.getString("table.ededb.datatable.state.downloading");
-        tableValueYes = resource.getString("table.ededb.datatable.state.yes");
-
     }
 }

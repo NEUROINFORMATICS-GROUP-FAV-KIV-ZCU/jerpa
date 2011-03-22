@@ -9,7 +9,6 @@ import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -27,7 +26,6 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
     private Controller controller;
     private EDEDSession session;
 
-    private String tableValueNo;
     private String warningTextPart1, warningTextPart2, warningDesc;
     private String noLocalText, noLocalDesc;
     private String errorText, errorDesc;
@@ -81,7 +79,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
                 boolean success = temp.delete();
 
                 if (success) {
-                    file.setDownloaded(tableValueNo);
+                    file.setDownloaded(DataRowModel.NO_LOCAL_COPY);
                 } else {
                     JOptionPane.showMessageDialog(
                             new JFrame(),
@@ -121,7 +119,6 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
 
     private void initTexts(){
 
-        tableValueNo = resource.getString("table.ededb.datatable.state.no");
         warningTextPart1 = resource.getString("actiondelete.ededb.warning.text.part1");
         warningTextPart2 = resource.getString("actiondelete.ededb.warning.text.part2");
         warningDesc = resource.getString("actiondelete.ededb.warning.desc");

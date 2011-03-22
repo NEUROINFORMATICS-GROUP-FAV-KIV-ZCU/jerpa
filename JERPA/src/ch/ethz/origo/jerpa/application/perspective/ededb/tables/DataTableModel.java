@@ -19,7 +19,6 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     private String resourceBundlePath;
     private LinkedList<DataRowModel> data;
     private LinkedList<String> columnNames;
-    
     private final int UNIT = 1024;
     public static final int ACTION_COLUMN = 0;
     public static final int NAME_COLUMN = 1;
@@ -58,7 +57,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         columnNames.add("table.ededb.datatable.size");
         columnNames.add("table.ededb.datatable.localcopy");
     }
-    
+
     @Override
     public int getRowCount() {
         return data.size();
@@ -83,10 +82,16 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
                 return data.get(rowIndex).getFileInfo().getFilename();
             case 2:
                 return data.get(rowIndex).getFileInfo().getMimeType();
-            case 3: 
+            case 3:
                 return countFileSize(data.get(rowIndex).getFileInfo().getLength());
             case 4:
-                return data.get(rowIndex).getDownloaded();
+                if (data.get(rowIndex).getDownloaded() == DataRowModel.NO_LOCAL_COPY) {
+                    return resource.getString("table.ededb.datatable.state.no");
+                } else if (data.get(rowIndex).getDownloaded() == DataRowModel.HAS_LOCAL_COPY) {
+                    return resource.getString("table.ededb.datatable.state.yes");
+                } else {
+                    return resource.getString("table.ededb.datatable.state.downloading");
+                }
             default:
                 return false;
         }
@@ -96,9 +101,9 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     public void setValueAt(Object object, int rowIndex, int columnIndex) {
         if (columnIndex == 0) {
             data.get(rowIndex).setSelected((Boolean) object);
+        } else if (columnIndex == getColumnCount() - 1) {
+            data.get(rowIndex).setDownloaded((Integer) object);
         }
-        else if(columnIndex == getColumnCount() - 1)
-            data.get(rowIndex).setDownloaded((String) object);
 
     }
 
@@ -107,7 +112,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         return (columnIndex == 0);
     }
 
-    public void addRow(DataFileInfo fileInfo, String downloaded) {
+    public void addRow(DataFileInfo fileInfo, int downloaded) {
         data.add(new DataRowModel(fileInfo, downloaded));
     }
 
@@ -138,15 +143,18 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         });
 
     }
+
     private String countFileSize(long length) {
-        
-    if (length < UNIT)
-        return length + " B";
-    
-    int exp = (int) (Math.log(length) / Math.log(UNIT));
-    String pre = "KMGTPE".charAt(exp-1) + "i";
-    
-    return String.format("%.1f %sB", length / Math.pow(UNIT, exp), pre);
-        
+
+        if (length < UNIT) {
+            return length + " B";
+        }
+
+
+        int exp = (int) (Math.log(length) / Math.log(UNIT));
+        String pre = "KMGTPE".charAt(exp - 1) + "i";
+
+        return String.format("%.1f %sB", length / Math.pow(UNIT, exp), pre);
+
     }
 }

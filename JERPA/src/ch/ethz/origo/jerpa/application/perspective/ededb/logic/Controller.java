@@ -154,6 +154,10 @@ public class Controller {
         this.rights = rights;
     }
 
+    public boolean isSelectedFiles(){
+        return (!tables.getSelectedFiles().isEmpty());
+    }
+
     public List<DataRowModel> getSelectedFiles() {
         return tables.getSelectedFiles();
     }

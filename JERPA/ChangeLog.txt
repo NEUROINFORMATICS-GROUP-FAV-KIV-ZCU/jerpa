@@ -1,7 +1,18 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
-  * (3/21/2011) vsouhrada
+  * (3/22/2011) Petr Miko
+     # 182
+       CHANGED : minor correction in JerpaLang.
+       
+       FOLLOWING CHANGES AND ADDITIONS ONLY IN EDEDB PACKAGES AND FILES.
+       CHANGED : DataRowModel "downloaded" type from String to integer. Classes using DataRowModel affected, minor changes.
+       ADDED   : Working class - singleton used for expressing that app is working. Used in cases of using webservice methods, updating GUI and maybe few more.
+       CHANGED : LoginDialog has now disabled buttons during connecting to database.
+       CHANGED : update methods of Tables class now work in threads.
+       CHANGED : button "Download" relocated from "Options" submenu to "File" submenu.  
+  
+  * (3/21/2011) Petr Miko
   	 # 181
   	 	 CHANGED : Corrected traslation in EDEDB. FileDownload threads are now synchronized.
   
