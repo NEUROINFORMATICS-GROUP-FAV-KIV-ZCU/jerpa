@@ -21,6 +21,7 @@ public class Working {
         working.add(progress);
         working.setLocationRelativeTo(null);
         working.setUndecorated(true);
+        working.setAlwaysOnTop(true);
         working.pack();
     }
 

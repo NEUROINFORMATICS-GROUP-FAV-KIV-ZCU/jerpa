@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionAnalyseSelected;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionChooseDownloadPath;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionConnect;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDeleteSelected;
@@ -40,6 +41,7 @@ public class Controller {
     private Tables tables;
     private Toolbar toolbar;
     private Rights rights;
+    private ActionAnalyseSelected actionAnalyseSelected;
     private ActionDownloadSelected actionDownloadSelected;
     private ActionDeleteSelected actionDeleteSelected;
     private ActionDisconnect actionDisconnect;
@@ -84,6 +86,7 @@ public class Controller {
         actionDeleteSelected = new ActionDeleteSelected(this, session);
         actionChooseDownloadFolder = new ActionChooseDownloadPath(this, session);
         actionOpenDownloadPath = new ActionOpenDownloadPath(this);
+        actionAnalyseSelected = new ActionAnalyseSelected(this);
     }
 
     public void update() {
@@ -145,6 +148,10 @@ public class Controller {
     public ActionOpenDownloadPath getActionOpenDownloadPath() {
         return actionOpenDownloadPath;
     }
+    
+    public ActionAnalyseSelected getActionAnalyseSelected() {
+        return actionAnalyseSelected;
+    }
 
     public Rights getRights() {
         return rights;
@@ -160,6 +167,12 @@ public class Controller {
 
     public List<DataRowModel> getSelectedFiles() {
         return tables.getSelectedFiles();
+    }
+    
+     public void unselectAllFiles() {
+        for(DataRowModel selected : getSelectedFiles()){
+            selected.setSelected(false);
+        }
     }
 
     private void initDownloadPath() {
@@ -203,11 +216,17 @@ public class Controller {
             JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
                     ex.getMessage(), ex);
         }
-
     }
 
     public String getDownloadPath() {
         return downloadPath;
+    }
+    
+    public String getDownloadExperimentPath(DataRowModel file){
+        return getDownloadPath() + File.separator
+                + session.getUsername() + File.separator
+                + file.getFileInfo().getExperimentId()
+                + " - " + file.getFileInfo().getScenarioName();
     }
 
     public void setFirstRun(boolean firstRun) {
@@ -229,4 +248,6 @@ public class Controller {
         return file.exists() && file.length() == info.getLength();
 
     }
+
+   
 }

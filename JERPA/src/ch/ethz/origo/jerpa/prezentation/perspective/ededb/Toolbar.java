@@ -115,6 +115,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         deleteFileButton.addActionListener(controller.getActionDeleteSelected());
         chooseFolderButton.addActionListener(controller.getActionChooseDownloadFolder());
         openFolderButton.addActionListener(controller.getActionOpenDownloadPath());
+        analyseFileButton.addActionListener(controller.getActionAnalyseSelected());
 
         disconnectButton.setVisible(false);
 

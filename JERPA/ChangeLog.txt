@@ -1,6 +1,12 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (3/25/2011) Petr Miko
+     # 183
+       CHANGED: JERPALang - minor updates
+       CHANGED: EDEDClient - new generated classes, fixed MTOM bug, extending time out for download purposes, closing connection by destroing endpoint reference now.
+       CHANGED: JERPA - changes related to EDEDClient update => solving bug in case of downloading bigger files (used to fail). Few other minor changes. Into lib added new EDEDClient.jar and JerpaLang.jar. 
+  
   * (3/22/2011) Petr Miko
      # 182
        CHANGED : minor correction in JerpaLang.

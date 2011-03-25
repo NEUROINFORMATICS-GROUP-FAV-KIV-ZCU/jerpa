@@ -14,6 +14,7 @@ public class DataRowModel {
     public static final int NO_LOCAL_COPY = 0;
     public static final int HAS_LOCAL_COPY = 1;
     public static final int DOWNLOADING = 2;
+    public static final int ERROR = 3;
 
     public DataRowModel(DataFileInfo fileInfo, int downloaded){
         selected = false;

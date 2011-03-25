@@ -89,8 +89,10 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
                     return resource.getString("table.ededb.datatable.state.no");
                 } else if (data.get(rowIndex).getDownloaded() == DataRowModel.HAS_LOCAL_COPY) {
                     return resource.getString("table.ededb.datatable.state.yes");
-                } else {
+                } else if (data.get(rowIndex).getDownloaded() == DataRowModel.DOWNLOADING){
                     return resource.getString("table.ededb.datatable.state.downloading");
+                }else{
+                    return resource.getString("table.ededb.datatable.state.error");
                 }
             default:
                 return false;

@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.ResourceBundle;;
+import javax.activation.DataHandler;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -44,11 +44,8 @@ public class FileDownload extends Thread implements ILanguage {
 
     @Override
     public synchronized void run() {
-        FileOutputStream fstream;
-        String path = controller.getDownloadPath() + File.separator
-                + session.getUsername() + File.separator
-                + rowData.getFileInfo().getExperimentId()
-                + " - " + rowData.getFileInfo().getScenarioName();
+        FileOutputStream fstream = null;
+        String path = controller.getDownloadExperimentPath(rowData);
         File destFolder = new File(path);
 
         if (!destFolder.exists()) {
@@ -76,10 +73,16 @@ public class FileDownload extends Thread implements ILanguage {
         try {
             fstream = new FileOutputStream(new File(path
                     + File.separator + rowData.getFileInfo().getFilename()));
-            fstream.write(session.getService().getDataFileBinaryWhereFileId(rowData.getFileInfo().getFileId()));
+            
+            DataHandler incommingFile = session.getService().downloadFile(rowData.getFileInfo().getFileId());
+            incommingFile.writeTo(fstream);
+            
             fstream.close();
 
-            rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
+            if(controller.isAlreadyDownloaded(rowData.getFileInfo()))
+                rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
+            else
+                rowData.setDownloaded(DataRowModel.ERROR);
             controller.repaintAll();
             this.join();
         } catch (FileNotFoundException e) {
@@ -97,6 +100,16 @@ public class FileDownload extends Thread implements ILanguage {
                     e.getMessage(),
                     e.getLocalizedMessage(),
                     e);
+        }finally{
+            if(fstream != null)
+                try {
+                fstream.close();
+            } catch (IOException ex) {
+                JUIGLErrorInfoUtils.showErrorDialog(
+                    ex.getMessage(),
+                    ex.getLocalizedMessage(),
+                    ex);
+            }
         }
     }
 

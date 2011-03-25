@@ -112,9 +112,9 @@ public class Tables extends JSplitPane implements ILanguage {
                     java.util.List<ExperimentInfo> availableExperiments;
 
                     if (controller.getRights() == Rights.SUBJECT) {
-                        availableExperiments = session.getService().getAvailableExperimentsWithRights(Rights.SUBJECT);
+                        availableExperiments = session.getService().getExperiments(Rights.SUBJECT);
                     } else {
-                        availableExperiments = session.getService().getAvailableExperimentsWithRights(Rights.OWNER);
+                        availableExperiments = session.getService().getExperiments(Rights.OWNER);
                     }
 
                     Working.hide();
@@ -162,7 +162,7 @@ public class Tables extends JSplitPane implements ILanguage {
                 if (row >= 0 && row <= dataModel.getRowCount()) {
                     try {
                         int expId = Integer.parseInt(expModel.getValueAt(row, ExpTableModel.ID_COLUMN).toString());
-                        dataFileInfos = session.getService().getExperimentDataFilesWhereExpId(expId);
+                        dataFileInfos = session.getService().getExperimentFiles(expId);
                     } catch (Exception e) {
 
                         JUIGLErrorInfoUtils.showErrorDialog(
