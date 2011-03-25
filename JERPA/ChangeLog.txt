@@ -2,6 +2,15 @@
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
   * (3/25/2011) Petr Miko
+     # 184
+     
+       CHANGED: JERPALang - extended of actionAnalyse texts in ededb,
+       ADDED:   JERPA - ActionAnalyseSelected - selected file in Signal Perspective - not entirely done - really don't know how to "switch" perspectives after file is loaded (maybe making public mainMenu getter in JUIGLE, finding proper item and doing doClick? It would demand editing of JUIGLE).
+       CHANGED: JERPA - in SignalPerspective method openFile (created from piece of existing code) made public (it's used in ActionAnalyseSelected).
+       
+       BUG REPORT: above folder where is JERPA run I observe creating tmp files in case of analysing files - these files do not delete by itself.
+       
+  * (3/25/2011) Petr Miko
      # 183
        CHANGED: JERPALang - minor updates
        CHANGED: EDEDClient - new generated classes, fixed MTOM bug, extending time out for download purposes, closing connection by destroing endpoint reference now.

@@ -132,6 +132,7 @@ public class EDEDBPerspective extends Perspective {
 
         downloadFile.setAction(controller.getActionDownloadSelected());
         deleteFile.setAction(controller.getActionDeleteSelected());
+        analyseFile.setAction(controller.getActionAnalyseSelected());
 
         ededbMenu2.addSubItem(downloadFile);
         ededbMenu2.addSubItem(analyseFile);

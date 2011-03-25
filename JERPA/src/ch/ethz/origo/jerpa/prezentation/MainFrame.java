@@ -119,7 +119,7 @@ public class MainFrame implements IObserver, ILanguage {
 		mainFrame.setFullScreen(true);
 		MainFrame.HEIGHT = mainFrame.getHeight();
 		// PerspectiveLoader<T>
-	}
+        }
 
 	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {
 		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu(LangUtils.MAIN_FILE_PATH);

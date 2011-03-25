@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import javax.swing.SwingUtilities;
 import org.jdesktop.swingx.JXPanel;
 
 /**
@@ -94,9 +95,11 @@ public class Controller {
         loginInfo.updateLoginInfo();
         tables.updateExpTable();
         toolbar.updateButtonsVisibility();
+
+        repaintAll();
     }
-    
-    public void repaintAll(){
+
+    public void repaintAll() {
         tables.repaint();
         toolbar.repaint();
         loginInfo.repaint();
@@ -128,7 +131,7 @@ public class Controller {
     public ActionChooseDownloadPath getActionChooseDownloadFolder() {
         return actionChooseDownloadFolder;
     }
-    
+
     public ActionDeleteSelected getActionDeleteSelected() {
         return actionDeleteSelected;
     }
@@ -144,11 +147,11 @@ public class Controller {
     public ActionDownloadSelected getActionDownloadSelected() {
         return actionDownloadSelected;
     }
-    
+
     public ActionOpenDownloadPath getActionOpenDownloadPath() {
         return actionOpenDownloadPath;
     }
-    
+
     public ActionAnalyseSelected getActionAnalyseSelected() {
         return actionAnalyseSelected;
     }
@@ -161,18 +164,19 @@ public class Controller {
         this.rights = rights;
     }
 
-    public boolean isSelectedFiles(){
+    public boolean isSelectedFiles() {
         return (!tables.getSelectedFiles().isEmpty());
     }
 
     public List<DataRowModel> getSelectedFiles() {
         return tables.getSelectedFiles();
     }
-    
-     public void unselectAllFiles() {
-        for(DataRowModel selected : getSelectedFiles()){
+
+    public void unselectAllFiles() {
+        for (DataRowModel selected : getSelectedFiles()) {
             selected.setSelected(false);
         }
+        repaintAll();
     }
 
     private void initDownloadPath() {
@@ -221,8 +225,8 @@ public class Controller {
     public String getDownloadPath() {
         return downloadPath;
     }
-    
-    public String getDownloadExperimentPath(DataRowModel file){
+
+    public String getDownloadExperimentPath(DataRowModel file) {
         return getDownloadPath() + File.separator
                 + session.getUsername() + File.separator
                 + file.getFileInfo().getExperimentId()
@@ -248,6 +252,4 @@ public class Controller {
         return file.exists() && file.length() == info.getLength();
 
     }
-
-   
 }

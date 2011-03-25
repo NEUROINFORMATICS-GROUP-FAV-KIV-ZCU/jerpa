@@ -91,7 +91,7 @@ public class Tables extends JSplitPane implements ILanguage {
         dataTable.setFillsViewportHeight(true);
         dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         dataTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+        
         return new JScrollPane(dataTable);
     }
 
@@ -144,6 +144,7 @@ public class Tables extends JSplitPane implements ILanguage {
                     clearDataTable();
                 }
 
+                repaint();
                 Working.hide();
             }
         });
@@ -184,7 +185,7 @@ public class Tables extends JSplitPane implements ILanguage {
                         }
                     }
                 }
-
+                repaint();
                 Working.hide();
             }
         });
