@@ -2,6 +2,12 @@
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
   * (3/27/2011) Petr Miko
+     # 186
+     
+       CHANGED: tables now in JTabbedPane in order to look through files online or the ones already downloaded.
+       CHANGED: Many minor changes in order to watch changes with downloaded files.
+       CHANGED: added few new translations in JerpaLang. 
+  * (3/27/2011) Petr Miko
      # 185
      
        CHANGED: LoginDialog is now created only once and only shown/hidden on demand, plus the dialog is now modal.

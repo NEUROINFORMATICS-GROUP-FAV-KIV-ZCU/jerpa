@@ -11,18 +11,20 @@ public class DataRowModel {
     private DataFileInfo fileInfo;
     private int downloaded;
     private String extension;
+    private String location;
 
     public static final int NO_LOCAL_COPY = 0;
     public static final int HAS_LOCAL_COPY = 1;
     public static final int DOWNLOADING = 2;
     public static final int ERROR = 3;
 
-    public DataRowModel(DataFileInfo fileInfo, int downloaded){
+    public DataRowModel(DataFileInfo fileInfo, int downloaded, String location){
         selected = false;
         this.fileInfo = fileInfo;
         this.downloaded = downloaded;
         String[] filename = fileInfo.getFilename().split("\\.");
         extension = filename[filename.length - 1];
+        this.location = location;
     }
 
     public boolean isSelected() {
@@ -47,5 +49,9 @@ public class DataRowModel {
     
     public String getExtension() {
         return extension;
+    }
+    
+    public String getLocation(){
+        return location;
     }
 }

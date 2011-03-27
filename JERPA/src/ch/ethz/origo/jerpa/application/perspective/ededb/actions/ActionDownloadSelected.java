@@ -59,7 +59,7 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
                     for (DataRowModel file : filesToDownload) {
 
-                        if (controller.isAlreadyDownloaded(file.getFileInfo())) {
+                        if (controller.isAlreadyDownloaded(file.getFileInfo()) == DataRowModel.HAS_LOCAL_COPY) {
 
                             int retValue = JOptionPane.showConfirmDialog(
                                     null,

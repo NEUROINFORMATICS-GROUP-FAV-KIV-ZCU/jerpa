@@ -114,8 +114,9 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         return (columnIndex == 0);
     }
 
-    public void addRow(DataFileInfo fileInfo, int downloaded) {
-        data.add(new DataRowModel(fileInfo, downloaded));
+    public void addRow(DataFileInfo fileInfo, int downloaded, String location) {
+        data.add(new DataRowModel(fileInfo, downloaded, location));
+        this.fireTableDataChanged();
     }
 
     public List<DataRowModel> getData() {
@@ -151,8 +152,6 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         if (length < UNIT) {
             return length + " B";
         }
-
-
         int exp = (int) (Math.log(length) / Math.log(UNIT));
         String pre = "KMGTPE".charAt(exp - 1) + "i";
 

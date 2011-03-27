@@ -49,34 +49,34 @@ public class Toolbar extends JXPanel implements ILanguage {
         butBarConstrains.fill = GridBagConstraints.HORIZONTAL;
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 0;
+        butBarConstrains.gridwidth = 2;
         buttonBar.add(connectButton, butBarConstrains);
 
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 0;
         buttonBar.add(disconnectButton, butBarConstrains);
 
-        butBarConstrains.gridx = 1;
-        butBarConstrains.gridy = 0;
-        buttonBar.add(downloadButton, butBarConstrains);
-
+       
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 1;
-        butBarConstrains.gridwidth = 2;
         buttonBar.add(openFolderButton, butBarConstrains);
 
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 2;
-        butBarConstrains.gridwidth = 2;
         buttonBar.add(chooseFolderButton, butBarConstrains);
-
+        
         butBarConstrains.gridx = 0;
-        butBarConstrains.gridy = 5;
-        butBarConstrains.gridwidth = 2;
+        butBarConstrains.gridy = 3;
         buttonBar.add(analyseFileButton, butBarConstrains);
-
+        
         butBarConstrains.gridx = 0;
-        butBarConstrains.gridy = 6;
-        butBarConstrains.gridwidth = 2;
+        butBarConstrains.gridy = 4;
+        butBarConstrains.gridwidth = 1;
+        buttonBar.add(downloadButton, butBarConstrains);
+
+        butBarConstrains.gridx = 1;
+        butBarConstrains.gridy = 4;
+        butBarConstrains.gridwidth = 1;
         buttonBar.add(deleteFileButton, butBarConstrains);
 
         radioBar.add(ownerButton);
@@ -149,6 +149,16 @@ public class Toolbar extends JXPanel implements ILanguage {
             connectButton.setVisible(true);
             disconnectButton.setVisible(false);
         }
+        
+        if(controller.isOnlineTab()){
+            downloadButton.setEnabled(true);
+            ownerButton.setEnabled(true);
+            subjectButton.setEnabled(true);
+        }else{
+            downloadButton.setEnabled(false);
+            ownerButton.setEnabled(false);
+            subjectButton.setEnabled(false);
+        }
     }
 
     public void updateButtonsText() {
@@ -197,5 +207,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         downloadButton.setEnabled(active);
         ownerButton.setEnabled(active);
         subjectButton.setEnabled(active);
+        
+        updateButtonsVisibility();
     }
 }

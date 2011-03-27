@@ -91,9 +91,9 @@ public class SignalSessionManager extends SessionManager {
 			header = loader.getHeader();
 			epochs = loader.getEpochs();
 		} catch (IOException e) {
-			throw new ProjectOperationException("JERPA011", e);
+			throw new ProjectOperationException("JERPA011 IO Exception", e);
 		} catch (CorruptedFileException e) {
-			throw new ProjectOperationException("JERPA011", e);
+			throw new ProjectOperationException("JERPA011 Corrupted file Exception", e);
 		}
 
 		createProject(new SignalProject(), file.getName());

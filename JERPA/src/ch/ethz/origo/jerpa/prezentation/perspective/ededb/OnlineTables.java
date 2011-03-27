@@ -16,6 +16,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -24,7 +25,7 @@ import org.jdesktop.swingx.JXTable;
 /**
  * @author Petr Miko
  */
-public class Tables extends JSplitPane implements ILanguage {
+public class OnlineTables extends JSplitPane implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
@@ -40,7 +41,7 @@ public class Tables extends JSplitPane implements ILanguage {
     private String errorConnectionDesc;
     private String errorRangeDesc;
 
-    public Tables(Controller controller, EDEDSession session) {
+    public OnlineTables(Controller controller, EDEDSession session) {
         super();
 
         LanguageObservable.getInstance().attach(this);
@@ -74,7 +75,7 @@ public class Tables extends JSplitPane implements ILanguage {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
+                if (!e.getValueIsAdjusting() && expModel.getRowCount() > 0) {
                     updateDataTable(expTable.getSelectedRow());
                 }
             }
@@ -91,7 +92,7 @@ public class Tables extends JSplitPane implements ILanguage {
         dataTable.setFillsViewportHeight(true);
         dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         dataTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+
         return new JScrollPane(dataTable);
     }
 
@@ -125,13 +126,14 @@ public class Tables extends JSplitPane implements ILanguage {
                                 availableExperiments.size() + " " + expInfoText,
                                 expInfoDesc,
                                 JOptionPane.INFORMATION_MESSAGE);
-                        expModel.clear();
+
+                        clearExpTable();
 
                         for (ExperimentInfo availableExperiment : availableExperiments) {
-                            expModel.insertRow(availableExperiment);
+                            expModel.addRow(availableExperiment);
                         }
 
-                        dataModel.clear();
+                        clearDataTable();
                     } else {
                         JOptionPane.showMessageDialog(
                                 new JFrame(),
@@ -172,17 +174,16 @@ public class Tables extends JSplitPane implements ILanguage {
                                 e);
                     }
 
-                    dataModel.clear();
+                    clearDataTable();
 
                     assert dataFileInfos != null;
                     for (DataFileInfo info : dataFileInfos) {
-                        boolean downloaded = controller.isAlreadyDownloaded(info);
+                        String downloadPath = controller.getDownloadPath()
+                                + File.separator + session.getUsername()
+                                + File.separator + info.getExperimentId()
+                                + " - " + info.getScenarioName();
 
-                        if (downloaded) {
-                            dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY);
-                        } else {
-                            dataModel.addRow(info, DataRowModel.NO_LOCAL_COPY);
-                        }
+                        dataModel.addRow(info, controller.isAlreadyDownloaded(info), downloadPath);
                     }
                 }
                 repaint();
@@ -192,6 +193,13 @@ public class Tables extends JSplitPane implements ILanguage {
 
         Working.show();
         updateDataThread.start();
+    }
+
+    public void checkLocalCopies() {
+        for (DataRowModel row : dataModel.getData()) {
+            if(row.getDownloaded() != DataRowModel.DOWNLOADING)
+                row.setDownloaded(controller.isAlreadyDownloaded(row.getFileInfo()));
+        }
     }
 
     public List<DataRowModel> getSelectedFiles() {

@@ -45,11 +45,10 @@ public class FileDownload extends Thread implements ILanguage {
     @Override
     public synchronized void run() {
         FileOutputStream fstream = null;
-        String path = controller.getDownloadExperimentPath(rowData);
-        File destFolder = new File(path);
+        File destFolder = new File(rowData.getLocation());
 
         if (!destFolder.exists()) {
-            boolean success = (new File(path)).mkdirs();
+            boolean success = (new File(rowData.getLocation())).mkdirs();
 
             if (!success) {
                 JOptionPane.showMessageDialog(
@@ -71,7 +70,7 @@ public class FileDownload extends Thread implements ILanguage {
 
         rowData.setDownloaded(DataRowModel.DOWNLOADING);
         try {
-            fstream = new FileOutputStream(new File(path
+            fstream = new FileOutputStream(new File(rowData.getLocation()
                     + File.separator + rowData.getFileInfo().getFilename()));
             
             DataHandler incommingFile = session.getService().downloadFile(rowData.getFileInfo().getFileId());
@@ -79,10 +78,8 @@ public class FileDownload extends Thread implements ILanguage {
             
             fstream.close();
 
-            if(controller.isAlreadyDownloaded(rowData.getFileInfo()))
-                rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
-            else
-                rowData.setDownloaded(DataRowModel.ERROR);
+            rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
+            
             controller.repaintAll();
             this.join();
         } catch (FileNotFoundException e) {

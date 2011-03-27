@@ -15,12 +15,11 @@ import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.FirstRun;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginDialog;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginInfo;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Tables;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OfflineTables;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OnlineTables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Window;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,7 +27,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.jdesktop.swingx.JXPanel;
 
 /**
@@ -41,7 +43,8 @@ public class Controller {
     private EDEDSession session;
     private LoginDialog loginDialog;
     private LoginInfo loginInfo;
-    private Tables tables;
+    private OnlineTables onlineTables;
+    private OfflineTables offlineTables;
     private Toolbar toolbar;
     private Rights rights;
     private ActionAnalyseSelected actionAnalyseSelected;
@@ -56,6 +59,8 @@ public class Controller {
     private JXPanel mainPanel;
     private Properties properties;
     private final String configFile = "config/ededb.properties";
+    private boolean onlineTab;
+    private boolean lock;
 
     public Controller(EDEDBPerspective parent, EDEDSession session) {
         this.parent = parent;
@@ -71,7 +76,8 @@ public class Controller {
     }
 
     private void initClasses() {
-        tables = new Tables(this, session);
+        onlineTables = new OnlineTables(this, session);
+        offlineTables = new OfflineTables(this, session);
         loginDialog = new LoginDialog(this, session);
         loginInfo = new LoginInfo(this, session);
 
@@ -86,7 +92,7 @@ public class Controller {
         actionConnect = new ActionConnect(loginDialog);
         actionDisconnect = new ActionDisconnect(this, session);
         actionDownloadSelected = new ActionDownloadSelected(this, session);
-        actionDeleteSelected = new ActionDeleteSelected(this, session);
+        actionDeleteSelected = new ActionDeleteSelected(this);
         actionChooseDownloadFolder = new ActionChooseDownloadPath(this, session);
         actionOpenDownloadPath = new ActionOpenDownloadPath(this);
         actionAnalyseSelected = new ActionAnalyseSelected(this);
@@ -95,14 +101,21 @@ public class Controller {
     public void update() {
         parent.updateMenuItemVisibility();
         loginInfo.updateLoginInfo();
-        tables.updateExpTable();
+        onlineTables.updateExpTable();
         toolbar.updateButtonsVisibility();
 
         repaintAll();
     }
 
     public void repaintAll() {
-        tables.repaint();
+
+        if(!lock){
+            offlineTables.checkLocalCopies();
+            onlineTables.checkLocalCopies();
+        }
+
+        onlineTables.repaint();
+        offlineTables.repaint();
         toolbar.repaint();
         loginInfo.repaint();
     }
@@ -116,11 +129,34 @@ public class Controller {
 
         } else {
             JXPanel sidebar = new JXPanel(new BorderLayout());
+            JTabbedPane tabs = new JTabbedPane();
+
+            tabs.addTab("Online", onlineTables);
+            tabs.addTab("Offline", offlineTables);
+
+            onlineTab = true;
+
+            tabs.addChangeListener(new ChangeListener() {
+
+                public void stateChanged(ChangeEvent e) {
+                    JTabbedPane tabs = (JTabbedPane) e.getSource();
+
+                    if (tabs.getSelectedIndex() == 0) {
+                        onlineTab = true;
+                    } else {
+                        onlineTab = false;
+                    }
+
+                    if(!lock){
+                        toolbar.updateButtonsVisibility();
+                    }
+                }
+            });
 
             sidebar.add(loginInfo, BorderLayout.NORTH);
             sidebar.add(toolbar, BorderLayout.CENTER);
 
-            mainPanel.add(tables, BorderLayout.CENTER);
+            mainPanel.add(tabs, BorderLayout.CENTER);
             mainPanel.add(sidebar, BorderLayout.EAST);
         }
 
@@ -167,11 +203,19 @@ public class Controller {
     }
 
     public boolean isSelectedFiles() {
-        return (!tables.getSelectedFiles().isEmpty());
+        if (onlineTab) {
+            return (!onlineTables.getSelectedFiles().isEmpty());
+        } else {
+            return (!offlineTables.getSelectedFiles().isEmpty());
+        }
     }
 
     public List<DataRowModel> getSelectedFiles() {
-        return tables.getSelectedFiles();
+        if (onlineTab) {
+            return onlineTables.getSelectedFiles();
+        } else {
+            return offlineTables.getSelectedFiles();
+        }
     }
 
     public void unselectAllFiles() {
@@ -228,13 +272,6 @@ public class Controller {
         return downloadPath;
     }
 
-    public String getDownloadExperimentPath(DataRowModel file) {
-        return getDownloadPath() + File.separator
-                + session.getUsername() + File.separator
-                + file.getFileInfo().getExperimentId()
-                + " - " + file.getFileInfo().getScenarioName();
-    }
-
     public void setFirstRun(boolean firstRun) {
         this.firstRun = firstRun;
     }
@@ -243,7 +280,7 @@ public class Controller {
         return firstRun;
     }
 
-    public boolean isAlreadyDownloaded(DataFileInfo info) {
+    public int isAlreadyDownloaded(DataFileInfo info) {
 
         String path = getDownloadPath() + File.separator
                 + session.getUsername() + File.separator
@@ -251,7 +288,16 @@ public class Controller {
                 + File.separator + info.getFilename();
 
         File file = new File(path);
-        return file.exists() && file.length() == info.getLength();
+
+        if (!file.exists()) {
+            return DataRowModel.NO_LOCAL_COPY;
+        }
+
+        if (file.length() != info.getLength()) {
+            return DataRowModel.ERROR;
+        }
+
+        return DataRowModel.HAS_LOCAL_COPY;
 
     }
 
@@ -260,11 +306,15 @@ public class Controller {
 
             @Override
             public void run() {
+                lock = !active;
                 toolbar.setButtonsEnabled(active);
                 parent.setMenuItemEnabled(active);
                 repaintAll();
             }
         });
+    }
 
+    public boolean isOnlineTab() {
+        return onlineTab;
     }
 }

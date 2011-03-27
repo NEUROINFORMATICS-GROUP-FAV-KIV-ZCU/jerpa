@@ -24,20 +24,17 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
     private ResourceBundle resource;
     private String resourceBundlePath;
     private Controller controller;
-    private EDEDSession session;
-
     private String warningTextPart1, warningTextPart2, warningDesc;
     private String noLocalText, noLocalDesc;
     private String errorText, errorDesc;
 
-    public ActionDeleteSelected(Controller controller, EDEDSession session) {
+    public ActionDeleteSelected(Controller controller) {
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         initTexts();
-        
+
         this.controller = controller;
-        this.session = session;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -58,11 +55,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
 
                 file.setSelected(false);
 
-                String path = controller.getDownloadPath() + File.separator
-                        + session.getUsername() + File.separator
-                        + file.getFileInfo().getExperimentId()
-                        + " - " + file.getFileInfo().getScenarioName()
-                        + File.separator + file.getFileInfo().getFilename();
+                String path = file.getLocation() + File.separator + file.getFileInfo().getFilename();
 
                 File temp = new File(path);
 
@@ -78,9 +71,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
 
                 boolean success = temp.delete();
 
-                if (success) {
-                    file.setDownloaded(DataRowModel.NO_LOCAL_COPY);
-                } else {
+                if (!success) {
                     JOptionPane.showMessageDialog(
                             new JFrame(),
                             errorText,
@@ -117,7 +108,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
 
     }
 
-    private void initTexts(){
+    private void initTexts() {
 
         warningTextPart1 = resource.getString("actiondelete.ededb.warning.text.part1");
         warningTextPart2 = resource.getString("actiondelete.ededb.warning.text.part2");
