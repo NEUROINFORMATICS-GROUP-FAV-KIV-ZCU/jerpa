@@ -10,13 +10,12 @@ import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -30,12 +29,10 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    
     private String tooManyText, tooManyDesc;
     private String noFileText, noFileDesc;
     private String notSupportedText, notSupportedDesc;
     private String doneText, doneDesc;
-    
     private Controller controller;
     private final String[] extensions = {
         Const.EDF_FILE_EXTENSION,
@@ -46,10 +43,10 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
 
     public ActionAnalyseSelected(Controller controller) {
         this.controller = controller;
-        
+
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
-        
+
         initTexts();
     }
 
@@ -103,7 +100,10 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
             try {
                 perspectives = PerspectiveLoader.getInstance().getListOfPerspectives();
             } catch (PerspectiveException ex) {
-                Logger.getLogger(ActionAnalyseSelected.class.getName()).log(Level.SEVERE, null, ex);
+                JUIGLErrorInfoUtils.showErrorDialog(
+                        ex.getMessage(),
+                        ex.getLocalizedMessage(),
+                        ex);
             }
             if (perspectives != null) {
                 SignalPerspective signalPersp = null;
@@ -121,27 +121,27 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
                         public void run() {
                             persp.openFile(file);
                             Working.hide();
+                            controller.setElementsActive(true);
 
                             controller.unselectAllFiles();
-
+                            
                             JOptionPane.showMessageDialog(
-                                    new JFrame(),
-                                    doneText,
-                                    doneDesc,
-                                    JOptionPane.INFORMATION_MESSAGE);
+                            new JFrame(),
+                            doneText,
+                            doneDesc,
+                            JOptionPane.INFORMATION_MESSAGE);
                         }
                     });
-
                     Working.show();
+                    controller.setElementsActive(false);
                     openFile.start();
 
                 }
-
             }
         }
     }
-    
-    private void initTexts(){
+
+    private void initTexts() {
         tooManyText = resource.getString("actionanalyse.ededb.toomany.text");
         tooManyDesc = resource.getString("actionanalyse.ededb.toomany.desc");
         noFileText = resource.getString("actionanalyse.ededb.nofile.text");

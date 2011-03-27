@@ -1,6 +1,12 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (3/27/2011) Petr Miko
+     # 185
+     
+       CHANGED: LoginDialog is now created only once and only shown/hidden on demand, plus the dialog is now modal.
+       CHANGED: file opening for analysing is finished (without perspective switch). While file is opening, control elements are set inactive (added methods in Controller, EDEDBPerspective and Toolbar, which set elements enable state).
+  
   * (3/25/2011) Petr Miko
      # 184
      

@@ -186,4 +186,16 @@ public class Toolbar extends JXPanel implements ILanguage {
         });
 
     }
+
+    public void setButtonsEnabled(boolean active) {
+        connectButton.setEnabled(active);
+        disconnectButton.setEnabled(active);
+        chooseFolderButton.setEnabled(active);
+        deleteFileButton.setEnabled(active);
+        analyseFileButton.setEnabled(active);
+        openFolderButton.setEnabled(active);
+        downloadButton.setEnabled(active);
+        ownerButton.setEnabled(active);
+        subjectButton.setEnabled(active);
+    }
 }

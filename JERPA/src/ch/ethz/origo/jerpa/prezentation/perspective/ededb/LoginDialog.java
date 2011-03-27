@@ -5,11 +5,14 @@ import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import java.net.ConnectException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -52,9 +55,11 @@ public class LoginDialog implements ILanguage {
 
         this.controller = controller;
         this.session = session;
+        
+        createDialog();
     }
 
-    public void createDialog() {
+    private void createDialog() {
         dialog = new JDialog();
 
         JXPanel canvas = new JXPanel();
@@ -117,7 +122,7 @@ public class LoginDialog implements ILanguage {
                             try {
                                 session.userLogIn(tempUsername, tempPassword);
                                 controller.update();
-                                dialog.dispose();
+                                dialog.setVisible(false);
                             } catch (WebServiceException ex) {
 
                                 if (ex.getCause().getClass() == IOException.class) {
@@ -218,10 +223,16 @@ public class LoginDialog implements ILanguage {
         dialog.setTitle(resource.getString("logindialog.ededb.title"));
         dialog.setResizable(false);
         dialog.setAlwaysOnTop(true);
+        dialog.setModal(true);
         dialog.add(canvas);
         dialog.pack();
-        dialog.setVisible(true);
+        dialog.setVisible(false);
         dialog.setLocationRelativeTo(null);
+    }
+    
+    public void setVisible(boolean visibility){
+        if(dialog != null)
+            dialog.setVisible(visibility);
     }
 
     public void setLocalizedResourceBundle(String path) {

@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
@@ -151,8 +148,20 @@ public class EDEDBPerspective extends Perspective {
         
         connect.setVisible(!session.isConnected() && !controller.isFirstRun());
         disconnect.setVisible(session.isConnected() && !controller.isFirstRun());
-        downloadFile.setVisible(session.isConnected() && !controller.isFirstRun());
-        analyseFile.setVisible(session.isConnected() && !controller.isFirstRun());
-        deleteFile.setVisible(session.isConnected() && !controller.isFirstRun());
+        
+        downloadFile.setEnabled(session.isConnected() && !controller.isFirstRun());
+        analyseFile.setEnabled(session.isConnected() && !controller.isFirstRun());
+        deleteFile.setEnabled(session.isConnected() && !controller.isFirstRun());
+    }
+    
+    public void setMenuItemEnabled(boolean active){
+        connect.setEnabled(active);
+        disconnect.setEnabled(active);
+        openDir.setEnabled(active);
+        chooseDir.setEnabled(active);
+        
+        downloadFile.setEnabled(active);
+        analyseFile.setEnabled(active);
+        deleteFile.setEnabled(active);
     }
 }

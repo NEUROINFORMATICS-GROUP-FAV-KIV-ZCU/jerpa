@@ -19,6 +19,8 @@ import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Tables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Window;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -250,6 +252,19 @@ public class Controller {
 
         File file = new File(path);
         return file.exists() && file.length() == info.getLength();
+
+    }
+
+    public void setElementsActive(final boolean active) {
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                toolbar.setButtonsEnabled(active);
+                parent.setMenuItemEnabled(active);
+                repaintAll();
+            }
+        });
 
     }
 }

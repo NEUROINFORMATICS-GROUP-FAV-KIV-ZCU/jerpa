@@ -18,6 +18,6 @@ public class ActionConnect extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        loginDialog.createDialog();
+        loginDialog.setVisible(true);
     }
 }

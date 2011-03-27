@@ -17,7 +17,7 @@ public class Working {
 
         JProgressBar progress = new JProgressBar();
         progress.setIndeterminate(true);
-
+        
         working.add(progress);
         working.setLocationRelativeTo(null);
         working.setUndecorated(true);
