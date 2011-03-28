@@ -118,8 +118,6 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                         availableExperiments = session.getService().getExperiments(Rights.OWNER);
                     }
 
-                    Working.hide();
-
                     if (availableExperiments != null) {
                         JOptionPane.showMessageDialog(
                                 new JFrame(),

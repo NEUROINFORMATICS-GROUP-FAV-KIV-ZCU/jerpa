@@ -75,7 +75,7 @@ public class OfflineTables extends JSplitPane {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting() && userModel.getRowCount() > 0) {
+                if (!e.getValueIsAdjusting() && userTable.getSelectedRows().length > 0) {
                         username = "" + userModel.getValueAt(userTable.getSelectedRow(), 0);
                         updateExpTable();
                 }
@@ -156,9 +156,11 @@ public class OfflineTables extends JSplitPane {
                     userModel.fireTableDataChanged();
                 }
                 repaint();
+                Working.hide();
             }
         });
 
+        Working.show();
         updateUserThread.start();
     }
 

@@ -8,6 +8,7 @@ import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
@@ -25,7 +26,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
     private String resourceBundlePath;
     private Controller controller;
     private String warningTextPart1, warningTextPart2, warningDesc;
-    private String noLocalText, noLocalDesc;
+    private String downloadingText, downloadingDesc;
     private String errorText, errorDesc;
 
     public ActionDeleteSelected(Controller controller) {
@@ -40,10 +41,29 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
     public void actionPerformed(ActionEvent e) {
 
         List<DataRowModel> selected = controller.getSelectedFiles();
+        List<DataRowModel> hasLocal = new LinkedList<DataRowModel>();
+        
+        if(selected!= null)
+            for (DataRowModel temp : selected){
+                int exists = temp.getDownloaded();
+                if ( exists == DataRowModel.HAS_LOCAL_COPY || exists == DataRowModel.ERROR){
+                    hasLocal.add(temp);
+                }else if(exists == DataRowModel.DOWNLOADING){
+                    JOptionPane.showMessageDialog(
+                            new JFrame(),
+                            downloadingText,
+                            downloadingDesc,
+                            JOptionPane.ERROR_MESSAGE);
+                    controller.repaintAll();
+                    temp.setSelected(false);
+                }else{
+                    temp.setSelected(false);
+                }
+            }
 
-        if (!selected.isEmpty()) {
+        if (!hasLocal.isEmpty()) {
             int retValue = JOptionPane.showConfirmDialog(new JFrame(),
-                    warningTextPart1 + " " + selected.size() + " " + warningTextPart2,
+                    warningTextPart1 + " " + hasLocal.size() + " " + warningTextPart2,
                     warningDesc,
                     JOptionPane.WARNING_MESSAGE);
 
@@ -51,7 +71,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
                 return;
             }
 
-            for (DataRowModel file : selected) {
+            for (DataRowModel file : hasLocal) {
 
                 file.setSelected(false);
 
@@ -60,12 +80,6 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
                 File temp = new File(path);
 
                 if (!temp.exists()) {
-                    JOptionPane.showMessageDialog(
-                            new JFrame(),
-                            noLocalText,
-                            noLocalDesc,
-                            JOptionPane.ERROR_MESSAGE);
-                    controller.repaintAll();
                     continue;
                 }
 
@@ -113,8 +127,8 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
         warningTextPart1 = resource.getString("actiondelete.ededb.warning.text.part1");
         warningTextPart2 = resource.getString("actiondelete.ededb.warning.text.part2");
         warningDesc = resource.getString("actiondelete.ededb.warning.desc");
-        noLocalText = resource.getString("actiondelete.ededb.nolocal.text");
-        noLocalDesc = resource.getString("actiondelete.ededb.nolocal.desc");
+        downloadingText = resource.getString("actiondelete.ededb.downloading.text");
+        downloadingDesc = resource.getString("actiondelete.ededb.downloading.desc");
         errorText = resource.getString("actiondelete.ededb.error.text");
         errorDesc = resource.getString("actiondelete.ededb.error.desc");
 

@@ -18,6 +18,7 @@ import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginInfo;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OfflineTables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OnlineTables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.awt.BorderLayout;
 import java.io.File;
@@ -99,11 +100,14 @@ public class Controller {
     }
 
     public void update() {
+        Working.show();
+
         parent.updateMenuItemVisibility();
         loginInfo.updateLoginInfo();
-        onlineTables.updateExpTable();
         toolbar.updateButtonsVisibility();
+        onlineTables.updateExpTable();
 
+        Working.hide();
         repaintAll();
     }
 
@@ -316,5 +320,9 @@ public class Controller {
 
     public boolean isOnlineTab() {
         return onlineTab;
+    }
+
+    public boolean isLock(){
+        return lock;
     }
 }

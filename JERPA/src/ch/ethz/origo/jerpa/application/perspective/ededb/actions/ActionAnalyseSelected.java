@@ -31,6 +31,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
     private String resourceBundlePath;
     private String tooManyText, tooManyDesc;
     private String noFileText, noFileDesc;
+    private String downloadingText, downloadingDesc;
     private String notSupportedText, notSupportedDesc;
     private String doneText, doneDesc;
     private Controller controller;
@@ -68,6 +69,16 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         if (selectedFiles.size() == 1) {
 
             DataRowModel selected = selectedFiles.get(0);
+
+            if(selected.getDownloaded() == DataRowModel.DOWNLOADING){
+                JOptionPane.showMessageDialog(
+                        new JFrame(),
+                        downloadingText,
+                        downloadingDesc,
+                        JOptionPane.ERROR_MESSAGE);
+                controller.unselectAllFiles();
+                return;
+            }
 
             final File file = new File(selected.getLocation() + File.separator + selected.getFileInfo().getFilename());
 
@@ -147,6 +158,8 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         noFileDesc = resource.getString("actionanalyse.ededb.nofile.desc");
         notSupportedText = resource.getString("actionanalyse.ededb.notsupported.text");
         notSupportedDesc = resource.getString("actionanalyse.ededb.notsupported.desc");
+        downloadingText = resource.getString("actionanalyse.ededb.downloading.text");
+        downloadingDesc = resource.getString("actionanalyse.ededb.downloading.desc");
         doneText = resource.getString("actionanalyse.ededb.done.text");
         doneDesc = resource.getString("actionanalyse.ededb.done.desc");
     }

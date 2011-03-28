@@ -56,7 +56,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         butBarConstrains.gridy = 0;
         buttonBar.add(disconnectButton, butBarConstrains);
 
-       
+
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 1;
         buttonBar.add(openFolderButton, butBarConstrains);
@@ -64,11 +64,11 @@ public class Toolbar extends JXPanel implements ILanguage {
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 2;
         buttonBar.add(chooseFolderButton, butBarConstrains);
-        
+
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 3;
         buttonBar.add(analyseFileButton, butBarConstrains);
-        
+
         butBarConstrains.gridx = 0;
         butBarConstrains.gridy = 4;
         butBarConstrains.gridwidth = 1;
@@ -145,19 +145,19 @@ public class Toolbar extends JXPanel implements ILanguage {
         if (session.isConnected()) {
             connectButton.setVisible(false);
             disconnectButton.setVisible(true);
+
+            if (controller.isOnlineTab() && !controller.isLock()) {
+                downloadButton.setEnabled(true);
+                ownerButton.setEnabled(true);
+                subjectButton.setEnabled(true);
+            } else {
+                downloadButton.setEnabled(false);
+                ownerButton.setEnabled(false);
+                subjectButton.setEnabled(false);
+            }
         } else {
             connectButton.setVisible(true);
             disconnectButton.setVisible(false);
-        }
-        
-        if(controller.isOnlineTab()){
-            downloadButton.setEnabled(true);
-            ownerButton.setEnabled(true);
-            subjectButton.setEnabled(true);
-        }else{
-            downloadButton.setEnabled(false);
-            ownerButton.setEnabled(false);
-            subjectButton.setEnabled(false);
         }
     }
 
@@ -207,7 +207,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         downloadButton.setEnabled(active);
         ownerButton.setEnabled(active);
         subjectButton.setEnabled(active);
-        
+
         updateButtonsVisibility();
     }
 }

@@ -1,6 +1,15 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+
+  * (3/28/2011) Petr Miko
+     # 187
+     
+       CHANGED: few translation updates + extensions in JerpaLang.
+       CHANGED: repaired bug, when user closed logindialog during logging in and clicked some buttons, wrong operations happened.
+       CHANGED: repaired bug, when user selected files to delete - number is now equal to files physically present on local machine and downloading files cannot be deleted.
+       CHANGED: repaired bug - downloading files cannot be analysed.  
+  
   * (3/27/2011) Petr Miko
      # 186
      

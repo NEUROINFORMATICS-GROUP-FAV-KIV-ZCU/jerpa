@@ -145,8 +145,12 @@ public class LoginDialog implements ILanguage {
 
                             okButton.setEnabled(true);
                             cancelButton.setEnabled(true);
-
+                            dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
                             progress.setVisible(false);
+
+                            usernameField.setText("");
+                            passwordField.setText("");
+                            
                         }
                     });
 
@@ -156,6 +160,7 @@ public class LoginDialog implements ILanguage {
                         public void run() {
                             okButton.setEnabled(false);
                             cancelButton.setEnabled(false);
+                            dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
                             progress.setVisible(true);
                         }
                     });
