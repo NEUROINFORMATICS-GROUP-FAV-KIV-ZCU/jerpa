@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
+ * Action class for disconnecting from EEG/ERP Database.
+ *
  * @author Petr Miko
  */
 public class ActionDisconnect extends AbstractAction {
@@ -14,6 +16,12 @@ public class ActionDisconnect extends AbstractAction {
     private EDEDSession session;
     private Controller controller;
 
+    /**
+     * Constructor.
+     *
+     * @param controller EDEDB Controller
+     * @param session EDEDClient.jar Session
+     */
     public ActionDisconnect(Controller controller, EDEDSession session) {
         this.controller = controller;
         this.session = session;

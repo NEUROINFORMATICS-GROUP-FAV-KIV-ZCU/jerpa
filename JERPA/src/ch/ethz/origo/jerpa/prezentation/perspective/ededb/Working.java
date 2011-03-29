@@ -5,6 +5,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 /**
+ * Class for creating undecorated dialog showing "working animation"
  *
  * @author Petr Miko
  */
@@ -12,6 +13,9 @@ public class Working {
 
     private static JDialog working;
 
+    /**
+     *  MEthod creating JDialog
+     */
     public Working() {
         working = new JDialog();
 
@@ -25,6 +29,9 @@ public class Working {
         working.pack();
     }
 
+    /**
+     * Method setting visibility on true
+     */
     public synchronized static void show() {
         if (working == null) {
             new Working();
@@ -39,6 +46,9 @@ public class Working {
         });
     }
 
+    /**
+     * Method setting visibility on false
+     */
     public synchronized static void hide() {
         SwingUtilities.invokeLater(new Runnable() {
 

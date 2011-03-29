@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 /**
+ * Table model for list of users.
  *
  * @author Petr Miko
  */

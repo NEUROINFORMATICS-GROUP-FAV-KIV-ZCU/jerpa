@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 
 /**
+ * Action class opening download folder in OS enviroment.
  *
  * @author Petr Miko
  */
@@ -16,6 +17,11 @@ public class ActionOpenDownloadPath extends AbstractAction {
 
     private Controller controller;
 
+    /**
+     * Constructor.
+     *
+     * @param controller EDEDB Controller
+     */
     public ActionOpenDownloadPath(Controller controller) {
         this.controller = controller;
     }

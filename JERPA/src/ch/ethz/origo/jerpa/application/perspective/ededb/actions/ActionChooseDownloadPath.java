@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 
 import javax.swing.*;
@@ -8,16 +7,21 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 
 /**
+ * Action for choosing download folder for EDEDB.
+ *
  * @author Petr Miko
  */
 public class ActionChooseDownloadPath extends AbstractAction {
 
     private Controller controller;
-    private EDEDSession session;
 
-    public ActionChooseDownloadPath(Controller controller, EDEDSession session) {
+    /**
+     * Constructor.
+     *
+     * @param controller EDEDB Controller
+     */
+    public ActionChooseDownloadPath(Controller controller) {
         this.controller = controller;
-        this.session = session;
     }
 
     @Override

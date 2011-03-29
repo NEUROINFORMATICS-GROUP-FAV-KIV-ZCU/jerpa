@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
+ * Action class for opening selected file in SignalPerspective.
  *
  * @author Petr Miko
  */
@@ -151,6 +152,9 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         }
     }
 
+    /**
+     * Init/Update method for texts.
+     */
     private void initTexts() {
         tooManyText = resource.getString("actionanalyse.ededb.toomany.text");
         tooManyDesc = resource.getString("actionanalyse.ededb.toomany.desc");
@@ -164,6 +168,12 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         doneDesc = resource.getString("actionanalyse.ededb.done.desc");
     }
 
+    /**
+     * Checks if file is analysable in JERPA.
+     *
+     * @param extension File extension
+     * @return true/false
+     */
     private boolean isAnalysable(String extension) {
 
         for (String ext : extensions) {
@@ -175,6 +185,10 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         return false;
     }
 
+    /**
+     * Prints extensions in format "extension, extension, ..."
+     * @return String of extensions
+     */
     private String printExtensions() {
         String exts = "";
 

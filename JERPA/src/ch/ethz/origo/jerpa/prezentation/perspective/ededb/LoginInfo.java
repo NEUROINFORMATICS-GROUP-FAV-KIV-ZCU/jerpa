@@ -12,6 +12,8 @@ import javax.swing.border.TitledBorder;
 import org.jdesktop.swingx.JXPanel;
 
 /**
+ * Class of GUI fields containing login username and download folder information.
+ *
  * @author Petr Miko
  */
 public class LoginInfo extends JXPanel implements ILanguage {
@@ -26,6 +28,12 @@ public class LoginInfo extends JXPanel implements ILanguage {
     private TitledBorder usernameBorder;
     private TitledBorder directoryBorder;
 
+    /**
+     * Constructor creating JXPanel for information fields.
+     *
+     * @param controller EDEDB Controller
+     * @param session EDEDSession
+     */
     public LoginInfo(Controller controller, EDEDSession session) {
         super();
 
@@ -60,6 +68,10 @@ public class LoginInfo extends JXPanel implements ILanguage {
         this.add(directoryText);
     }
 
+    /**
+     * Method creating JTextArea with certain parameters.
+     * @return
+     */
     private JTextArea createArea() {
         JTextArea area = new JTextArea();
 
@@ -72,6 +84,9 @@ public class LoginInfo extends JXPanel implements ILanguage {
         return area;
     }
 
+    /**
+     * Shown information update method.
+     */
     public void updateLoginInfo() {
         if (session.isConnected()) {
             usernameText.setText(session.getUsername());

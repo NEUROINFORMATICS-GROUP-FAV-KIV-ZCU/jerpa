@@ -15,6 +15,8 @@ import javax.swing.Icon;
 import org.jdesktop.swingx.JXTaskPane;
 
 /**
+ * EEG/ERP Database Experiment Browser (EDEDB) perspective class. Provides user interface for working with remote data in Database, download them
+ * and open them in SignalPerspective.
  *
  * @author Petr Miko
  */

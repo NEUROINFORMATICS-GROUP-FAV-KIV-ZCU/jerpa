@@ -10,6 +10,8 @@ import java.util.ResourceBundle;
 import javax.swing.SwingUtilities;
 
 /**
+ * Table model for list of experiments.
+ *
  * @author Petr Miko
  */
 public class ExpTableModel extends AbstractTableModel implements ILanguage {

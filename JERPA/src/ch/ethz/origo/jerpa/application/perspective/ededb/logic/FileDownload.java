@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
+ * Thread extending class for file download.
+ *
  * @author Petr Miko
  */
 public class FileDownload extends Thread implements ILanguage {
@@ -29,6 +31,13 @@ public class FileDownload extends Thread implements ILanguage {
     private EDEDSession session;
     private String errorText, errorDesc;
 
+    /**
+     * Constructor. Sets up which file will be downloaded by saving DataRowModel object.
+     *
+     * @param controller EDEDB Controller
+     * @param session EDEDClient.jar Session
+     * @param rowData Information about file, which selected to download
+     */
     public FileDownload(Controller controller, EDEDSession session, DataRowModel rowData) {
         super();
 
@@ -134,6 +143,9 @@ public class FileDownload extends Thread implements ILanguage {
 
     }
 
+    /**
+     * Init/update method of text. Vital for localization.
+     */
     private void initTexts() {
 
         errorText = resource.getString("filedownload.ededb.error.text");

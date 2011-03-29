@@ -2,7 +2,6 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -17,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
+ * Action class for deletion of selected files' local copies.
  *
  * @author Petr Miko
  */
@@ -122,6 +122,9 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
 
     }
 
+    /**
+     * Init/update method for texts. Vital for localization.
+     */
     private void initTexts() {
 
         warningTextPart1 = resource.getString("actiondelete.ededb.warning.text.part1");

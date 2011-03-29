@@ -4,7 +4,6 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -20,6 +19,7 @@ import javax.swing.border.TitledBorder;
 import org.jdesktop.swingx.JXPanel;
 
 /**
+ * JXPanel extending class for performing first run interface.
  *
  * @author Petr Miko
  */
@@ -33,6 +33,10 @@ public class FirstRun extends JXPanel implements ILanguage {
     private JTextArea text;
     private TitledBorder titledBorder;
 
+    /**
+     * Contructor creating whole FirstRun JXPanel with all its elements.
+     * @param controller EDEDBController
+     */
     public FirstRun(final Controller controller) {
         super();
 

@@ -5,14 +5,11 @@ import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
-import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import java.net.ConnectException;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -24,6 +21,8 @@ import org.jdesktop.swingx.JXLabel;
 import org.jdesktop.swingx.JXPanel;
 
 /**
+ * Class creating login dialog for setting up connection to EEG/ERP Database.
+ *
  * @author Petr Miko
  */
 public class LoginDialog implements ILanguage {
@@ -48,6 +47,12 @@ public class LoginDialog implements ILanguage {
     private String connectionErrorText;
     private String connectionErrorDesc;
 
+    /**
+     * Constructor.
+     *
+     * @param controller EDEDB Controller
+     * @param session EDEDSession from EDEDClient.jar
+     */
     public LoginDialog(Controller controller, EDEDSession session) {
 
         LanguageObservable.getInstance().attach(this);
@@ -59,6 +64,9 @@ public class LoginDialog implements ILanguage {
         createDialog();
     }
 
+    /**
+     * Creating LoginDialong JDialog with all its fields, labels and buttons (with actions).
+     */
     private void createDialog() {
         dialog = new JDialog();
 
@@ -234,12 +242,16 @@ public class LoginDialog implements ILanguage {
         dialog.setVisible(false);
         dialog.setLocationRelativeTo(null);
     }
-    
+
+    /**
+     * Setter of LoginDialog visibility.
+     * @param visibility boolean
+     */
     public void setVisible(boolean visibility){
         if(dialog != null)
             dialog.setVisible(visibility);
     }
-
+    
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
@@ -270,6 +282,9 @@ public class LoginDialog implements ILanguage {
 
     }
 
+    /**
+     * Init/update texts. Vital for localization.
+     */
     private void updateErrorTexts() {
         inputsErrorText = resource.getString("logindialog.ededb.errors.inputs.text");
         inputsErrorDesc = resource.getString("logindialog.ededb.errors.inputs.desc");

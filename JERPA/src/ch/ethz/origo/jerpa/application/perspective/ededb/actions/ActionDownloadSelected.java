@@ -16,6 +16,8 @@ import java.util.ResourceBundle;
 import javax.xml.ws.WebServiceException;
 
 /**
+ * Action class for downloading files selected in data view table of EDEDB.
+ *
  * @author Petr Miko
  */
 public class ActionDownloadSelected extends AbstractAction implements ILanguage {
@@ -30,6 +32,12 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
     private String existenceTextPart1, existenceTextPart2, existenceDesc;
 
 
+    /**
+     * Constructor.
+     *
+     * @param controller EDEDB Controller
+     * @param session EDEDClient.jar Session
+     */
     public ActionDownloadSelected(Controller controller, EDEDSession session) {
         super();
 
@@ -123,6 +131,9 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
     }
 
+    /**
+     * Update/init text method. Vital for localization.
+     */
     public void initTexts(){
         emptyText = resource.getString("actiondownload.ededb.empty.text");
         emptyDesc = resource.getString("actiondownload.ededb.empty.desc");

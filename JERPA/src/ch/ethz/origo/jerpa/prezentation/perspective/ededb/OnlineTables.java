@@ -23,6 +23,8 @@ import java.util.ResourceBundle;
 import org.jdesktop.swingx.JXTable;
 
 /**
+ * Class for displaying experiments and its data in online mode.
+ *
  * @author Petr Miko
  */
 public class OnlineTables extends JSplitPane implements ILanguage {
@@ -41,6 +43,11 @@ public class OnlineTables extends JSplitPane implements ILanguage {
     private String errorConnectionDesc;
     private String errorRangeDesc;
 
+    /**
+     * Constructor creating basic JSplitPane interface.
+     * @param controller EDEDB Controller class
+     * @param session EDEDSession session
+     */
     public OnlineTables(Controller controller, EDEDSession session) {
         super();
 
@@ -61,6 +68,10 @@ public class OnlineTables extends JSplitPane implements ILanguage {
 
     }
 
+    /**
+     * Method creating Experiment JXTable within a JScrollPane.
+     * @return Experiment view table
+     */
     private Container createExpTable() {
         expModel = new ExpTableModel();
         final JXTable expTable = new JXTable(expModel);
@@ -84,6 +95,10 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         return new JScrollPane(expTable);
     }
 
+    /**
+     * Method creating Data JXTable within a JScrollPane.
+     * @return Experiment's data view table
+     */
     private Container createDataTable() {
         dataModel = new DataTableModel();
         JXTable dataTable = new JXTable(dataModel);
@@ -96,14 +111,23 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         return new JScrollPane(dataTable);
     }
 
+    /**
+     * Method clearing all data from experiment view table
+     */
     public void clearExpTable() {
         expModel.clear();
     }
 
+    /**
+     * Method clearing all data from data view table
+     */
     public void clearDataTable() {
         dataModel.clear();
     }
 
+    /**
+     * Method for filling experiment view table with information about experiments. Information depends on Owner/Subject button selection.
+     */
     public void updateExpTable() {
 
         Thread updateExpThread = new Thread(new Runnable() {
@@ -154,6 +178,10 @@ public class OnlineTables extends JSplitPane implements ILanguage {
 
     }
 
+    /**
+     * Method filing data view table with experiment's files information. Shown information depends on selected experiment in experiment view table.
+     * @param row selected experiment in experiment view table
+     */
     public void updateDataTable(final int row) {
 
         Thread updateDataThread = new Thread(new Runnable() {
@@ -193,13 +221,21 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         updateDataThread.start();
     }
 
+    /**
+     * Method updating file status within local machine
+     */
     public void checkLocalCopies() {
         for (DataRowModel row : dataModel.getData()) {
-            if(row.getDownloaded() != DataRowModel.DOWNLOADING)
+            if (row.getDownloaded() != DataRowModel.DOWNLOADING) {
                 row.setDownloaded(controller.isAlreadyDownloaded(row.getFileInfo()));
+            }
         }
     }
 
+    /**
+     * Returns selected files in data view table.
+     * @return list DataRowModel (files info) of users selection in data view table
+     */
     public List<DataRowModel> getSelectedFiles() {
         List<DataRowModel> data = dataModel.getData();
         ArrayList<DataRowModel> selectedFiles = new ArrayList<DataRowModel>();
@@ -212,11 +248,19 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         return selectedFiles;
     }
 
+    /**
+     * Method setting localization resource budle path.
+     * @param path Resource bundle path
+     */
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
     }
-
+    
+    /**
+     * Getter of resource budle path.
+     * @return resource budle path
+     */
     public String getResourceBundlePath() {
         return resourceBundlePath;
     }
@@ -225,6 +269,10 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
+    /**
+     * ILanguage updating method. Vital for localization.
+     * @throws JUIGLELangException
+     */
     public void updateText() throws JUIGLELangException {
         SwingUtilities.invokeLater(new Runnable() {
 
@@ -236,6 +284,9 @@ public class OnlineTables extends JSplitPane implements ILanguage {
 
     }
 
+    /**
+     * Init/update text method. Vital for localization.
+     */
     private void initTexts() {
         tableValueYes = resource.getString("table.ededb.datatable.state.yes");
         tableValueNo = resource.getString("table.ededb.datatable.state.no");

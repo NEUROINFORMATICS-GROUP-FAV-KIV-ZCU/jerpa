@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
+ * Connect action class "calling" LoginDialog.
+ *
  * @author Petr Miko
  */
 public class ActionConnect extends AbstractAction {

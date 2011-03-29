@@ -8,26 +8,20 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.UserTableModel;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
-import ch.ethz.origo.juigle.application.ILanguage;
-import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
-import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.awt.Container;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.JXTable;
 
 /**
- *
+ * Class for viewing already downloaded experiment files.
  * @author Petr Miko
  */
 public class OfflineTables extends JSplitPane {
@@ -36,15 +30,17 @@ public class OfflineTables extends JSplitPane {
     private ExpTableModel expModel;
     private DataTableModel dataModel;
     private Controller controller;
-    private EDEDSession session;
     private String username;
     private String folder;
 
-    public OfflineTables(Controller controller, EDEDSession session) {
+    /**
+     * Constructor method creating JSplitPane with tables.
+     * @param controller
+     */
+    public OfflineTables(Controller controller) {
         super();
 
         this.controller = controller;
-        this.session = session;
 
         this.setResizeWeight(.5d);
 
@@ -61,6 +57,10 @@ public class OfflineTables extends JSplitPane {
         this.setDividerLocation(300 + this.getInsets().left);
     }
 
+    /**
+     * Table of users with local copies.
+     * @return JScrollPane with JXTable in it
+     */
     private Container createUserTable() {
         userModel = new UserTableModel();
         final JXTable userTable = new JXTable(userModel);
@@ -85,6 +85,10 @@ public class OfflineTables extends JSplitPane {
         return new JScrollPane(userTable);
     }
 
+    /**
+     * Table of users experiments with local copies.
+     * @return JScrollPane with JXTable in it
+     */
     private Container createExpTable() {
         expModel = new ExpTableModel();
         final JXTable expTable = new JXTable(expModel);
@@ -110,6 +114,11 @@ public class OfflineTables extends JSplitPane {
         return new JScrollPane(expTable);
     }
 
+
+    /**
+     * Table of local data files.
+     * @return JScrollPane with JXTable in it
+     */
     private Container createDataTable() {
         dataModel = new DataTableModel();
         JXTable dataTable = new JXTable(dataModel);
@@ -125,20 +134,32 @@ public class OfflineTables extends JSplitPane {
         return new JScrollPane(dataTable);
     }
 
+    /**
+     * Method clearing user view table of all data.
+     */
     public void clearUserTable() {
         while (userModel.getRowCount() > 0) {
             userModel.removeRow(0);
         }
     }
 
+    /**
+     * Method clearing experiment view table of all data.
+     */
     public void clearExpTable() {
         expModel.clear();
     }
 
+    /**
+     * Method clearing data view table of all data.
+     */
     public void clearDataTable() {
         dataModel.clear();
     }
 
+    /**
+     * Loading all usernames with local copies on machine.
+     */
     public void updateUserTable() {
         Thread updateUserThread = new Thread(new Runnable() {
 
@@ -164,6 +185,9 @@ public class OfflineTables extends JSplitPane {
         updateUserThread.start();
     }
 
+    /**
+     * Loading all users experiments which has local copies. User (=row in user table) muset be selected first.
+     */
     public void updateExpTable() {
 
         Thread updateExpThread = new Thread(new Runnable() {
@@ -195,6 +219,9 @@ public class OfflineTables extends JSplitPane {
 
     }
 
+    /**
+     * Loading local data files' names.
+     */
     public void updateDataTable() {
 
         Thread updateDataThread = new Thread(new Runnable() {
@@ -227,13 +254,20 @@ public class OfflineTables extends JSplitPane {
         Working.show();
         updateDataThread.start();
     }
-    
+
+    /**
+     * File update method.
+     */
     public void checkLocalCopies() {
         updateUserTable();
         updateExpTable();
         updateDataTable();
     }
 
+    /**
+     * Getter of information about selected rows in data table.
+     * @return List of DataRowModel information
+     */
     public List<DataRowModel> getSelectedFiles() {
         List<DataRowModel> data = dataModel.getData();
         ArrayList<DataRowModel> selectedFiles = new ArrayList<DataRowModel>();

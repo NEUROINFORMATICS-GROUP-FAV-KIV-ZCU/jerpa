@@ -11,6 +11,8 @@ import java.util.ResourceBundle;
 import javax.swing.SwingUtilities;
 
 /**
+ * Table model for data view table.
+ *
  * @author Petr Miko
  */
 public class DataTableModel extends AbstractTableModel implements ILanguage {

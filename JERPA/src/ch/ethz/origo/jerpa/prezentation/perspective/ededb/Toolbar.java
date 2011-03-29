@@ -15,6 +15,8 @@ import java.util.ResourceBundle;
 import org.jdesktop.swingx.JXPanel;
 
 /**
+ * Class for creating side-toolbar for EDEDB.
+ *
  * @author Petr Miko
  */
 public class Toolbar extends JXPanel implements ILanguage {
@@ -27,6 +29,12 @@ public class Toolbar extends JXPanel implements ILanguage {
             openFolderButton, deleteFileButton, analyseFileButton;
     private JRadioButton ownerButton, subjectButton;
 
+    /**
+     * Creating main panel and setting elements into proper positions.
+     *
+     * @param controller Controller class of EDEDB
+     * @param session EDEDSession class
+     */
     public Toolbar(Controller controller, EDEDSession session) {
         super();
 
@@ -88,6 +96,9 @@ public class Toolbar extends JXPanel implements ILanguage {
         ownerButton.setSelected(true);
     }
 
+    /**
+     * Buttons initialization and setting their actions
+     */
     private void createButtons() {
 
         connectButton = new JButton();
@@ -140,6 +151,9 @@ public class Toolbar extends JXPanel implements ILanguage {
         });
     }
 
+    /**
+     * Setting buttons visibility giving the exact situation.
+     */
     public void updateButtonsVisibility() {
 
         if (session.isConnected()) {
@@ -161,6 +175,9 @@ public class Toolbar extends JXPanel implements ILanguage {
         }
     }
 
+    /**
+     * Update text method. Vital for localization.
+     */
     public void updateButtonsText() {
         connectButton.setText(resource.getString("sidebar.ededb.toolbar.connect"));
         disconnectButton.setText(resource.getString("sidebar.ededb.toolbar.disconnect"));
@@ -173,11 +190,19 @@ public class Toolbar extends JXPanel implements ILanguage {
         subjectButton.setText(resource.getString("sidebar.ededb.toolbar.subject"));
     }
 
+    /**
+     * Method setting localization resource budle path.
+     * @param path Resource bundle path
+     */
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
     }
 
+    /**
+     * Getter of resource budle path.
+     * @return resource budle path
+     */
     public String getResourceBundlePath() {
         return resourceBundlePath;
     }
@@ -186,6 +211,10 @@ public class Toolbar extends JXPanel implements ILanguage {
         throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
+    /**
+     * ILanguage updating method. Vital for localization.
+     * @throws JUIGLELangException
+     */
     public void updateText() throws JUIGLELangException {
         SwingUtilities.invokeLater(new Runnable() {
 
@@ -197,6 +226,10 @@ public class Toolbar extends JXPanel implements ILanguage {
 
     }
 
+    /**
+     * Method setting buttons on/off.
+     * @param active boolean setting buttons' activeness
+     */
     public void setButtonsEnabled(boolean active) {
         connectButton.setEnabled(active);
         disconnectButton.setEnabled(active);

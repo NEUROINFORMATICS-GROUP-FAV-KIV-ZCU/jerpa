@@ -3,6 +3,8 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 
 /**
+ * Row Model used in data table.
+ *
  * @author Petr Miko
  */
 public class DataRowModel {
