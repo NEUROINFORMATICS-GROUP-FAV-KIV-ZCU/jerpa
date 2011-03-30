@@ -159,19 +159,19 @@ public class Toolbar extends JXPanel implements ILanguage {
         if (session.isConnected()) {
             connectButton.setVisible(false);
             disconnectButton.setVisible(true);
-
-            if (controller.isOnlineTab() && !controller.isLock()) {
-                downloadButton.setEnabled(true);
-                ownerButton.setEnabled(true);
-                subjectButton.setEnabled(true);
-            } else {
-                downloadButton.setEnabled(false);
-                ownerButton.setEnabled(false);
-                subjectButton.setEnabled(false);
-            }
         } else {
             connectButton.setVisible(true);
             disconnectButton.setVisible(false);
+        }
+
+        if (controller.isOnlineTab() && !controller.isLock()) {
+            downloadButton.setEnabled(true);
+            ownerButton.setEnabled(true);
+            subjectButton.setEnabled(true);
+        } else {
+            downloadButton.setEnabled(false);
+            ownerButton.setEnabled(false);
+            subjectButton.setEnabled(false);
         }
     }
 

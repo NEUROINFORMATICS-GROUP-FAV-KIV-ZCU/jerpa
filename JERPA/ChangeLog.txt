@@ -1,6 +1,12 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (3/30/2011) Petr Miko
+     # 189
+       CHANGED: FileDownload now runnable and is used by executorservice => paralell download applied only on same number of files as CPU has cores.
+       CHANGED: solved bug with active/inactive buttons in online/offline view.
+       BUG REPORT: everytime file is opened in SignalProcess, perspective bar adds buttons with analyse tools.  
+
   * (3/29/2011) Petr Miko
      # 188
        CHANGED: ADDED comments in source files related to EDEDB Perspective.

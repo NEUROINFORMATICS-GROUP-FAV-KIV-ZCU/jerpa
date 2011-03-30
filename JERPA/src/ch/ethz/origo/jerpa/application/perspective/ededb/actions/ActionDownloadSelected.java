@@ -8,11 +8,13 @@ import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import java.util.concurrent.ExecutorService;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.net.ConnectException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
 import javax.xml.ws.WebServiceException;
 
 /**
@@ -64,6 +66,9 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
                             emptyDesc,
                             JOptionPane.INFORMATION_MESSAGE);
                     }
+                    
+                    //bude stahovano paralelne tolik souboru, kolik je jader CPU
+                    ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
                     for (DataRowModel file : filesToDownload) {
 
@@ -86,7 +91,8 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
                         }
 
                         FileDownload fileDownload = new FileDownload(controller, session, file);
-                        fileDownload.start();
+                        
+                        pool.submit(fileDownload);
                         
                         file.setSelected(false);
                         controller.repaintAll();

@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Petr Miko
  */
-public class FileDownload extends Thread implements ILanguage {
+public class FileDownload implements Runnable, ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
@@ -65,14 +65,7 @@ public class FileDownload extends Thread implements ILanguage {
                         errorText,
                         errorDesc,
                         JOptionPane.ERROR_MESSAGE);
-                try {
-                    this.join();
-                } catch (InterruptedException e) {
-                    JUIGLErrorInfoUtils.showErrorDialog(
-                            e.getMessage(),
-                            e.getLocalizedMessage(),
-                            e);
-                }
+                
                 return;
             }
         }
@@ -90,18 +83,12 @@ public class FileDownload extends Thread implements ILanguage {
             rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
             
             controller.repaintAll();
-            this.join();
         } catch (FileNotFoundException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
                     e.getMessage(),
                     e.getLocalizedMessage(),
                     e);
         } catch (IOException e) {
-            JUIGLErrorInfoUtils.showErrorDialog(
-                    e.getMessage(),
-                    e.getLocalizedMessage(),
-                    e);
-        } catch (InterruptedException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
                     e.getMessage(),
                     e.getLocalizedMessage(),
