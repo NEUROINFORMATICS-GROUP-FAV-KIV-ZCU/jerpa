@@ -54,7 +54,8 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
                             downloadingText,
                             downloadingDesc,
                             JOptionPane.ERROR_MESSAGE);
-                    controller.repaintAll();
+                    
+                    controller.update();
                     temp.setSelected(false);
                 }else{
                     temp.setSelected(false);
@@ -93,7 +94,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
                             JOptionPane.ERROR_MESSAGE);
                 }
 
-                controller.repaintAll();
+                controller.fileChange();
             }
         }
     }

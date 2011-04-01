@@ -84,7 +84,8 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
                             if (retValue == JOptionPane.NO_OPTION) {
                                 file.setSelected(false);
-                                controller.repaintAll();
+                                
+                                controller.update();
                                 continue;
                             }
 
@@ -95,7 +96,7 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
                         pool.submit(fileDownload);
                         
                         file.setSelected(false);
-                        controller.repaintAll();
+                        controller.fileChange();
                     }
 
                 }

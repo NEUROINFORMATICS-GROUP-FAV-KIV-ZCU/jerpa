@@ -33,6 +33,8 @@ public class OnlineTables extends JSplitPane implements ILanguage {
     private String resourceBundlePath;
     private ExpTableModel expModel;
     private DataTableModel dataModel;
+    private JXTable expTable;
+    private JXTable dataTable;
     private Controller controller;
     private EDEDSession session;
     private String tableValueYes;
@@ -74,7 +76,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
      */
     private Container createExpTable() {
         expModel = new ExpTableModel();
-        final JXTable expTable = new JXTable(expModel);
+        expTable = new JXTable(expModel);
 
         expTable.setAutoCreateRowSorter(true);
         expTable.setFillsViewportHeight(true);
@@ -101,7 +103,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
      */
     private Container createDataTable() {
         dataModel = new DataTableModel();
-        JXTable dataTable = new JXTable(dataModel);
+        dataTable = new JXTable(dataModel);
 
         dataTable.setAutoCreateRowSorter(true);
         dataTable.setFillsViewportHeight(true);
@@ -169,11 +171,11 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                 }
 
                 repaint();
-                Working.hide();
+                Working.setVisible(false);
             }
         });
 
-        Working.show();
+        Working.setVisible(true);
         updateExpThread.start();
 
     }
@@ -202,7 +204,6 @@ public class OnlineTables extends JSplitPane implements ILanguage {
 
                     clearDataTable();
 
-                    assert dataFileInfos != null;
                     for (DataFileInfo info : dataFileInfos) {
                         String downloadPath = controller.getDownloadPath()
                                 + File.separator + session.getUsername()
@@ -213,14 +214,14 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                     }
                 }
                 repaint();
-                Working.hide();
+                Working.setVisible(false);
             }
         });
 
-        Working.show();
+        Working.setVisible(true);
         updateDataThread.start();
     }
-
+    
     /**
      * Method updating file status within local machine
      */
@@ -256,7 +257,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
     }
-    
+
     /**
      * Getter of resource budle path.
      * @return resource budle path

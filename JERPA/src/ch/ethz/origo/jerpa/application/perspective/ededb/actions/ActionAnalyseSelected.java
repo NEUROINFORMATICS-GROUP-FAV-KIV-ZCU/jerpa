@@ -71,7 +71,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
 
             DataRowModel selected = selectedFiles.get(0);
 
-            if(selected.getDownloaded() == DataRowModel.DOWNLOADING){
+            if (selected.getDownloaded() == DataRowModel.DOWNLOADING) {
                 JOptionPane.showMessageDialog(
                         new JFrame(),
                         downloadingText,
@@ -131,20 +131,20 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
 
                         public void run() {
                             persp.openFile(file);
-                            
+
                             controller.setElementsActive(true);
 
                             controller.unselectAllFiles();
-                            Working.hide();
+                            Working.setVisible(false);
                             JOptionPane.showMessageDialog(
-                            new JFrame(),
-                            doneText,
-                            doneDesc,
-                            JOptionPane.INFORMATION_MESSAGE);
+                                    new JFrame(),
+                                    doneText,
+                                    doneDesc,
+                                    JOptionPane.INFORMATION_MESSAGE);
                         }
                     });
                     controller.setElementsActive(false);
-                    Working.show();
+                    Working.setVisible(true);
                     openFile.start();
 
                 }

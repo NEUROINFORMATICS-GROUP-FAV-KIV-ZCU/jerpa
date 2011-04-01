@@ -136,7 +136,6 @@ public class Toolbar extends JXPanel implements ILanguage {
             public void actionPerformed(ActionEvent e) {
                 ownerButton.setSelected(true);
                 controller.setRights(Rights.OWNER);
-                controller.update();
             }
         });
 
@@ -146,7 +145,6 @@ public class Toolbar extends JXPanel implements ILanguage {
             public void actionPerformed(ActionEvent e) {
                 subjectButton.setSelected(true);
                 controller.setRights(Rights.SUBJECT);
-                controller.update();
             }
         });
     }

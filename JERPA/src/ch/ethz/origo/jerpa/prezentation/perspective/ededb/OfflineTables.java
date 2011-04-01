@@ -7,7 +7,6 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.UserTableModel;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import java.awt.Container;
 import java.io.File;
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public class OfflineTables extends JSplitPane {
     private Container createUserTable() {
         userModel = new UserTableModel();
         final JXTable userTable = new JXTable(userModel);
-        
+
         userTable.setAutoCreateRowSorter(true);
         userTable.setFillsViewportHeight(true);
         userTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -76,8 +75,8 @@ public class OfflineTables extends JSplitPane {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting() && userTable.getSelectedRows().length > 0) {
-                        username = "" + userModel.getValueAt(userTable.getSelectedRow(), 0);
-                        updateExpTable();
+                    username = "" + userModel.getValueAt(userTable.getSelectedRow(), 0);
+                    updateExpTable();
                 }
             }
         });
@@ -104,6 +103,7 @@ public class OfflineTables extends JSplitPane {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting() && expModel.getRowCount() > 0) {
+
                     folder = expModel.getValueAt(expTable.getSelectedRow(), 0)
                             + " - " + expModel.getValueAt(expTable.getSelectedRow(), 1);
                     updateDataTable();
@@ -113,7 +113,6 @@ public class OfflineTables extends JSplitPane {
 
         return new JScrollPane(expTable);
     }
-
 
     /**
      * Table of local data files.
@@ -169,19 +168,18 @@ public class OfflineTables extends JSplitPane {
 
                 clearUserTable();
 
-                if(experiments != null)
-                for (File experiment : experiments) {
-                    Object[] temp = {experiment.getName()};
+                if (experiments != null) {
+                    for (File experiment : experiments) {
+                        Object[] temp = {experiment.getName()};
 
-                    userModel.addRow(temp);
-                    userModel.fireTableDataChanged();
+                        userModel.addRow(temp);
+                        userModel.fireTableDataChanged();
+                    }
                 }
                 repaint();
-                Working.hide();
             }
         });
 
-        Working.show();
         updateUserThread.start();
     }
 
@@ -200,21 +198,22 @@ public class OfflineTables extends JSplitPane {
 
                 clearExpTable();
 
-                if(experiments != null)
-                for (File experiment : experiments) {
-                    String[] name = experiment.getName().split(" - ");
-                    ExperimentInfo data = new ExperimentInfo();
-                    data.setExperimentId(Integer.parseInt(name[0]));
-                    data.setScenarioName(name[1]);
-                    expModel.addRow(data);
-                    dataModel.clear();
+                if (experiments != null) {
+                    for (File experiment : experiments) {
+                        String[] name = experiment.getName().split(" - ");
+                        ExperimentInfo data = new ExperimentInfo();
+                        data.setExperimentId(Integer.parseInt(name[0]));
+                        data.setScenarioName(name[1]);
+                        expModel.addRow(data);
+                        dataModel.clear();
+                    }
                 }
                 repaint();
-                Working.hide();
+                Working.setVisible(false);
             }
         });
-
-        Working.show();
+        
+        Working.setVisible(true);
         updateExpThread.start();
 
     }
@@ -234,25 +233,27 @@ public class OfflineTables extends JSplitPane {
                 File[] files = downloadFolder.listFiles();
 
                 clearDataTable();
-                
-                if(files != null)
-                for (File file : files) {
-                    DataFileInfo info = new DataFileInfo();
-                    info.setFilename(file.getName());
-                    info.setLength(file.length());
-                    info.setScenarioName(folder);
 
-                    dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY,
-                            downloadFolder.getAbsolutePath());
+                if (files != null) {
+                    for (File file : files) {
+                        DataFileInfo info = new DataFileInfo();
+                        info.setFilename(file.getName());
+                        info.setLength(file.length());
+                        info.setScenarioName(folder);
+
+                        dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY,
+                                downloadFolder.getAbsolutePath());
+                    }
                 }
 
                 repaint();
-                Working.hide();
+                Working.setVisible(false);
             }
         });
 
-        Working.show();
         updateDataThread.start();
+        if(!controller.isOnlineTab())
+            Working.setVisible(true);
     }
 
     /**

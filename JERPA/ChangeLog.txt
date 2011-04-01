@@ -1,6 +1,11 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (4/1/2011) Petr Miko
+    # 190
+	CHANGED: Fixed "working" bug, when working window was not showing properly.
+	CHANGED: few minor changes (buttons visibility bug solved, update methods rewrite in order to be at least a bit more clearer)
+
   * (3/30/2011) Petr Miko
      # 189
        CHANGED: FileDownload now runnable and is used by executorservice => paralell download applied only on same number of files as CPU has cores.

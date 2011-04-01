@@ -114,29 +114,35 @@ public class Controller {
     }
 
     /**
-     * Update method for EDEDB. Controles mainly connection to EEG/ERP Database.
+     * Actions performed only at users log in. (updating experiment table in OnlineTables)
      */
-    public void update() {
-        Working.show();
+    public void userLoggedIn() {
 
-        parent.updateMenuItemVisibility();
-        loginInfo.updateLoginInfo();
-        toolbar.updateButtonsVisibility();
         onlineTables.updateExpTable();
 
-        Working.hide();
-        repaintAll();
+        update();
+    }
+
+    /**
+     * Actions performed if file was deleted/downloaded.
+     * (updating file information in online and offline tables)
+     */
+    public void fileChange() {
+
+        onlineTables.checkLocalCopies();
+        offlineTables.updateDataTable();
+
+        update();
     }
 
     /**
      * Repaint method for EDEDB. Updates tables content for changes with local file copies.
      */
-    public void repaintAll() {
+    public void update() {
 
-        if(!lock){
-            offlineTables.checkLocalCopies();
-            onlineTables.checkLocalCopies();
-        }
+        parent.updateMenuItemVisibility();
+        loginInfo.updateLoginInfo();
+        toolbar.updateButtonsVisibility();
 
         onlineTables.repaint();
         offlineTables.repaint();
@@ -175,7 +181,8 @@ public class Controller {
                         onlineTab = false;
                     }
 
-                    if(!lock){
+                    if (!lock) {
+                        parent.updateMenuItemVisibility();
                         toolbar.updateButtonsVisibility();
                     }
                 }
@@ -264,6 +271,11 @@ public class Controller {
      */
     public void setRights(Rights rights) {
         this.rights = rights;
+
+        if (session.isConnected()) {
+            onlineTables.updateExpTable();
+            update();
+        }
     }
 
     /**
@@ -297,7 +309,8 @@ public class Controller {
         for (DataRowModel selected : getSelectedFiles()) {
             selected.setSelected(false);
         }
-        repaintAll();
+
+        update();
     }
 
     /**
@@ -375,7 +388,6 @@ public class Controller {
         return firstRun;
     }
 
-
     /**
      * Method which finds out whether the files is already downloaded.
      * @param info DataFile
@@ -414,7 +426,8 @@ public class Controller {
                 lock = !active;
                 toolbar.setButtonsEnabled(active);
                 parent.setMenuItemEnabled(active);
-                repaintAll();
+
+                update();
             }
         });
     }
@@ -431,7 +444,7 @@ public class Controller {
      * Getter whether are EDEDB control elements locked (disabled).
      * @return true/false
      */
-    public boolean isLock(){
+    public boolean isLock() {
         return lock;
     }
 }

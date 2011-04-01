@@ -129,7 +129,7 @@ public class LoginDialog implements ILanguage {
                         public void run() {
                             try {
                                 session.userLogIn(tempUsername, tempPassword);
-                                controller.update();
+                                controller.userLoggedIn();
                                 dialog.setVisible(false);
                             } catch (WebServiceException ex) {
 

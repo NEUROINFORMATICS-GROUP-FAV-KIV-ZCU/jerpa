@@ -82,7 +82,8 @@ public class FileDownload implements Runnable, ILanguage {
 
             rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
             
-            controller.repaintAll();
+            controller.fileChange();
+            
         } catch (FileNotFoundException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
                     e.getMessage(),

@@ -30,31 +30,21 @@ public class Working {
     }
 
     /**
-     * Method setting visibility on true
+     * Method setting visibility according to input integer
      */
-    public synchronized static void show() {
+    public synchronized static void setVisible(boolean visibility) {
         if (working == null) {
             new Working();
         }
 
+        final boolean tmp = visibility;
+        
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                working.setVisible(true);
-            }
-        });
-    }
-
-    /**
-     * Method setting visibility on false
-     */
-    public synchronized static void hide() {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                working.setVisible(false);
+                working.setVisible(tmp);
+                working.repaint();
             }
         });
     }
