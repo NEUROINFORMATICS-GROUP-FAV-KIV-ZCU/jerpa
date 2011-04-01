@@ -26,13 +26,10 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    
     private Controller controller;
     private EDEDSession session;
-
     private String emptyText, emptyDesc;
     private String existenceTextPart1, existenceTextPart2, existenceDesc;
-
 
     /**
      * Constructor.
@@ -47,73 +44,72 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         initTexts();
-        
+
         this.controller = controller;
         this.session = session;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (session.isConnected()) {
-            try {
-                if (session.isServerAvailable()) {
-                    List<DataRowModel> filesToDownload = controller.getSelectedFiles();
 
-                    if (filesToDownload.isEmpty()) {
-                        JOptionPane.showMessageDialog(
-                            new JFrame(),
-                            emptyText,
-                            emptyDesc,
-                            JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    
-                    //bude stahovano paralelne tolik souboru, kolik je jader CPU
-                    ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        List<DataRowModel> filesToDownload = controller.getSelectedFiles();
 
-                    for (DataRowModel file : filesToDownload) {
+        if (filesToDownload.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    new JFrame(),
+                    emptyText,
+                    emptyDesc,
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
 
-                        if (controller.isAlreadyDownloaded(file.getFileInfo()) == DataRowModel.HAS_LOCAL_COPY) {
+        //bude stahovano paralelne tolik souboru, kolik je jader CPU
+        ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-                            int retValue = JOptionPane.showConfirmDialog(
-                                    null,
-                                    existenceTextPart1
-                                    + file.getFileInfo().getFilename()
-                                    + existenceTextPart2,
-                                    existenceDesc,
-                                    JOptionPane.YES_NO_OPTION);
+        for (DataRowModel file : filesToDownload) {
 
-                            if (retValue == JOptionPane.NO_OPTION) {
-                                file.setSelected(false);
-                                
-                                controller.update();
-                                continue;
-                            }
+            if (controller.isAlreadyDownloaded(file.getFileInfo()) == DataRowModel.HAS_LOCAL_COPY) {
 
-                        }
+                int retValue = JOptionPane.showConfirmDialog(
+                        null,
+                        existenceTextPart1
+                        + file.getFileInfo().getFilename()
+                        + existenceTextPart2,
+                        existenceDesc,
+                        JOptionPane.YES_NO_OPTION);
 
-                        FileDownload fileDownload = new FileDownload(controller, session, file);
-                        
-                        pool.submit(fileDownload);
-                        
-                        file.setSelected(false);
-                        controller.fileChange();
-                    }
+                if (retValue == JOptionPane.NO_OPTION) {
+                    file.setSelected(false);
 
+                    controller.update();
+                    continue;
                 }
-            } catch (ConnectException ex) {
-                JUIGLErrorInfoUtils.showErrorDialog(
-                                ex.getMessage(),
-                                ex.getLocalizedMessage(),
-                                ex);
-            } catch (WebServiceException ex) {
-                JUIGLErrorInfoUtils.showErrorDialog(
-                                ex.getMessage(),
-                                ex.getLocalizedMessage(),
-                                ex);
+
+            }
+            if (session.isConnected()) {
+                try {
+                    if (session.isServerAvailable()) {
+                        FileDownload fileDownload = new FileDownload(controller, session, file);
+
+                        pool.submit(fileDownload);
+
+                    }
+                } catch (ConnectException ex) {
+                    JUIGLErrorInfoUtils.showErrorDialog(
+                            ex.getMessage(),
+                            ex.getLocalizedMessage(),
+                            ex);
+                } catch (WebServiceException ex) {
+                    JUIGLErrorInfoUtils.showErrorDialog(
+                            ex.getMessage(),
+                            resource.getString("webserviceexception.ededb.text"),
+                            ex);
+                }
+                file.setSelected(false);
+                controller.fileChange();
             }
         }
     }
-    
+
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
@@ -141,7 +137,7 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
     /**
      * Update/init text method. Vital for localization.
      */
-    public void initTexts(){
+    public void initTexts() {
         emptyText = resource.getString("actiondownload.ededb.empty.text");
         emptyDesc = resource.getString("actiondownload.ededb.empty.desc");
 

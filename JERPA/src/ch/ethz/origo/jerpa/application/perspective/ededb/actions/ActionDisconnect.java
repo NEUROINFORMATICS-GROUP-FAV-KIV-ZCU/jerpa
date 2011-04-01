@@ -13,23 +13,19 @@ import java.awt.event.ActionEvent;
  */
 public class ActionDisconnect extends AbstractAction {
 
-    private EDEDSession session;
     private Controller controller;
 
     /**
      * Constructor.
      *
      * @param controller EDEDB Controller
-     * @param session EDEDClient.jar Session
      */
-    public ActionDisconnect(Controller controller, EDEDSession session) {
+    public ActionDisconnect(Controller controller) {
         this.controller = controller;
-        this.session = session;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        session.userLogout();
-        controller.update();
+        controller.setUserLoggedIn(false);
     }
 }

@@ -18,7 +18,6 @@ import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginInfo;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OfflineTables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OnlineTables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.awt.BorderLayout;
 import java.io.File;
@@ -104,8 +103,8 @@ public class Controller {
      */
     private void initActions() {
 
-        actionConnect = new ActionConnect(loginDialog);
-        actionDisconnect = new ActionDisconnect(this, session);
+        actionConnect = new ActionConnect(this);
+        actionDisconnect = new ActionDisconnect(this);
         actionDownloadSelected = new ActionDownloadSelected(this, session);
         actionDeleteSelected = new ActionDeleteSelected(this);
         actionChooseDownloadFolder = new ActionChooseDownloadPath(this);
@@ -114,11 +113,21 @@ public class Controller {
     }
 
     /**
-     * Actions performed only at users log in. (updating experiment table in OnlineTables)
+     * Actions performed at changing connection status.
+     * logged in - show login dialog
+     * logged out - closing connection, clearing online tables.
      */
-    public void userLoggedIn() {
+    public void setUserLoggedIn(boolean loggedIn) {
 
-        onlineTables.updateExpTable();
+        if (loggedIn) {
+            loginDialog.setVisible(true);
+            onlineTables.updateExpTable();
+        } else {
+            session.userLogout();
+            
+            onlineTables.clearDataTable();
+            onlineTables.clearExpTable();
+        }
 
         update();
     }

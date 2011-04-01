@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginDialog;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -12,14 +12,14 @@ import java.awt.event.ActionEvent;
  */
 public class ActionConnect extends AbstractAction {
 
-    private LoginDialog loginDialog;
+    private Controller controller;
 
-    public ActionConnect(LoginDialog loginDialog) {
-        this.loginDialog = loginDialog;
+    public ActionConnect(Controller controller) {
+        this.controller = controller;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        loginDialog.setVisible(true);
+        controller.setUserLoggedIn(true);
     }
 }

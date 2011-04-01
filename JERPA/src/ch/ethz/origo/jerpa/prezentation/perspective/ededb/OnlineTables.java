@@ -8,6 +8,7 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.Rights;
+import ch.ethz.origo.jerpa.ededclient.generated.SOAPException_Exception;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -194,6 +195,12 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                     try {
                         int expId = Integer.parseInt(expModel.getValueAt(row, ExpTableModel.ID_COLUMN).toString());
                         dataFileInfos = session.getService().getExperimentFiles(expId);
+                    } catch (SOAPException_Exception e) {
+                        
+                        JUIGLErrorInfoUtils.showErrorDialog(
+                                e.getMessage(),
+                                resource.getString("soapexception.ededb.text"),
+                                e);
                     } catch (Exception e) {
 
                         JUIGLErrorInfoUtils.showErrorDialog(
@@ -221,7 +228,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         Working.setVisible(true);
         updateDataThread.start();
     }
-    
+
     /**
      * Method updating file status within local machine
      */

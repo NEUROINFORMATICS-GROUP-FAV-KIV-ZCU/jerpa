@@ -1,6 +1,13 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+
+  * (4/1/2011) Petr Miko
+    # 191
+	CHANGED: EDEDClient: new webservice generated files, MTOM now set by getEndpoint.put method instead of properties hash map.
+	CHANGED: JERPALang: new translations and corrections in ededb section.
+	CHANGED: JERPA - EDEDB section: solved possible connection-error situations (server falls down during file transferm server is not available,...), new source code clearings. New JerpaLang.jar and EDEDClient.jar in lib folder.
+
   * (4/1/2011) Petr Miko
     # 190
 	CHANGED: Fixed "working" bug, when working window was not showing properly.

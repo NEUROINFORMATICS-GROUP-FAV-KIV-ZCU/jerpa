@@ -1,6 +1,7 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
+import ch.ethz.origo.jerpa.ededclient.generated.SOAPException_Exception;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -11,7 +12,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ResourceBundle;;
+import java.util.ResourceBundle;
+;import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.activation.DataHandler;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.xml.ws.WebServiceException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -22,6 +33,8 @@ import javax.swing.SwingUtilities;
  *
  * @author Petr Miko
  */
+
+
 public class FileDownload implements Runnable, ILanguage {
 
     private ResourceBundle resource;
@@ -65,7 +78,7 @@ public class FileDownload implements Runnable, ILanguage {
                         errorText,
                         errorDesc,
                         JOptionPane.ERROR_MESSAGE);
-                
+
                 return;
             }
         }
@@ -74,16 +87,31 @@ public class FileDownload implements Runnable, ILanguage {
         try {
             fstream = new FileOutputStream(new File(rowData.getLocation()
                     + File.separator + rowData.getFileInfo().getFilename()));
-            
-            DataHandler incommingFile = session.getService().downloadFile(rowData.getFileInfo().getFileId());
-            incommingFile.writeTo(fstream);
-            
+
+            DataHandler incommingFile;
+            try {
+                incommingFile = session.getService().downloadFile(rowData.getFileInfo().getFileId());
+                incommingFile.writeTo(fstream);
+            } catch (SOAPException_Exception ex) {
+                JUIGLErrorInfoUtils.showErrorDialog(
+                        ex.getMessage(),
+                        resource.getString("soapexception.ededb.text"),
+                        ex);
+                controller.setUserLoggedIn(false);
+            } catch (WebServiceException e){
+                JUIGLErrorInfoUtils.showErrorDialog(
+                        e.getMessage(),
+                        resource.getString("webserviceexception.ededb.text"),
+                        e);
+                controller.setUserLoggedIn(false);
+            }
+
             fstream.close();
 
             rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
-            
+
             controller.fileChange();
-            
+
         } catch (FileNotFoundException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
                     e.getMessage(),
@@ -94,15 +122,16 @@ public class FileDownload implements Runnable, ILanguage {
                     e.getMessage(),
                     e.getLocalizedMessage(),
                     e);
-        }finally{
-            if(fstream != null)
+        } finally {
+            if (fstream != null) {
                 try {
-                fstream.close();
-            } catch (IOException ex) {
-                JUIGLErrorInfoUtils.showErrorDialog(
-                    ex.getMessage(),
-                    ex.getLocalizedMessage(),
-                    ex);
+                    fstream.close();
+                } catch (IOException ex) {
+                    JUIGLErrorInfoUtils.showErrorDialog(
+                            ex.getMessage(),
+                            ex.getLocalizedMessage(),
+                            ex);
+                }
             }
         }
     }

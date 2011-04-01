@@ -129,7 +129,6 @@ public class LoginDialog implements ILanguage {
                         public void run() {
                             try {
                                 session.userLogIn(tempUsername, tempPassword);
-                                controller.userLoggedIn();
                                 dialog.setVisible(false);
                             } catch (WebServiceException ex) {
 
@@ -142,6 +141,11 @@ public class LoginDialog implements ILanguage {
                                     JUIGLErrorInfoUtils.showErrorDialog(
                                             connectionErrorDesc,
                                             connectionErrorText,
+                                            ex);
+                                } else{
+                                    JUIGLErrorInfoUtils.showErrorDialog(
+                                            ex.getMessage(),
+                                            ex.getLocalizedMessage(),
                                             ex);
                                 }
                             } catch (ConnectException ex) {
