@@ -2,6 +2,12 @@
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
 
+  * (4/2/2011) Petr Miko
+    # 192
+	CHANGED: corrected few bugs in EDEDB.
+	CHANGED: add JUnit.jar, build.xml edited in order to provide JUnit tests.
+	ADDED: test-src folder, ControllerTest.java test file.
+
   * (4/1/2011) Petr Miko
     # 191
 	CHANGED: EDEDClient: new webservice generated files, MTOM now set by getEndpoint.put method instead of properties hash map.

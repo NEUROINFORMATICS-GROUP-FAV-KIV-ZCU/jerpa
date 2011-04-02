@@ -160,27 +160,31 @@ public class OfflineTables extends JSplitPane {
      * Loading all usernames with local copies on machine.
      */
     public void updateUserTable() {
-        Thread updateUserThread = new Thread(new Runnable() {
+        if (controller.getDownloadPath() != null) {
 
-            public void run() {
-                File downloadFolder = new File(controller.getDownloadPath());
-                File[] experiments = downloadFolder.listFiles();
+            Thread updateUserThread = new Thread(new Runnable() {
 
-                clearUserTable();
+                public void run() {
 
-                if (experiments != null) {
-                    for (File experiment : experiments) {
-                        Object[] temp = {experiment.getName()};
+                    File downloadFolder = new File(controller.getDownloadPath());
+                    File[] experiments = downloadFolder.listFiles();
 
-                        userModel.addRow(temp);
-                        userModel.fireTableDataChanged();
+                    clearUserTable();
+
+                    if (experiments != null) {
+                        for (File experiment : experiments) {
+                            Object[] temp = {experiment.getName()};
+
+                            userModel.addRow(temp);
+                            userModel.fireTableDataChanged();
+                        }
                     }
+                    repaint();
                 }
-                repaint();
-            }
-        });
+            });
 
-        updateUserThread.start();
+            updateUserThread.start();
+        }
     }
 
     /**
@@ -212,7 +216,7 @@ public class OfflineTables extends JSplitPane {
                 Working.setVisible(false);
             }
         });
-        
+
         Working.setVisible(true);
         updateExpThread.start();
 
@@ -252,8 +256,9 @@ public class OfflineTables extends JSplitPane {
         });
 
         updateDataThread.start();
-        if(!controller.isOnlineTab())
+        if (!controller.isOnlineTab()) {
             Working.setVisible(true);
+        }
     }
 
     /**

@@ -13,16 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ResourceBundle;
-;import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.activation.DataHandler;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.xml.ws.WebServiceException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;

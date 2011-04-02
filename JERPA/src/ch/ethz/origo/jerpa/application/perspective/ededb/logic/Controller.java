@@ -59,6 +59,7 @@ public class Controller {
     private boolean firstRun;
     private JXPanel mainPanel;
     private Properties properties;
+    private final String configFolder = "config";
     private final String configFile = "config/ededb.properties";
     private boolean onlineTab;
     private boolean lock;
@@ -74,6 +75,7 @@ public class Controller {
         this.session = session;
 
         properties = new Properties();
+        firstRun = true;
         initDownloadPath();
 
         mainPanel = new JXPanel();
@@ -188,6 +190,7 @@ public class Controller {
                         onlineTab = true;
                     } else {
                         onlineTab = false;
+                        offlineTables.updateUserTable();
                     }
 
                     if (!lock) {
@@ -333,11 +336,10 @@ public class Controller {
         try {
             inPropStream = new FileInputStream(configFile);
             properties.load(inPropStream);
-            downloadPath = properties.getProperty("ededb.downloadfolder");
-            firstRun = false;
+            setDownloadPath(properties.getProperty("ededb.downloadfolder"));
             inPropStream.close();
         } catch (IOException e) {
-            firstRun = true;
+            
         }
     }
 
@@ -351,6 +353,7 @@ public class Controller {
         FileOutputStream outPropStream = null;
         if (!config.exists()) {
             try {
+                (new File(configFolder)).mkdirs();
                 config.createNewFile();
             } catch (IOException ex) {
                 JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
@@ -363,6 +366,7 @@ public class Controller {
             properties.setProperty("ededb.downloadfolder", downloadPath);
             properties.store(outPropStream, "Author: Petr Miko");
             this.downloadPath = downloadPath;
+            firstRun = false;
             outPropStream.close();
         } catch (FileNotFoundException ex) {
             JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
@@ -394,7 +398,7 @@ public class Controller {
      * @return true/false
      */
     public boolean isFirstRun() {
-        return firstRun;
+        return !(new File(configFile)).exists();
     }
 
     /**
@@ -455,5 +459,13 @@ public class Controller {
      */
     public boolean isLock() {
         return lock;
+    }
+    
+    /**
+     * Getter of config file location.
+     * @return relative path to config file
+     */
+    public String getConfigFilePath(){
+        return configFile;
     }
 }

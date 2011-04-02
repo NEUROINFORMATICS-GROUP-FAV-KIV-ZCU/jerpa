@@ -2,104 +2,140 @@
 <project name="JERPA" default="makejar" basedir=".">
 
 	<!-- domovský adresář jaru -->
-	<property name="projecthome" value="." />
+    <property name="projecthome" value="." />
 
 	<!-- verze jaru -->
-	<property name="version" value="1.0.1-SNAPSHOT" />
+    <property name="version" value="1.0.1-SNAPSHOT" />
 
 	<!-- symbolický název jaru -->
-	<property name="jarname" value="${ant.project.name}" />
+    <property name="jarname" value="${ant.project.name}" />
 
 	<!-- autor -->
-	<property name="author" value="Vaclav Souhrada" />
+    <property name="author" value="Vaclav Souhrada" />
 
-	<property name="src" location="${projecthome}/src" />
-	<property name="build" location="${projecthome}/bin" />
-	<property name="dist" location="${projecthome}/dist" />
-	<property name="config" location="${projecthome}/config" />
-	<property name="lib" location="${projecthome}/lib" />
-	<property name="plugins" location="${projecthome}/plugins" />
-	<property name="dir.javadoc" location="${projecthome}/docs/javadoc" />
+    <property name="src" location="${projecthome}/src" />
+    <property name="build" location="${projecthome}/bin" />
+    <property name="dist" location="${projecthome}/dist" />
+    <property name="config" location="${projecthome}/config" />
+    <property name="lib" location="${projecthome}/lib" />
+    <property name="plugins" location="${projecthome}/plugins" />
+    <property name="dir.javadoc" location="${projecthome}/docs/javadoc" />
+    <property name="dir.test-src" location="${projecthome}/test-src" />
+    <property name="dir.test-bin" location="${projecthome}/test-bin" />
 
-	<property name="runloc" location="${dist}" />
+    <property name="runloc" location="${dist}" />
 
-	<property name="buildfilename" value="${jarname}-${version}.jar" />
+    <property name="buildfilename" value="${jarname}-${version}.jar" />
 
-	<path id="bnd.classpath">
-		<pathelement location="${dist}/${buildfilename}" />
-	</path>
+    <path id="bnd.classpath">
+        <pathelement location="${dist}/${buildfilename}" />
+    </path>
 
-	<path id="compile.class.path">
-		<fileset dir=".">
-			<include name="lib/**/*.jar" />
-		</fileset>
-	</path>
+    <path id="compile.class.path">
+        <fileset dir=".">
+            <include name="lib/**/*.jar" />
+        </fileset>
+    </path>
+    
+    <path id="test.class.path">
+        <pathelement location="${dir.test-bin}" />
+        <path refid="compile.class.path" />
+    </path>
+      
+    <target name="init">
+        <mkdir dir="${build}" />
+        <mkdir dir="${dist}" />
+        <mkdir dir="${dir.test-bin}" />
+    </target>
 
-	<target name="init">
-		<mkdir dir="${build}" />
-		<mkdir dir="${dist}" />
-	</target>
+    <manifestclasspath property="lib.list" jarfile="${dist}/${buildfilename}">
+        <classpath refid="compile.class.path" />
+    </manifestclasspath>
 
-	<manifestclasspath property="lib.list" jarfile="${dist}/${buildfilename}">
-		<classpath refid="compile.class.path" />
-	</manifestclasspath>
+    <target name="compile" depends="init">
+        <javac srcdir="${src}" destdir="${build}" classpathref="compile.class.path" debug="on">
+            <compilerarg value="-Xlint:none" />
+        </javac>
+    </target>
 
-	<target name="compile" depends="init">
-		<javac srcdir="${src}" destdir="${build}" classpathref="compile.class.path" debug="on">
-			<compilerarg value="-Xlint:none" />
-		</javac>
-	</target>
-
-	<target name="copy_img" depends="compile">
-		<copy todir="${build}/ch/ethz/origo/jerpa/data/images/">
-			<fileset dir="${src}/ch/ethz/origo/jerpa/data/images/" />
-		</copy>
-	</target>
+    <target name="copy_img" depends="compile">
+        <copy todir="${build}/ch/ethz/origo/jerpa/data/images/">
+            <fileset dir="${src}/ch/ethz/origo/jerpa/data/images/" />
+        </copy>
+    </target>
 
 
-	<target name="makejar" description="generate the distribution" depends="copy_img">
-		<mkdir dir="${dist}" />
-		<jar jarfile="${dist}/${buildfilename}" basedir="${build}">
-			<manifest>
-				<attribute name="Main-Class" value="ch.ethz.origo.jerpa.application.Main" />
-				<attribute name="Class-Path" value="${lib.list}" />
-			</manifest>
-		</jar>
-		<copy todir="${dist}/config">
-			<fileset dir="${config}/" />
-		</copy>
-		<copy todir="${dist}/plugins">
-			<fileset dir="${plugins}/" />
-		</copy>
-	</target>
+    <target name="makejar" description="generate the distribution" depends="copy_img">
+        <mkdir dir="${dist}" />
+        <jar jarfile="${dist}/${buildfilename}" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="ch.ethz.origo.jerpa.application.Main" />
+                <attribute name="Class-Path" value="${lib.list}" />
+            </manifest>
+        </jar>
+        <copy todir="${dist}/config">
+            <fileset dir="${config}/" />
+        </copy>
+        <copy todir="${dist}/plugins">
+            <fileset dir="${plugins}/" />
+        </copy>
+    </target>
 
 	<!-- automatický úklid po kompilaci a vytvoření bundelu-->
-	<target name="autoclean">
-		<delete dir="${build}" />
-		<delete dir="${dist}" />
-	</target>
+    <target name="autoclean">
+        <delete dir="${build}" />
+        <delete dir="${dist}" />
+        <delete dir="${dir.test-bin}" />
+    </target>
 
 	<!-- ručně prováděný úklid -->
-	<target name="clean">
-		<antcall target="autoclean" />
-		<delete dir="${dist}" />
-	</target>
+    <target name="clean">
+        <antcall target="autoclean" />
+        <delete dir="${dist}" />
+    </target>
 
-	<target name="run">
-		<echo message="Starting.." />
-		<java jar="${runloc}/${buildfilename}" fork="true" dir="${projecthome}">
-		</java>
-		<echo message="Shutting down..." />
-	</target>
+    <target name="run">
+        <echo message="Starting.." />
+        <java jar="${runloc}/${buildfilename}" fork="true" dir="${projecthome}">
+        </java>
+        <echo message="Shutting down..." />
+    </target>
 
-	<target name="javadoc">
-		<javadoc excludepackagenames="ch.ethz.origo.jerpa.test" access="public" destdir="${dir.javadoc}" author="true" version="true" use="true" windowtitle="${jarname}-${version}" doctitle="${jarname}-${version} Javadoc">
+    <target name="javadoc">
+        <javadoc excludepackagenames="ch.ethz.origo.jerpa.test" access="public" destdir="${dir.javadoc}" author="true" version="true" use="true" windowtitle="${jarname}-${version}" doctitle="${jarname}-${version} Javadoc">
 
-			<fileset dir="${src}" defaultexcludes="yes">
-				<include name="**/*.java" />
-				<exclude name="ch/ethz/origo/jerpa/test/**/*.java" />
-			</fileset>
-		</javadoc>
-	</target>
+            <fileset dir="${src}" defaultexcludes="yes">
+                <include name="**/*.java" />
+                <exclude name="ch/ethz/origo/jerpa/test/**/*.java" />
+            </fileset>
+        </javadoc>
+    </target>
+    
+    <target name="compile-test" depends="init">
+        <javac srcdir="${dir.test-src}:${src}" destdir="${dir.test-bin}"  classpathref="compile.class.path" debug="on">
+            <compilerarg value="-Xlint:none" />
+        </javac>
+    </target>
+    
+    <target name="clean-test">
+        <delete>
+            <fileset dir="${dir.test-bin}" includes="**/*.class" />
+            <fileset dir="${src}" includes="**/*.class" />
+        </delete>
+    </target>
+
+    <target name="test" depends="compile-test">
+        <!--<junit haltonfailure="true" printsummary="true">-->
+        <junit showoutput="true"
+       failureproperty="tests.failed"
+       errorproperty="tests.failed">
+            <classpath refid="test.class.path" />
+
+            <formatter type="brief" usefile="false" />
+            <batchtest>
+                <fileset dir="${dir.test-bin}" includes="**/*Test.class" />
+            </batchtest>
+        </junit>
+    </target>
 
 </project>
