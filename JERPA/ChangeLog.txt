@@ -3,6 +3,11 @@
 *********************************************************************************************
 
   * (4/2/2011) Petr Miko
+    # 193
+	CHANGED: EDEDB Controller.java is EDEDBController.java now (so name should be more clear).
+	ADDED: ControllerTest.java file, which should be in previous commit (my fault).
+
+  * (4/2/2011) Petr Miko
     # 192
 	CHANGED: corrected few bugs in EDEDB.
 	CHANGED: add JUnit.jar, build.xml edited in order to provide JUnit tests.

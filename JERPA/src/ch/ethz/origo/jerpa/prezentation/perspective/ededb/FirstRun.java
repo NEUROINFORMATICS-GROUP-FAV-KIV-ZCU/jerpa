@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -27,7 +27,7 @@ public class FirstRun extends JXPanel implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    private Controller controller;
+    private EDEDBController controller;
 
     private JButton choose;
     private JTextArea text;
@@ -37,7 +37,7 @@ public class FirstRun extends JXPanel implements ILanguage {
      * Contructor creating whole FirstRun JXPanel with all its elements.
      * @param controller EDEDBController
      */
-    public FirstRun(final Controller controller) {
+    public FirstRun(final EDEDBController controller) {
         super();
 
         LanguageObservable.getInstance().attach(this);

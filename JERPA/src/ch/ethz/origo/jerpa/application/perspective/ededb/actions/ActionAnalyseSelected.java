@@ -1,7 +1,7 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
 import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
 import ch.ethz.origo.jerpa.prezentation.perspective.SignalPerspective;
@@ -35,7 +35,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
     private String downloadingText, downloadingDesc;
     private String notSupportedText, notSupportedDesc;
     private String doneText, doneDesc;
-    private Controller controller;
+    private EDEDBController controller;
     private final String[] extensions = {
         Const.EDF_FILE_EXTENSION,
         Const.EDF_FILE_EXTENSION2,
@@ -43,7 +43,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         Const.KIV_FILE_EXTENSION,
         Const.VHDR_EXTENSION};
 
-    public ActionAnalyseSelected(Controller controller) {
+    public ActionAnalyseSelected(EDEDBController controller) {
         this.controller = controller;
 
         LanguageObservable.getInstance().attach(this);

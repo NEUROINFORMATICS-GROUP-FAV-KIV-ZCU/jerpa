@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -24,12 +24,12 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    private Controller controller;
+    private EDEDBController controller;
     private String warningTextPart1, warningTextPart2, warningDesc;
     private String downloadingText, downloadingDesc;
     private String errorText, errorDesc;
 
-    public ActionDeleteSelected(Controller controller) {
+    public ActionDeleteSelected(EDEDBController controller) {
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 

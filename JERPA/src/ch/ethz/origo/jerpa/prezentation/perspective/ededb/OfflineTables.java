@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
@@ -28,7 +28,7 @@ public class OfflineTables extends JSplitPane {
     private UserTableModel userModel;
     private ExpTableModel expModel;
     private DataTableModel dataModel;
-    private Controller controller;
+    private EDEDBController controller;
     private String username;
     private String folder;
 
@@ -36,7 +36,7 @@ public class OfflineTables extends JSplitPane {
      * Constructor method creating JSplitPane with tables.
      * @param controller
      */
-    public OfflineTables(Controller controller) {
+    public OfflineTables(EDEDBController controller) {
         super();
 
         this.controller = controller;

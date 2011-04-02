@@ -2,7 +2,7 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.FileDownload;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -26,7 +26,7 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    private Controller controller;
+    private EDEDBController controller;
     private EDEDSession session;
     private String emptyText, emptyDesc;
     private String existenceTextPart1, existenceTextPart2, existenceDesc;
@@ -34,10 +34,10 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
     /**
      * Constructor.
      *
-     * @param controller EDEDB Controller
+     * @param controller EDEDB EDEDBController
      * @param session EDEDClient.jar Session
      */
-    public ActionDownloadSelected(Controller controller, EDEDSession session) {
+    public ActionDownloadSelected(EDEDBController controller, EDEDSession session) {
         super();
 
         LanguageObservable.getInstance().attach(this);

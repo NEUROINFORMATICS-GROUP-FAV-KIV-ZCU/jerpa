@@ -38,7 +38,7 @@ import org.jdesktop.swingx.JXPanel;
  *
  * @author Petr Miko
  */
-public class Controller {
+public class EDEDBController {
 
     private EDEDBPerspective parent;
     private EDEDSession session;
@@ -70,7 +70,7 @@ public class Controller {
      * @param parent EDEDBPerspective
      * @param session EDEDClient.jar session
      */
-    public Controller(EDEDBPerspective parent, EDEDSession session) {
+    public EDEDBController(EDEDBPerspective parent, EDEDSession session) {
         this.parent = parent;
         this.session = session;
 

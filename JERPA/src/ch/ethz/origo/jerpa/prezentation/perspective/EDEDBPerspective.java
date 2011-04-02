@@ -2,7 +2,7 @@ package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
@@ -24,7 +24,7 @@ public class EDEDBPerspective extends Perspective {
     private JUIGLEMenuItem ededbMenu;
     private JUIGLEMenuItem ededbMenu2;
     private EDEDSession session;
-    private Controller controller;
+    private EDEDBController controller;
     private JUIGLEMenuItem connect;
     private JUIGLEMenuItem disconnect;
     private JUIGLEMenuItem downloadFile;
@@ -37,7 +37,7 @@ public class EDEDBPerspective extends Perspective {
 
         resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB";
         session = new EDEDSession();
-        controller = new Controller(this, session);
+        controller = new EDEDBController(this, session);
 
     }
 

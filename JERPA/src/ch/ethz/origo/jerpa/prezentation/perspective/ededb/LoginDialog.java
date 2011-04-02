@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -29,7 +29,7 @@ public class LoginDialog implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
-    private Controller controller;
+    private EDEDBController controller;
     private EDEDSession session;
     private JFormattedTextField usernameField;
     private JPasswordField passwordField;
@@ -50,10 +50,10 @@ public class LoginDialog implements ILanguage {
     /**
      * Constructor.
      *
-     * @param controller EDEDB Controller
+     * @param controller EDEDB EDEDBController
      * @param session EDEDSession from EDEDClient.jar
      */
-    public LoginDialog(Controller controller, EDEDSession session) {
+    public LoginDialog(EDEDBController controller, EDEDSession session) {
 
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");

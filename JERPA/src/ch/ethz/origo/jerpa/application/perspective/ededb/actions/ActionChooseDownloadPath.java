@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Controller;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,14 +13,14 @@ import java.io.*;
  */
 public class ActionChooseDownloadPath extends AbstractAction {
 
-    private Controller controller;
+    private EDEDBController controller;
 
     /**
      * Constructor.
      *
-     * @param controller EDEDB Controller
+     * @param controller EDEDB EDEDBController
      */
-    public ActionChooseDownloadPath(Controller controller) {
+    public ActionChooseDownloadPath(EDEDBController controller) {
         this.controller = controller;
     }
 

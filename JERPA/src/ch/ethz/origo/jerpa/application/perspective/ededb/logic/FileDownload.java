@@ -31,18 +31,18 @@ public class FileDownload implements Runnable, ILanguage {
     private ResourceBundle resource;
     private String resourceBundlePath;
     private DataRowModel rowData;
-    private Controller controller;
+    private EDEDBController controller;
     private EDEDSession session;
     private String errorText, errorDesc;
 
     /**
      * Constructor. Sets up which file will be downloaded by saving DataRowModel object.
      *
-     * @param controller EDEDB Controller
+     * @param controller EDEDB EDEDBController
      * @param session EDEDClient.jar Session
      * @param rowData Information about file, which selected to download
      */
-    public FileDownload(Controller controller, EDEDSession session, DataRowModel rowData) {
+    public FileDownload(EDEDBController controller, EDEDSession session, DataRowModel rowData) {
         super();
 
         LanguageObservable.getInstance().attach(this);
