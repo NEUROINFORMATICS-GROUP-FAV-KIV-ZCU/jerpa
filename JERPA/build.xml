@@ -125,10 +125,12 @@
     </target>
 
     <target name="test" depends="compile-test">
-        <!--<junit haltonfailure="true" printsummary="true">-->
-        <junit showoutput="true"
+        <junit showoutput="true" fork="true"
        failureproperty="tests.failed"
-       errorproperty="tests.failed">
+       errorproperty="tests.failed"
+       printsummary="true"
+       haltonfailure="true"
+       dir="${dir.test-bin}">
             <classpath refid="test.class.path" />
 
             <formatter type="brief" usefile="false" />

@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
+import org.junit.Ignore;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import java.io.File;
@@ -19,6 +20,9 @@ public class EDEDBControllerTest {
     private EDEDSession session;
     private EDEDBController EDEDBController;
 
+    /**
+     * Test constructor, initializing needed variables.
+     */
     public EDEDBControllerTest() {
 
         System.out.println("* EDEDB Test - EDEDBController - class setup hit");
@@ -29,6 +33,9 @@ public class EDEDBControllerTest {
 
     }
 
+    /**
+     * Test of getter/setter of rights handling.
+     */
     @Test
     public void checkRights() {
         System.out.println("* EDEDB Test - EDEDBController - Rights check");
@@ -36,6 +43,9 @@ public class EDEDBControllerTest {
         assertTrue(EDEDBController.getRights() == Rights.SUBJECT);
     }
 
+    /**
+     * Test whether EDEDBController creates actions properly and doesn't return null.
+     */
     @Test
     public void checkActions() {
         System.out.println("* EDEDB Test - EDEDBController - Actions hit");
@@ -50,6 +60,9 @@ public class EDEDBControllerTest {
                 && EDEDBController.getActionOpenDownloadPath() != null);
     }
 
+    /**
+     * Test of proper recognition of first start.
+     */
     @Test
     public void checkFirstRun(){
         System.out.println("* EDEDB Test - EDEDBController - Check first run hit");
@@ -68,6 +81,9 @@ public class EDEDBControllerTest {
         assertFalse(EDEDBController.isFirstRun());
     }
     
+    /**
+     * Test of getter/setter download path.
+     */
     @Test
     public void checkDownloadPath() {
         System.out.println("* EDEDB Test - EDEDBController - Download path change hit");
@@ -82,6 +98,9 @@ public class EDEDBControllerTest {
         EDEDBController.setDownloadPath(path);
     }
     
+    /**
+     * Creating of nonsense file and checking whether it has a local copy.
+     */
     @Test
     public void checkFilePresence(){
         System.out.println("* EDEDB Test - EDEDBController - Checking file presence hit");

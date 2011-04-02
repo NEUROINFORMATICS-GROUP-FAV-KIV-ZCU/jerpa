@@ -1,6 +1,11 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (4/2/2011) Petr Miko
+    # 194
+     
+  CHANGED: edition in build.xml (in case of testing, there was severe bug with run classpath - now within test-bin folder).
+  CHANGED: EDEDBControllerTest.java has comments now.  
 
   * (4/2/2011) Petr Miko
     # 193
