@@ -129,18 +129,23 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
                     final SignalPerspective persp = signalPersp;
                     Thread openFile = new Thread(new Runnable() {
 
+                        @Override
                         public void run() {
-                            persp.openFile(file);
+                            boolean opened = persp.openFile(file);
 
                             controller.setElementsActive(true);
 
                             controller.unselectAllFiles();
                             Working.setVisible(false);
+                            
+                            if(opened){
+                            
                             JOptionPane.showMessageDialog(
                                     new JFrame(),
                                     doneText,
                                     doneDesc,
                                     JOptionPane.INFORMATION_MESSAGE);
+                            }
                         }
                     });
                     controller.setElementsActive(false);
@@ -201,19 +206,23 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         return exts;
     }
 
+    @Override
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
     }
 
+    @Override
     public String getResourceBundlePath() {
         return resourceBundlePath;
     }
 
+    @Override
     public void setResourceBundleKey(String string) {
         throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
+    @Override
     public void updateText() throws JUIGLELangException {
         SwingUtilities.invokeLater(new Runnable() {
 

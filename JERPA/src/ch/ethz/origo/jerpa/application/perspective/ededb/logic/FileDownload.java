@@ -34,7 +34,7 @@ public class FileDownload implements Runnable, ILanguage {
     private EDEDBController controller;
     private EDEDSession session;
     private String errorText, errorDesc;
-
+    
     /**
      * Constructor. Sets up which file will be downloaded by saving DataRowModel object.
      *

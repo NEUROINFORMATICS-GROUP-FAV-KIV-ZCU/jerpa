@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
@@ -16,20 +17,18 @@ import static org.junit.Assert.*;
  */
 public class EDEDBControllerTest {
 
-    private EDEDBPerspective perspective;
-    private EDEDSession session;
-    private EDEDBController EDEDBController;
+    private static EDEDBPerspective perspective;
+    private static EDEDSession session;
+    private static EDEDBController EDEDBController;
 
-    /**
-     * Test constructor, initializing needed variables.
-     */
-    public EDEDBControllerTest() {
-
-        System.out.println("* EDEDB Test - EDEDBController - class setup hit");
+    @BeforeClass
+    public static void setupClass() throws Exception {
 
         perspective = new EDEDBPerspective();
         session = new EDEDSession();
         EDEDBController = new EDEDBController(perspective, session);
+        
+        System.out.println("* EDEDB - EDEDBController test");
 
     }
 
@@ -38,9 +37,9 @@ public class EDEDBControllerTest {
      */
     @Test
     public void checkRights() {
-        System.out.println("* EDEDB Test - EDEDBController - Rights check");
         EDEDBController.setRights(Rights.SUBJECT);
         assertTrue(EDEDBController.getRights() == Rights.SUBJECT);
+        System.out.println("- Rights checked");
     }
 
     /**
@@ -48,8 +47,6 @@ public class EDEDBControllerTest {
      */
     @Test
     public void checkActions() {
-        System.out.println("* EDEDB Test - EDEDBController - Actions hit");
-
         assertTrue(
                 EDEDBController.getActionAnalyseSelected() != null
                 && EDEDBController.getActionChooseDownloadFolder() != null
@@ -58,6 +55,7 @@ public class EDEDBControllerTest {
                 && EDEDBController.getActionDisconnect() != null
                 && EDEDBController.getActionDownloadSelected() != null
                 && EDEDBController.getActionOpenDownloadPath() != null);
+        System.out.println("- Actions checked");
     }
 
     /**
@@ -65,7 +63,7 @@ public class EDEDBControllerTest {
      */
     @Test
     public void checkFirstRun(){
-        System.out.println("* EDEDB Test - EDEDBController - Check first run hit");
+        
         String path = "pokus";
         File configFile = new File(EDEDBController.getConfigFilePath());
         
@@ -79,6 +77,8 @@ public class EDEDBControllerTest {
         assertTrue(EDEDBController.isFirstRun());
         EDEDBController.setDownloadPath(path);
         assertFalse(EDEDBController.isFirstRun());
+        
+        System.out.println("- First run checked");
     }
     
     /**
@@ -86,8 +86,6 @@ public class EDEDBControllerTest {
      */
     @Test
     public void checkDownloadPath() {
-        System.out.println("* EDEDB Test - EDEDBController - Download path change hit");
-
         String path = "pokus";
         if ((EDEDBController.getDownloadPath()) != null) {
             path = EDEDBController.getDownloadPath();
@@ -96,6 +94,8 @@ public class EDEDBControllerTest {
         EDEDBController.setDownloadPath("pokus");
         assertTrue(EDEDBController.getDownloadPath().equals("pokus"));
         EDEDBController.setDownloadPath(path);
+        
+        System.out.println("- Download path change checked");
     }
     
     /**
@@ -103,7 +103,7 @@ public class EDEDBControllerTest {
      */
     @Test
     public void checkFilePresence(){
-        System.out.println("* EDEDB Test - EDEDBController - Checking file presence hit");
+        
         DataFileInfo tmp = new DataFileInfo();
         tmp.setExperimentId(Integer.MAX_VALUE);
         tmp.setFilename("'.[.[");
@@ -113,5 +113,7 @@ public class EDEDBControllerTest {
         tmp.setScenarioName("Knock knock, who's there?");
         
         assertTrue(DataRowModel.NO_LOCAL_COPY == EDEDBController.isAlreadyDownloaded(tmp));
+        
+        System.out.println("- File presence checked");
     }    
 }

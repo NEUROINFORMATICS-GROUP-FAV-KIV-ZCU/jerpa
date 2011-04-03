@@ -91,9 +91,9 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
                     return resource.getString("table.ededb.datatable.state.no");
                 } else if (data.get(rowIndex).getDownloaded() == DataRowModel.HAS_LOCAL_COPY) {
                     return resource.getString("table.ededb.datatable.state.yes");
-                } else if (data.get(rowIndex).getDownloaded() == DataRowModel.DOWNLOADING){
+                } else if (data.get(rowIndex).getDownloaded() == DataRowModel.DOWNLOADING) {
                     return resource.getString("table.ededb.datatable.state.downloading");
-                }else{
+                } else {
                     return resource.getString("table.ededb.datatable.state.error");
                 }
             default:
@@ -104,9 +104,18 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     @Override
     public void setValueAt(Object object, int rowIndex, int columnIndex) {
         if (columnIndex == 0) {
-            data.get(rowIndex).setSelected((Boolean) object);
+            try{
+                boolean tmp = (Boolean) object;
+                data.get(rowIndex).setSelected(tmp);
+            }catch(Exception e){
+                System.err.println("DataTableModel set value: " + e);
+            }
         } else if (columnIndex == getColumnCount() - 1) {
-            data.get(rowIndex).setDownloaded((Integer) object);
+            try{
+                data.get(rowIndex).setDownloaded((Integer) object);
+            }catch(Exception e){
+                System.err.println("DataTableModel set value: " + e);
+            }
         }
 
     }
@@ -117,7 +126,14 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     }
 
     public void addRow(DataFileInfo fileInfo, int downloaded, String location) {
-        data.add(new DataRowModel(fileInfo, downloaded, location));
+        if (fileInfo != null && location != null && (downloaded == DataRowModel.NO_LOCAL_COPY
+                || downloaded == DataRowModel.HAS_LOCAL_COPY
+                || downloaded == DataRowModel.DOWNLOADING
+                || downloaded == DataRowModel.ERROR)) {
+            data.add(new DataRowModel(fileInfo, downloaded, location));
+        }else{
+            System.err.println("Row was not added - invalid data format!");
+        }
         this.fireTableDataChanged();
     }
 

@@ -137,9 +137,7 @@ public class OfflineTables extends JSplitPane {
      * Method clearing user view table of all data.
      */
     public void clearUserTable() {
-        while (userModel.getRowCount() > 0) {
-            userModel.removeRow(0);
-        }
+        userModel.clear();
     }
 
     /**
@@ -173,9 +171,7 @@ public class OfflineTables extends JSplitPane {
 
                     if (experiments != null) {
                         for (File experiment : experiments) {
-                            Object[] temp = {experiment.getName()};
-
-                            userModel.addRow(temp);
+                            userModel.addRow(experiment.getName());
                             userModel.fireTableDataChanged();
                         }
                     }

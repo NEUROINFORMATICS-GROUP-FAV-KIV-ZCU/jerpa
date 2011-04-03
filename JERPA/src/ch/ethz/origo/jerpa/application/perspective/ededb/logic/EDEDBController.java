@@ -123,7 +123,8 @@ public class EDEDBController {
 
         if (loggedIn) {
             loginDialog.setVisible(true);
-            onlineTables.updateExpTable();
+            if(session.isConnected())
+                onlineTables.updateExpTable();
         } else {
             session.userLogout();
             

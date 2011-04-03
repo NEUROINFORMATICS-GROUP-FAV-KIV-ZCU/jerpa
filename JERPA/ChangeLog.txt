@@ -1,11 +1,19 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (4/3/2011) Petr Miko
+    # 195
+
+      CHANGED: "working" panel visibility bug solved in EDEDBController
+      CHANGED: table models of EDEDB were extendend + bug solving
+      CHANGED: a bit repaired file loading in case of wrong format (only in VDefLoader) + openFile is boolean now (returns state of opening)
+      ADDED:   new JUnit test files with comments for EDEDB, editing the existing ones. JUnit testing for EDEDB should be completed now.
+
   * (4/2/2011) Petr Miko
     # 194
      
-  CHANGED: edition in build.xml (in case of testing, there was severe bug with run classpath - now within test-bin folder).
-  CHANGED: EDEDBControllerTest.java has comments now.  
+      CHANGED: edition in build.xml (in case of testing, there was severe bug with run classpath - now within test-bin folder).
+      CHANGED: EDEDBControllerTest.java has comments now.  
 
   * (4/2/2011) Petr Miko
     # 193

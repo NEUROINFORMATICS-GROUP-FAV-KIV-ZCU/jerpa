@@ -68,7 +68,12 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
     }
 
     public void addRow(ExperimentInfo experiment) {
-        data.add(experiment);
+        if(experiment!= null && experiment.getScenarioName() != null){
+           data.add(experiment);
+        }else{
+            System.err.println("Row wasn't added - experiment or its name was null");
+        }
+        
         fireTableDataChanged();
     }
 

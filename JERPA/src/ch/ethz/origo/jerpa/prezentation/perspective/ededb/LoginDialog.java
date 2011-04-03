@@ -193,7 +193,7 @@ public class LoginDialog implements ILanguage {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                dialog.dispose();
+                dialog.setVisible(false);
             }
         });
 

@@ -780,7 +780,7 @@ public class SignalPerspective extends Perspective implements IObserver {
         return open;
     }
 
-    public void openFile(File file) {
+    public boolean openFile(File file) {
         try {
             sessionManager.loadFile(file);
             addOpenedFunctionsToMenu();
@@ -790,8 +790,10 @@ public class SignalPerspective extends Perspective implements IObserver {
                             ex.getMessage(),
                             ex.getLocalizedMessage(),
                             ex);
+            return false;
         }
 
+        return true;
     }
 
     public void createNewArtefactDialog() {

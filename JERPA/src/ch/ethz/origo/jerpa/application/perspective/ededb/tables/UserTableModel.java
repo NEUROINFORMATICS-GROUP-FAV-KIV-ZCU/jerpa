@@ -14,21 +14,20 @@ import javax.swing.table.DefaultTableModel;
  * @author Petr Miko
  */
 public class UserTableModel extends DefaultTableModel implements ILanguage {
-    
+
     private ResourceBundle resource;
     private String resourceBundlePath;
-    
     private LinkedList<String> columnNames;
-    
-    public UserTableModel(){
+
+    public UserTableModel() {
         super();
-        
+
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
-        
+
         initColumns();
     }
-    
+
     private void initColumns() {
         columnNames = new LinkedList<String>();
         columnNames.add("tables.ededb.offline.users");
@@ -38,7 +37,7 @@ public class UserTableModel extends DefaultTableModel implements ILanguage {
     public boolean isCellEditable(int row, int column) {
         return false;
     }
-    
+
     @Override
     public int getColumnCount() {
         return columnNames.size();
@@ -49,13 +48,32 @@ public class UserTableModel extends DefaultTableModel implements ILanguage {
         return resource.getString(columnNames.get(columnIndex));
     }
     
-    
+    @Override
+    public void addRow(Object[] object) {
+        if (object != null && object.length > 0) {
+            if (object[0] != null) {
+                addRow((String) object[0]);
+            }
+        }
+    }
+
+    public void addRow(String filename) {
+        super.addRow(new Object[]{filename});
+    }
+
+    @Override
+    public void setValueAt(Object object, int rowIndex, int columnIndex) {
+        if (object != null) {
+            super.setValueAt(object, rowIndex, columnIndex);
+        }
+    }
+
     @Override
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
     }
-    
+
     public String getResourceBundlePath() {
         return resourceBundlePath;
     }
@@ -74,4 +92,9 @@ public class UserTableModel extends DefaultTableModel implements ILanguage {
         });
     }
 
+    public void clear() {
+        while (this.getRowCount() > 0) {
+            this.removeRow(0);
+        }
+    }
 }
