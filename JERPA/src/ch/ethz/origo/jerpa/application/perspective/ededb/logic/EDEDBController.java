@@ -25,8 +25,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -63,6 +65,7 @@ public class EDEDBController {
     private final String configFile = "config/ededb.properties";
     private boolean onlineTab;
     private boolean lock;
+    private Set<Integer> downloadingFiles;
 
     /**
      * Constructor.
@@ -82,6 +85,8 @@ public class EDEDBController {
         mainPanel.setLayout(new BorderLayout());
 
         initClasses();
+
+        downloadingFiles = new HashSet<Integer>();
     }
 
     /**
@@ -123,11 +128,12 @@ public class EDEDBController {
 
         if (loggedIn) {
             loginDialog.setVisible(true);
-            if(session.isConnected())
+            if (session.isConnected()) {
                 onlineTables.updateExpTable();
+            }
         } else {
             session.userLogout();
-            
+
             onlineTables.clearDataTable();
             onlineTables.clearExpTable();
         }
@@ -340,7 +346,6 @@ public class EDEDBController {
             setDownloadPath(properties.getProperty("ededb.downloadfolder"));
             inPropStream.close();
         } catch (IOException e) {
-            
         }
     }
 
@@ -407,7 +412,7 @@ public class EDEDBController {
      * @param info DataFile
      * @return integer of DataRowModel (HAS_LOCAL/NO_LOCAL/ERROR)
      */
-    public int isAlreadyDownloaded(DataFileInfo info) {
+    public synchronized int isAlreadyDownloaded(DataFileInfo info) {
 
         String path = getDownloadPath() + File.separator
                 + session.getUsername() + File.separator
@@ -418,6 +423,10 @@ public class EDEDBController {
 
         if (!file.exists()) {
             return DataRowModel.NO_LOCAL_COPY;
+        }
+
+        if (isDownloading(info.getFileId())) {
+            return DataRowModel.DOWNLOADING;
         }
 
         if (file.length() != info.getLength()) {
@@ -461,12 +470,53 @@ public class EDEDBController {
     public boolean isLock() {
         return lock;
     }
-    
+
     /**
      * Getter of config file location.
      * @return relative path to config file
      */
-    public String getConfigFilePath(){
+    public String getConfigFilePath() {
         return configFile;
+    }
+
+    /**
+     * Adds file id to set of downloading files.
+     * @param fileId 
+     */
+    public synchronized void addDownloading(int fileId) {
+        downloadingFiles.add(fileId);
+        
+    }
+
+    /**
+     * Checks whether the files is currently downloading.
+     * @param fileId
+     * @return true/false
+     */
+    public synchronized boolean isDownloading(int fileId) {
+        if (downloadingFiles.contains(fileId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Removes file id from set of currently downloading files.
+     * @param fileId
+     * @return removal success true/false
+     */
+    public synchronized boolean removeDownloading(int fileId) {
+        boolean success = downloadingFiles.remove(fileId);
+        
+        for(DataRowModel row : onlineTables.getRows()){
+            if(row.getFileInfo().getFileId() == fileId){
+                row.setDownloaded(isAlreadyDownloaded(row.getFileInfo()));
+            }
+        }
+        
+        fileChange();
+
+        return success;
     }
 }

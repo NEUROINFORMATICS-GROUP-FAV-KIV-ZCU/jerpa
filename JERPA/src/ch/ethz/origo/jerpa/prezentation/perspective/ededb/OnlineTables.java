@@ -19,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import org.jdesktop.swingx.JXTable;
@@ -304,5 +305,13 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         errorConnectionText = resource.getString("tables.ededb.exp.connection.text");
         errorConnectionDesc = resource.getString("tables.ededb.exp.connection.desc");
         errorRangeDesc = resource.getString("tables.ededb.data.exception.desc");
+    }
+    
+    /**
+     * Method for returning row contents.
+     * @return rows of data table
+     */
+    public List<DataRowModel> getRows(){
+        return dataModel.getData();
     }
 }

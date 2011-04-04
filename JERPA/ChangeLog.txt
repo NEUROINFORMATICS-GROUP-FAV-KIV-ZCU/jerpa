@@ -1,6 +1,12 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  
+  * (4/4/2011) Petr Miko
+    # 196
+
+      CHANGED: In EDEDBController is now HashSet of currently downloading file ids. Logic edited in order to use it -> solves bug of case, when user switched owner/subject mode and downloading file began report itself as corrupted.
+
   * (4/3/2011) Petr Miko
     # 195
 

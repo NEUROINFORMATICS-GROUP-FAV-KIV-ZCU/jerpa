@@ -75,6 +75,8 @@ public class FileDownload implements Runnable, ILanguage {
         }
 
         rowData.setDownloaded(DataRowModel.DOWNLOADING);
+        controller.addDownloading(rowData.getFileInfo().getFileId());
+        
         try {
             fstream = new FileOutputStream(new File(rowData.getLocation()
                     + File.separator + rowData.getFileInfo().getFilename()));
@@ -99,9 +101,7 @@ public class FileDownload implements Runnable, ILanguage {
 
             fstream.close();
 
-            rowData.setDownloaded(DataRowModel.HAS_LOCAL_COPY);
-
-            controller.fileChange();
+            controller.removeDownloading(rowData.getFileInfo().getFileId());
 
         } catch (FileNotFoundException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
@@ -124,6 +124,8 @@ public class FileDownload implements Runnable, ILanguage {
                             ex);
                 }
             }
+            
+            controller.removeDownloading(rowData.getFileInfo().getFileId());
         }
     }
 
