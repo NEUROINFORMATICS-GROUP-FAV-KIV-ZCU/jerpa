@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 public class Working {
 
     private static JDialog working;
+    private static int counter;
 
     /**
      *  MEthod creating JDialog
@@ -21,6 +22,8 @@ public class Working {
 
         JProgressBar progress = new JProgressBar();
         progress.setIndeterminate(true);
+        
+        counter = 0;
         
         working.add(progress);
         working.setLocationRelativeTo(null);
@@ -36,14 +39,25 @@ public class Working {
         if (working == null) {
             new Working();
         }
-
+        
         final boolean tmp = visibility;
         
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                working.setVisible(tmp);
+                if(tmp){
+                    if(counter == 0){
+                        working.setVisible(true);
+                    }
+                    counter++;
+                }else{
+                    counter--;
+                    
+                    if(counter == 0){
+                        working.setVisible(false);
+                    }
+                }
                 working.repaint();
             }
         });

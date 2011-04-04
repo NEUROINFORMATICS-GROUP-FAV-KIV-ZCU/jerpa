@@ -102,6 +102,9 @@ public class FileDownload implements Runnable, ILanguage {
             fstream.close();
 
             controller.removeDownloading(rowData.getFileInfo().getFileId());
+            controller.fileChange();
+            
+            return;
 
         } catch (FileNotFoundException e) {
             JUIGLErrorInfoUtils.showErrorDialog(
@@ -126,6 +129,7 @@ public class FileDownload implements Runnable, ILanguage {
             }
             
             controller.removeDownloading(rowData.getFileInfo().getFileId());
+            controller.fileChange();
         }
     }
 

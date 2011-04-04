@@ -514,9 +514,15 @@ public class EDEDBController {
                 row.setDownloaded(isAlreadyDownloaded(row.getFileInfo()));
             }
         }
-        
-        fileChange();
 
         return success;
+    }
+    
+    /**
+     * Count of currently downloading files.
+     * @return size of downloading files set
+     */
+    public int getDownloadingSize(){
+        return downloadingFiles.size();
     }
 }

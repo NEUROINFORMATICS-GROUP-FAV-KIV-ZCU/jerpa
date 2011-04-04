@@ -19,14 +19,14 @@ public class EDEDBControllerTest {
 
     private static EDEDBPerspective perspective;
     private static EDEDSession session;
-    private static EDEDBController EDEDBController;
+    private static EDEDBController controller;
 
     @BeforeClass
     public static void setupClass() throws Exception {
 
         perspective = new EDEDBPerspective();
         session = new EDEDSession();
-        EDEDBController = new EDEDBController(perspective, session);
+        controller = new EDEDBController(perspective, session);
         
         System.out.println("* EDEDB - EDEDBController test");
 
@@ -37,8 +37,8 @@ public class EDEDBControllerTest {
      */
     @Test
     public void checkRights() {
-        EDEDBController.setRights(Rights.SUBJECT);
-        assertTrue(EDEDBController.getRights() == Rights.SUBJECT);
+        controller.setRights(Rights.SUBJECT);
+        assertTrue(controller.getRights() == Rights.SUBJECT);
         System.out.println("- Rights checked");
     }
 
@@ -48,13 +48,13 @@ public class EDEDBControllerTest {
     @Test
     public void checkActions() {
         assertTrue(
-                EDEDBController.getActionAnalyseSelected() != null
-                && EDEDBController.getActionChooseDownloadFolder() != null
-                && EDEDBController.getActionConnect() != null
-                && EDEDBController.getActionDeleteSelected() != null
-                && EDEDBController.getActionDisconnect() != null
-                && EDEDBController.getActionDownloadSelected() != null
-                && EDEDBController.getActionOpenDownloadPath() != null);
+                controller.getActionAnalyseSelected() != null
+                && controller.getActionChooseDownloadFolder() != null
+                && controller.getActionConnect() != null
+                && controller.getActionDeleteSelected() != null
+                && controller.getActionDisconnect() != null
+                && controller.getActionDownloadSelected() != null
+                && controller.getActionOpenDownloadPath() != null);
         System.out.println("- Actions checked");
     }
 
@@ -65,18 +65,18 @@ public class EDEDBControllerTest {
     public void checkFirstRun(){
         
         String path = "pokus";
-        File configFile = new File(EDEDBController.getConfigFilePath());
+        File configFile = new File(controller.getConfigFilePath());
         
         if(configFile.exists()){
-            if (EDEDBController.getDownloadPath() != null) {
-                path = EDEDBController.getDownloadPath();
+            if (controller.getDownloadPath() != null) {
+                path = controller.getDownloadPath();
             }
             configFile.delete();
         }
         
-        assertTrue(EDEDBController.isFirstRun());
-        EDEDBController.setDownloadPath(path);
-        assertFalse(EDEDBController.isFirstRun());
+        assertTrue(controller.isFirstRun());
+        controller.setDownloadPath(path);
+        assertFalse(controller.isFirstRun());
         
         System.out.println("- First run checked");
     }
@@ -87,13 +87,13 @@ public class EDEDBControllerTest {
     @Test
     public void checkDownloadPath() {
         String path = "pokus";
-        if ((EDEDBController.getDownloadPath()) != null) {
-            path = EDEDBController.getDownloadPath();
+        if ((controller.getDownloadPath()) != null) {
+            path = controller.getDownloadPath();
         }
 
-        EDEDBController.setDownloadPath("pokus");
-        assertTrue(EDEDBController.getDownloadPath().equals("pokus"));
-        EDEDBController.setDownloadPath(path);
+        controller.setDownloadPath("pokus");
+        assertTrue(controller.getDownloadPath().equals("pokus"));
+        controller.setDownloadPath(path);
         
         System.out.println("- Download path change checked");
     }
@@ -112,8 +112,39 @@ public class EDEDBControllerTest {
         tmp.setMimeType("mime/nonsense");
         tmp.setScenarioName("Knock knock, who's there?");
         
-        assertTrue(DataRowModel.NO_LOCAL_COPY == EDEDBController.isAlreadyDownloaded(tmp));
+        assertTrue(DataRowModel.NO_LOCAL_COPY == controller.isAlreadyDownloaded(tmp));
         
         System.out.println("- File presence checked");
     }    
+    
+    @Test
+    public void checkDownloading(){
+        
+        System.out.println("- Downloading count testing");
+        
+        controller.addDownloading(99);
+        
+        assertTrue(controller.isDownloading(99));
+        assertFalse(controller.isDownloading(666));
+        
+        System.out.println("-- existence of file id downloading");
+        
+        controller.addDownloading(99);
+        
+        assertEquals(1, controller.getDownloadingSize());
+        
+        System.out.println("-- no duplicities");
+        
+        controller.removeDownloading(666);
+        
+        assertEquals(1, controller.getDownloadingSize());
+        
+        controller.removeDownloading(99);
+        
+        assertEquals(0, controller.getDownloadingSize());
+        
+        System.out.println("-- removing from downloading set");
+        
+        System.out.println("- Downloading count checked");
+    }
 }

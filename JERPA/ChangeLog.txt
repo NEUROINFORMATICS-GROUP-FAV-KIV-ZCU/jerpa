@@ -3,6 +3,12 @@
 *********************************************************************************************
   
   * (4/4/2011) Petr Miko
+    # 197
+    
+      CHANGED: EDEDBControllerTest - added testing of downloading "counter" Set. Solved few bugs related to the downloading Set.
+      CHANGED: solved bug in Working.java - added counter in order to eliminated display errors.    
+  
+  * (4/4/2011) Petr Miko
     # 196
 
       CHANGED: In EDEDBController is now HashSet of currently downloading file ids. Logic edited in order to use it -> solves bug of case, when user switched owner/subject mode and downloading file began report itself as corrupted.
