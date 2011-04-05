@@ -50,9 +50,11 @@ public class Working {
                     if(counter == 0){
                         working.setVisible(true);
                     }
-                    counter++;
+                    if(counter < Integer.MAX_VALUE)
+                        counter++;
                 }else{
-                    counter--;
+                    if(counter > 0)
+                        counter--;
                     
                     if(counter == 0){
                         working.setVisible(false);

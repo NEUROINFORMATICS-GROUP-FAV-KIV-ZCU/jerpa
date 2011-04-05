@@ -243,6 +243,7 @@ public class OfflineTables extends JSplitPane {
 
                         dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY,
                                 downloadFolder.getAbsolutePath());
+                        dataModel.fireTableDataChanged();
                     }
                 }
 

@@ -485,7 +485,8 @@ public class EDEDBController {
      */
     public synchronized void addDownloading(int fileId) {
         downloadingFiles.add(fileId);
-        
+
+        fileChange();
     }
 
     /**
@@ -502,19 +503,28 @@ public class EDEDBController {
     }
 
     /**
+     * Checking whether there is any downloading currently.
+     * @return
+     */
+    public synchronized boolean isDownloading(){
+        return !downloadingFiles.isEmpty();
+    }
+
+    /**
      * Removes file id from set of currently downloading files.
      * @param fileId
      * @return removal success true/false
      */
     public synchronized boolean removeDownloading(int fileId) {
         boolean success = downloadingFiles.remove(fileId);
-        
+
         for(DataRowModel row : onlineTables.getRows()){
             if(row.getFileInfo().getFileId() == fileId){
                 row.setDownloaded(isAlreadyDownloaded(row.getFileInfo()));
             }
         }
 
+        fileChange();
         return success;
     }
     

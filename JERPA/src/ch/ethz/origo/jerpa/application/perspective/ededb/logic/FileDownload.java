@@ -74,7 +74,9 @@ public class FileDownload implements Runnable, ILanguage {
             }
         }
 
+        rowData.setSelected(false);
         rowData.setDownloaded(DataRowModel.DOWNLOADING);
+        
         controller.addDownloading(rowData.getFileInfo().getFileId());
         
         try {
@@ -102,7 +104,6 @@ public class FileDownload implements Runnable, ILanguage {
             fstream.close();
 
             controller.removeDownloading(rowData.getFileInfo().getFileId());
-            controller.fileChange();
             
             return;
 
@@ -129,7 +130,6 @@ public class FileDownload implements Runnable, ILanguage {
             }
             
             controller.removeDownloading(rowData.getFileInfo().getFileId());
-            controller.fileChange();
         }
     }
 

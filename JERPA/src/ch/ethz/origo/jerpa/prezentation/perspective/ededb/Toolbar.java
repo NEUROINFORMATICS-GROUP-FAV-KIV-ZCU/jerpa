@@ -171,6 +171,12 @@ public class Toolbar extends JXPanel implements ILanguage {
             ownerButton.setEnabled(false);
             subjectButton.setEnabled(false);
         }
+
+        if(!controller.isDownloading() && !controller.isLock()){
+            analyseFileButton.setEnabled(true);
+        }else{
+            analyseFileButton.setEnabled(false);
+        }
     }
 
     /**

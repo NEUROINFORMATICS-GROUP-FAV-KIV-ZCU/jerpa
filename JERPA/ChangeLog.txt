@@ -2,6 +2,14 @@
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
   
+  * (4/5/2011) Petr Miko
+    # 198
+    
+      CHANGED: during downloading in EDEDB, Analyse buttons are blocked (not exactly the best way, but loading file routine dos not recognize that the file is not closed)
+      CHANGED: in Vdefloader added throw ioexception in loading eeg binary / there was only print stacktrace, in case of missing eeg file jerpa froze.
+      CHANGED: Working.java - counter is now limited in range of <0: Integer.MAX) - solved some display issues)
+      CHANGED: solved table repaint issue when file was downloaded.  
+  
   * (4/4/2011) Petr Miko
     # 197
     

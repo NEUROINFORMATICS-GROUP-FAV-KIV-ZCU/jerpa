@@ -33,6 +33,8 @@ public class EDEDBPerspective extends Perspective {
     private JUIGLEMenuItem analyseFile;
     private JUIGLEMenuItem deleteFile;
 
+    private boolean menuInited = false;
+
     public EDEDBPerspective() {
 
         resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB";
@@ -63,6 +65,8 @@ public class EDEDBPerspective extends Perspective {
             menuTaskPane.setOpaque(false);
 
             menuTaskPane.add(initMenu());
+
+            menuInited = true;
         }
     }
 
@@ -147,7 +151,7 @@ public class EDEDBPerspective extends Perspective {
 
     public void updateMenuItemVisibility() {
 
-        if (!controller.isLock()) {
+        if (!controller.isLock() && menuInited) {
 
             connect.setVisible(!session.isConnected() && !controller.isFirstRun());
             disconnect.setVisible(session.isConnected() && !controller.isFirstRun());
@@ -156,6 +160,12 @@ public class EDEDBPerspective extends Perspective {
                     && controller.isOnlineTab());
             analyseFile.setEnabled(!controller.isFirstRun());
             deleteFile.setEnabled(!controller.isFirstRun());
+
+            if (controller.isDownloading()) {
+                analyseFile.setEnabled(false);
+            } else {
+                analyseFile.setEnabled(true);
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.util.concurrent.ExecutorService;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.net.ConnectException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -75,15 +76,16 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
                         + file.getFileInfo().getFilename()
                         + existenceTextPart2,
                         existenceDesc,
-                        JOptionPane.YES_NO_OPTION);
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
 
-                if (retValue == JOptionPane.NO_OPTION) {
+                if (retValue != JOptionPane.YES_OPTION) {
                     file.setSelected(false);
 
                     controller.update();
                     continue;
                 }
-
+               (new File(file.getFileInfo().getFilename())).delete();
             }
             if (session.isConnected()) {
                 try {
@@ -104,8 +106,6 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
                             resource.getString("webserviceexception.ededb.text"),
                             ex);
                 }
-                file.setSelected(false);
-                controller.fileChange();
             }
         }
     }

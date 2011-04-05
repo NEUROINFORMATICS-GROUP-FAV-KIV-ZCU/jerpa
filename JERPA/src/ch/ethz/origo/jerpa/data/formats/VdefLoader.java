@@ -38,6 +38,8 @@ import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.NioInputStream;
 import ch.ethz.origo.juigle.application.JUIGLEFileUtils;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 /**
  * T��da VdefLoader obsahuje v�echny metody pro parsov�n� vstupn�ch soubor� a
@@ -142,6 +144,7 @@ public class VdefLoader implements DataFormatLoader {
                             this.headerFile.getAbsolutePath().indexOf(".")));
                 }
             }
+
             this.eegFile = this.headerKeyNames.get("DataFile");
             if (this.eegFile.indexOf("$b") >= 0) {
                 this.eegFile = this.eegFile.replace("$b", this.headerFile.getAbsolutePath().substring(0,
@@ -186,6 +189,7 @@ public class VdefLoader implements DataFormatLoader {
                 fileMarker = new File(JUIGLEFileUtils.getSameAbsolutePathAsOtherFile(headerFile)
                         + this.markerFile);
             }
+
             FileReader fr = new FileReader(fileMarker);
             BufferedReader in = new BufferedReader(fr);
             String line = "";
@@ -236,11 +240,12 @@ public class VdefLoader implements DataFormatLoader {
     /**
      * Metoda na�te bin�rn� EEG soubor do pole bajt�.
      */
-    private void loadBinaryEEG() {
+    private void loadBinaryEEG() throws IOException {
         File fileEEG = new File(this.eegFile);
         if (!fileEEG.exists()) {
             fileEEG = new File(JUIGLEFileUtils.getSameAbsolutePathAsOtherFile(headerFile) + this.eegFile);
         }
+
         long length = fileEEG.length();
         byte[] bytess = new byte[(int) length];
         // InputStream input;
@@ -264,7 +269,7 @@ public class VdefLoader implements DataFormatLoader {
             }
             // input.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException("Error reading file " + fileEEG.getName() + " (does it exist?)");
         }
         this.data = bytess;
     }
