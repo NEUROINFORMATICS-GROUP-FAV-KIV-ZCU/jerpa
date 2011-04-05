@@ -221,7 +221,7 @@ public class OfflineTables extends JSplitPane {
     /**
      * Loading local data files' names.
      */
-    public void updateDataTable() {
+    public synchronized void updateDataTable() {
 
         Thread updateDataThread = new Thread(new Runnable() {
 
