@@ -13,6 +13,7 @@ import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -35,6 +36,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
     private String downloadingText, downloadingDesc;
     private String notSupportedText, notSupportedDesc;
     private String doneText, doneDesc;
+    private String emptyText, emptyDesc;
     private EDEDBController controller;
     private final String[] extensions = {
         Const.EDF_FILE_EXTENSION,
@@ -50,12 +52,23 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         initTexts();
+        putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_A));
+        
     }
 
     public void actionPerformed(ActionEvent e) {
 
         List<DataRowModel> selectedFiles = controller.getSelectedFiles();
 
+        if (selectedFiles.isEmpty()){
+            JOptionPane.showMessageDialog(
+                    new JFrame(),
+                    emptyText,
+                    emptyDesc,
+                    JOptionPane.INFORMATION_MESSAGE);
+            return; 
+        }
+        
         if (selectedFiles.size() > 1) {
             JOptionPane.showMessageDialog(
                     new JFrame(),
@@ -67,7 +80,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
             return;
         }
 
-        if (selectedFiles.size() == 1) {
+        if (selectedFiles.size() == 1 && !controller.isDownloading()) {
 
             DataRowModel selected = selectedFiles.get(0);
 
@@ -171,6 +184,8 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         downloadingDesc = resource.getString("actionanalyse.ededb.downloading.desc");
         doneText = resource.getString("actionanalyse.ededb.done.text");
         doneDesc = resource.getString("actionanalyse.ededb.done.desc");
+        emptyText = resource.getString("actionanalyse.ededb.empty.text");
+        emptyDesc = resource.getString("actionanalyse.ededb.empty.desc");
     }
 
     /**

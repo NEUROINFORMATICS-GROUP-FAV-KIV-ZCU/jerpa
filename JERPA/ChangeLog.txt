@@ -1,7 +1,18 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
-  
+    
+  * (4/7/2011) Petr Miko
+    # 199
+
+      CHANGED: EDEDBPerspective display menu items bug solved (by additional boolean menuInited)
+      CHANGED: action delete and analyse now reacts when no file is selected. JerpaLang extended for those new texts.
+      CHANGED: toolbar buttons now have icons
+      CHANGED: all actions now have mnemonics
+      ADDED:   few new icons from same pack as already used icons.
+
+      EDEDB is now ready for release.
+
   * (4/5/2011) Petr Miko
     # 198
     

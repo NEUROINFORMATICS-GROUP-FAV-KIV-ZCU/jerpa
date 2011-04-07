@@ -65,8 +65,6 @@ public class EDEDBPerspective extends Perspective {
             menuTaskPane.setOpaque(false);
 
             menuTaskPane.add(initMenu());
-
-            menuInited = true;
         }
     }
 
@@ -81,6 +79,8 @@ public class EDEDBPerspective extends Perspective {
             menu.addItem(createEdedbMenu());
             menu.addItem(createEdedbMenu2());
 
+            menuInited = true;
+            
             updateMenuItemVisibility();
             menu.addMenuSeparator();
 
@@ -111,7 +111,7 @@ public class EDEDBPerspective extends Perspective {
         disconnect.setAction(controller.getActionDisconnect());
         chooseDir.setAction(controller.getActionChooseDownloadFolder());
         openDir.setAction(controller.getActionOpenDownloadPath());
-
+        
         ededbMenu.addSubItem(connect);
         ededbMenu.addSubItem(disconnect);
         ededbMenu.addSubItem(chooseDir);
@@ -135,7 +135,7 @@ public class EDEDBPerspective extends Perspective {
         downloadFile.setAction(controller.getActionDownloadSelected());
         deleteFile.setAction(controller.getActionDeleteSelected());
         analyseFile.setAction(controller.getActionAnalyseSelected());
-
+        
         ededbMenu2.addSubItem(downloadFile);
         ededbMenu2.addSubItem(analyseFile);
         ededbMenu2.addSubItem(deleteFile);

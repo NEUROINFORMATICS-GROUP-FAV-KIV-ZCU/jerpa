@@ -5,6 +5,7 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * Action class for disconnecting from EEG/ERP Database.
@@ -22,6 +23,8 @@ public class ActionDisconnect extends AbstractAction {
      */
     public ActionDisconnect(EDEDBController controller) {
         this.controller = controller;
+        
+        putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
     }
 
     @Override

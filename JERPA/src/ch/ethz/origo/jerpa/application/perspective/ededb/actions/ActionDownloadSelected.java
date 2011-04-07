@@ -11,6 +11,7 @@ import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.util.concurrent.ExecutorService;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.ConnectException;
 import java.util.List;
@@ -48,6 +49,8 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
         this.controller = controller;
         this.session = session;
+        
+        putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
     }
 
     @Override

@@ -4,6 +4,7 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
 
 /**
@@ -22,6 +23,8 @@ public class ActionChooseDownloadPath extends AbstractAction {
      */
     public ActionChooseDownloadPath(EDEDBController controller) {
         this.controller = controller;
+        
+        putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
     }
 
     @Override

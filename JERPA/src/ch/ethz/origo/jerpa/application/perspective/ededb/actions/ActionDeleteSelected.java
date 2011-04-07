@@ -6,6 +6,7 @@ import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
     private String warningTextPart1, warningTextPart2, warningDesc;
     private String downloadingText, downloadingDesc;
     private String errorText, errorDesc;
+    private String emptyText, emptyDesc;
 
     public ActionDeleteSelected(EDEDBController controller) {
         LanguageObservable.getInstance().attach(this);
@@ -36,31 +38,41 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
         initTexts();
 
         this.controller = controller;
+
+        putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_E));
     }
 
     public void actionPerformed(ActionEvent e) {
 
         List<DataRowModel> selected = controller.getSelectedFiles();
         List<DataRowModel> hasLocal = new LinkedList<DataRowModel>();
-        
-        if(selected!= null)
-            for (DataRowModel temp : selected){
+
+        if (!selected.isEmpty()) {
+            for (DataRowModel temp : selected) {
                 int exists = temp.getDownloaded();
-                if ( exists == DataRowModel.HAS_LOCAL_COPY || exists == DataRowModel.ERROR){
+                if (exists == DataRowModel.HAS_LOCAL_COPY || exists == DataRowModel.ERROR) {
                     hasLocal.add(temp);
-                }else if(exists == DataRowModel.DOWNLOADING){
+                } else if (exists == DataRowModel.DOWNLOADING) {
                     JOptionPane.showMessageDialog(
                             new JFrame(),
                             downloadingText,
                             downloadingDesc,
                             JOptionPane.ERROR_MESSAGE);
-                    
+
                     controller.update();
                     temp.setSelected(false);
-                }else{
+                } else {
                     temp.setSelected(false);
                 }
             }
+        }else{
+            JOptionPane.showMessageDialog(
+                    new JFrame(),
+                    emptyText,
+                    emptyDesc,
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
 
         if (!hasLocal.isEmpty()) {
             int retValue = JOptionPane.showConfirmDialog(new JFrame(),
@@ -135,6 +147,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage {
         downloadingDesc = resource.getString("actiondelete.ededb.downloading.desc");
         errorText = resource.getString("actiondelete.ededb.error.text");
         errorDesc = resource.getString("actiondelete.ededb.error.desc");
-
+        emptyText = resource.getString("actiondelete.ededb.empty.text");
+        emptyDesc = resource.getString("actiondelete.ededb.empty.desc");
     }
 }

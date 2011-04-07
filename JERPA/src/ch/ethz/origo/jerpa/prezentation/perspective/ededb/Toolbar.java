@@ -1,18 +1,25 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
+import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonAreaLayout;
+import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.VerticalLayout;
 
 /**
  * Class for creating side-toolbar for EDEDB.
@@ -44,54 +51,24 @@ public class Toolbar extends JXPanel implements ILanguage {
         this.session = session;
         this.controller = controller;
 
-        JPanel buttonBar = new JPanel();
         JPanel radioBar = new JPanel();
 
-        this.setLayout(new BorderLayout());
-        buttonBar.setLayout(new GridBagLayout());
-        GridBagConstraints butBarConstrains = new GridBagConstraints();
-        radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.PAGE_AXIS));
+        this.setLayout(new VerticalLayout());
+        radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.LINE_AXIS));
 
         createButtons();
-
-        butBarConstrains.fill = GridBagConstraints.HORIZONTAL;
-        butBarConstrains.gridx = 0;
-        butBarConstrains.gridy = 0;
-        butBarConstrains.gridwidth = 2;
-        buttonBar.add(connectButton, butBarConstrains);
-
-        butBarConstrains.gridx = 0;
-        butBarConstrains.gridy = 0;
-        buttonBar.add(disconnectButton, butBarConstrains);
-
-
-        butBarConstrains.gridx = 0;
-        butBarConstrains.gridy = 1;
-        buttonBar.add(openFolderButton, butBarConstrains);
-
-        butBarConstrains.gridx = 0;
-        butBarConstrains.gridy = 2;
-        buttonBar.add(chooseFolderButton, butBarConstrains);
-
-        butBarConstrains.gridx = 0;
-        butBarConstrains.gridy = 3;
-        buttonBar.add(analyseFileButton, butBarConstrains);
-
-        butBarConstrains.gridx = 0;
-        butBarConstrains.gridy = 4;
-        butBarConstrains.gridwidth = 1;
-        buttonBar.add(downloadButton, butBarConstrains);
-
-        butBarConstrains.gridx = 1;
-        butBarConstrains.gridy = 4;
-        butBarConstrains.gridwidth = 1;
-        buttonBar.add(deleteFileButton, butBarConstrains);
 
         radioBar.add(ownerButton);
         radioBar.add(subjectButton);
 
-        this.add(buttonBar, BorderLayout.NORTH);
-        this.add(radioBar, BorderLayout.CENTER);
+        this.add(connectButton);
+        this.add(disconnectButton);
+        this.add(chooseFolderButton);
+        this.add(openFolderButton);
+        this.add(radioBar);
+        this.add(analyseFileButton);
+        this.add(downloadButton);
+        this.add(deleteFileButton);
 
         ownerButton.setSelected(true);
     }
@@ -112,6 +89,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         subjectButton = new JRadioButton();
 
         updateButtonsText();
+        createIcons();
 
         ButtonGroup group = new ButtonGroup();
 
@@ -119,6 +97,14 @@ public class Toolbar extends JXPanel implements ILanguage {
 
         group.add(ownerButton);
         group.add(subjectButton);
+        
+        connectButton.setHorizontalAlignment(SwingConstants.LEFT);
+        disconnectButton.setHorizontalAlignment(SwingConstants.LEFT);
+        downloadButton.setHorizontalAlignment(SwingConstants.LEFT);
+        deleteFileButton.setHorizontalAlignment(SwingConstants.LEFT);
+        chooseFolderButton.setHorizontalAlignment(SwingConstants.LEFT);
+        openFolderButton.setHorizontalAlignment(SwingConstants.LEFT);
+        analyseFileButton.setHorizontalAlignment(SwingConstants.LEFT);
 
         connectButton.addActionListener(controller.getActionConnect());
         disconnectButton.addActionListener(controller.getActionDisconnect());
@@ -172,9 +158,9 @@ public class Toolbar extends JXPanel implements ILanguage {
             subjectButton.setEnabled(false);
         }
 
-        if(!controller.isDownloading() && !controller.isLock()){
+        if (!controller.isDownloading() && !controller.isLock()) {
             analyseFileButton.setEnabled(true);
-        }else{
+        } else {
             analyseFileButton.setEnabled(false);
         }
     }
@@ -246,5 +232,24 @@ public class Toolbar extends JXPanel implements ILanguage {
         subjectButton.setEnabled(active);
 
         updateButtonsVisibility();
+    }
+
+    private void createIcons() {
+        try {
+            analyseFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "ededb_48.png", 32, 32));
+            openFolderButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "folder_48.png", 32, 32));
+            chooseFolderButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "spanner_48.png", 32, 32));
+            
+            connectButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32));
+            disconnectButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "logout_48.png", 32, 32));
+            downloadButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "arrow_down_green_48.png", 32, 32));
+            deleteFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "cross_48.png", 32, 32));
+            
+        } catch (PerspectiveException ex) {
+            JUIGLErrorInfoUtils.showErrorDialog(
+                    ex.getMessage(),
+                    ex.getLocalizedMessage(),
+                    ex);
+        }
     }
 }
