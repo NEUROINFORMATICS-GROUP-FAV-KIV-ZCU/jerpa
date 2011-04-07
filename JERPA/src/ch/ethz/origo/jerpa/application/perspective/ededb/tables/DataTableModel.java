@@ -77,6 +77,10 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        
+        if(rowIndex < 0)
+            return null;
+        
         switch (columnIndex) {
             case 0:
                 return data.get(rowIndex).isSelected();

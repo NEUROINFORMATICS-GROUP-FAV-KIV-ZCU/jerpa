@@ -1,9 +1,14 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
-    
+
   * (4/7/2011) Petr Miko
-    # 199
+    # 201
+      
+      CHANGED: resolved get value issue in table models.
+  
+  * (4/7/2011) Petr Miko
+    # 200
 
       CHANGED: EDEDBPerspective display menu items bug solved (by additional boolean menuInited)
       CHANGED: action delete and analyse now reacts when no file is selected. JerpaLang extended for those new texts.

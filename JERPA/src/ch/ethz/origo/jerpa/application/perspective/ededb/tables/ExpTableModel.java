@@ -55,11 +55,15 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (columnIndex == ID_COLUMN) {
-            return data.get(rowIndex).getExperimentId();
-        } else {
-            return data.get(rowIndex).getScenarioName();
+        if (rowIndex >= 0) {
+            if (columnIndex == ID_COLUMN) {
+                return data.get(rowIndex).getExperimentId();
+            } else {
+                return data.get(rowIndex).getScenarioName();
+
+            }
         }
+        return null;
     }
 
     @Override
@@ -68,12 +72,12 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
     }
 
     public void addRow(ExperimentInfo experiment) {
-        if(experiment!= null && experiment.getScenarioName() != null){
-           data.add(experiment);
-        }else{
+        if (experiment != null && experiment.getScenarioName() != null) {
+            data.add(experiment);
+        } else {
             System.err.println("Row wasn't added - experiment or its name was null");
         }
-        
+
         fireTableDataChanged();
     }
 
