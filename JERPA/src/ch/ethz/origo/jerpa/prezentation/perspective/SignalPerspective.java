@@ -16,7 +16,7 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
@@ -33,8 +33,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -83,11 +81,11 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 /**
  * Class represented Perspective for application <code>JERPA</code>. This is the
  * main perspective of application JERPA. Contains component for display EEG
- * signals and tools for automatic artefact selection, baseline correction, EEG
+ * signals and tools for automatic artifact selection, baseline correction, EEG
  * signals info and a lot of others functions.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.3.9 (5/20/2010)
+ * @version 0.4.0 (4/3/2011)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -134,6 +132,8 @@ public class SignalPerspective extends Perspective implements IObserver {
     private ChannelsPanelProvider channelPanelProvider;
     private ArtefactSelectionDialog artefactSelectionDialog;
     private BaselineCorrectionDialog baselineCorrectionDialog;
+    
+    public static final String ID_PERSPECTIVE = SignalPerspective.class.getName();
 
     /**
      * Default constructor. Initializes required objects.
@@ -256,6 +256,11 @@ public class SignalPerspective extends Perspective implements IObserver {
          * 
          * } });
          */
+    }
+    
+    @Override
+    public String getID() {
+    	return ID_PERSPECTIVE;
     }
 
     /**

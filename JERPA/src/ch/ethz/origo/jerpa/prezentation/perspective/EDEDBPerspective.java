@@ -20,6 +20,8 @@ import org.jdesktop.swingx.JXTaskPane;
  * @author Petr Miko
  */
 public class EDEDBPerspective extends Perspective {
+	
+	  private static final String ID_PERSPECTIVE = EDEDBPerspective.class.getName();
 
     private JUIGLEMenuItem ededbMenu;
     private JUIGLEMenuItem ededbMenu2;
@@ -56,6 +58,11 @@ public class EDEDBPerspective extends Perspective {
     @Override
     public String getRBPerspectiveTitleKey() {
         return "perspective.title";
+    }
+    
+    @Override
+    public String getID() {
+        return ID_PERSPECTIVE;
     }
 
     @Override

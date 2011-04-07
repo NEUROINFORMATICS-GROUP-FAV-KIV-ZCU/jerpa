@@ -1,6 +1,15 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+  * (4/7/2011) Vaclav Souhrada
+    # 202
+      
+      CHANGED: Version of the JUIGLE library changed - 1.0.2-RC1
+      CHANGED: Version of the PluginEngine library changed - 1.0.1
+      CHANGED: Perspective loader - Now is not NullPointerException throw if not exist category Perspective in plugin.xml
+      CHANGED: Perspectives now contains unique identifier method getID and static constant which contains a specific identifier value
+      CHANGED: Added a support for switching perspectives from one perspective to the another - a new feature from JUIGLE-1.0.2-RC1
+      
 
   * (4/7/2011) Petr Miko
     # 201

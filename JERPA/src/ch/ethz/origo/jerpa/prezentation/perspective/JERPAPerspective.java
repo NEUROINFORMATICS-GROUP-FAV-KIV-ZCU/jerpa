@@ -16,7 +16,7 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
@@ -56,7 +56,7 @@ import ch.ethz.origo.juigle.prezentation.tables.PluginsTreeTable;
  * unavailable plugins. 
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.5 (5/20/2010)
+ * @version 0.1.6 (3/4/2011)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * 
@@ -67,6 +67,8 @@ public final class JERPAPerspective extends Perspective {
 	private static final long serialVersionUID = -8946236261770444906L;
 
 	private static String resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.jerpa.JERPAPerspective";
+	
+	public static final String ID_PERSPECTIVE = JERPAPerspective.class.getName();
 
 	private JUIGLEMenuItem languageMenu;
 
@@ -97,6 +99,11 @@ public final class JERPAPerspective extends Perspective {
 	@Override
 	public String getResourceBundlePath() {
 		return JERPAPerspective.resourcePath;
+	}
+	
+	@Override
+	public String getID() {
+		return ID_PERSPECTIVE;
 	}
 
 	@Override

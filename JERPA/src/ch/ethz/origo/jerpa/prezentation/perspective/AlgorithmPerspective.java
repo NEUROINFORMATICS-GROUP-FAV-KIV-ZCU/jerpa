@@ -16,7 +16,7 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
@@ -60,7 +60,7 @@ import ch.ethz.origo.juigle.prezentation.tables.model.JUIGLETreeTableModel;
  * of methods can be apply on the EEG record.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.4 (5/20/2010)
+ * @version 0.1.5 (4/03/2011)
  * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
@@ -74,6 +74,8 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 	private JUIGLEMenuItem applyAlgItem;
 
 	private AlgorithmTreeTableProvider attp;
+	
+	public static final String ID_PERSPECTIVE = AlgorithmPerspective.class.getName();
 
 	/**
 	 * Construct algorithm perspective. Attach perspective to perspective
@@ -100,6 +102,11 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 	public String getRBPerspectiveTitleKey() {
 		return "perspective.title";
 	}
+	
+	@Override
+	public String getID() {
+		return ID_PERSPECTIVE;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -109,7 +116,7 @@ public class AlgorithmPerspective extends Perspective implements IObserver {
 		if (menuTaskPane == null) {
 			menuTaskPane = new JXTaskPane();
 			menuTaskPane.setOpaque(false);
-			// initalize menu
+			// initialize menu
 			menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP,
 					resourcePath);
 			menu.setFloatable(false);

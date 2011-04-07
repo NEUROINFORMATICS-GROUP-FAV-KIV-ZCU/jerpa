@@ -31,6 +31,7 @@ import javax.swing.Icon;
 
 import org.jdesktop.swingx.JXTaskPane;
 
+import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.prezentation.perspective.db.LoginDialog;
 import ch.ethz.origo.juigle.application.db.Database;
@@ -43,8 +44,8 @@ import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 
 /**
- * NOT USED YET. This perspective is completed, but application and 
- * data layers are not complete implemented.
+ * NOT USED YET. This perspective is completed, but application and data layers
+ * are not complete implemented.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.1.2 (3/29/2010)
@@ -53,10 +54,12 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * 
  */
 public class DBPerspective extends Perspective {
-	
+
 	private static final String JDBC_DRIVER_CLASS = "";
 	private static final String JDBC_DB_ADDRESS = "";
 	
+  public static final String ID_PERSPECTIVE = DBPerspective.class.getName();
+
 	// Database menu
 	private JUIGLEMenuItem databaseItem;
 	private JUIGLEMenuItem dbConnectItem;
@@ -69,10 +72,11 @@ public class DBPerspective extends Perspective {
 	public DBPerspective() {
 		resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.database.DBPerspective";
 	}
-	
+
 	@Override
 	public Icon getPerspectiveIcon() throws PerspectiveException {
-		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "database_48.png", 32, 32);
+		return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
+				+ "database_48.png", 32, 32);
 	}
 
 	@Override
@@ -90,14 +94,18 @@ public class DBPerspective extends Perspective {
 	}
 	
 	@Override
+	public String getID() {
+		return ID_PERSPECTIVE;
+	}
+
+	@Override
 	public void updateText() {
 		super.updateText();
-		/*SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				menu.updateText();
-			}
-		});*/
+		/*
+		 * SwingUtilities.invokeLater(new Runnable() {
+		 * 
+		 * @Override public void run() { menu.updateText(); } });
+		 */
 	}
 
 	/**
@@ -153,18 +161,35 @@ public class DBPerspective extends Perspective {
 				Database db = new Database();
 				db.connect(JDBC_DRIVER_CLASS, JDBC_DB_ADDRESS);
 				new LoginDialog(db);
-				//new DbChooserDialog();
-			}	
+				// new DbChooserDialog();
+			}
 		};
 		dbConnectItem.setAction(connect);
+
+		Action dbInfo = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Perspective perspective = PerspectiveLoader.getInstance()
+							.getPerspective(SignalPerspective.ID_PERSPECTIVE);
+					if (perspective != null) {
+						perspectiveObservable.changePerspective(perspective);
+					}
+				} catch (PerspectiveException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		};
+		dbInfoItem.setAction(dbInfo);
 	}
 
 	private JUIGLEMenuItem initAndGetToolsItem() {
 		toolsItem = new JUIGLEMenuItem(getLocalizedString("menu.tools"));
-	// initialize subItems of file menu
-	// set Resource bundles
+		// initialize subItems of file menu
+		// set Resource bundles
 		toolsItem.setResourceBundleKey("menu.tools");
-	// add subitems to dabase item
+		// add subitems to dabase item
 		return toolsItem;
 	}
 
