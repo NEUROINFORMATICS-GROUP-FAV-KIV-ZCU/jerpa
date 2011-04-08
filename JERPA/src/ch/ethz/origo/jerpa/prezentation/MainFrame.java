@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
@@ -189,6 +190,11 @@ public class MainFrame implements IObserver, ILanguage {
 	 */
 	private void appClosing() {
 		JERPAUtils.deleteFilesFromDeleteList();
+                
+                if(EDEDClient.getInstance() != null){
+                    EDEDClient.getInstance().userLogout();
+                }
+                
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {

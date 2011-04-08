@@ -3,6 +3,20 @@
 *********************************************************************************************
 
   * (4/8/2011) Petr Miko
+    # 204
+      
+      CHANGED: ActionAnalyse - instead of string with name of signal perspective, now using class'es public id.
+      CHANGED: VDefLoader - in case of ArrayIndexOutOfBoundsException is created CorruptedFileException (because it is - on 99,9999%)
+      CHANGED: MainFrame - in exit routine added checking whether EDEDClient is not null, if it is not, user logout (closing conduit).
+      CHANGED: LoginDialog - new text field for endpoint adress. On first start is blank, after first successful login it is saved into ededb.properties file and used in future. LoginDialog now also have a small icon.
+      CHANGED: EDEDBController - now provides methods for public access to ededb.properties file. "Put" and "Load" is available.
+      CHANGED: JerpaLang - edited years in main files, few more editions in ededb section.
+      CHANGED: EDEDClient - class renamed to EDEDClient, login method now has input parameter of endpoint. Public getter of instance added. New jar added in JERPA lib.
+      CHANGED: almost every java file cooperating with EDEDB has "EDEDSession" renamed to "EDEDClient". Seems more clearer.
+      CHANGED: one contributor added, years of development changed in config.properties.
+      CHANGED: edited build.xml in test section.
+
+  * (4/8/2011) Petr Miko
     # 203
     
       CHANGED: new translations in JerpaLang

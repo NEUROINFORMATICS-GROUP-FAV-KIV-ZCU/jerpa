@@ -87,6 +87,9 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
         if (selectedFiles.size() == 1 && !controller.isDownloading()) {
 
             DataRowModel selected = selectedFiles.get(0);
+            
+            if(selected.getDownloaded() == DataRowModel.DOWNLOADING)
+                return;
 
             if (selected.getDownloaded() == DataRowModel.DOWNLOADING) {
                 JOptionPane.showMessageDialog(
@@ -127,7 +130,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
 
             try {
                 signalPersp = (SignalPerspective) PerspectiveLoader.getInstance().getPerspective(
-                        "ch.ethz.origo.jerpa.prezentation.perspective.SignalPerspective");
+                        SignalPerspective.ID_PERSPECTIVE);
             } catch (PerspectiveException ex) {
                 JUIGLErrorInfoUtils.showErrorDialog(
                         ex.getMessage(),

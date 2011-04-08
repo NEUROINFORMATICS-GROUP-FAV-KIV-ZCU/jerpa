@@ -38,6 +38,7 @@ import ch.ethz.origo.jerpa.data.Epoch;
 import ch.ethz.origo.jerpa.data.Header;
 import ch.ethz.origo.jerpa.data.NioInputStream;
 import ch.ethz.origo.juigle.application.JUIGLEFileUtils;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
@@ -278,7 +279,7 @@ public class VdefLoader implements DataFormatLoader {
      * Metoda ur�uje kam se budou jednotliv� hodnoty ukl�dat a vol� metody pro
      * p�evod bajt� na hodnoty.
      */
-    private void loadBinaryValues() {
+    private void loadBinaryValues() throws ArrayIndexOutOfBoundsException {
         int numberOfBytes;
         if (this.headerKeyNames.get("BinaryFormat").equals("IEEE_FLOAT_32")) {
             numberOfBytes = 4;
@@ -468,7 +469,7 @@ public class VdefLoader implements DataFormatLoader {
          * @param value
          *          P�id�van� hodnota
          */
-        private void addValue(float value) {
+        private void addValue(float value) throws ArrayIndexOutOfBoundsException {
             this.values[size] = value;
             this.size++;
         }
@@ -490,7 +491,11 @@ public class VdefLoader implements DataFormatLoader {
             loadBinaryEEG();
 
             // System.out.println("decoding binary Values");
-            loadBinaryValues();
+            try {
+                loadBinaryValues();
+            } catch (ArrayIndexOutOfBoundsException e) {
+                throw new CorruptedFileException(e);
+            }
         } else {
             loadAsciiEEG();
         }

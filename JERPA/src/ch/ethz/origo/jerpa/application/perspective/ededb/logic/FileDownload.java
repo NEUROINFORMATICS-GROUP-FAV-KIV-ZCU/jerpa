@@ -2,7 +2,7 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.ededclient.generated.SOAPException_Exception;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -32,7 +32,7 @@ public class FileDownload implements Runnable, ILanguage {
     private String resourceBundlePath;
     private DataRowModel rowData;
     private EDEDBController controller;
-    private EDEDSession session;
+    private EDEDClient session;
     private String errorText, errorDesc;
     
     /**
@@ -42,7 +42,7 @@ public class FileDownload implements Runnable, ILanguage {
      * @param session EDEDClient.jar Session
      * @param rowData Information about file, which selected to download
      */
-    public FileDownload(EDEDBController controller, EDEDSession session, DataRowModel rowData) {
+    public FileDownload(EDEDBController controller, EDEDClient session, DataRowModel rowData) {
         super();
 
         LanguageObservable.getInstance().attach(this);

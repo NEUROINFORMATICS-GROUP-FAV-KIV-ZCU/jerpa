@@ -10,7 +10,7 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionOpenDownl
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.Rights;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.FirstRun;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginDialog;
@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -43,7 +45,7 @@ import org.jdesktop.swingx.JXPanel;
 public class EDEDBController {
 
     private EDEDBPerspective parent;
-    private EDEDSession session;
+    private EDEDClient session;
     private LoginDialog loginDialog;
     private LoginInfo loginInfo;
     private OnlineTables onlineTables;
@@ -73,13 +75,14 @@ public class EDEDBController {
      * @param parent EDEDBPerspective
      * @param session EDEDClient.jar session
      */
-    public EDEDBController(EDEDBPerspective parent, EDEDSession session) {
+    public EDEDBController(EDEDBPerspective parent, EDEDClient session) {
         this.parent = parent;
         this.session = session;
 
         properties = new Properties();
         firstRun = true;
-        initDownloadPath();
+
+        setDownloadPath(getConfigKey("ededb.downloadfolder"));
 
         mainPanel = new JXPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -333,30 +336,12 @@ public class EDEDBController {
     }
 
     /**
-     * Tries to read user's download folder location from properties file.
-     * If the file doesn't exist, boolean firstRun is set.
-     */
-    private void initDownloadPath() {
-
-        FileInputStream inPropStream = null;
-
-        try {
-            inPropStream = new FileInputStream(configFile);
-            properties.load(inPropStream);
-            setDownloadPath(properties.getProperty("ededb.downloadfolder"));
-            inPropStream.close();
-        } catch (IOException e) {
-        }
-    }
-
-    /**
      * Setter for absolute location of download folder path.
      * @param downloadPath Absolute folder location String
      */
     public void setDownloadPath(String downloadPath) {
 
         File config = new File(configFile);
-        FileOutputStream outPropStream = null;
         if (!config.exists()) {
             try {
                 (new File(configFolder)).mkdirs();
@@ -367,20 +352,9 @@ public class EDEDBController {
             }
         }
 
-        try {
-            outPropStream = new FileOutputStream(configFile);
-            properties.setProperty("ededb.downloadfolder", downloadPath);
-            properties.store(outPropStream, "Author: Petr Miko");
-            this.downloadPath = downloadPath;
-            firstRun = false;
-            outPropStream.close();
-        } catch (FileNotFoundException ex) {
-            JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
-                    ex.getMessage(), ex);
-        } catch (IOException ex) {
-            JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
-                    ex.getMessage(), ex);
-        }
+        setConfigKey("ededb.downloadfolder", downloadPath);
+        this.downloadPath = downloadPath;
+        firstRun = false;
     }
 
     /**
@@ -506,7 +480,7 @@ public class EDEDBController {
      * Checking whether there is any downloading currently.
      * @return
      */
-    public synchronized boolean isDownloading(){
+    public synchronized boolean isDownloading() {
         return !downloadingFiles.isEmpty();
     }
 
@@ -518,8 +492,8 @@ public class EDEDBController {
     public synchronized boolean removeDownloading(int fileId) {
         boolean success = downloadingFiles.remove(fileId);
 
-        for(DataRowModel row : onlineTables.getRows()){
-            if(row.getFileInfo().getFileId() == fileId){
+        for (DataRowModel row : onlineTables.getRows()) {
+            if (row.getFileInfo().getFileId() == fileId) {
                 row.setDownloaded(isAlreadyDownloaded(row.getFileInfo()));
             }
         }
@@ -527,12 +501,37 @@ public class EDEDBController {
         fileChange();
         return success;
     }
-    
+
     /**
      * Count of currently downloading files.
      * @return size of downloading files set
      */
-    public int getDownloadingSize(){
+    public int getDownloadingSize() {
         return downloadingFiles.size();
+    }
+
+    public String getConfigKey(String key) {
+        FileInputStream inPropStream = null;
+        String tmp = null;
+        try {
+            inPropStream = new FileInputStream(configFile);
+            properties.load(inPropStream);
+            tmp = properties.getProperty(key);
+            inPropStream.close();
+
+        } catch (IOException e) {
+        }
+
+        return tmp;
+    }
+
+    public void setConfigKey(String key, String argument) {
+        try {
+            FileOutputStream outPropStream = null;
+            outPropStream = new FileOutputStream(configFile);
+            properties.setProperty(key, argument);
+            properties.store(outPropStream, null);
+        } catch (IOException ex) {
+        }
     }
 }

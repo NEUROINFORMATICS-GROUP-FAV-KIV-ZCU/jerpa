@@ -7,7 +7,7 @@ import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import java.io.File;
 import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -18,16 +18,16 @@ import static org.junit.Assert.*;
 public class EDEDBControllerTest {
 
     private static EDEDBPerspective perspective;
-    private static EDEDSession session;
+    private static EDEDClient session;
     private static EDEDBController controller;
 
     @BeforeClass
     public static void setupClass() throws Exception {
 
         perspective = new EDEDBPerspective();
-        session = new EDEDSession();
+        session = new EDEDClient();
         controller = new EDEDBController(perspective, session);
-        
+
         System.out.println("* EDEDB - EDEDBController test");
 
     }
@@ -62,25 +62,20 @@ public class EDEDBControllerTest {
      * Test of proper recognition of first start.
      */
     @Test
-    public void checkFirstRun(){
-        
-        String path = "pokus";
+    public void checkFirstRun() {
+
         File configFile = new File(controller.getConfigFilePath());
         
-        if(configFile.exists()){
-            if (controller.getDownloadPath() != null) {
-                path = controller.getDownloadPath();
-            }
-            configFile.delete();
+        if (configFile.exists()) {
+            assertFalse(controller.isFirstRun());
+        } else {
+            assertTrue(controller.isFirstRun());
         }
-        
-        assertTrue(controller.isFirstRun());
-        controller.setDownloadPath(path);
-        assertFalse(controller.isFirstRun());
-        
+
+
         System.out.println("- First run checked");
     }
-    
+
     /**
      * Test of getter/setter download path.
      */
@@ -94,16 +89,16 @@ public class EDEDBControllerTest {
         controller.setDownloadPath("pokus");
         assertTrue(controller.getDownloadPath().equals("pokus"));
         controller.setDownloadPath(path);
-        
+
         System.out.println("- Download path change checked");
     }
-    
+
     /**
      * Creating of nonsense file and checking whether it has a local copy.
      */
     @Test
-    public void checkFilePresence(){
-        
+    public void checkFilePresence() {
+
         DataFileInfo tmp = new DataFileInfo();
         tmp.setExperimentId(Integer.MAX_VALUE);
         tmp.setFilename("'.[.[");
@@ -111,40 +106,40 @@ public class EDEDBControllerTest {
         tmp.setLength(Long.MAX_VALUE);
         tmp.setMimeType("mime/nonsense");
         tmp.setScenarioName("Knock knock, who's there?");
-        
+
         assertTrue(DataRowModel.NO_LOCAL_COPY == controller.isAlreadyDownloaded(tmp));
-        
+
         System.out.println("- File presence checked");
-    }    
-    
+    }
+
     @Test
-    public void checkDownloading(){
-        
+    public void checkDownloading() {
+
         System.out.println("- Downloading count testing");
-        
+
         controller.addDownloading(99);
-        
+
         assertTrue(controller.isDownloading(99));
         assertFalse(controller.isDownloading(666));
-        
+
         System.out.println("-- existence of file id downloading");
-        
+
         controller.addDownloading(99);
-        
+
         assertEquals(1, controller.getDownloadingSize());
-        
+
         System.out.println("-- no duplicities");
-        
+
         controller.removeDownloading(666);
-        
+
         assertEquals(1, controller.getDownloadingSize());
-        
+
         controller.removeDownloading(99);
-        
+
         assertEquals(0, controller.getDownloadingSize());
-        
+
         System.out.println("-- removing from downloading set");
-        
+
         System.out.println("- Downloading count checked");
     }
 }

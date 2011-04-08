@@ -1,8 +1,8 @@
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
@@ -25,7 +25,7 @@ public class EDEDBPerspective extends Perspective {
 
     private JUIGLEMenuItem ededbMenu;
     private JUIGLEMenuItem ededbMenu2;
-    private EDEDSession session;
+    private EDEDClient session;
     private EDEDBController controller;
     private JUIGLEMenuItem connect;
     private JUIGLEMenuItem disconnect;
@@ -37,12 +37,11 @@ public class EDEDBPerspective extends Perspective {
 
     private boolean menuInited = false;
 
-    public EDEDBPerspective() {
-
+    public EDEDBPerspective(){
         resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB";
-        session = new EDEDSession();
+        session = new EDEDClient();
         controller = new EDEDBController(this, session);
-
+        
     }
 
     @Override

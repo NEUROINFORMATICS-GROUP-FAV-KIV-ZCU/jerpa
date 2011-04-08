@@ -1,7 +1,7 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -22,7 +22,7 @@ public class LoginInfo extends JXPanel implements ILanguage {
     private String resourceBundlePath;
     private JTextArea usernameText;
     private JTextArea directoryText;
-    private EDEDSession session;
+    private EDEDClient session;
     private EDEDBController controller;
 
     private TitledBorder usernameBorder;
@@ -34,7 +34,7 @@ public class LoginInfo extends JXPanel implements ILanguage {
      * @param controller EDEDB EDEDBController
      * @param session EDEDSession
      */
-    public LoginInfo(EDEDBController controller, EDEDSession session) {
+    public LoginInfo(EDEDBController controller, EDEDClient session) {
         super();
 
         LanguageObservable.getInstance().attach(this);

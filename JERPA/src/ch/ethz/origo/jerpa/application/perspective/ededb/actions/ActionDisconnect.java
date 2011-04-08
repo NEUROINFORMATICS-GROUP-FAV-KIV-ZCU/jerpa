@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 
 import javax.swing.*;

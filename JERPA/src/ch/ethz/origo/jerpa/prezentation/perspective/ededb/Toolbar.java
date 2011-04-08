@@ -3,7 +3,7 @@ package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.ededclient.generated.Rights;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
@@ -31,7 +31,7 @@ public class Toolbar extends JXPanel implements ILanguage {
     private ResourceBundle resource;
     private String resourceBundlePath;
     private EDEDBController controller;
-    private EDEDSession session;
+    private EDEDClient session;
     private JButton connectButton, disconnectButton, downloadButton, chooseFolderButton,
             openFolderButton, deleteFileButton, analyseFileButton;
     private JRadioButton ownerButton, subjectButton;
@@ -42,7 +42,7 @@ public class Toolbar extends JXPanel implements ILanguage {
      * @param controller EDEDBController class of EDEDB
      * @param session EDEDSession class
      */
-    public Toolbar(EDEDBController controller, EDEDSession session) {
+    public Toolbar(EDEDBController controller, EDEDClient session) {
         super();
 
         LanguageObservable.getInstance().attach(this);

@@ -39,6 +39,7 @@
     
     <path id="test.class.path">
         <pathelement location="${dir.test-bin}" />
+        <pathelement location="${src}" />
         <path refid="compile.class.path" />
     </path>
       

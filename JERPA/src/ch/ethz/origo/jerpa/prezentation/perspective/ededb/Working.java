@@ -15,7 +15,7 @@ public class Working {
     private static int counter;
 
     /**
-     *  MEthod creating JDialog
+     *  Method creating JDialog
      */
     public Working() {
         working = new JDialog();

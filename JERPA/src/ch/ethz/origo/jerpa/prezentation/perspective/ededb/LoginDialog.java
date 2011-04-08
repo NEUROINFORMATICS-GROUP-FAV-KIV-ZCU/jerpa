@@ -1,12 +1,17 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.net.ConnectException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,16 +35,16 @@ public class LoginDialog implements ILanguage {
     private ResourceBundle resource;
     private String resourceBundlePath;
     private EDEDBController controller;
-    private EDEDSession session;
+    private EDEDClient session;
     private JFormattedTextField usernameField;
     private JPasswordField passwordField;
-
+    private JFormattedTextField endpointField;
     private JDialog dialog;
     private JTextArea info;
-    private JLabel usernameLabel;
-    private JLabel passwordLabel;
+    private JXLabel usernameLabel;
+    private JXLabel passwordLabel;
+    private JXLabel endpointLabel;
     private JButton okButton, cancelButton;
-
     private String inputsErrorText;
     private String inputsErrorDesc;
     private String credentialsErrorText;
@@ -53,14 +58,14 @@ public class LoginDialog implements ILanguage {
      * @param controller EDEDB EDEDBController
      * @param session EDEDSession from EDEDClient.jar
      */
-    public LoginDialog(EDEDBController controller, EDEDSession session) {
+    public LoginDialog(EDEDBController controller, EDEDClient session) {
 
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         this.controller = controller;
         this.session = session;
-        
+
         createDialog();
     }
 
@@ -89,22 +94,29 @@ public class LoginDialog implements ILanguage {
         progress.setIndeterminate(true);
         progress.setVisible(false);
 
+        endpointField = new JFormattedTextField();
         usernameField = new JFormattedTextField();
         passwordField = new JPasswordField();
 
+        endpointLabel = new JXLabel(resource.getString("logindialog.ededb.endpoint"));
         usernameLabel = new JXLabel(resource.getString("logindialog.ededb.username"));
         passwordLabel = new JXLabel(resource.getString("logindialog.ededb.password"));
         usernameLabel.setLabelFor(usernameField);
         passwordLabel.setLabelFor(passwordField);
 
+        endpointField.setText(controller.getConfigKey("ededb.endpoint"));
+
+        endpointField.setColumns(10);
         usernameField.setColumns(10);
         passwordField.setColumns(10);
 
         usernameField.setText(session.getUsername());
         passwordField.setText(session.getPassword());
 
+        labelPane.add(endpointLabel);
         labelPane.add(usernameLabel);
         labelPane.add(passwordLabel);
+        fieldPane.add(endpointField);
         fieldPane.add(usernameField);
         fieldPane.add(passwordField);
 
@@ -116,11 +128,15 @@ public class LoginDialog implements ILanguage {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                final String tempEndpoint;
                 final String tempUsername;
                 final String tempPassword;
 
-                if (usernameField.getText().length() > 0 && passwordField.getPassword().length > 0) {
+                if (!endpointField.getText().isEmpty()
+                        && !usernameField.getText().isEmpty()
+                        && passwordField.getPassword().length > 0) {
 
+                    tempEndpoint = (String) endpointField.getText();
                     tempUsername = usernameField.getText();
                     tempPassword = new String(passwordField.getPassword());
 
@@ -128,7 +144,8 @@ public class LoginDialog implements ILanguage {
 
                         public void run() {
                             try {
-                                session.userLogIn(tempUsername, tempPassword);
+                                session.userLogIn(tempUsername, tempPassword, tempEndpoint);
+                                controller.setConfigKey("ededb.endpoint", tempEndpoint);
                                 dialog.setVisible(false);
                             } catch (WebServiceException ex) {
 
@@ -142,7 +159,7 @@ public class LoginDialog implements ILanguage {
                                             connectionErrorDesc,
                                             connectionErrorText,
                                             ex);
-                                } else{
+                                } else {
                                     JUIGLErrorInfoUtils.showErrorDialog(
                                             ex.getMessage(),
                                             ex.getLocalizedMessage(),
@@ -162,7 +179,7 @@ public class LoginDialog implements ILanguage {
 
                             usernameField.setText("");
                             passwordField.setText("");
-                            
+
                         }
                     });
 
@@ -197,6 +214,19 @@ public class LoginDialog implements ILanguage {
             }
         });
 
+        endpointField.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent ke) {
+                int kc = ke.getKeyCode();
+                if (kc == KeyEvent.VK_ENTER) {
+                    okButton.doClick();
+                } else if (kc == KeyEvent.VK_ESCAPE) {
+                    cancelButton.doClick();
+                }
+            }
+        });
+
         usernameField.addKeyListener(new KeyAdapter() {
 
             @Override
@@ -225,14 +255,23 @@ public class LoginDialog implements ILanguage {
 
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
+        
+        JXPanel top = new JXPanel();
+        top.setLayout(new BoxLayout(top, BoxLayout.LINE_AXIS));
+        try {
+            top.add(new JLabel(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32)));
+        } catch (PerspectiveException ex) {
+        }
+        
+        top.add(info);
 
         JXPanel center = new JXPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.LINE_AXIS));
         center.add(labelPane);
         center.add(fieldPane);
-
+        
         canvas.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        canvas.add(info);
+        canvas.add(top);
         canvas.add(center);
         canvas.add(buttonPane);
         canvas.add(progress);
@@ -251,11 +290,12 @@ public class LoginDialog implements ILanguage {
      * Setter of LoginDialog visibility.
      * @param visibility boolean
      */
-    public void setVisible(boolean visibility){
-        if(dialog != null)
+    public void setVisible(boolean visibility) {
+        if (dialog != null) {
             dialog.setVisible(visibility);
+        }
     }
-    
+
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
         resource = ResourceBundle.getBundle(path);
@@ -276,6 +316,7 @@ public class LoginDialog implements ILanguage {
             public void run() {
                 dialog.setTitle(resource.getString("logindialog.ededb.title"));
                 info.setText(resource.getString("logindialog.ededb.caution"));
+                endpointLabel.setText(resource.getString("logindialog.ededb.endpoint"));
                 usernameLabel.setText(resource.getString("logindialog.ededb.username"));
                 passwordLabel.setText(resource.getString("logindialog.ededb.password"));
                 okButton.setText(resource.getString("logindialog.ededb.buttons.ok"));

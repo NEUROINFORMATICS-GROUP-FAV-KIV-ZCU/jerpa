@@ -2,7 +2,7 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
 import org.junit.BeforeClass;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,7 +18,7 @@ public class ActionAnalyseSelectedTest {
     private static Method printExtensionsMethod;
     private static Method isAnalysibleMethod;
     private static EDEDBPerspective perspective;
-    private static EDEDSession session;
+    private static EDEDClient session;
     private static EDEDBController controller;
     private static ActionAnalyseSelected actionClass;
     
@@ -29,7 +29,7 @@ public class ActionAnalyseSelectedTest {
     @BeforeClass
     public static void setupClass() throws Exception {
         perspective = new EDEDBPerspective();
-        session = new EDEDSession();
+        session = new EDEDClient();
         controller = new EDEDBController(perspective, session);
         
         actionClass = new ActionAnalyseSelected(controller);

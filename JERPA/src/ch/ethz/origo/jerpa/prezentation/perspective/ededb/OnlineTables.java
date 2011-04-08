@@ -1,7 +1,7 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDSession;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
@@ -19,7 +19,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import org.jdesktop.swingx.JXTable;
@@ -38,7 +37,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
     private JXTable expTable;
     private JXTable dataTable;
     private EDEDBController controller;
-    private EDEDSession session;
+    private EDEDClient session;
     private String tableValueYes;
     private String tableValueNo;
     private String expInfoText;
@@ -52,7 +51,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
      * @param controller EDEDB EDEDBController class
      * @param session EDEDSession session
      */
-    public OnlineTables(EDEDBController controller, EDEDSession session) {
+    public OnlineTables(EDEDBController controller, EDEDClient session) {
         super();
 
         LanguageObservable.getInstance().attach(this);
