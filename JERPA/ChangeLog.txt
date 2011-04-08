@@ -1,6 +1,14 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.x.x                               *
 *********************************************************************************************
+
+  * (4/8/2011) Petr Miko
+    # 203
+    
+      CHANGED: new translations in JerpaLang
+      CHANGED: ActionAnalyse edited: Signal Perspective is now opened after file is loaded.
+        
+  
   * (4/7/2011) Vaclav Souhrada
     # 202
       

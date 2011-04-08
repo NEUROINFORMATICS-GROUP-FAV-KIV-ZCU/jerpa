@@ -10,7 +10,11 @@ import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
+import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -53,22 +57,22 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
 
         initTexts();
         putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_A));
-        
+
     }
 
     public void actionPerformed(ActionEvent e) {
 
         List<DataRowModel> selectedFiles = controller.getSelectedFiles();
 
-        if (selectedFiles.isEmpty()){
+        if (selectedFiles.isEmpty()) {
             JOptionPane.showMessageDialog(
                     new JFrame(),
                     emptyText,
                     emptyDesc,
                     JOptionPane.INFORMATION_MESSAGE);
-            return; 
+            return;
         }
-        
+
         if (selectedFiles.size() > 1) {
             JOptionPane.showMessageDialog(
                     new JFrame(),
@@ -119,54 +123,48 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
             }
 
 
-            List<Perspective> perspectives = null;
+           SignalPerspective signalPersp = null;
 
             try {
-                perspectives = PerspectiveLoader.getInstance().getListOfPerspectives();
+                signalPersp = (SignalPerspective) PerspectiveLoader.getInstance().getPerspective(
+                        "ch.ethz.origo.jerpa.prezentation.perspective.SignalPerspective");
             } catch (PerspectiveException ex) {
                 JUIGLErrorInfoUtils.showErrorDialog(
                         ex.getMessage(),
                         ex.getLocalizedMessage(),
                         ex);
             }
-            if (perspectives != null) {
-                SignalPerspective signalPersp = null;
 
-                for (Perspective persp : perspectives) {
-                    if (persp.getClass() == SignalPerspective.class) {
-                        signalPersp = (SignalPerspective) persp;
-                    }
-                }
+            if (signalPersp != null) {
+                final SignalPerspective persp = signalPersp;
+                Thread openFile = new Thread(new Runnable() {
 
-                if (signalPersp != null) {
-                    final SignalPerspective persp = signalPersp;
-                    Thread openFile = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean opened = persp.openFile(file);
 
-                        @Override
-                        public void run() {
-                            boolean opened = persp.openFile(file);
+                        controller.setElementsActive(true);
 
-                            controller.setElementsActive(true);
+                        controller.unselectAllFiles();
+                        Working.setVisible(false);
 
-                            controller.unselectAllFiles();
-                            Working.setVisible(false);
-                            
-                            if(opened){
-                            
+                        if (opened) {
+
                             JOptionPane.showMessageDialog(
                                     new JFrame(),
                                     doneText,
                                     doneDesc,
                                     JOptionPane.INFORMATION_MESSAGE);
-                            }
+                            PerspectiveObservable.getInstance().changePerspective(persp);
                         }
-                    });
-                    controller.setElementsActive(false);
-                    Working.setVisible(true);
-                    openFile.start();
+                    }
+                });
+                controller.setElementsActive(false);
+                Working.setVisible(true);
+                openFile.start();
 
-                }
             }
+
         }
     }
 
