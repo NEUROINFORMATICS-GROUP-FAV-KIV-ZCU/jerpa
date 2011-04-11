@@ -19,6 +19,9 @@ public class UserTableModel extends DefaultTableModel implements ILanguage {
     private String resourceBundlePath;
     private LinkedList<String> columnNames;
 
+    /**
+     * Constructor method.
+     */
     public UserTableModel() {
         super();
 
@@ -28,26 +31,48 @@ public class UserTableModel extends DefaultTableModel implements ILanguage {
         initColumns();
     }
 
+    /**
+     * Adds column with name "users" in proper language.
+     */
     private void initColumns() {
         columnNames = new LinkedList<String>();
         columnNames.add("tables.ededb.offline.users");
     }
 
+    /**
+     * Getter of editability cell state.
+     * @param row row index
+     * @param column column index
+     * @return false (this table can not be edited)
+     */
     @Override
     public boolean isCellEditable(int row, int column) {
         return false;
     }
 
+    /**
+     * Getter of column count.
+     * @return column count
+     */
     @Override
     public int getColumnCount() {
         return columnNames.size();
     }
 
+    /**
+     * Getter of Column name
+     * @param columnIndex column index
+     * @return String of column name
+     */
     @Override
     public String getColumnName(int columnIndex) {
         return resource.getString(columnNames.get(columnIndex));
     }
-    
+
+    /**
+     * Method for adding row.
+     * @param object
+     */
     @Override
     public void addRow(Object[] object) {
         if (object != null && object.length > 0) {
@@ -57,10 +82,20 @@ public class UserTableModel extends DefaultTableModel implements ILanguage {
         }
     }
 
+    /**
+     * Method for adding users name to table.
+     * @param filename
+     */
     public void addRow(String filename) {
         super.addRow(new Object[]{filename});
     }
 
+    /**
+     * Setter cell value method.
+     * @param object input
+     * @param rowIndex row index
+     * @param columnIndex column index
+     */
     @Override
     public void setValueAt(Object object, int rowIndex, int columnIndex) {
         if (object != null) {
@@ -92,6 +127,9 @@ public class UserTableModel extends DefaultTableModel implements ILanguage {
         });
     }
 
+    /**
+     * Clearing table method.
+     */
     public void clear() {
         while (this.getRowCount() > 0) {
             this.removeRow(0);

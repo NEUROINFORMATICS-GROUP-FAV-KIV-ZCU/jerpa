@@ -23,6 +23,9 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
     public static final int ID_COLUMN = 0;
     public static final int NAME_COLUMN = 1;
 
+    /**
+     * Constructor of experiment table model.
+     */
     public ExpTableModel() {
         super();
 
@@ -32,27 +35,49 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
         data = new LinkedList<ExperimentInfo>();
     }
 
+    /**
+     * Adds columns with names.
+     */
     private void initColumns() {
         columnNames = new LinkedList<String>();
         columnNames.add("table.ededb.exptable.expid");
         columnNames.add("table.ededb.exptable.scenarioname");
     }
 
+    /**
+     * Getter of row count.
+     * @return row count
+     */
     @Override
     public int getRowCount() {
         return data.size();
     }
 
+    /**
+     * Getter of column count.
+     * @return column count
+     */
     @Override
     public int getColumnCount() {
         return columnNames.size();
     }
 
+    /**
+     * Getter of column name
+     * @param columnIndex
+     * @return String of column name
+     */
     @Override
     public String getColumnName(int columnIndex) {
         return resource.getString(columnNames.get(columnIndex));
     }
 
+    /**
+     * Getter of table cell value according to row/column indices.
+     * @param rowIndex row index
+     * @param columnIndex column index
+     * @return Object (Integer or String}
+     */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (rowIndex >= 0) {
@@ -66,11 +91,21 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
         return null;
     }
 
+    /**
+     * Getter of cell editability state.
+     * @param rowIndex row index
+     * @param columnIndex column index
+     * @return false (this table cannot be edited)
+     */
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
     }
 
+    /**
+     * Add row to table method.
+     * @param experiment ExperimentInfo
+     */
     public void addRow(ExperimentInfo experiment) {
         if (experiment != null && experiment.getScenarioName() != null) {
             data.add(experiment);
@@ -81,6 +116,9 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
         fireTableDataChanged();
     }
 
+    /**
+     * Method clearing table.
+     */
     public void clear() {
         data.clear();
         fireTableDataChanged();

@@ -28,6 +28,9 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     public static final int SIZE_COLUMN = 3;
     public static final int DOWNLOADED_COLUMN = 4;
 
+    /**
+     * Constructor of data table model.
+     */
     public DataTableModel() {
         super();
         LanguageObservable.getInstance().attach(this);
@@ -51,6 +54,9 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         }
     }
 
+    /**
+     * Init. method - adding columns with proper names.
+     */
     private void initColumns() {
         columnNames = new LinkedList<String>();
         columnNames.add("table.ededb.datatable.action");
@@ -60,21 +66,40 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         columnNames.add("table.ededb.datatable.localcopy");
     }
 
+    /**
+     * Getter of row count.
+     * @return int - row count
+     */
     @Override
     public int getRowCount() {
         return data.size();
     }
 
+    /**
+     * Getter of column count.
+     * @return int - column count
+     */
     @Override
     public int getColumnCount() {
         return columnNames.size();
     }
 
+    /**
+     * Getter of column name.
+     * @param columnIndex index of column
+     * @return column name
+     */
     @Override
     public String getColumnName(int columnIndex) {
         return resource.getString(columnNames.get(columnIndex));
     }
 
+    /**
+     * Getter of value in table.
+     * @param rowIndex row index
+     * @param columnIndex column index
+     * @return Object (type depends of column index : 0 - boolean, 1 - String, 2 - String, 3 - long, 4 - DataRowModel.VALUE, else - false)
+     */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         
@@ -105,6 +130,13 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         }
     }
 
+
+    /**
+     * Setter of table cell value
+     * @param object input value
+     * @param rowIndex row index
+     * @param columnIndex column index
+     */
     @Override
     public void setValueAt(Object object, int rowIndex, int columnIndex) {
         if (columnIndex == 0) {
@@ -124,11 +156,23 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
     }
 
+    /**
+     * Getter whether is cell editable.
+     * @param rowIndex Row index
+     * @param columnIndex column index
+     * @return true/false
+     */
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return (columnIndex == 0);
     }
 
+    /**
+     * Method for adding row in table.
+     * @param fileInfo File information class
+     * @param downloaded DataRowModel.VALUE
+     * @param location experiment download folder path
+     */
     public void addRow(DataFileInfo fileInfo, int downloaded, String location) {
         if (fileInfo != null && location != null && (downloaded == DataRowModel.NO_LOCAL_COPY
                 || downloaded == DataRowModel.HAS_LOCAL_COPY
@@ -141,10 +185,17 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         this.fireTableDataChanged();
     }
 
+    /**
+     * Getter of data List<>
+     * @return List<DataRowModel> data
+     */
     public List<DataRowModel> getData() {
         return data;
     }
 
+    /**
+     * Method clearing table.
+     */
     public void clear() {
         data.clear();
         this.fireTableDataChanged();
@@ -169,6 +220,11 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
     }
 
+    /**
+     * Method for counting file size from long value
+     * @param length long value of file
+     * @return number Ki/Mi/Gi/Ti/Pi/Ei b
+     */
     private String countFileSize(long length) {
 
         if (length < UNIT) {
