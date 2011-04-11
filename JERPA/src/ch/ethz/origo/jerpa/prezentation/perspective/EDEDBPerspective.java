@@ -20,9 +20,8 @@ import org.jdesktop.swingx.JXTaskPane;
  * @author Petr Miko
  */
 public class EDEDBPerspective extends Perspective {
-	
-	  private static final String ID_PERSPECTIVE = EDEDBPerspective.class.getName();
 
+    private static final String ID_PERSPECTIVE = EDEDBPerspective.class.getName();
     private JUIGLEMenuItem ededbMenu;
     private JUIGLEMenuItem ededbMenu2;
     private EDEDClient session;
@@ -34,36 +33,59 @@ public class EDEDBPerspective extends Perspective {
     private JUIGLEMenuItem openDir;
     private JUIGLEMenuItem analyseFile;
     private JUIGLEMenuItem deleteFile;
-
     private boolean menuInited = false;
 
-    public EDEDBPerspective(){
+    /**
+     * Constructor creating EEG/ERP Database - Experiment Data Browser Perspective
+     */
+    public EDEDBPerspective() {
         resourcePath = "ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB";
         session = new EDEDClient();
         controller = new EDEDBController(this, session);
-        
+
     }
 
+    /**
+     * Override method for setting perspective's icon
+     * @return perspective's icon
+     * @throws PerspectiveException
+     */
     @Override
     public Icon getPerspectiveIcon() throws PerspectiveException {
         return JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "ededb_48.png", 32, 32);
     }
-
+    
+    /**
+     * Override method for getting perspective's title
+     * @return perspective's title
+     */
     @Override
     public String getTitle() {
         return resource.getString(getRBPerspectiveTitleKey());
     }
 
+    /**
+     * An override method setting perspective's resource bundle title key.
+     * @return title key
+     */
     @Override
     public String getRBPerspectiveTitleKey() {
         return "perspective.title";
     }
-    
+
+    /**
+     * An override method for gettting perspective's id
+     * @return String ID
+     */
     @Override
     public String getID() {
         return ID_PERSPECTIVE;
     }
 
+    /**
+     * An override method for initialising perspective's menu panel.
+     * @throws PerspectiveException
+     */
     @Override
     public void initPerspectiveMenuPanel() throws PerspectiveException {
         if (menuTaskPane == null) {
@@ -74,6 +96,11 @@ public class EDEDBPerspective extends Perspective {
         }
     }
 
+    /**
+     * Method creating initialised menu.
+     * @return JUIGLEMenu inited
+     * @throws PerspectiveException
+     */
     private JUIGLEMenu initMenu() throws PerspectiveException {
 
         menu = new JUIGLEPerspectiveMenu(JUIGLEMenu.MENU_LOCATION_TOP,
@@ -86,7 +113,7 @@ public class EDEDBPerspective extends Perspective {
             menu.addItem(createEdedbMenu2());
 
             menuInited = true;
-            
+
             updateMenuItemVisibility();
             menu.addMenuSeparator();
 
@@ -99,6 +126,10 @@ public class EDEDBPerspective extends Perspective {
         return menu;
     }
 
+    /**
+     * Creating items for first EDEDB menu.
+     * @return first EDEDB JUIGLEMenuItem
+     */
     private JUIGLEMenuItem createEdedbMenu() {
         ededbMenu = new JUIGLEMenuItem(getLocalizedString("menu.ededb.title"));
 
@@ -117,7 +148,7 @@ public class EDEDBPerspective extends Perspective {
         disconnect.setAction(controller.getActionDisconnect());
         chooseDir.setAction(controller.getActionChooseDownloadFolder());
         openDir.setAction(controller.getActionOpenDownloadPath());
-        
+
         ededbMenu.addSubItem(connect);
         ededbMenu.addSubItem(disconnect);
         ededbMenu.addSubItem(chooseDir);
@@ -126,6 +157,10 @@ public class EDEDBPerspective extends Perspective {
         return ededbMenu;
     }
 
+    /**
+     * Creating items for second EDEDB menu.
+     * @return second EDEDB JUIGLEMenuItem
+     */
     private JUIGLEMenuItem createEdedbMenu2() {
         ededbMenu2 = new JUIGLEMenuItem(getLocalizedString("menu2.ededb.title"));
 
@@ -141,7 +176,7 @@ public class EDEDBPerspective extends Perspective {
         downloadFile.setAction(controller.getActionDownloadSelected());
         deleteFile.setAction(controller.getActionDeleteSelected());
         analyseFile.setAction(controller.getActionAnalyseSelected());
-        
+
         ededbMenu2.addSubItem(downloadFile);
         ededbMenu2.addSubItem(analyseFile);
         ededbMenu2.addSubItem(deleteFile);
@@ -149,12 +184,19 @@ public class EDEDBPerspective extends Perspective {
         return ededbMenu2;
     }
 
+    /**
+     * Override method for initialising perspective panel.
+     * @throws PerspectiveException
+     */
     @Override
     public void initPerspectivePanel() throws PerspectiveException {
         super.initPerspectivePanel();
         mainPanel = controller.initGraphics();
     }
 
+    /**
+     * Method for updating menu items visibility
+     */
     public void updateMenuItemVisibility() {
 
         if (!controller.isLock() && menuInited) {
@@ -175,6 +217,10 @@ public class EDEDBPerspective extends Perspective {
         }
     }
 
+    /**
+     * Method setting all items active/inactive in same time.
+     * @param active true/false
+     */
     public void setMenuItemEnabled(boolean active) {
         connect.setEnabled(active);
         disconnect.setEnabled(active);

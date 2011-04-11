@@ -224,7 +224,7 @@ public class EDEDBController {
     }
 
     /**
-     * Following methods are action getters.
+     * Getter of choose download folder path.
      * @return download action
      */
     public ActionChooseDownloadPath getActionChooseDownloadFolder() {
@@ -232,7 +232,7 @@ public class EDEDBController {
     }
 
     /**
-     *
+     * Get action delete selected.
      * @return delete action
      */
     public ActionDeleteSelected getActionDeleteSelected() {
@@ -240,7 +240,7 @@ public class EDEDBController {
     }
 
     /**
-     *
+     * Getter of action connect.
      * @return connect action
      */
     public ActionConnect getActionConnect() {
@@ -248,7 +248,7 @@ public class EDEDBController {
     }
 
     /**
-     *
+     * Getter of action disconnect.
      * @return disconnect action
      */
     public ActionDisconnect getActionDisconnect() {
@@ -256,7 +256,7 @@ public class EDEDBController {
     }
 
     /**
-     *
+     * Getter of action download selected.
      * @return download action
      */
     public ActionDownloadSelected getActionDownloadSelected() {
@@ -264,7 +264,7 @@ public class EDEDBController {
     }
 
     /**
-     *
+     * Getter of action open download path.
      * @return open download folder action
      */
     public ActionOpenDownloadPath getActionOpenDownloadPath() {
@@ -272,7 +272,7 @@ public class EDEDBController {
     }
 
     /**
-     *
+     * Getter of action analyse selected.
      * @return open in analyze perspective action
      */
     public ActionAnalyseSelected getActionAnalyseSelected() {
@@ -510,6 +510,11 @@ public class EDEDBController {
         return downloadingFiles.size();
     }
 
+    /**
+     * Getter of String key from config properties file.
+     * @param key String key
+     * @return String value
+     */
     public String getConfigKey(String key) {
         FileInputStream inPropStream = null;
         String tmp = null;
@@ -525,6 +530,11 @@ public class EDEDBController {
         return tmp;
     }
 
+    /**
+     * Add/Set key in config properties file.
+     * @param key String key
+     * @param argument String value
+     */
     public void setConfigKey(String key, String argument) {
         try {
             FileOutputStream outPropStream = null;

@@ -26,6 +26,10 @@ public class ActionDisconnect extends AbstractAction {
         putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
     }
 
+    /**
+     * Method invoked by performed action
+     * @param e action
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         controller.setUserLoggedIn(false);

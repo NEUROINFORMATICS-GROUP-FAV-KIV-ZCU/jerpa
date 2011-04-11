@@ -3,6 +3,11 @@
 *********************************************************************************************
   
   * (4/11/2011) Petr Miko
+    # 206
+    
+      CHANGED: complete JavaDoc for EDEDB sections.  
+  
+  * (4/11/2011) Petr Miko
     # 205
     
       CHANGED: in package ...ededb.tables added JavaDoc comments.   

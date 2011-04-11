@@ -14,9 +14,22 @@ public class DataRowModel {
     private int downloaded;
     private String extension;
     private String location;
+
+    /**
+     * Value signalizing, that file does not have a local copy.
+     */
     public static final int NO_LOCAL_COPY = 0;
+    /**
+     * Value signalizing, that file has a local copy.
+     */
     public static final int HAS_LOCAL_COPY = 1;
+    /**
+     * Value signalizing, that file is currently downloading.
+     */
     public static final int DOWNLOADING = 2;
+    /**
+     * Value signalizing, that file is in error state (size of complete file is not equal to size of file which is localy present)
+     */
     public static final int ERROR = 3;
 
     /**

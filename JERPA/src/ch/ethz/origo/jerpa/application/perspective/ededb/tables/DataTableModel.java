@@ -22,10 +22,25 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     private LinkedList<DataRowModel> data;
     private LinkedList<String> columnNames;
     private final int UNIT = 1024;
+    /**
+     * Index of action column.
+     */
     public static final int ACTION_COLUMN = 0;
+    /**
+     * Index of name column.
+     */
     public static final int NAME_COLUMN = 1;
+    /**
+     * Index of MIME type column.
+     */
     public static final int MIME_COLUMN = 2;
+    /**
+     * Index of file size column.
+     */
     public static final int SIZE_COLUMN = 3;
+    /**
+     * Index of download state column.
+     */
     public static final int DOWNLOADED_COLUMN = 4;
 
     /**
@@ -39,12 +54,12 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         data = new LinkedList<DataRowModel>();
     }
 
-    @Override
-    public void setLocalizedResourceBundle(String path) {
-        this.resourceBundlePath = path;
-        resource = ResourceBundle.getBundle(path);
-    }
 
+    /**
+     * Getter of column class type. Necessary for first column in order to be a check box.
+     * @param columnIndex column index
+     * @return class
+     */
     @Override
     public Class getColumnClass(int columnIndex) {
         if (columnIndex == 0) {
@@ -201,14 +216,35 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         this.fireTableDataChanged();
     }
 
+    /**
+     * Setter of localization resource budle path
+     * @param path path to localization source file.
+     */
+    public void setLocalizedResourceBundle(String path) {
+        this.resourceBundlePath = path;
+        resource = ResourceBundle.getBundle(path);
+    }
+
+    /**
+     * Getter of path to resource bundle.
+     * @return path to localization file.
+     */
     public String getResourceBundlePath() {
         return resourceBundlePath;
     }
 
+    /**
+     * Setter of resource budle key.
+     * @param string key
+     */
     public void setResourceBundleKey(String string) {
         throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
+    /**
+     * Method invoked by change of LanguageObservable.
+     * @throws JUIGLELangException
+     */
     public void updateText() throws JUIGLELangException {
         SwingUtilities.invokeLater(new Runnable() {
 

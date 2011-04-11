@@ -27,6 +27,10 @@ public class ActionChooseDownloadPath extends AbstractAction {
         putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
     }
 
+    /**
+     * Method invoked by performed action.
+     * @param e
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();

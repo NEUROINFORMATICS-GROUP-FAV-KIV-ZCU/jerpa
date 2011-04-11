@@ -29,6 +29,10 @@ public class ActionOpenDownloadPath extends AbstractAction {
         putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_P));
     }
 
+    /**
+     * Performed action method
+     * @param e action
+     */
     public void actionPerformed(ActionEvent e) {
         try {
             File file = new File(controller.getDownloadPath());

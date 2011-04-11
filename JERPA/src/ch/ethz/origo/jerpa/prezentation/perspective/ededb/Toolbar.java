@@ -181,8 +181,8 @@ public class Toolbar extends JXPanel implements ILanguage {
     }
 
     /**
-     * Method setting localization resource budle path.
-     * @param path Resource bundle path
+     * Setter of localization resource budle path
+     * @param path path to localization source file.
      */
     public void setLocalizedResourceBundle(String path) {
         this.resourceBundlePath = path;
@@ -190,19 +190,23 @@ public class Toolbar extends JXPanel implements ILanguage {
     }
 
     /**
-     * Getter of resource budle path.
-     * @return resource budle path
+     * Getter of path to resource bundle.
+     * @return path to localization file.
      */
     public String getResourceBundlePath() {
         return resourceBundlePath;
     }
 
+    /**
+     * Setter of resource budle key.
+     * @param string key
+     */
     public void setResourceBundleKey(String string) {
         throw new UnsupportedOperationException("Method is not implemented yet...");
     }
 
     /**
-     * ILanguage updating method. Vital for localization.
+     * Method invoked by change of LanguageObservable.
      * @throws JUIGLELangException
      */
     public void updateText() throws JUIGLELangException {
@@ -234,6 +238,9 @@ public class Toolbar extends JXPanel implements ILanguage {
         updateButtonsVisibility();
     }
 
+    /**
+     * Method for creating and setting icons to buttons.
+     */
     private void createIcons() {
         try {
             analyseFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "ededb_48.png", 32, 32));
