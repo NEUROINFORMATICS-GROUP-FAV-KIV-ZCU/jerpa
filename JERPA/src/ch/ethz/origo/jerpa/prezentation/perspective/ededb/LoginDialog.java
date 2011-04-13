@@ -10,8 +10,6 @@ import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.net.ConnectException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,6 +43,7 @@ public class LoginDialog implements ILanguage {
     private JXLabel passwordLabel;
     private JXLabel endpointLabel;
     private JButton okButton, cancelButton;
+    private JToggleButton optionsButton;
     private String inputsErrorText;
     private String inputsErrorDesc;
     private String credentialsErrorText;
@@ -81,6 +80,9 @@ public class LoginDialog implements ILanguage {
         JXPanel fieldPane = new JXPanel(new GridLayout(0, 1));
         JXPanel buttonPane = new JXPanel(new FlowLayout());
 
+        final JXPanel moreLabelPane = new JXPanel(new GridLayout(0, 1));
+        final JXPanel moreFieldPane = new JXPanel(new GridLayout(0, 1));
+
         updateErrorTexts();
 
         info = new JTextArea(resource.getString("logindialog.ededb.caution"));
@@ -104,7 +106,9 @@ public class LoginDialog implements ILanguage {
         usernameLabel.setLabelFor(usernameField);
         passwordLabel.setLabelFor(passwordField);
 
-        endpointField.setText(controller.getConfigKey("ededb.endpoint"));
+        String endpoint = controller.getConfigKey("ededb.endpoint");
+        endpointField.setText(endpoint);
+
 
         endpointField.setColumns(10);
         usernameField.setColumns(10);
@@ -113,15 +117,17 @@ public class LoginDialog implements ILanguage {
         usernameField.setText(session.getUsername());
         passwordField.setText(session.getPassword());
 
-        labelPane.add(endpointLabel);
+        moreLabelPane.add(endpointLabel);
         labelPane.add(usernameLabel);
         labelPane.add(passwordLabel);
-        fieldPane.add(endpointField);
+
+        moreFieldPane.add(endpointField);
         fieldPane.add(usernameField);
         fieldPane.add(passwordField);
 
         okButton = new JButton(resource.getString("logindialog.ededb.buttons.ok"));
         cancelButton = new JButton(resource.getString("logindialog.ededb.buttons.cancel"));
+        optionsButton = new JToggleButton(resource.getString("logindialog.ededb.buttons.more"));
 
         okButton.addActionListener(new ActionListener() {
 
@@ -214,6 +220,17 @@ public class LoginDialog implements ILanguage {
             }
         });
 
+        optionsButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                moreLabelPane.setVisible(optionsButton.isSelected());
+                moreFieldPane.setVisible(optionsButton.isSelected());
+
+                dialog.pack();
+            }
+        });
+
+
         endpointField.addKeyListener(new KeyAdapter() {
 
             @Override
@@ -253,27 +270,45 @@ public class LoginDialog implements ILanguage {
             }
         });
 
+        if (endpoint == null) {
+            optionsButton.setSelected(true);
+
+            moreLabelPane.setVisible(true);
+            moreFieldPane.setVisible(true);
+        } else {
+
+            moreLabelPane.setVisible(false);
+            moreFieldPane.setVisible(false);
+        }
+
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
-        
+        buttonPane.add(optionsButton);
+
         JXPanel top = new JXPanel();
         top.setLayout(new BoxLayout(top, BoxLayout.LINE_AXIS));
         try {
             top.add(new JLabel(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32)));
         } catch (PerspectiveException ex) {
         }
-        
+
         top.add(info);
 
         JXPanel center = new JXPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.LINE_AXIS));
         center.add(labelPane);
         center.add(fieldPane);
-        
+
+        JXPanel more = new JXPanel();
+        more.setLayout(new FlowLayout());
+        more.add(moreLabelPane);
+        more.add(moreFieldPane);
+
         canvas.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         canvas.add(top);
         canvas.add(center);
         canvas.add(buttonPane);
+        canvas.add(more);
         canvas.add(progress);
 
         dialog.setTitle(resource.getString("logindialog.ededb.title"));
@@ -337,6 +372,7 @@ public class LoginDialog implements ILanguage {
                 passwordLabel.setText(resource.getString("logindialog.ededb.password"));
                 okButton.setText(resource.getString("logindialog.ededb.buttons.ok"));
                 cancelButton.setText(resource.getString("logindialog.ededb.buttons.cancel"));
+                optionsButton.setText(resource.getString("logindialog.ededb.buttons.more"));
                 updateErrorTexts();
             }
         });
