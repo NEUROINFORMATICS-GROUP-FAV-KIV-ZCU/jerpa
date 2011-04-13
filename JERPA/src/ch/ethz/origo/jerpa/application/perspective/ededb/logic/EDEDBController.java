@@ -80,9 +80,14 @@ public class EDEDBController {
         this.session = session;
 
         properties = new Properties();
-        firstRun = true;
+        String tmpath = getConfigKey("ededb.downloadfolder");
 
-        setDownloadPath(getConfigKey("ededb.downloadfolder"));
+        if (tmpath == null) {
+            firstRun = true;
+        } else {
+            setDownloadPath(tmpath);
+            firstRun = false;
+        }
 
         mainPanel = new JXPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -341,20 +346,8 @@ public class EDEDBController {
      */
     public void setDownloadPath(String downloadPath) {
 
-        File config = new File(configFile);
-        if (!config.exists()) {
-            try {
-                (new File(configFolder)).mkdirs();
-                config.createNewFile();
-            } catch (IOException ex) {
-                JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
-                        ex.getMessage(), ex);
-            }
-        }
-
         setConfigKey("ededb.downloadfolder", downloadPath);
         this.downloadPath = downloadPath;
-        firstRun = false;
     }
 
     /**
@@ -536,12 +529,27 @@ public class EDEDBController {
      * @param argument String value
      */
     public void setConfigKey(String key, String argument) {
+
+        File config = new File(configFile);
+        if (!config.exists()) {
+            try {
+                (new File(configFolder)).mkdirs();
+                config.createNewFile();
+            } catch (IOException ex) {
+                JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
+                        ex.getMessage(), ex);
+            }
+        }
+
+        FileOutputStream outPropStream = null;
         try {
-            FileOutputStream outPropStream = null;
             outPropStream = new FileOutputStream(configFile);
             properties.setProperty(key, argument);
             properties.store(outPropStream, null);
+            outPropStream.close();
         } catch (IOException ex) {
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR",
+                    ex.getMessage(), ex);
         }
     }
 }

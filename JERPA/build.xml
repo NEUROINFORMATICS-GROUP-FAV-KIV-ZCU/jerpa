@@ -47,11 +47,13 @@
         <mkdir dir="${build}" />
         <mkdir dir="${dist}" />
         <mkdir dir="${dir.test-bin}" />
+
+        <manifestclasspath property="lib.list" jarfile="${dist}/${buildfilename}">
+            <classpath refid="compile.class.path" />
+        </manifestclasspath>
     </target>
 
-    <manifestclasspath property="lib.list" jarfile="${dist}/${buildfilename}">
-        <classpath refid="compile.class.path" />
-    </manifestclasspath>
+    
 
     <target name="compile" depends="init">
         <javac srcdir="${src}" destdir="${build}" classpathref="compile.class.path" debug="on">

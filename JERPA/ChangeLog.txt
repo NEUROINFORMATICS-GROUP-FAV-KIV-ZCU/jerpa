@@ -1,7 +1,18 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.0.1                               *
 *********************************************************************************************
-
+  
+  * (4/13/2011) Petr Miko
+    # 209
+      
+      Following changes are both in trunk and branch 1.0.1.
+    
+      CHANGED: edited build.xml - ant operations works now properly even in cases of missing folders (moved manifestclasspath to init).
+      CHANGED: EDEDBController - corrected creation of ededb.properties - should work now properly.
+      CHANGED: LoginDialog of EDEDB - endpoint field is now part of "options menu" inside login dialog.
+      CHANGED: text added in JerpaLang.
+   
+   
   * (4/11/2011) vsouhrada
     # 207
     
