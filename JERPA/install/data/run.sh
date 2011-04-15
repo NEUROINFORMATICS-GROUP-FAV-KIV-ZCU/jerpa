@@ -1,0 +1,2 @@
+$LINUX_BASH
+$runScript $APP_JAR_NAME

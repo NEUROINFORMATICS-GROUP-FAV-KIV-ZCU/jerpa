@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF8" standalone="yes" ?>
+<installation version="1.0">
+	<info>
+		<appname>JERPA</appname>
+		<appversion>1.0.1</appversion>
+		<authors>
+			<author name="Vaclav Souhrada" email="v.souhrada at gmail dot com" />
+			<author name="Tomas Rondik" email=""/>
+			<author name="Petr Soukal" email=""/>
+			<author name="Jiri Kucera" email=""/>
+			<author name="Petr Miko" email="petr(at)petrmiko.cz" />
+		</authors>
+		<url>http://jerpa.origo.ethz.ch/</url>
+		<uninstaller>yes</uninstaller>
+		<javaversion>1.6</javaversion>
+	</info>
+
+	<variables>
+		<variable name="JVM_REQ" value="Java VM (JRE) 1.5 or higher" />
+		<variable name="DesktopShortcutCheckboxEnabled" value="true" />
+		<variable name="runScript" value="java -jar" />
+		<variable name="APP_JAR_NAME" value="dist/JERPA-1.0.1.jar" />
+		<variable name="LANG_KEY" value="default.lang =" />
+		<variable name="LINUX_BASH" value="#!/bin/bash" />
+		<variable name="UNINSTALL" value="Uninstaller/uninstaller.jar" />
+	</variables>
+
+	<!-- The gui preferences indication. Sets the installer window to 640x480. 
+		It will not be able to change the size. -->
+	<guiprefs width="640" height="480" resizable="yes">
+		<laf name="metouia">
+			<os family="unix" />
+		</laf>
+		<laf name="looks">
+			<os family="windows" />
+			<param name="variant" value="extwin" />
+		</laf>
+	</guiprefs>
+
+	<!-- The locale section. Asks here to include the English and Czech langpacks. -->
+	<locale>
+		<langpack iso3="eng" />
+		<langpack iso3="cze" />
+	</locale>
+
+	<!-- The resources section. The ids must be these ones if you want to use 
+		the LicencePanel and/or the InfoPanel. -->
+	<resources>
+		<res id="InfoPanel.info" src="Readme.txt" parse="yes" type="plain" />
+		<res id="InfoPanel.info_cze" src="Readme_cze.txt" parse="yes"
+			type="plain" />
+		<res id="LicencePanel.licence" src="Licence.txt" />
+		<res id="LicencePanel.licence_cze" src="Licence_cze.txt" parse="yes"
+			type="plain" />
+		<res id="shortcutSpec.xml" src="Win-shortcutSpec.xml" />
+		<res id="Unix_shortcutSpec.xml" src="Unix-shortcutSpec.xml" />
+	</resources>
+
+	<!-- The native libraries to add -->
+	<native type="izpack" name="ShellLink.dll">
+		<os family="windows" />
+	</native>
+
+	<!-- The panels section. We indicate here which panels we want to use. The 
+		order will be respected. -->
+	<panels>
+		<panel classname="HelloPanel" />
+		<panel classname="InfoPanel" />
+		<panel classname="LicencePanel" />
+		<panel classname="TargetPanel" />
+		<panel classname="PacksPanel" />
+		<panel classname="InstallPanel" />
+		<panel classname="ShortcutPanel" />
+		<panel classname="FinishPanel" />
+	</panels>
+
+	<!-- The packs section. We specify here our packs. -->
+	<packs>
+		<pack name="Base" required="yes">
+			<description>The base files</description>
+			<file src="Readme.txt" targetdir="$INSTALL_PATH" />
+			<file src="Licence.txt" targetdir="$INSTALL_PATH" />
+			<file src="lib" targetdir="$INSTALL_PATH" />
+			<file src="config" targetdir="$INSTALL_PATH" />
+			<file src="lang.properties" targetdir="$INSTALL_PATH/config" />
+			<file src="unixIcon.png" targetdir="$INSTALL_PATH" />
+			<file src="jerpa.ico" targetdir="$INSTALL_PATH" />
+			<file src="dist/JERPA-1.0.1.jar" targetdir="$INSTALL_PATH/dist" />
+			<file src="run.bat" targetdir="$INSTALL_PATH" />
+			<file src="run.sh" targetdir="$INSTALL_PATH" />
+			<file src="uninstall.sh" targetdir="$INSTALL_PATH" />
+			<file src="uninstall.bat" targetdir="$INSTALL_PATH" />
+			<parsable targetfile="$INSTALL_PATH/run.bat" /> <!-- The file will be parsed -->
+			<parsable targetfile="$INSTALL_PATH/run.sh" /> <!-- The file will be parsed -->
+			<parsable targetfile="$INSTALL_PATH/uninstall.bat" /> <!-- The file will be parsed -->
+			<parsable targetfile="$INSTALL_PATH/uninstall.sh" /> <!-- The file will be parsed -->
+			<parsable targetfile="$INSTALL_PATH/config/lang.properties" /> <!-- The file will be parsed -->
+		</pack>
+		<pack name="Plugins" required="no">
+			<description>The JERPA's Plugins</description>
+			<file src="plugins" targetdir="$INSTALL_PATH" />
+			<!-- Reccursive adding -->
+		</pack>
+		<pack name="Docs" required="no">
+			<description>The documentation</description>
+			<file src="doc" targetdir="$INSTALL_PATH" />
+			<!-- Reccursive adding -->
+		</pack>
+		<pack name="Source" required="no">
+			<description>The source of application</description>
+			<file src="src" targetdir="$INSTALL_PATH" />
+			<!-- Reccursive adding -->
+		</pack>
+	</packs>
+
+</installation>

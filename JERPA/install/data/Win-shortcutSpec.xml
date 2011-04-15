@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+ 
+<shortcuts>
+    <skipIfNotSupported/>
+    <programGroup defaultName="JERPA" location="applications"/>
+ 
+    <shortcut
+        name= "$APP_NAME"
+        programGroup="yes"
+        desktop="yes"
+        applications="no"
+        startMenu="yes"
+        startup="no"
+        target="java -jar $INSTALL_PATH\dist\JERPA-1.0.1.jar"
+        commandLine=""
+        description="$APP_NAME launcher"
+        iconFile="$INSTALL_PATH\jerpa.ico"
+        iconIndex="0"
+        initialState="noShow">
+    </shortcut>
+ 
+    <shortcut
+        name="Uninstaller"
+        programGroup="yes"
+        desktop="no"
+        applications="no"
+        startMenu="no"
+        startup="no"
+        target="java -jar $INSTALL_PATH\Uninstaller\uninstaller.jar"
+        commandLine=""
+        description="JERPA uninstaller">
+    </shortcut>
+ 
+</shortcuts>

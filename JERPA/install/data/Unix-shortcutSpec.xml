@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+      <shortcuts>
+            <skipIfNotSupported/>
+            <programGroup defaultName="JERPA" location="applications"/>
+            <shortcut
+            	name="$APP_NAME"
+                programGroup="yes"
+               	desktop="yes"
+               	applications="no"
+              	iconFile="$INSTALL_PATH/unixIcon.png"
+              	startup="no"
+              	target="java -jar $INSTALL_PATH/dist/JERPA-1.0.1.jar"
+             	workingDirectory="$INSTALL_PATH"
+             	description="JERPA installation"
+              	type="Application"
+              	encoding="UTF-8"
+              	terminal="true"
+              	KdeSubstUID="false"
+             	initialState="normal">
+         </shortcut>
+         <shortcut
+              	name="Uninstall JERPA"
+              	programGroup="yes"
+              	applications="no"
+             	startup="no"
+             	target="java -jar $INSTALL_PATH/Uninstaller/uninstall.jar"
+             	workingDirectory="$INSTALL_PATH"
+              	description="JERPA uninstall"
+              	type="Application"
+              	encoding="UTF-8"
+              	terminal="true"
+              	KdeSubstUID="false"
+              	initialState="normal">
+         </shortcut>
+      </shortcuts>

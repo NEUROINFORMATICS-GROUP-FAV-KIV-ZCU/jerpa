@@ -1,0 +1,3 @@
+$LINUX_BASH
+$runScript $UNINSTALL
+
