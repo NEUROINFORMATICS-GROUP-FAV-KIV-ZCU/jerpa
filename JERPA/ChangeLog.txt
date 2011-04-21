@@ -11,6 +11,20 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.0.1                               *
 *********************************************************************************************
+ 
+  * (4/21/2011) Petr Miko
+    # 214
+     
+      Following changes are both in trunk and branch 1.0.1.
+      
+      CHANGED: EDEDClient.jar has new generated sources.    
+      CHANGED: Online and Offline Tables are now switch in accordance to connected/disconnected state, no tabs anymore.
+      CHANGED: Fixed update experiment table bug (wrong data files shown)   
+      CHANGED: ededb.properties are now part of JERPA pack - needed endpoint address is inside (but is changeble and when the properties file is deleted, still generates itself)
+      CHANGED: Data Table Cell editor added - downloaded files have green cell's background, corrupted red background and downloading orange background.
+      CHANGED: Working is now JPanel in sidebar with description of ongoing operations. Also sets up animation of cursor (busy/default).
+      CHANGED: New translations and edits in JerpaLang.
+      CHANGED: In sidebar is now ALL radio button, which shows all available experiments on EEG/ERP Portal.
   
   * (4/13/2011) Petr Miko
     # 209

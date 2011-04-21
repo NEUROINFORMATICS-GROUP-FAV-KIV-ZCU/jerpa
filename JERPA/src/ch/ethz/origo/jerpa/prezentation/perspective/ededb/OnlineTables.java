@@ -1,6 +1,7 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
+import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataCellRenderer;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.swing.table.TableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 
 /**
@@ -105,6 +107,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
     private Container createDataTable() {
         dataModel = new DataTableModel();
         dataTable = new JXTable(dataModel);
+        dataTable.setDefaultRenderer(Object.class, new DataCellRenderer(dataModel));
 
         dataTable.setAutoCreateRowSorter(true);
         dataTable.setFillsViewportHeight(true);
@@ -139,11 +142,8 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                 if (session.isConnected()) {
                     java.util.List<ExperimentInfo> availableExperiments;
 
-                    if (controller.getRights() == Rights.SUBJECT) {
-                        availableExperiments = session.getService().getExperiments(Rights.SUBJECT);
-                    } else {
-                        availableExperiments = session.getService().getExperiments(Rights.OWNER);
-                    }
+                    availableExperiments = session.getService().getExperiments(controller.getRights());
+                    Working.setActivity(false, "working.ededb.update.exptable");
 
                     if (availableExperiments != null) {
                         JOptionPane.showMessageDialog(
@@ -172,11 +172,10 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                 }
 
                 repaint();
-                Working.setVisible(false);
             }
         });
 
-        Working.setVisible(true);
+        Working.setActivity(true, "working.ededb.update.exptable");
         updateExpThread.start();
 
     }
@@ -191,12 +190,12 @@ public class OnlineTables extends JSplitPane implements ILanguage {
 
             public void run() {
                 java.util.List<DataFileInfo> dataFileInfos = null;
-                if (row >= 0 && row <= dataModel.getRowCount()) {
+                if (row >= 0 && row <= expModel.getRowCount()) {
                     try {
-                        int expId = Integer.parseInt(expModel.getValueAt(row, ExpTableModel.ID_COLUMN).toString());
+                        int expId = Integer.parseInt(expTable.getValueAt(row, ExpTableModel.ID_COLUMN).toString());
                         dataFileInfos = session.getService().getExperimentFiles(expId);
                     } catch (SOAPException_Exception e) {
-                        
+
                         JUIGLErrorInfoUtils.showErrorDialog(
                                 e.getMessage(),
                                 resource.getString("soapexception.ededb.text"),
@@ -221,11 +220,11 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                     }
                 }
                 repaint();
-                Working.setVisible(false);
+                Working.setActivity(false, "working.ededb.update.datatable");
             }
         });
 
-        Working.setVisible(true);
+        Working.setActivity(true, "working.ededb.update.datatable");
         updateDataThread.start();
     }
 
@@ -309,12 +308,12 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         errorConnectionDesc = resource.getString("tables.ededb.exp.connection.desc");
         errorRangeDesc = resource.getString("tables.ededb.data.exception.desc");
     }
-    
+
     /**
      * Method for returning row contents.
      * @return rows of data table
      */
-    public List<DataRowModel> getRows(){
+    public List<DataRowModel> getRows() {
         return dataModel.getData();
     }
 }

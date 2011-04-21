@@ -11,11 +11,7 @@ import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
-import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
-import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
-import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
-import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -157,7 +153,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
                         controller.setElementsActive(true);
 
                         controller.unselectAllFiles();
-                        Working.setVisible(false);
+                        Working.setActivity(false,"working.ededb.visualise");
 
                         if (opened) {
 
@@ -171,7 +167,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
                     }
                 });
                 controller.setElementsActive(false);
-                Working.setVisible(true);
+                Working.setActivity(true,"working.ededb.visualise");
                 openFile.start();
 
             }

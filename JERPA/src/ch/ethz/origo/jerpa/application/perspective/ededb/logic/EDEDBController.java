@@ -18,23 +18,18 @@ import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginInfo;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OfflineTables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OnlineTables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import org.jdesktop.swingx.JXPanel;
 
 /**
@@ -61,11 +56,11 @@ public class EDEDBController {
     private ActionOpenDownloadPath actionOpenDownloadPath;
     private String downloadPath;
     private boolean firstRun;
-    private JXPanel mainPanel;
+    private JXPanel mainPanel, tableViewPanel;
     private Properties properties;
     private final String configFolder = "config";
     private final String configFile = "config/ededb.properties";
-    private boolean onlineTab;
+    private boolean offlineMode;
     private boolean lock;
     private Set<Integer> downloadingFiles;
 
@@ -80,12 +75,14 @@ public class EDEDBController {
         this.session = session;
 
         properties = new Properties();
-        String tmpath = getConfigKey("ededb.downloadfolder");
+        String temPath = getConfigKey("ededb.downloadfolder");
+        File tempDownloadFolder = (temPath == null
+                ? null : new File(temPath));
 
-        if (tmpath == null) {
+        if (tempDownloadFolder == null || !(tempDownloadFolder.exists())) {
             firstRun = true;
         } else {
-            setDownloadPath(tmpath);
+            setDownloadPath(temPath);
             firstRun = false;
         }
 
@@ -101,6 +98,7 @@ public class EDEDBController {
      * Init method for all used classes in EDEDB.
      */
     private void initClasses() {
+
         onlineTables = new OnlineTables(this, session);
         offlineTables = new OfflineTables(this);
         loginDialog = new LoginDialog(this, session);
@@ -137,11 +135,13 @@ public class EDEDBController {
         if (loggedIn) {
             loginDialog.setVisible(true);
             if (session.isConnected()) {
+                updateTableView();
                 onlineTables.updateExpTable();
             }
         } else {
             session.userLogout();
-
+            updateTableView();
+            
             onlineTables.clearDataTable();
             onlineTables.clearExpTable();
         }
@@ -189,36 +189,16 @@ public class EDEDBController {
 
         } else {
             JXPanel sidebar = new JXPanel(new BorderLayout());
-            JTabbedPane tabs = new JTabbedPane();
+            tableViewPanel = new JXPanel(new BorderLayout());
 
-            tabs.addTab("Online", onlineTables);
-            tabs.addTab("Offline", offlineTables);
-
-            onlineTab = true;
-
-            tabs.addChangeListener(new ChangeListener() {
-
-                public void stateChanged(ChangeEvent e) {
-                    JTabbedPane tabs = (JTabbedPane) e.getSource();
-
-                    if (tabs.getSelectedIndex() == 0) {
-                        onlineTab = true;
-                    } else {
-                        onlineTab = false;
-                        offlineTables.updateUserTable();
-                    }
-
-                    if (!lock) {
-                        parent.updateMenuItemVisibility();
-                        toolbar.updateButtonsVisibility();
-                    }
-                }
-            });
+            offlineMode = true;
+            updateTableView();
 
             sidebar.add(loginInfo, BorderLayout.NORTH);
             sidebar.add(toolbar, BorderLayout.CENTER);
+            sidebar.add(new Working(), BorderLayout.SOUTH);
 
-            mainPanel.add(tabs, BorderLayout.CENTER);
+            mainPanel.add(tableViewPanel, BorderLayout.CENTER);
             mainPanel.add(sidebar, BorderLayout.EAST);
         }
 
@@ -226,6 +206,23 @@ public class EDEDBController {
         mainPanel.repaint();
 
         return mainPanel;
+    }
+
+    /**
+     * This method sets up the table view panel in accordance to the offlineMode
+     * boolean.
+     */
+    private void updateTableView() {
+        tableViewPanel.removeAll();
+
+        if (session.isConnected()) {
+            tableViewPanel.add(onlineTables, BorderLayout.CENTER);
+        } else {
+            tableViewPanel.add(offlineTables, BorderLayout.CENTER);
+        }
+
+        tableViewPanel.revalidate();
+        tableViewPanel.repaint();
     }
 
     /**
@@ -310,7 +307,7 @@ public class EDEDBController {
      * @return true/false
      */
     public boolean isSelectedFiles() {
-        if (onlineTab) {
+        if (offlineMode) {
             return (!onlineTables.getSelectedFiles().isEmpty());
         } else {
             return (!offlineTables.getSelectedFiles().isEmpty());
@@ -322,7 +319,7 @@ public class EDEDBController {
      * @return List of DataRowModel
      */
     public List<DataRowModel> getSelectedFiles() {
-        if (onlineTab) {
+        if (offlineMode) {
             return onlineTables.getSelectedFiles();
         } else {
             return offlineTables.getSelectedFiles();
@@ -390,18 +387,13 @@ public class EDEDBController {
 
         if (!file.exists()) {
             return DataRowModel.NO_LOCAL_COPY;
-        }
-
-        if (isDownloading(info.getFileId())) {
+        } else if (isDownloading(info.getFileId())) {
             return DataRowModel.DOWNLOADING;
-        }
-
-        if (file.length() != info.getLength()) {
+        } else if (file.length() != info.getLength()) {
             return DataRowModel.ERROR;
+        } else {
+            return DataRowModel.HAS_LOCAL_COPY;
         }
-
-        return DataRowModel.HAS_LOCAL_COPY;
-
     }
 
     /**
@@ -423,11 +415,22 @@ public class EDEDBController {
     }
 
     /**
+     * Setter of EDEDB online/offline view selection.
+     * After setting the mode, table view panel is updated.
+     * @param offlineMode true/false
+     */
+    public void setOfflineMode(boolean offlineMode) {
+        this.offlineMode = offlineMode;
+
+        updateTableView();
+    }
+
+    /**
      * Getter of EDEDB online/offline view selection
      * @return true/false
      */
-    public boolean isOnlineTab() {
-        return onlineTab;
+    public boolean isOfflineMode() {
+        return offlineMode;
     }
 
     /**

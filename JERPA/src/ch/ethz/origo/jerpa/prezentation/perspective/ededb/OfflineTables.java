@@ -171,8 +171,10 @@ public class OfflineTables extends JSplitPane {
 
                     if (experiments != null) {
                         for (File experiment : experiments) {
-                            userModel.addRow(experiment.getName());
-                            userModel.fireTableDataChanged();
+                            if (experiment.isDirectory()) {
+                                userModel.addRow(experiment.getName());
+                                userModel.fireTableDataChanged();
+                            }
                         }
                     }
                     repaint();
@@ -200,20 +202,25 @@ public class OfflineTables extends JSplitPane {
 
                 if (experiments != null) {
                     for (File experiment : experiments) {
-                        String[] name = experiment.getName().split(" - ");
-                        ExperimentInfo data = new ExperimentInfo();
-                        data.setExperimentId(Integer.parseInt(name[0]));
-                        data.setScenarioName(name[1]);
-                        expModel.addRow(data);
-                        dataModel.clear();
+                        if (experiment.isDirectory()) {
+                            try {
+                                String[] name = experiment.getName().split(" - ");
+                                ExperimentInfo data = new ExperimentInfo();
+                                data.setExperimentId(Integer.parseInt(name[0]));
+                                data.setScenarioName(name[1]);
+                                expModel.addRow(data);
+                                dataModel.clear();
+                            } catch (Exception e) {
+                            }
+                        }
                     }
                 }
                 repaint();
-                Working.setVisible(false);
+                Working.setActivity(false, "working.ededb.update.exptable");
             }
         });
 
-        Working.setVisible(true);
+        Working.setActivity(true, "working.ededb.update.exptable");
         updateExpThread.start();
 
     }
@@ -236,26 +243,26 @@ public class OfflineTables extends JSplitPane {
 
                 if (files != null) {
                     for (File file : files) {
-                        DataFileInfo info = new DataFileInfo();
-                        info.setFilename(file.getName());
-                        info.setLength(file.length());
-                        info.setScenarioName(folder);
+                        if (file.isFile()) {
+                            DataFileInfo info = new DataFileInfo();
+                            info.setFilename(file.getName());
+                            info.setLength(file.length());
+                            info.setScenarioName(folder);
 
-                        dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY,
-                                downloadFolder.getAbsolutePath());
-                        dataModel.fireTableDataChanged();
+                            dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY,
+                                    downloadFolder.getAbsolutePath());
+                            dataModel.fireTableDataChanged();
+                        }
                     }
                 }
 
                 repaint();
-                Working.setVisible(false);
+                Working.setActivity(false, "working.ededb.update.datatable");
             }
         });
 
         updateDataThread.start();
-        if (!controller.isOnlineTab()) {
-            Working.setVisible(true);
-        }
+        Working.setActivity(true, "working.ededb.update.datatable");
     }
 
     /**

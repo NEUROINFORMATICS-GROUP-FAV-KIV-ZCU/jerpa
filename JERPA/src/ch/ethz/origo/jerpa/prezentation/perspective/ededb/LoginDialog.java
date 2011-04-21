@@ -50,6 +50,8 @@ public class LoginDialog implements ILanguage {
     private String credentialsErrorDesc;
     private String connectionErrorText;
     private String connectionErrorDesc;
+    public static Cursor busyCursor;
+    public static Cursor defaultCursor;
 
     /**
      * Constructor.
@@ -64,6 +66,9 @@ public class LoginDialog implements ILanguage {
 
         this.controller = controller;
         this.session = session;
+
+        busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+        defaultCursor = Cursor.getDefaultCursor();
 
         createDialog();
     }
@@ -149,6 +154,9 @@ public class LoginDialog implements ILanguage {
                     Thread loginThread = new Thread(new Runnable() {
 
                         public void run() {
+                            
+                            dialog.getRootPane().setCursor(busyCursor);
+                            
                             try {
                                 session.userLogIn(tempUsername, tempPassword, tempEndpoint);
                                 controller.setConfigKey("ededb.endpoint", tempEndpoint);
@@ -181,8 +189,11 @@ public class LoginDialog implements ILanguage {
                             okButton.setEnabled(true);
                             cancelButton.setEnabled(true);
                             dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+                            Working.setActivity(false, "working.ededb.connecting");
                             progress.setVisible(false);
 
+                            dialog.getRootPane().setCursor(defaultCursor);
+                            
                             usernameField.setText("");
                             passwordField.setText("");
 
@@ -196,6 +207,7 @@ public class LoginDialog implements ILanguage {
                             okButton.setEnabled(false);
                             cancelButton.setEnabled(false);
                             dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                            Working.setActivity(true, "working.ededb.connecting");
                             progress.setVisible(true);
                         }
                     });
