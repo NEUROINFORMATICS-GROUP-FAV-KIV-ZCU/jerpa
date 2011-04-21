@@ -11,6 +11,13 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.0 - > 1.0.1                               *
 *********************************************************************************************
+  
+  * (4/21/2011) Petr Miko
+    # 215
+    
+    Following changes are both in trunk and branch 1.0.1.
+    CHANGED: ActionDownloadSelected - if file is downloading, another request for its downloading is ignored. (bugfix)
+        
  
   * (4/21/2011) Petr Miko
     # 214
