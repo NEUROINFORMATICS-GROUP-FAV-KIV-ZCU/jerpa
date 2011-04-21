@@ -49,7 +49,7 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
         this.controller = controller;
         this.session = session;
-        
+
         putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_D));
     }
 
@@ -92,8 +92,16 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
                     controller.update();
                     continue;
                 }
-               (new File(file.getFileInfo().getFilename())).delete();
+                (new File(file.getFileInfo().getFilename())).delete();
             }
+
+            if (file.getDownloaded() == DataRowModel.DOWNLOADING) {
+                file.setSelected(false);
+
+                controller.update();
+                continue;
+            }
+
             if (session.isConnected()) {
                 try {
                     if (session.isServerAvailable()) {
