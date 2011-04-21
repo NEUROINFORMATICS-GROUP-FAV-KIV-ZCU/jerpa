@@ -1,67 +1,200 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import javax.swing.JDialog;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import org.jdesktop.swingx.JXPanel;
 
 /**
  * Class for creating undecorated dialog showing "working animation"
  *
  * @author Petr Miko
  */
-public class Working {
+public class Working extends JXPanel implements ILanguage {
 
-    private static JDialog working;
+    private static Working instance;
     private static int counter;
+    private static HashMap<String, Integer> operations;
+    private static JTextArea operationsField;
+    private static String resourceBundlePath;
+    private static ResourceBundle resource;
+    private static JProgressBar progress;
+    public static Cursor busyCursor;
+    public static Cursor defaultCursor;
+    private static JScrollPane operationsPane;
 
     /**
      *  Method creating JDialog
      */
     public Working() {
-        working = new JDialog();
+        super();
+        instance = this;
 
-        JProgressBar progress = new JProgressBar();
-        progress.setIndeterminate(true);
-        
+        busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+        defaultCursor = Cursor.getDefaultCursor();
+
+        LanguageObservable.getInstance().attach(this);
+        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+
+        progress = new JProgressBar();
+        this.setLayout(new BorderLayout());
+
+        operations = new HashMap<String, Integer>();
+
+        operationsField = new JTextArea();
+        operationsField.setEditable(false);
+        operationsField.setBackground(this.getBackground());
+        operationsField.setForeground(this.getForeground());
+
+        operationsPane = new JScrollPane(operationsField);
+        operationsPane.setMaximumSize(new Dimension(30, 50));
+        operationsPane.setFocusable(false);
+
         counter = 0;
-        
-        working.add(progress);
-        working.setLocationRelativeTo(null);
-        working.setUndecorated(true);
-        working.setAlwaysOnTop(true);
-        working.pack();
+        updateOperations();
+
+        this.add(operationsPane, BorderLayout.CENTER);
+        this.add(progress, BorderLayout.SOUTH);
     }
 
     /**
      * Method setting visibility according to input integer
      */
-    public synchronized static void setVisible(boolean visibility) {
-        if (working == null) {
+    public static synchronized void setActivity(boolean add, String operation) {
+
+        if (instance == null) {
             new Working();
         }
-        
-        final boolean tmp = visibility;
-        
+
+        final boolean tmp = add;
+
+        if (add) {
+            operations.put(operation, (operations.get(operation) == null ? 1 : operations.get(operation) + 1));
+        } else {
+            if (operations.get(operation) != null && operations.get(operation) == 1) {
+                operations.remove(operation);
+            } else {
+                operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0
+                        ? 1 : operations.get(operation) - 1));
+            }
+        }
+
+        updateOperations();
+
+        if (tmp) {
+            if (counter == 0) {
+                progress.setIndeterminate(true);
+                
+                if(instance.getRootPane() != null)
+                    instance.getRootPane().setCursor(busyCursor);
+                else
+                    instance.setCursor(busyCursor);
+            }
+            if (counter < Integer.MAX_VALUE) {
+                counter++;
+            }
+        } else {
+            if (counter > 0) {
+                counter--;
+            }
+
+            if (counter == 0) {
+                progress.setIndeterminate(false);
+                
+                if(instance.getRootPane() != null)
+                    instance.getRootPane().setCursor(defaultCursor);
+                else
+                    instance.setCursor(defaultCursor);
+            }
+        }
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                instance.revalidate();
+                instance.repaint();
+            }
+        });
+    }
+
+    /**
+     * Prints out ongoing operations into JTextArea
+     */
+    private static void updateOperations() {
+
+        String temp = "";
+        operationsField.removeAll();
+
+        if (!operations.isEmpty()) {
+            for (String operation : operations.keySet()) {
+                if (temp.equals("")) {
+                    temp = "[" + operations.get(operation) + "] " + resource.getString(operation);
+                } else {
+                    temp += "\n [" + operations.get(operation) + "] " + resource.getString(operation);
+                }
+            }
+        } else {
+            temp = resource.getString("working.ededb.no");
+        }
+
+        progress.setToolTipText(temp);
+
+        operationsField.setText(temp);
+        operationsField.revalidate();
+        operationsField.repaint();
+
+        operationsPane.revalidate();
+        operationsPane.repaint();
+
+    }
+
+    /**
+     * Setter of localization resource budle path
+     * @param path path to localization source file.
+     */
+    public void setLocalizedResourceBundle(String path) {
+        this.resourceBundlePath = path;
+        resource = ResourceBundle.getBundle(path);
+    }
+
+    /**
+     * Getter of path to resource bundle.
+     * @return path to localization file.
+     */
+    public String getResourceBundlePath() {
+        return resourceBundlePath;
+    }
+
+    /**
+     * Setter of resource budle key.
+     * @param string key
+     */
+    public void setResourceBundleKey(String string) {
+        throw new UnsupportedOperationException("Method is not implemented yet...");
+    }
+
+    /**
+     * Method invoked by change of LanguageObservable.
+     * @throws JUIGLELangException
+     */
+    public void updateText() throws JUIGLELangException {
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                if(tmp){
-                    if(counter == 0){
-                        working.setVisible(true);
-                    }
-                    if(counter < Integer.MAX_VALUE)
-                        counter++;
-                }else{
-                    if(counter > 0)
-                        counter--;
-                    
-                    if(counter == 0){
-                        working.setVisible(false);
-                    }
-                }
-                working.repaint();
+                updateOperations();
             }
         });
+
     }
 }

@@ -118,7 +118,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         
-        if(rowIndex < 0)
+        if(rowIndex < 0 || rowIndex > data.size())
             return null;
         
         switch (columnIndex) {

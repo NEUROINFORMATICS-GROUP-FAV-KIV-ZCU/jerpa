@@ -170,7 +170,7 @@ public class EDEDBPerspective extends Perspective {
 
         ededbMenu2.setResourceBundleKey("menu2.ededb.title");
         downloadFile.setResourceBundleKey("menu2.ededb.download");
-        analyseFile.setResourceBundleKey("menu2.ededb.analysefile");
+        analyseFile.setResourceBundleKey("menu2.ededb.visualise");
         deleteFile.setResourceBundleKey("menu2.ededb.delete");
 
         downloadFile.setAction(controller.getActionDownloadSelected());
@@ -205,7 +205,7 @@ public class EDEDBPerspective extends Perspective {
             disconnect.setVisible(session.isConnected() && !controller.isFirstRun());
 
             downloadFile.setEnabled(session.isConnected() && !controller.isFirstRun()
-                    && controller.isOnlineTab());
+                    && session.isConnected());
             analyseFile.setEnabled(!controller.isFirstRun());
             deleteFile.setEnabled(!controller.isFirstRun());
 

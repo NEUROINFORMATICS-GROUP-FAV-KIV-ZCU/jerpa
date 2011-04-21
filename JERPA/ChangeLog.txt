@@ -1,7 +1,42 @@
 *********************************************************************************************
-*                                  CHANGE LOG 1.0.0 - > 1.0.1                               *
+*                                  CHANGE LOG 1.0.1 - > 1.0.2                               *
 *********************************************************************************************
 
+ * (4/11/2011) vsouhrada
+    # 213
+      
+      CHANGED: edited build.xml - changed version of JERPA to 1.0.2 
+      ADDED  : Required files for installation 
+
+*********************************************************************************************
+*                                  CHANGE LOG 1.0.0 - > 1.0.1                               *
+*********************************************************************************************
+ 
+  * (4/21/2011) Petr Miko
+    # 214
+     
+      Following changes are both in trunk and branch 1.0.1.
+      
+      CHANGED: EDEDClient.jar has new generated sources.    
+      CHANGED: Online and Offline Tables are now switch in accordance to connected/disconnected state, no tabs anymore.
+      CHANGED: Fixed update experiment table bug (wrong data files shown)   
+      CHANGED: ededb.properties are now part of JERPA pack - needed endpoint address is inside (but is changeble and when the properties file is deleted, still generates itself)
+      CHANGED: Data Table Cell editor added - downloaded files have green cell's background, corrupted red background and downloading orange background.
+      CHANGED: Working is now JPanel in sidebar with description of ongoing operations. Also sets up animation of cursor (busy/default).
+      CHANGED: New translations and edits in JerpaLang.
+      CHANGED: In sidebar is now ALL radio button, which shows all available experiments on EEG/ERP Portal.
+  
+  * (4/13/2011) Petr Miko
+    # 209
+      
+      Following changes are both in trunk and branch 1.0.1.
+    
+      CHANGED: edited build.xml - ant operations works now properly even in cases of missing folders (moved manifestclasspath to init).
+      CHANGED: EDEDBController - corrected creation of ededb.properties - should work now properly.
+      CHANGED: LoginDialog of EDEDB - endpoint field is now part of "options menu" inside login dialog.
+      CHANGED: text added in JerpaLang.
+   
+   
   * (4/11/2011) vsouhrada
     # 207
     

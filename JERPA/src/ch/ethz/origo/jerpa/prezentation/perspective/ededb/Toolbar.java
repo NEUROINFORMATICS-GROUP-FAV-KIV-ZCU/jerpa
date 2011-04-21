@@ -12,12 +12,9 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
-import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonAreaLayout;
-import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.VerticalLayout;
 
@@ -34,7 +31,7 @@ public class Toolbar extends JXPanel implements ILanguage {
     private EDEDClient session;
     private JButton connectButton, disconnectButton, downloadButton, chooseFolderButton,
             openFolderButton, deleteFileButton, analyseFileButton;
-    private JRadioButton ownerButton, subjectButton;
+    private JRadioButton ownerButton, subjectButton, allButton;
 
     /**
      * Creating main panel and setting elements into proper positions.
@@ -57,7 +54,8 @@ public class Toolbar extends JXPanel implements ILanguage {
         radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.LINE_AXIS));
 
         createButtons();
-
+        
+        radioBar.add(allButton);
         radioBar.add(ownerButton);
         radioBar.add(subjectButton);
 
@@ -70,7 +68,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         this.add(downloadButton);
         this.add(deleteFileButton);
 
-        ownerButton.setSelected(true);
+        allButton.setSelected(true);
     }
 
     /**
@@ -85,6 +83,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         chooseFolderButton = new JButton();
         analyseFileButton = new JButton();
         deleteFileButton = new JButton();
+        allButton = new JRadioButton();
         ownerButton = new JRadioButton();
         subjectButton = new JRadioButton();
 
@@ -93,8 +92,9 @@ public class Toolbar extends JXPanel implements ILanguage {
 
         ButtonGroup group = new ButtonGroup();
 
-        controller.setRights(Rights.OWNER);
-
+        controller.setRights(Rights.ALL);
+        
+        group.add(allButton);
         group.add(ownerButton);
         group.add(subjectButton);
         
@@ -115,7 +115,16 @@ public class Toolbar extends JXPanel implements ILanguage {
         analyseFileButton.addActionListener(controller.getActionAnalyseSelected());
 
         disconnectButton.setVisible(false);
+        
+        allButton.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                allButton.setSelected(true);
+                controller.setRights(Rights.ALL);
+            }
+        });
+        
         ownerButton.addActionListener(new ActionListener() {
 
             @Override
@@ -148,12 +157,14 @@ public class Toolbar extends JXPanel implements ILanguage {
             disconnectButton.setVisible(false);
         }
 
-        if (controller.isOnlineTab() && !controller.isLock()) {
+        if (session.isConnected() && !controller.isLock()) {
             downloadButton.setEnabled(true);
+            allButton.setEnabled(true);
             ownerButton.setEnabled(true);
             subjectButton.setEnabled(true);
         } else {
             downloadButton.setEnabled(false);
+            allButton.setEnabled(false);
             ownerButton.setEnabled(false);
             subjectButton.setEnabled(false);
         }
@@ -174,8 +185,9 @@ public class Toolbar extends JXPanel implements ILanguage {
         downloadButton.setText(resource.getString("sidebar.ededb.toolbar.download"));
         openFolderButton.setText(resource.getString("sidebar.ededb.toolbar.opendir"));
         chooseFolderButton.setText(resource.getString("sidebar.ededb.toolbar.choosedir"));
-        analyseFileButton.setText(resource.getString("sidebar.ededb.toolbar.analysefile"));
+        analyseFileButton.setText(resource.getString("sidebar.ededb.toolbar.visualise"));
         deleteFileButton.setText(resource.getString("sidebar.ededb.toolbar.deletefile"));
+        allButton.setText(resource.getString("sidebar.ededb.toolbar.all"));
         ownerButton.setText(resource.getString("sidebar.ededb.toolbar.owner"));
         subjectButton.setText(resource.getString("sidebar.ededb.toolbar.subject"));
     }

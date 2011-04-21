@@ -3,6 +3,7 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.ededclient.generated.SOAPException_Exception;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -59,6 +60,9 @@ public class FileDownload implements Runnable, ILanguage {
      */
     @Override
     public synchronized void run() {
+        
+        Working.setActivity(true, "working.ededb.downloading");
+        
         FileOutputStream fstream = null;
         File destFolder = new File(rowData.getLocation());
 
@@ -120,6 +124,9 @@ public class FileDownload implements Runnable, ILanguage {
                     e.getLocalizedMessage(),
                     e);
         } finally {
+            
+            Working.setActivity(false, "working.ededb.downloading");
+            
             if (fstream != null) {
                 try {
                     fstream.close();
