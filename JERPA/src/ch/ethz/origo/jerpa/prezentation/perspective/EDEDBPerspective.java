@@ -10,6 +10,7 @@ import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEPerspectiveMenu;
 import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
+import java.awt.Desktop;
 import javax.swing.Icon;
 import org.jdesktop.swingx.JXTaskPane;
 
@@ -208,8 +209,11 @@ public class EDEDBPerspective extends Perspective {
                     && session.isConnected());
             analyseFile.setEnabled(!controller.isFirstRun());
             deleteFile.setEnabled(!controller.isFirstRun());
+            
+            openDir.setEnabled(!controller.isFirstRun());
+            openDir.setVisible(Desktop.isDesktopSupported());
 
-            if (controller.isDownloading()) {
+            if (controller.isDownloading() || controller.isFirstRun()) {
                 analyseFile.setEnabled(false);
             } else {
                 analyseFile.setEnabled(true);

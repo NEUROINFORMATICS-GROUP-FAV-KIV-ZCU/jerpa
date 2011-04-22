@@ -10,6 +10,7 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import java.awt.Desktop;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -115,6 +116,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         analyseFileButton.addActionListener(controller.getActionAnalyseSelected());
 
         disconnectButton.setVisible(false);
+        openFolderButton.setVisible(Desktop.isDesktopSupported());
         
         allButton.addActionListener(new ActionListener() {
 
@@ -149,6 +151,9 @@ public class Toolbar extends JXPanel implements ILanguage {
      */
     public void updateButtonsVisibility() {
 
+        openFolderButton.setVisible(Desktop.isDesktopSupported());
+        
+        
         if (session.isConnected()) {
             connectButton.setVisible(false);
             disconnectButton.setVisible(true);
@@ -159,14 +164,8 @@ public class Toolbar extends JXPanel implements ILanguage {
 
         if (session.isConnected() && !controller.isLock()) {
             downloadButton.setEnabled(true);
-            allButton.setEnabled(true);
-            ownerButton.setEnabled(true);
-            subjectButton.setEnabled(true);
         } else {
             downloadButton.setEnabled(false);
-            allButton.setEnabled(false);
-            ownerButton.setEnabled(false);
-            subjectButton.setEnabled(false);
         }
 
         if (!controller.isDownloading() && !controller.isLock()) {

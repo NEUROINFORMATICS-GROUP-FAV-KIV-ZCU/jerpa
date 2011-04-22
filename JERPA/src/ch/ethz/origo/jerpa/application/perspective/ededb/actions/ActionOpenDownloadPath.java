@@ -38,7 +38,7 @@ public class ActionOpenDownloadPath extends AbstractAction {
             File file = new File(controller.getDownloadPath());
             Desktop desktop = Desktop.getDesktop();
             desktop.open(file);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             JUIGLErrorInfoUtils.showErrorDialog(
                     ex.getMessage(),
                     ex.getLocalizedMessage(),
