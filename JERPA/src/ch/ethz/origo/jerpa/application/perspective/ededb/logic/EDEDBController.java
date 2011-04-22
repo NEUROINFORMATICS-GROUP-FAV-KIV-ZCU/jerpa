@@ -219,6 +219,7 @@ public class EDEDBController {
             tableViewPanel.add(onlineTables, BorderLayout.CENTER);
         } else {
             tableViewPanel.add(offlineTables, BorderLayout.CENTER);
+            offlineTables.updateUserTable();
         }
 
         tableViewPanel.revalidate();
