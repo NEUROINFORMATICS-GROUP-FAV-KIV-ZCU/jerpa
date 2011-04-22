@@ -13,6 +13,14 @@
 *********************************************************************************************
 
   * (4/22/2011) Petr Miko
+    # 217
+  
+    Following changes are both in trunk and branch 1.0.1.
+  
+    CHANGED: Open download directory is active only if is Desktop enviroment supported.
+    CHANGED: Fixed buttons/items visibility bug.
+
+  * (4/22/2011) Petr Miko
     # 216
     CHANGED: Fixed bug when OfflineTable would not fill the user table.
 
