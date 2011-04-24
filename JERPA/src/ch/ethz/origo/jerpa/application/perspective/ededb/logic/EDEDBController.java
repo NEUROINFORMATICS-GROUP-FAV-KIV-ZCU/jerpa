@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionAnalyseSelected;
+import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionVisualizeSelected;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionChooseDownloadPath;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionConnect;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDeleteSelected;
@@ -47,7 +47,7 @@ public class EDEDBController {
     private OfflineTables offlineTables;
     private Toolbar toolbar;
     private Rights rights;
-    private ActionAnalyseSelected actionAnalyseSelected;
+    private ActionVisualizeSelected actionAnalyseSelected;
     private ActionDownloadSelected actionDownloadSelected;
     private ActionDeleteSelected actionDeleteSelected;
     private ActionDisconnect actionDisconnect;
@@ -122,7 +122,7 @@ public class EDEDBController {
         actionDeleteSelected = new ActionDeleteSelected(this);
         actionChooseDownloadFolder = new ActionChooseDownloadPath(this);
         actionOpenDownloadPath = new ActionOpenDownloadPath(this);
-        actionAnalyseSelected = new ActionAnalyseSelected(this);
+        actionAnalyseSelected = new ActionVisualizeSelected(this);
     }
 
     /**
@@ -141,7 +141,7 @@ public class EDEDBController {
         } else {
             session.userLogout();
             updateTableView();
-            
+
             onlineTables.clearDataTable();
             onlineTables.clearExpTable();
         }
@@ -278,7 +278,7 @@ public class EDEDBController {
      * Getter of action analyse selected.
      * @return open in analyze perspective action
      */
-    public ActionAnalyseSelected getActionAnalyseSelected() {
+    public ActionVisualizeSelected getActionAnalyseSelected() {
         return actionAnalyseSelected;
     }
 
@@ -309,9 +309,9 @@ public class EDEDBController {
      */
     public boolean isSelectedFiles() {
         if (offlineMode) {
-            return (!onlineTables.getSelectedFiles().isEmpty());
-        } else {
             return (!offlineTables.getSelectedFiles().isEmpty());
+        } else {
+            return (!onlineTables.getSelectedFiles().isEmpty());
         }
     }
 
@@ -321,9 +321,10 @@ public class EDEDBController {
      */
     public List<DataRowModel> getSelectedFiles() {
         if (offlineMode) {
-            return onlineTables.getSelectedFiles();
-        } else {
             return offlineTables.getSelectedFiles();
+        } else {
+            return onlineTables.getSelectedFiles();
+            
         }
     }
 
@@ -369,7 +370,7 @@ public class EDEDBController {
      * @return true/false
      */
     public boolean isFirstRun() {
-        return !(new File(configFile)).exists();
+        return firstRun;
     }
 
     /**

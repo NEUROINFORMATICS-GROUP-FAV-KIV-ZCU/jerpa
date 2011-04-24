@@ -13,14 +13,14 @@ import static org.junit.Assert.*;
  *
  * @author Petr Miko
  */
-public class ActionAnalyseSelectedTest {
+public class ActionVisualizeSelectedTest {
 
     private static Method printExtensionsMethod;
     private static Method isAnalysibleMethod;
     private static EDEDBPerspective perspective;
     private static EDEDClient session;
     private static EDEDBController controller;
-    private static ActionAnalyseSelected actionClass;
+    private static ActionVisualizeSelected actionClass;
     
     /**
      * Test class initialization.
@@ -32,15 +32,15 @@ public class ActionAnalyseSelectedTest {
         session = new EDEDClient();
         controller = new EDEDBController(perspective, session);
         
-        actionClass = new ActionAnalyseSelected(controller);
+        actionClass = new ActionVisualizeSelected(controller);
         
-        printExtensionsMethod = ActionAnalyseSelected.class.getDeclaredMethod("printExtensions");
+        printExtensionsMethod = ActionVisualizeSelected.class.getDeclaredMethod("printExtensions");
         printExtensionsMethod.setAccessible(true);
         
-        isAnalysibleMethod = ActionAnalyseSelected.class.getDeclaredMethod("isAnalysable",String.class);
+        isAnalysibleMethod = ActionVisualizeSelected.class.getDeclaredMethod("isAnalysable",String.class);
         isAnalysibleMethod.setAccessible(true);
         
-        System.out.print("* EDEDB - ActionAnalyseSelected test");
+        System.out.print("* EDEDB - ActionVisualizeSelected test");
         
     }
     

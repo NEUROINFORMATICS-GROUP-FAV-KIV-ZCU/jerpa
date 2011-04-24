@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Petr Miko
  */
-public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
+public class ActionVisualizeSelected extends AbstractAction implements ILanguage {
 
     private ResourceBundle resource;
     private String resourceBundlePath;
@@ -49,7 +49,7 @@ public class ActionAnalyseSelected extends AbstractAction implements ILanguage {
      * Constructor method for action of analyse selected.
      * @param controller EDEDBController
      */
-    public ActionAnalyseSelected(EDEDBController controller) {
+    public ActionVisualizeSelected(EDEDBController controller) {
         this.controller = controller;
 
         LanguageObservable.getInstance().attach(this);

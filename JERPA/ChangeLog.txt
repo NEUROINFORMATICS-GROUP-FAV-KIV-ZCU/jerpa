@@ -12,6 +12,15 @@
 *                                  CHANGE LOG 1.0.0 - > 1.0.1                               *
 *********************************************************************************************
 
+  * (4/23/2011) Petr Miko
+    # 218
+
+    Following changes are both in trunk and branch 1.0.1.
+
+    CHANGED: ActionAnalyseSelected => ActionVisualizeSelected
+    CHANGED: Fixed bug with selected files in tables (wrong condition)
+    CHANGED: Changed isFirstRun method to getter method
+
   * (4/22/2011) Petr Miko
     # 217
   
