@@ -13,6 +13,15 @@
 *********************************************************************************************
 
   * (4/23/2011) Petr Miko
+    # 219
+
+    Following changes are both in trunk and branch 1.0.1.
+
+    CHANGED: getActionAnalyseSelected method => getActionVisualizeSelected
+    CHANGED: variables like analyse*** => visualize***
+    CHANGED: EDEDBPerspective and Toolbar: corrected name of called method.
+
+  * (4/23/2011) Petr Miko
     # 218
 
     Following changes are both in trunk and branch 1.0.1.

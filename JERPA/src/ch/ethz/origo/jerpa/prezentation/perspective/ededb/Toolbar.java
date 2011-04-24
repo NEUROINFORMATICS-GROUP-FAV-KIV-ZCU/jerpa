@@ -31,7 +31,7 @@ public class Toolbar extends JXPanel implements ILanguage {
     private EDEDBController controller;
     private EDEDClient session;
     private JButton connectButton, disconnectButton, downloadButton, chooseFolderButton,
-            openFolderButton, deleteFileButton, analyseFileButton;
+            openFolderButton, deleteFileButton, visualizeFileButton;
     private JRadioButton ownerButton, subjectButton, allButton;
 
     /**
@@ -65,7 +65,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         this.add(chooseFolderButton);
         this.add(openFolderButton);
         this.add(radioBar);
-        this.add(analyseFileButton);
+        this.add(visualizeFileButton);
         this.add(downloadButton);
         this.add(deleteFileButton);
 
@@ -82,7 +82,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         downloadButton = new JButton();
         openFolderButton = new JButton();
         chooseFolderButton = new JButton();
-        analyseFileButton = new JButton();
+        visualizeFileButton = new JButton();
         deleteFileButton = new JButton();
         allButton = new JRadioButton();
         ownerButton = new JRadioButton();
@@ -105,7 +105,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         deleteFileButton.setHorizontalAlignment(SwingConstants.LEFT);
         chooseFolderButton.setHorizontalAlignment(SwingConstants.LEFT);
         openFolderButton.setHorizontalAlignment(SwingConstants.LEFT);
-        analyseFileButton.setHorizontalAlignment(SwingConstants.LEFT);
+        visualizeFileButton.setHorizontalAlignment(SwingConstants.LEFT);
 
         connectButton.addActionListener(controller.getActionConnect());
         disconnectButton.addActionListener(controller.getActionDisconnect());
@@ -113,7 +113,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         deleteFileButton.addActionListener(controller.getActionDeleteSelected());
         chooseFolderButton.addActionListener(controller.getActionChooseDownloadFolder());
         openFolderButton.addActionListener(controller.getActionOpenDownloadPath());
-        analyseFileButton.addActionListener(controller.getActionAnalyseSelected());
+        visualizeFileButton.addActionListener(controller.getActionVisualizeSelected());
 
         disconnectButton.setVisible(false);
         openFolderButton.setVisible(Desktop.isDesktopSupported());
@@ -169,9 +169,9 @@ public class Toolbar extends JXPanel implements ILanguage {
         }
 
         if (!controller.isDownloading() && !controller.isLock()) {
-            analyseFileButton.setEnabled(true);
+            visualizeFileButton.setEnabled(true);
         } else {
-            analyseFileButton.setEnabled(false);
+            visualizeFileButton.setEnabled(false);
         }
     }
 
@@ -184,7 +184,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         downloadButton.setText(resource.getString("sidebar.ededb.toolbar.download"));
         openFolderButton.setText(resource.getString("sidebar.ededb.toolbar.opendir"));
         chooseFolderButton.setText(resource.getString("sidebar.ededb.toolbar.choosedir"));
-        analyseFileButton.setText(resource.getString("sidebar.ededb.toolbar.visualise"));
+        visualizeFileButton.setText(resource.getString("sidebar.ededb.toolbar.visualise"));
         deleteFileButton.setText(resource.getString("sidebar.ededb.toolbar.deletefile"));
         allButton.setText(resource.getString("sidebar.ededb.toolbar.all"));
         ownerButton.setText(resource.getString("sidebar.ededb.toolbar.owner"));
@@ -240,7 +240,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         disconnectButton.setEnabled(active);
         chooseFolderButton.setEnabled(active);
         deleteFileButton.setEnabled(active);
-        analyseFileButton.setEnabled(active);
+        visualizeFileButton.setEnabled(active);
         openFolderButton.setEnabled(active);
         downloadButton.setEnabled(active);
         ownerButton.setEnabled(active);
@@ -254,7 +254,7 @@ public class Toolbar extends JXPanel implements ILanguage {
      */
     private void createIcons() {
         try {
-            analyseFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "ededb_48.png", 32, 32));
+            visualizeFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "ededb_48.png", 32, 32));
             openFolderButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "folder_48.png", 32, 32));
             chooseFolderButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "spanner_48.png", 32, 32));
             
