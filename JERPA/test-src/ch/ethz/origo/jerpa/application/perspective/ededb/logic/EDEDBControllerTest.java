@@ -48,7 +48,7 @@ public class EDEDBControllerTest {
     @Test
     public void checkActions() {
         assertTrue(
-                controller.getActionAnalyseSelected() != null
+                controller.getActionVisualizeSelected() != null
                 && controller.getActionChooseDownloadFolder() != null
                 && controller.getActionConnect() != null
                 && controller.getActionDeleteSelected() != null
@@ -66,7 +66,7 @@ public class EDEDBControllerTest {
 
         File configFile = new File(controller.getConfigFilePath());
         
-        if (configFile.exists()) {
+        if (configFile.exists() && controller.getConfigKey("ededb.downloadpath") != null) {
             assertFalse(controller.isFirstRun());
         } else {
             assertTrue(controller.isFirstRun());
