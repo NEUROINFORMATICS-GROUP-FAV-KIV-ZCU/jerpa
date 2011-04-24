@@ -47,7 +47,7 @@ public class EDEDBController {
     private OfflineTables offlineTables;
     private Toolbar toolbar;
     private Rights rights;
-    private ActionVisualizeSelected actionAnalyseSelected;
+    private ActionVisualizeSelected actionVisualizeSelected;
     private ActionDownloadSelected actionDownloadSelected;
     private ActionDeleteSelected actionDeleteSelected;
     private ActionDisconnect actionDisconnect;
@@ -122,7 +122,7 @@ public class EDEDBController {
         actionDeleteSelected = new ActionDeleteSelected(this);
         actionChooseDownloadFolder = new ActionChooseDownloadPath(this);
         actionOpenDownloadPath = new ActionOpenDownloadPath(this);
-        actionAnalyseSelected = new ActionVisualizeSelected(this);
+        actionVisualizeSelected = new ActionVisualizeSelected(this);
     }
 
     /**
@@ -275,11 +275,11 @@ public class EDEDBController {
     }
 
     /**
-     * Getter of action analyse selected.
+     * Getter of action visualize selected.
      * @return open in analyze perspective action
      */
-    public ActionVisualizeSelected getActionAnalyseSelected() {
-        return actionAnalyseSelected;
+    public ActionVisualizeSelected getActionVisualizeSelected() {
+        return actionVisualizeSelected;
     }
 
     /**

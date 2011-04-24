@@ -32,7 +32,7 @@ public class EDEDBPerspective extends Perspective {
     private JUIGLEMenuItem downloadFile;
     private JUIGLEMenuItem chooseDir;
     private JUIGLEMenuItem openDir;
-    private JUIGLEMenuItem analyseFile;
+    private JUIGLEMenuItem visualizeFile;
     private JUIGLEMenuItem deleteFile;
     private boolean menuInited = false;
 
@@ -166,20 +166,20 @@ public class EDEDBPerspective extends Perspective {
         ededbMenu2 = new JUIGLEMenuItem(getLocalizedString("menu2.ededb.title"));
 
         downloadFile = new JUIGLEMenuItem();
-        analyseFile = new JUIGLEMenuItem();
+        visualizeFile = new JUIGLEMenuItem();
         deleteFile = new JUIGLEMenuItem();
 
         ededbMenu2.setResourceBundleKey("menu2.ededb.title");
         downloadFile.setResourceBundleKey("menu2.ededb.download");
-        analyseFile.setResourceBundleKey("menu2.ededb.visualise");
+        visualizeFile.setResourceBundleKey("menu2.ededb.visualise");
         deleteFile.setResourceBundleKey("menu2.ededb.delete");
 
         downloadFile.setAction(controller.getActionDownloadSelected());
         deleteFile.setAction(controller.getActionDeleteSelected());
-        analyseFile.setAction(controller.getActionAnalyseSelected());
+        visualizeFile.setAction(controller.getActionVisualizeSelected());
 
         ededbMenu2.addSubItem(downloadFile);
-        ededbMenu2.addSubItem(analyseFile);
+        ededbMenu2.addSubItem(visualizeFile);
         ededbMenu2.addSubItem(deleteFile);
 
         return ededbMenu2;
@@ -207,16 +207,16 @@ public class EDEDBPerspective extends Perspective {
 
             downloadFile.setEnabled(session.isConnected() && !controller.isFirstRun()
                     && session.isConnected());
-            analyseFile.setEnabled(!controller.isFirstRun());
+            visualizeFile.setEnabled(!controller.isFirstRun());
             deleteFile.setEnabled(!controller.isFirstRun());
             
             openDir.setEnabled(!controller.isFirstRun());
             openDir.setVisible(Desktop.isDesktopSupported());
 
             if (controller.isDownloading() || controller.isFirstRun()) {
-                analyseFile.setEnabled(false);
+                visualizeFile.setEnabled(false);
             } else {
-                analyseFile.setEnabled(true);
+                visualizeFile.setEnabled(true);
             }
         }
     }
@@ -232,7 +232,7 @@ public class EDEDBPerspective extends Perspective {
         chooseDir.setEnabled(active);
 
         downloadFile.setEnabled(active);
-        analyseFile.setEnabled(active);
+        visualizeFile.setEnabled(active);
         deleteFile.setEnabled(active);
     }
 }
