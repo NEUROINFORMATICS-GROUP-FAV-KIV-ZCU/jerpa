@@ -16,7 +16,7 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
@@ -34,9 +34,9 @@ import org.jdesktop.swingx.JXTaskPane;
 import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.prezentation.perspective.db.LoginDialog;
-import ch.ethz.origo.juigle.application.db.Database;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
+import ch.ethz.origo.juigle.db_prepare.Database;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
@@ -48,7 +48,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * are not complete implemented.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.2 (3/29/2010)
+ * @version 0.2.0 (4/25/2011)
  * @since 0.1.0 (10/16/2010)
  * @see Perspective
  * 

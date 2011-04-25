@@ -16,7 +16,8 @@
 
 /*
  *    MainFrame.java
- *    Copyright (C) 2009 University of West Bohemia, 
+ *    Copyright (C) 2009 - 2011
+ *                       University of West Bohemia, 
  *                       Department of Computer Science and Engineering, 
  *                       Pilsen, Czech Republic
  */
@@ -40,9 +41,9 @@ import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
-import ch.ethz.origo.juigle.application.observers.IObserver;
 import ch.ethz.origo.juigle.application.observers.JUIGLEObservable;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.prezentation.IMainFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
@@ -55,19 +56,19 @@ import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
  * <code>JUIGLE</code> called <code>JUIGLEFrame</code>.
  * 
  * @author Vaclav Souhrada
- * @version 0.1.5 (5/20/2010)
+ * @version 2.0.0 (4/25/2011)
  * @since 0.1.0 (05/07/2009)
- * @see IObserver
+ * @see IMainFrame
  */
-public class MainFrame implements IObserver, ILanguage {
+public class MainFrame implements IMainFrame {
 
 	/** HEIGHT of application frame */
 	public static int HEIGHT;
 
 	private JUIGLEFrame mainFrame;
-	
+
 	private ResourceBundle mainJERPAresource;
-	
+
 	private String mainJERPAResourcePath;
 
 	private Logger logger = Logger.getLogger(MainFrame.class);
@@ -80,7 +81,7 @@ public class MainFrame implements IObserver, ILanguage {
 			setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
 			initGui();
 			updateText();
-			LanguageObservable.getInstance().attach((ILanguage)this);
+			LanguageObservable.getInstance().attach((ILanguage) this);
 			JUIGLEObservable.getInstance().attach(this);
 		} catch (PerspectiveException e) {
 			String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
@@ -109,10 +110,9 @@ public class MainFrame implements IObserver, ILanguage {
 		titleBuff.append(".");
 		titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
 		// create frame
-		mainFrame = new JUIGLEFrame(
-				titleBuff.toString(),
-				ClassLoader
-						.getSystemResourceAsStream(JERPAUtils.IMAGE_PATH + "Jerpa_icon.png"));
+		mainFrame = new JUIGLEFrame(titleBuff.toString(),
+				ClassLoader.getSystemResourceAsStream(JERPAUtils.IMAGE_PATH
+						+ "Jerpa_icon.png"));
 		mainFrame.setMainMenu(getMainMenu());
 		mainFrame.setPerspectives(PerspectiveLoader.getInstance(),
 				"menu.main.perspectives");
@@ -120,9 +120,10 @@ public class MainFrame implements IObserver, ILanguage {
 		mainFrame.setFullScreen(true);
 		MainFrame.HEIGHT = mainFrame.getHeight();
 		// PerspectiveLoader<T>
-        }
+	}
 
-	private JUIGLEMainMenu getMainMenu() throws PerspectiveException {
+	@Override
+	public JUIGLEMainMenu getMainMenu() throws PerspectiveException {
 		JUIGLEMainMenu mainMenu = new JUIGLEMainMenu(LangUtils.MAIN_FILE_PATH);
 		mainMenu.addHomePageItem(null, ConfigPropertiesLoader.getJERPAHomePage());
 		try {
@@ -153,7 +154,7 @@ public class MainFrame implements IObserver, ILanguage {
 
 			switch (msg) {
 			case JUIGLEObservable.MSG_APPLICATION_CLOSING:
-				appClosing();
+				applicationClose();
 				break;
 
 			default:
@@ -161,17 +162,19 @@ public class MainFrame implements IObserver, ILanguage {
 			}
 		}
 	}
-	
+
 	/**
 	 * Return about dialog
+	 * 
 	 * @return about dialog
 	 * @throws JUIGLELangException
 	 */
 	private JDialog getAboutDialog() throws JUIGLELangException {
-		AboutDialog ad = new AboutDialog(LangUtils
-				.getPerspectiveLangPathProp("about.dialog.lang"), JUIGLEGraphicsUtils
-				.createImageIcon(JERPAUtils.IMAGE_PATH + "Jerpa_icon.png"), true);
-		
+		AboutDialog ad = new AboutDialog(
+				LangUtils.getPerspectiveLangPathProp("about.dialog.lang"),
+				JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
+						+ "Jerpa_icon.png"), true);
+
 		String[] authors = ConfigPropertiesLoader.getListOfAuthors();
 		String[] contributions = ConfigPropertiesLoader.getListOfContributions();
 		AboutRecord ar = new AboutRecord();
@@ -188,13 +191,14 @@ public class MainFrame implements IObserver, ILanguage {
 	/**
 	 * Close application
 	 */
-	private void appClosing() {
+	@Override
+	public void applicationClose() {
 		JERPAUtils.deleteFilesFromDeleteList();
-                
-                if(EDEDClient.getInstance() != null){
-                    EDEDClient.getInstance().userLogout();
-                }
-                
+
+		if (EDEDClient.getInstance() != null) {
+			EDEDClient.getInstance().userLogout();
+		}
+
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
@@ -213,13 +217,13 @@ public class MainFrame implements IObserver, ILanguage {
 	public void setLocalizedResourceBundle(String path) {
 		this.mainJERPAResourcePath = path;
 		this.mainJERPAresource = ResourceBundle.getBundle(path);
-		
+
 	}
 
 	@Override
 	public void setResourceBundleKey(String key) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -228,9 +232,15 @@ public class MainFrame implements IObserver, ILanguage {
 			@Override
 			public void run() {
 				setLocalizedResourceBundle(getResourceBundlePath());
-				mainFrame.setCopyrightTitle(mainJERPAresource.getString("jerpa.application.copyright"));
+				mainFrame.setCopyrightTitle(mainJERPAresource
+						.getString("jerpa.application.copyright"));
 			}
-		});		
+		});
+	}
+	
+	@Override
+	public String getLogoPath() {
+		return JERPAUtils.IMAGE_PATH + "Jerpa_logo.png";
 	}
 
 }
