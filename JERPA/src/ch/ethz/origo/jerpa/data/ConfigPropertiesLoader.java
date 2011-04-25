@@ -16,7 +16,7 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
@@ -36,7 +36,7 @@ import ch.ethz.origo.juigle.application.exception.PropertiesException;
  * Class for handling with configuration properties
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.9 (5/19/2010)
+ * @version 1.0.0 (4/25/2010)
  * @since 0.1.0 (7/18/09)
  * 
  */
@@ -234,6 +234,16 @@ public class ConfigPropertiesLoader {
 		return properties.getProperty("plugin.xml.path");
 	}
 
+	/**
+	 * 
+	 * @since 1.0.0 (4/25/2010)
+	 * @return
+	 * 
+	 */
+	public static String getPluginsLocation() {
+		return properties.getProperty("plugin.path");
+	}
+	
 	/** Only for test */
 	public static void main(String[] args) {
 		try {
@@ -243,5 +253,6 @@ public class ConfigPropertiesLoader {
 		}
 		System.out.println(ConfigPropertiesLoader.getDefaultPerspective());
 	}
+
 	
 }

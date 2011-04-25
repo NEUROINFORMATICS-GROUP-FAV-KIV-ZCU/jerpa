@@ -31,12 +31,12 @@ import javax.swing.Icon;
 
 import org.jdesktop.swingx.JXTaskPane;
 
-import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.prezentation.perspective.db.LoginDialog;
+import ch.ethz.origo.juigle.application.PerspectiveLoader;
 import ch.ethz.origo.juigle.application.exception.JUIGLEMenuException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
-import ch.ethz.origo.juigle.db_prepare.Database;
+import ch.ethz.origo.juigle.database.service.LoginDialogService;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenu;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMenuItem;
@@ -158,7 +158,7 @@ public class DBPerspective extends Perspective {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Database db = new Database();
+				LoginDialogService db = new LoginDialogService();
 				db.connect(JDBC_DRIVER_CLASS, JDBC_DB_ADDRESS);
 				new LoginDialog(db);
 				// new DbChooserDialog();

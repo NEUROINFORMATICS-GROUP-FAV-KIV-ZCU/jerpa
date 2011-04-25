@@ -24,20 +24,17 @@
 package ch.ethz.origo.jerpa.prezentation;
 
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-import ch.ethz.origo.jerpa.application.perspective.PerspectiveLoader;
 import ch.ethz.origo.jerpa.data.ConfigPropertiesLoader;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 import ch.ethz.origo.juigle.application.ILanguage;
-import ch.ethz.origo.juigle.application.JUIGLEErrorParser;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.IObservable;
@@ -46,7 +43,6 @@ import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.IMainFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEFrame;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
-import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import ch.ethz.origo.juigle.prezentation.dialogs.AboutDialog;
 import ch.ethz.origo.juigle.prezentation.dialogs.AboutRecord;
 import ch.ethz.origo.juigle.prezentation.menu.JUIGLEMainMenu;
@@ -65,7 +61,7 @@ public class MainFrame implements IMainFrame {
 	/** HEIGHT of application frame */
 	public static int HEIGHT;
 
-	private JUIGLEFrame mainFrame;
+	private JUIGLEFrame juigleMainFrame;
 
 	private ResourceBundle mainJERPAresource;
 
@@ -77,49 +73,26 @@ public class MainFrame implements IMainFrame {
 	 * Initialize main graphic frame
 	 */
 	public MainFrame() {
-		try {
-			setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
-			initGui();
-			updateText();
-			LanguageObservable.getInstance().attach((ILanguage) this);
-			JUIGLEObservable.getInstance().attach(this);
-		} catch (PerspectiveException e) {
-			String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
-					LangUtils.JERPA_ERROR_LIST_PATH);
-			JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e, Level.WARNING);
-			logger.error(e.getMessage(), e);
-		} catch (JUIGLELangException e) {
-			logger.error(e.getMessage(), e);
-		}
+
 	}
 
 	/**
 	 * Initialize GUI
 	 * 
 	 * @throws PerspectiveException
-	 * @version 0.2.0 (10/18/09)
-	 * @since 0.1.0
+	 * @since 2.0.0 (4/25/2011)
 	 */
-	private void initGui() throws PerspectiveException {
-		StringBuffer titleBuff = new StringBuffer();
-		titleBuff.append(ConfigPropertiesLoader.getApplicationTitle());
-		titleBuff.append(" ");
-		titleBuff.append(ConfigPropertiesLoader.getAppMajorVersion());
-		titleBuff.append(".");
-		titleBuff.append(ConfigPropertiesLoader.getAppMinorVersion());
-		titleBuff.append(".");
-		titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
-		// create frame
-		mainFrame = new JUIGLEFrame(titleBuff.toString(),
-				ClassLoader.getSystemResourceAsStream(JERPAUtils.IMAGE_PATH
-						+ "Jerpa_icon.png"));
-		mainFrame.setMainMenu(getMainMenu());
-		mainFrame.setPerspectives(PerspectiveLoader.getInstance(),
-				"menu.main.perspectives");
-		mainFrame.setVisible(true);
-		mainFrame.setFullScreen(true);
-		MainFrame.HEIGHT = mainFrame.getHeight();
-		// PerspectiveLoader<T>
+	public void initGUI(JUIGLEFrame frame) throws PerspectiveException {
+		this.juigleMainFrame = frame;
+		setLocalizedResourceBundle(LangUtils.MAIN_FILE_PATH);
+		LanguageObservable.getInstance().attach((ILanguage) this);
+		JUIGLEObservable.getInstance().attach(this);
+	  MainFrame.HEIGHT = juigleMainFrame.getHeight();
+	  try {
+			updateText();
+		} catch (JUIGLELangException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -204,7 +177,7 @@ public class MainFrame implements IMainFrame {
 		} catch (InterruptedException e) {
 			logger.warn(e);
 		}
-		mainFrame.dispose();
+		juigleMainFrame.dispose();
 		System.exit(0);
 	}
 
@@ -232,7 +205,7 @@ public class MainFrame implements IMainFrame {
 			@Override
 			public void run() {
 				setLocalizedResourceBundle(getResourceBundlePath());
-				mainFrame.setCopyrightTitle(mainJERPAresource
+				juigleMainFrame.setCopyrightTitle(mainJERPAresource
 						.getString("jerpa.application.copyright"));
 			}
 		});

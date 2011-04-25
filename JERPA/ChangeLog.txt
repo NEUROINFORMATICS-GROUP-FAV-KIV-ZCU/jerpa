@@ -1,7 +1,15 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
- * (4/11/2011) vsouhrada
+ * (4/25/2011) vsouhrada
+    # 222
+    
+      CHANGED: JERPA now using JUIGLE-2.0.0-RC1. A lot of main application API was changed (Main, MainFrame, config.properties and so on). But we only increase MINOR version.
+      CHANGED: JERPA now using PluginEngine-2.0.0-RC1 - main part of the JUIGLE-2.0.0-RC1.
+      CHANGED: From config.properties were removed properties which defined Perspectives. Perspectives are now defined in own files - perspectives.properties or perspectives.xml.
+      CHANGED: Added a new version of the WEKAPerspective-0.2.0.
+      FIXED  : Fixed all plugins for JERPA software. Since JUIGLE-2.0.0 all plugins has to contain an own plugin.xml file.
+ 
     # 221
       
       CHANGED: edited build.xml - changed version of JERPA to 1.1.0 - Prepared for switch to JUIGLE-2.0-RC1 

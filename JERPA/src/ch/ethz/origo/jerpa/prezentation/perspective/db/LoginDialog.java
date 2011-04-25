@@ -16,7 +16,7 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
@@ -25,14 +25,14 @@ package ch.ethz.origo.jerpa.prezentation.perspective.db;
 
 import org.jdesktop.swingx.auth.LoginEvent;
 
-import ch.ethz.origo.juigle.application.db.Database;
+import ch.ethz.origo.juigle.database.service.LoginDialogService;
 import ch.ethz.origo.juigle.prezentation.database.DatabaseDialog;
 
 /**
  * 
  * 
  * @author Vaclav Souhrada
- * @version 0.2.0.00 (11/14/2010)
+ * @version 0.2.1 (4/25/2011)
  * @since 1.0.0 (1/28/2010)
  * @see DatabaseDialog
  * 
@@ -42,7 +42,7 @@ public class LoginDialog extends DatabaseDialog {
 	/** Only for serialization */
 	private static final long serialVersionUID = -8148301402485470747L;
 
-	public LoginDialog(Database database) {
+	public LoginDialog(LoginDialogService database) {
 		super(database);
 	}
 
@@ -68,13 +68,6 @@ public class LoginDialog extends DatabaseDialog {
 	public void loginSucceeded(LoginEvent source) {
 		// TODO Auto-generated method stub
 
-	}
-
-	/** Only for test */
-	public static void main(String[] args) {
-		Database db = new Database();
-		db.connect("", "");
-		LoginDialog ld = new LoginDialog(db);
 	}
 
 }

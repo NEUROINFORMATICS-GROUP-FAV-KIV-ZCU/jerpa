@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<perspectives>
+	<perspective name="SignalPerspective" isDefault="true"
+		package="ch.ethz.origo.jerpa.prezentation.perspective" />
+	<perspective name="AlgorithmPerspective" isDefault="false"
+		package="ch.ethz.origo.jerpa.prezentation.perspective" />
+	<perspective name="JERPAPerspective" isDefault="false"
+		package="ch.ethz.origo.jerpa.prezentation.perspective" />
+	<perspective name="DBPerspective" isDefault="false"
+		package="ch.ethz.origo.jerpa.prezentation.perspective" />
+	<perspective name="EDEDBPerspective" isDefault="false"
+		package="ch.ethz.origo.jerpa.prezentation.perspective" />
+</perspectives>
