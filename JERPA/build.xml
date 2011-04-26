@@ -125,6 +125,7 @@
             <fileset dir="${dir.test-bin}" includes="**/*.class" />
             <fileset dir="${src}" includes="**/*.class" />
         </delete>
+        <delete dir="${dir.test-bin}" />
     </target>
 
     <target name="test" depends="compile-test">
