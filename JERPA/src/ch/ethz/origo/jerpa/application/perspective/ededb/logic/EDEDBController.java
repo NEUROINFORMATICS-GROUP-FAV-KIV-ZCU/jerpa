@@ -135,11 +135,13 @@ public class EDEDBController {
         if (loggedIn) {
             loginDialog.setVisible(true);
             if (session.isConnected()) {
+                setOfflineMode(false);
                 updateTableView();
                 onlineTables.updateExpTable();
             }
         } else {
             session.userLogout();
+            setOfflineMode(true);
             updateTableView();
 
             onlineTables.clearDataTable();

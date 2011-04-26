@@ -70,6 +70,12 @@ public class Toolbar extends JXPanel implements ILanguage {
         this.add(deleteFileButton);
 
         allButton.setSelected(true);
+        disconnectButton.setVisible(false);
+        openFolderButton.setVisible(Desktop.isDesktopSupported());
+        downloadButton.setEnabled(false);
+
+        revalidate();
+        repaint();
     }
 
     /**
@@ -115,9 +121,6 @@ public class Toolbar extends JXPanel implements ILanguage {
         openFolderButton.addActionListener(controller.getActionOpenDownloadPath());
         visualizeFileButton.addActionListener(controller.getActionVisualizeSelected());
 
-        disconnectButton.setVisible(false);
-        openFolderButton.setVisible(Desktop.isDesktopSupported());
-        
         allButton.addActionListener(new ActionListener() {
 
             @Override
@@ -243,6 +246,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         visualizeFileButton.setEnabled(active);
         openFolderButton.setEnabled(active);
         downloadButton.setEnabled(active);
+        allButton.setEnabled(active);
         ownerButton.setEnabled(active);
         subjectButton.setEnabled(active);
 

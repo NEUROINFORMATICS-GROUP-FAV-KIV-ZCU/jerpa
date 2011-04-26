@@ -24,6 +24,15 @@
 *                                  CHANGE LOG 1.0.0 - > 1.0.1                               *
 *********************************************************************************************
 
+  * (4/26/2011) Petr Miko
+    # 225
+    
+    Following changes are both in trunk and branch 1.0.1.
+    
+    CHANGED: Fixed bug of selected files (offline mode was not switching properly in EDEDBController)
+    CHANGED: Update buttons visibility (ALL button was active during visualizing, Download button was active when app started)
+    CHANGED: edited build.xml - clean-test now removes directory of test binaries.
+
   * (4/23/2011) Petr Miko
     # 219
 
