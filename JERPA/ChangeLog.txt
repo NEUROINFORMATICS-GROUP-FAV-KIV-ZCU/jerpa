@@ -48,6 +48,17 @@
 *                                  CHANGE LOG 1.0.0 - > 1.0.1                               *
 *********************************************************************************************
 
+  * (4/28/2011) Petr Miko
+    # 228
+    
+    Following changes are both in trunk and branch 1.0.1.
+    
+    ADDED: EDEDB: On mouse click in Data Table (Online and Offline) is file selected now.
+    ADDED: EDEDB: In Experiment Tables (Online and Offline) can be selected more rows (with CTRL) => files in Data Table are merged
+    CHANGED: EDEDB: username and password will be stored in ededb.properties from now on
+    INTERNAL: EDEDB: file download now runs in a loop instead of direct assign to variable - better control, possible checking the percents of downloading file.
+    CHANGED: EDEDClient: a bit different creation of client, works the same.  
+
   * (4/26/2011) Petr Miko
     # 225
     

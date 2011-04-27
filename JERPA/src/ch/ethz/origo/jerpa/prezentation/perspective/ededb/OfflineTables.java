@@ -8,6 +8,8 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.UserTableModel;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
 import java.awt.Container;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class OfflineTables extends JSplitPane {
     private DataTableModel dataModel;
     private EDEDBController controller;
     private String username;
-    private String folder;
+    private ArrayList<String> folders;
 
     /**
      * Constructor method creating JSplitPane with tables.
@@ -40,6 +42,7 @@ public class OfflineTables extends JSplitPane {
         super();
 
         this.controller = controller;
+        folders = new ArrayList<String>();
 
         this.setResizeWeight(.5d);
 
@@ -95,17 +98,20 @@ public class OfflineTables extends JSplitPane {
         expTable.setAutoCreateRowSorter(true);
         expTable.setFillsViewportHeight(true);
         expTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        expTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        expTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         ListSelectionModel selectionModel = expTable.getSelectionModel();
         selectionModel.addListSelectionListener(new ListSelectionListener() {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting() && expModel.getRowCount() > 0) {
+                if (!e.getValueIsAdjusting() && expTable.getSelectedRow() != -1) {
+                    folders.clear();
+                    for (Integer i : expTable.getSelectedRows()) {
+                        folders.add(expTable.getValueAt(i, 0)
+                                + " - " + expTable.getValueAt(i, 1));
+                    }
 
-                    folder = expModel.getValueAt(expTable.getSelectedRow(), 0)
-                            + " - " + expModel.getValueAt(expTable.getSelectedRow(), 1);
                     updateDataTable();
                 }
             }
@@ -120,7 +126,7 @@ public class OfflineTables extends JSplitPane {
      */
     private Container createDataTable() {
         dataModel = new DataTableModel();
-        JXTable dataTable = new JXTable(dataModel);
+        final JXTable dataTable = new JXTable(dataModel);
 
         dataTable.setAutoCreateRowSorter(true);
         dataTable.setFillsViewportHeight(true);
@@ -129,6 +135,23 @@ public class OfflineTables extends JSplitPane {
 
         dataTable.getColumn(DataTableModel.MIME_COLUMN).setMaxWidth(0);
         dataTable.getColumn(DataTableModel.DOWNLOADED_COLUMN).setMaxWidth(0);
+
+        dataTable.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (dataTable.getSelectedRow() != -1) {
+                    if (dataTable.getSelectedColumn() != DataTableModel.ACTION_COLUMN) {
+                        dataModel.getData().get(dataTable.getSelectedRow()).setSelected(!dataModel.getData().get(dataTable.getSelectedRow()).isSelected());
+                    }
+
+                    dataTable.revalidate();
+                    dataTable.repaint();
+                }
+            }
+        });
+
 
         return new JScrollPane(dataTable);
     }
@@ -234,29 +257,38 @@ public class OfflineTables extends JSplitPane {
 
             public void run() {
 
-                File downloadFolder = new File(controller.getDownloadPath()
-                        + File.separator + username
-                        + File.separator + folder);
-                File[] files = downloadFolder.listFiles();
+                File downloadFolder = null;
+                File[] files = null;
 
                 clearDataTable();
 
-                if (files != null) {
-                    for (File file : files) {
-                        if (file.isFile()) {
-                            DataFileInfo info = new DataFileInfo();
-                            info.setFilename(file.getName());
-                            info.setLength(file.length());
-                            info.setScenarioName(folder);
+                for (String folder : folders) {
 
-                            dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY,
-                                    downloadFolder.getAbsolutePath());
-                            dataModel.fireTableDataChanged();
+                    downloadFolder = new File(controller.getDownloadPath()
+                            + File.separator + username
+                            + File.separator + folder);
+                    files = downloadFolder.listFiles();
+
+
+
+                    if (files != null) {
+                        for (File file : files) {
+                            if (file.isFile()) {
+                                DataFileInfo info = new DataFileInfo();
+                                info.setFilename(file.getName());
+                                info.setLength(file.length());
+                                info.setScenarioName(folder);
+
+                                dataModel.addRow(info, DataRowModel.HAS_LOCAL_COPY,
+                                        downloadFolder.getAbsolutePath());
+                                dataModel.fireTableDataChanged();
+                            }
                         }
                     }
+                    revalidate();
+                    repaint();
                 }
 
-                repaint();
                 Working.setActivity(false, "working.ededb.update.datatable");
             }
         });

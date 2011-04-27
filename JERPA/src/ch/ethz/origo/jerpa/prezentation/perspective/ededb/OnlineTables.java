@@ -8,21 +8,23 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
 import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.jerpa.ededclient.generated.SOAPException_Exception;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.swing.table.TableCellRenderer;
 import org.jdesktop.swingx.JXTable;
 
 /**
@@ -47,6 +49,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
     private String errorConnectionText;
     private String errorConnectionDesc;
     private String errorRangeDesc;
+    private ArrayList<Integer> selectedExps;
 
     /**
      * Constructor creating basic JSplitPane interface.
@@ -84,15 +87,21 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         expTable.setAutoCreateRowSorter(true);
         expTable.setFillsViewportHeight(true);
         expTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        expTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        expTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        selectedExps = new ArrayList<Integer>();
 
         ListSelectionModel selectionModel = expTable.getSelectionModel();
         selectionModel.addListSelectionListener(new ListSelectionListener() {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting() && expModel.getRowCount() > 0) {
-                    updateDataTable(expTable.getSelectedRow());
+                if (!e.getValueIsAdjusting() && expTable.getSelectedRow() != -1) {
+                    selectedExps.clear();
+                    for (Integer i : expTable.getSelectedRows()) {
+                        selectedExps.add((Integer) expTable.getValueAt(i, 0));
+                    }
+                    updateDataTable();
                 }
             }
         });
@@ -113,6 +122,20 @@ public class OnlineTables extends JSplitPane implements ILanguage {
         dataTable.setFillsViewportHeight(true);
         dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         dataTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        dataTable.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (dataTable.getSelectedColumn() != DataTableModel.ACTION_COLUMN) {
+                    dataModel.getData().get(dataTable.getSelectedRow()).setSelected(!dataModel.getData().get(dataTable.getSelectedRow()).isSelected());
+                }
+
+                dataTable.revalidate();
+                dataTable.repaint();
+            }
+        });
 
         return new JScrollPane(dataTable);
     }
@@ -184,16 +207,17 @@ public class OnlineTables extends JSplitPane implements ILanguage {
      * Method filing data view table with experiment's files information. Shown information depends on selected experiment in experiment view table.
      * @param row selected experiment in experiment view table
      */
-    public void updateDataTable(final int row) {
+    public void updateDataTable() {
 
         Thread updateDataThread = new Thread(new Runnable() {
 
             public void run() {
-                java.util.List<DataFileInfo> dataFileInfos = null;
-                if (row >= 0 && row <= expModel.getRowCount()) {
+                java.util.List<DataFileInfo> dataFileInfos = new LinkedList<DataFileInfo>();
+
+                for (Integer expId : selectedExps) {
+
                     try {
-                        int expId = Integer.parseInt(expTable.getValueAt(row, ExpTableModel.ID_COLUMN).toString());
-                        dataFileInfos = session.getService().getExperimentFiles(expId);
+                        dataFileInfos.addAll(session.getService().getExperimentFiles(expId));
                     } catch (SOAPException_Exception e) {
 
                         JUIGLErrorInfoUtils.showErrorDialog(
@@ -207,17 +231,16 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                                 e.getMessage(),
                                 e);
                     }
+                }
+                clearDataTable();
 
-                    clearDataTable();
+                for (DataFileInfo info : dataFileInfos) {
+                    String downloadPath = controller.getDownloadPath()
+                            + File.separator + session.getUsername()
+                            + File.separator + info.getExperimentId()
+                            + " - " + info.getScenarioName();
 
-                    for (DataFileInfo info : dataFileInfos) {
-                        String downloadPath = controller.getDownloadPath()
-                                + File.separator + session.getUsername()
-                                + File.separator + info.getExperimentId()
-                                + " - " + info.getScenarioName();
-
-                        dataModel.addRow(info, controller.isAlreadyDownloaded(info), downloadPath);
-                    }
+                    dataModel.addRow(info, controller.isAlreadyDownloaded(info), downloadPath);
                 }
                 repaint();
                 Working.setActivity(false, "working.ededb.update.datatable");

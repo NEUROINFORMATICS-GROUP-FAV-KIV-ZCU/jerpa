@@ -8,14 +8,13 @@ import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ResourceBundle;
 import javax.xml.ws.WebServiceException;
-import javax.activation.DataHandler;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -25,7 +24,6 @@ import javax.swing.SwingUtilities;
  *
  * @author Petr Miko
  */
-
 public class FileDownload implements Runnable, ILanguage {
 
     private ResourceBundle resource;
@@ -34,7 +32,7 @@ public class FileDownload implements Runnable, ILanguage {
     private EDEDBController controller;
     private EDEDClient session;
     private String errorText, errorDesc;
-    
+
     /**
      * Constructor. Sets up which file will be downloaded by saving DataRowModel object.
      *
@@ -60,9 +58,9 @@ public class FileDownload implements Runnable, ILanguage {
      */
     @Override
     public synchronized void run() {
-        
+
         Working.setActivity(true, "working.ededb.downloading");
-        
+
         FileOutputStream fstream = null;
         File destFolder = new File(rowData.getLocation());
 
@@ -81,36 +79,55 @@ public class FileDownload implements Runnable, ILanguage {
         }
 
         rowData.setSelected(false);
-        rowData.setDownloaded(DataRowModel.DOWNLOADING);
-        
+
         controller.addDownloading(rowData.getFileInfo().getFileId());
-        
+
         try {
             fstream = new FileOutputStream(new File(rowData.getLocation()
                     + File.separator + rowData.getFileInfo().getFilename()));
 
-            DataHandler incommingFile;
+            InputStream inStream = null;
+            int in;
+            int prev = 0;
+            int change;
+            long counter = 0;
             try {
-                incommingFile = session.getService().downloadFile(rowData.getFileInfo().getFileId());
-                incommingFile.writeTo(fstream);
+                inStream = session.getService().downloadFile(rowData.getFileInfo().getFileId()).getInputStream();
+                rowData.setDownloaded(DataRowModel.DOWNLOADING);
+                while ((in = inStream.read()) != -1) {
+                    fstream.write(in);
+                    /*change = (int) (((++counter * 100) / rowData.getFileInfo().getLength()));
+                    if(change - prev > 0){
+                    prev = change;
+                    System.out.println("Downloading file " + rowData.getFileInfo().getFilename() + ": " + change + "%");
+                    }*/
+                }
+                fstream.close();
             } catch (SOAPException_Exception ex) {
                 JUIGLErrorInfoUtils.showErrorDialog(
                         ex.getMessage(),
                         resource.getString("soapexception.ededb.text"),
                         ex);
                 controller.setUserLoggedIn(false);
-            } catch (WebServiceException e){
+            } catch (WebServiceException e) {
                 JUIGLErrorInfoUtils.showErrorDialog(
                         e.getMessage(),
                         resource.getString("webserviceexception.ededb.text"),
                         e);
                 controller.setUserLoggedIn(false);
+            } finally {
+                if (fstream != null) {
+                    fstream.close();
+                }
+                if (inStream != null) {
+                    inStream.close();
+                }
             }
 
             fstream.close();
 
             controller.removeDownloading(rowData.getFileInfo().getFileId());
-            
+
             return;
 
         } catch (FileNotFoundException e) {
@@ -124,9 +141,9 @@ public class FileDownload implements Runnable, ILanguage {
                     e.getLocalizedMessage(),
                     e);
         } finally {
-            
+
             Working.setActivity(false, "working.ededb.downloading");
-            
+
             if (fstream != null) {
                 try {
                     fstream.close();
@@ -137,7 +154,7 @@ public class FileDownload implements Runnable, ILanguage {
                             ex);
                 }
             }
-            
+
             controller.removeDownloading(rowData.getFileInfo().getFileId());
         }
     }

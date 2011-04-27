@@ -111,16 +111,13 @@ public class LoginDialog implements ILanguage {
         usernameLabel.setLabelFor(usernameField);
         passwordLabel.setLabelFor(passwordField);
 
-        String endpoint = controller.getConfigKey("ededb.endpoint");
-        endpointField.setText(endpoint);
-
-
         endpointField.setColumns(10);
         usernameField.setColumns(10);
         passwordField.setColumns(10);
 
-        usernameField.setText(session.getUsername());
-        passwordField.setText(session.getPassword());
+        usernameField.setText(controller.getConfigKey("ededb.username"));
+        passwordField.setText(controller.getConfigKey("ededb.password"));
+        endpointField.setText(controller.getConfigKey("ededb.endpoint"));
 
         moreLabelPane.add(endpointLabel);
         labelPane.add(usernameLabel);
@@ -154,13 +151,16 @@ public class LoginDialog implements ILanguage {
                     Thread loginThread = new Thread(new Runnable() {
 
                         public void run() {
-                            
+
                             dialog.getRootPane().setCursor(busyCursor);
-                            
+
                             try {
                                 session.userLogIn(tempUsername, tempPassword, tempEndpoint);
                                 controller.setConfigKey("ededb.endpoint", tempEndpoint);
                                 dialog.setVisible(false);
+
+                                controller.setConfigKey("ededb.username", tempUsername);
+                                controller.setConfigKey("ededb.password", tempPassword);
                             } catch (WebServiceException ex) {
 
                                 if (ex.getCause().getClass() == IOException.class) {
@@ -193,10 +193,6 @@ public class LoginDialog implements ILanguage {
                             progress.setVisible(false);
 
                             dialog.getRootPane().setCursor(defaultCursor);
-                            
-                            usernameField.setText("");
-                            passwordField.setText("");
-
                         }
                     });
 
@@ -282,7 +278,7 @@ public class LoginDialog implements ILanguage {
             }
         });
 
-        if (endpoint == null) {
+        if (endpointField.getText().isEmpty()) {
             optionsButton.setSelected(true);
 
             moreLabelPane.setVisible(true);
