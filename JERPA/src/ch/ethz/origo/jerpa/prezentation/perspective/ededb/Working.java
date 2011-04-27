@@ -94,11 +94,12 @@ public class Working extends JXPanel implements ILanguage {
         if (tmp) {
             if (counter == 0) {
                 progress.setIndeterminate(true);
-                
-                if(instance.getRootPane() != null)
+
+                if (instance.getRootPane() != null) {
                     instance.getRootPane().setCursor(busyCursor);
-                else
+                } else {
                     instance.setCursor(busyCursor);
+                }
             }
             if (counter < Integer.MAX_VALUE) {
                 counter++;
@@ -110,11 +111,12 @@ public class Working extends JXPanel implements ILanguage {
 
             if (counter == 0) {
                 progress.setIndeterminate(false);
-                
-                if(instance.getRootPane() != null)
+
+                if (instance.getRootPane() != null) {
                     instance.getRootPane().setCursor(defaultCursor);
-                else
+                } else {
                     instance.setCursor(defaultCursor);
+                }
             }
         }
 
@@ -156,6 +158,10 @@ public class Working extends JXPanel implements ILanguage {
         operationsPane.revalidate();
         operationsPane.repaint();
 
+        if (operationsPane.getParent() != null) {
+            operationsPane.getParent().validate();
+            operationsPane.getParent().repaint();
+        }
     }
 
     /**
