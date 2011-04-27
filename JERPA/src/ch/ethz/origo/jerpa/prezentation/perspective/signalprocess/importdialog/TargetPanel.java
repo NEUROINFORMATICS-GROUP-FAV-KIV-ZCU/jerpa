@@ -16,20 +16,23 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
  */
 package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.importdialog;
 
+import java.util.ResourceBundle;
+
+import javax.swing.SwingUtilities;
+
 /**
- * Panel pro v�b�r c�lov�ho projektu pro import pr�m�r�.
- * 
+ * Panel for select target project for import averages
  * 
  * @author Jiri Kucera (jERP Studio)
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (3/20/2010)
+ * @version 1.0.0 (4/26/2011)
  * @since 0.1.0 (3/20/2010)
  */
 public class TargetPanel extends javax.swing.JPanel {
@@ -38,10 +41,11 @@ public class TargetPanel extends javax.swing.JPanel {
 	private static final long serialVersionUID = -5460803600462974904L;
 
 	/** Creates new form TargetPanel */
-	public TargetPanel() {
+	public TargetPanel(ResourceBundle resource) {
 		initComponents();
 		targetProjectButtonGroup.add(importRadioButton);
 		targetProjectButtonGroup.add(newProjectRadioButton);
+		updateText(resource);
 	}
 
 	/**
@@ -61,27 +65,19 @@ public class TargetPanel extends javax.swing.JPanel {
 		projectNameTextField = new javax.swing.JTextField();
 		jLabel2 = new javax.swing.JLabel();
 
-		jLabel1.setText("Select target for importing averages:");
-
 		importRadioButton.setSelected(true);
-		importRadioButton.setText("Import into current project");
 		importRadioButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				importRadioButtonActionPerformed(evt);
 			}
 		});
 
-		newProjectRadioButton.setText("Create new project");
 		newProjectRadioButton
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
 						newProjectRadioButtonActionPerformed(evt);
 					}
 				});
-
-		projectNameTextField.setText("Project1");
-
-		jLabel2.setText("Project name:");
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
 		this.setLayout(layout);
@@ -153,5 +149,19 @@ public class TargetPanel extends javax.swing.JPanel {
 	protected javax.swing.JTextField projectNameTextField;
 	private javax.swing.ButtonGroup targetProjectButtonGroup;
 	// End of variables declaration//GEN-END:variables
+	
+	public void updateText(final ResourceBundle resource) {
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				jLabel1.setText(resource.getString("sp.diag.import.target.panel.target"));
+				importRadioButton.setText(resource.getString("sp.diag.import.target.panel.imp.proj"));
+				newProjectRadioButton.setText(resource.getString("sp.diag.import.target.panel.new.proj"));
+				projectNameTextField.setText(resource.getString("sp.diag.import.target.panel.proj.name.def"));
+				jLabel2.setText(resource.getString("sp.diag.import.target.panel.proj.name"));
+			}
+		});
+	}
 
 }

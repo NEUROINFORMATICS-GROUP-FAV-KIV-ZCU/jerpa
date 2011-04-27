@@ -16,7 +16,7 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
@@ -24,29 +24,45 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.importdialog;
 
 import java.awt.BorderLayout;
+import java.util.ResourceBundle;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import org.apache.log4j.Logger;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.exception.ProjectOperationException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 
 /**
- * Dialogov� okno pro import pr�m�r�.
+ * Dialog window for import of average
  * 
  * @author Jiri Kucera (jERP Studio)
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (3/20/2010)
+ * @version 1.0.0 (4/26/2011)
  * @since 0.1.0 (3/20/2010)
+ * @see ILanguage
  */
-public class DialogWindow extends JDialog {
+public class DialogWindow extends JDialog implements ILanguage {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = -7291735764219664878L;
 	
+	/** Logger for this class */
+	private static final Logger logger = Logger.getLogger(DialogWindow.class);
+	
 	ImportDialogProvider importDialogProvider;
+	
+	private ResourceBundle resource;
+	
+	private String resourceBundlePath;
 
 	/**
 	 * Creates new form DialogWindow
@@ -57,12 +73,22 @@ public class DialogWindow extends JDialog {
 	 */
 	DialogWindow(ImportDialogProvider importDialogProvider, JPanel initialPanel) throws PerspectiveException {
 		this.importDialogProvider = importDialogProvider;
+	  // set localized files
+		setLocalizedResourceBundle(LangUtils
+				.getPerspectiveLangPathProp(LangUtils.SIGNAL_PERSP_LANG_FILE_KEY));
+		// attach class as Observer of Language Observable
+		LanguageObservable.getInstance().attach(this);
 		initComponents();
 		dialogPanel.setLayout(new BorderLayout());
 		dialogPanel.add(initialPanel, BorderLayout.CENTER);
 		setIconImage(JUIGLEGraphicsUtils.getImage(JERPAUtils.IMAGE_PATH
 				+ "icon.gif"));
-		setTitle("Import averages wizard");
+    try {
+			updateText();
+		} catch (JUIGLELangException e) {
+			logger.error(e.getMessage(), e);
+			throw new PerspectiveException(e.getMessage(), e);
+		}
 		this.pack();
 	}
 
@@ -89,21 +115,18 @@ public class DialogWindow extends JDialog {
 			}
 		});
 
-		cancelButton.setText("Cancel");
 		cancelButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				cancelButtonActionPerformed(evt);
 			}
 		});
 
-		nextButton.setText("Next >");
 		nextButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				nextButtonActionPerformed(evt);
 			}
 		});
 
-		backButton.setText("< Back");
 		backButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				backButtonActionPerformed(evt);
@@ -185,8 +208,7 @@ public class DialogWindow extends JDialog {
 		try {
 			importDialogProvider.setDialogState(ImportDialogProvider.BUTTON_BACK);
 		} catch (ProjectOperationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		importDialogProvider.setDialogContent();
 	}// GEN-LAST:event_backButtonActionPerformed
@@ -196,8 +218,7 @@ public class DialogWindow extends JDialog {
 		try {
 			importDialogProvider.setDialogState(ImportDialogProvider.BUTTON_NEXT);
 		} catch (ProjectOperationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		importDialogProvider.setDialogContent();
 	}// GEN-LAST:event_nextButtonActionPerformed
@@ -209,4 +230,37 @@ public class DialogWindow extends JDialog {
 	private javax.swing.JSeparator jSeparator1;
 	protected javax.swing.JButton nextButton;
 	// End of variables declaration//GEN-END:variables
+
+	@Override
+	public String getResourceBundlePath() {
+		return resourceBundlePath;
+	}
+
+	@Override
+	public void setLocalizedResourceBundle(String path) {
+		this.resourceBundlePath = path;
+		resource = ResourceBundle.getBundle(path);
+	}
+
+	/**
+	 * NOT IMPLEMENTED FOR THIS CLASS
+	 */
+	@Override
+	public void setResourceBundleKey(String key) {
+		// NOT IMPLEMENTED FOR THIS CLASS
+	}
+
+	@Override
+	public void updateText() throws JUIGLELangException {
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				setTitle(resource.getString("sp.diag.import.title"));
+				cancelButton.setText(resource.getString("sp.diag.import.button.cancel"));
+				nextButton.setText(resource.getString("sp.diag.import.button.next"));
+				backButton.setText(resource.getString("sp.diag.import.button.back"));
+			}
+		});
+	}
 }

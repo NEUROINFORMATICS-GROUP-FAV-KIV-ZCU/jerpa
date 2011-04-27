@@ -16,20 +16,24 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
  */
 package ch.ethz.origo.jerpa.prezentation.perspective.signalprocess.importdialog;
 
+import java.util.ResourceBundle;
+
+import javax.swing.SwingUtilities;
+
 /**
- * Panel pro v�b�r projekt� s pr�m�ry k importov�n�.
+ * Panel for select a projects with averages ready to import
  * 
  * 
  * @author Jiri Kucera (jERP Studio)
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.0 (3/20/2010)
+ * @version 1.0.0 (4/26/2011)
  * @since 0.1.0 (3/20/2010)
  * 
  */
@@ -37,7 +41,7 @@ public class SourcePanel extends javax.swing.JPanel {
 
 	/** Only for serialization */
 	private static final long serialVersionUID = 8374978802927604490L;
-	
+
 	private ImportDialogProvider importDialogProvider;
 
 	/**
@@ -45,11 +49,13 @@ public class SourcePanel extends javax.swing.JPanel {
 	 * 
 	 * @param importDialogProvider
 	 */
-	public SourcePanel(ImportDialogProvider importDialogProvider) {
+	public SourcePanel(ImportDialogProvider importDialogProvider,
+			ResourceBundle resource) {
 		this.importDialogProvider = importDialogProvider;
 		initComponents();
 		buttonGroup.add(filesButton);
 		buttonGroup.add(projectsButton);
+		updateText(resource);
 	}
 
 	/**
@@ -72,9 +78,6 @@ public class SourcePanel extends javax.swing.JPanel {
 		removeButton = new javax.swing.JButton();
 		jLabel2 = new javax.swing.JLabel();
 
-		jLabel1.setText("Select source to import averages from:");
-
-		projectsButton.setText("Opened projects");
 		projectsButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				projectsButtonActionPerformed(evt);
@@ -82,7 +85,6 @@ public class SourcePanel extends javax.swing.JPanel {
 		});
 
 		filesButton.setSelected(true);
-		filesButton.setText("Project files");
 		filesButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				filesButtonActionPerformed(evt);
@@ -91,7 +93,7 @@ public class SourcePanel extends javax.swing.JPanel {
 
 		projectsList.setModel(new javax.swing.AbstractListModel() {
 			private static final long serialVersionUID = 4861755758958531703L;
-			
+
 			String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
 
 			public int getSize() {
@@ -104,56 +106,76 @@ public class SourcePanel extends javax.swing.JPanel {
 		});
 		jScrollPane1.setViewportView(projectsList);
 
-		addFileButton.setText("Add file...");
 		addFileButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addFileButtonActionPerformed(evt);
 			}
 		});
 
-		removeButton.setText("Remove item");
 		removeButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeButtonActionPerformed(evt);
 			}
 		});
 
-		jLabel2.setText("Projects for import:");
-
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
 		this.setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-				layout.createSequentialGroup().addContainerGap().addGroup(
-						layout.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING).addComponent(
-								jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 402,
-								Short.MAX_VALUE).addComponent(jLabel1).addGroup(
-								layout.createSequentialGroup().addComponent(projectsButton)
-										.addGap(18, 18, 18).addComponent(filesButton)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(addFileButton).addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-										.addComponent(removeButton).addGap(6, 6, 6)).addComponent(
-								jLabel2)).addContainerGap()));
+		layout
+				.setHorizontalGroup(layout
+						.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								layout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(
+												layout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(jScrollPane1,
+																javax.swing.GroupLayout.DEFAULT_SIZE, 402,
+																Short.MAX_VALUE)
+														.addComponent(jLabel1)
+														.addGroup(
+																layout
+																		.createSequentialGroup()
+																		.addComponent(projectsButton)
+																		.addGap(18, 18, 18)
+																		.addComponent(filesButton)
+																		.addPreferredGap(
+																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																		.addComponent(addFileButton)
+																		.addPreferredGap(
+																				javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+																		.addComponent(removeButton).addGap(6, 6, 6))
+														.addComponent(jLabel2)).addContainerGap()));
 		layout
 				.setVerticalGroup(layout.createParallelGroup(
-						javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-						layout.createSequentialGroup().addContainerGap().addComponent(
-								jLabel1).addPreferredGap(
-								javax.swing.LayoutStyle.ComponentPlacement.UNRELATED).addGroup(
-								layout.createParallelGroup(
-										javax.swing.GroupLayout.Alignment.BASELINE).addComponent(
-										projectsButton).addComponent(filesButton).addComponent(
-										addFileButton).addComponent(removeButton)).addPreferredGap(
-								javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-								javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(jLabel2).addPreferredGap(
-										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(jScrollPane1,
-										javax.swing.GroupLayout.PREFERRED_SIZE, 197,
-										javax.swing.GroupLayout.PREFERRED_SIZE).addContainerGap()));
+						javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								layout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addComponent(jLabel1)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+										.addGroup(
+												layout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.BASELINE)
+														.addComponent(projectsButton)
+														.addComponent(filesButton)
+														.addComponent(addFileButton)
+														.addComponent(removeButton))
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+												javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(jLabel2)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(jScrollPane1,
+												javax.swing.GroupLayout.PREFERRED_SIZE, 197,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addContainerGap()));
 	}// </editor-fold>//GEN-END:initComponents
 
 	private void projectsButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_projectsButtonActionPerformed
@@ -194,5 +216,20 @@ public class SourcePanel extends javax.swing.JPanel {
 	protected javax.swing.JList projectsList;
 	private javax.swing.JButton removeButton;
 	// End of variables declaration//GEN-END:variables
+	
+	public void updateText(final ResourceBundle resource) {
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				jLabel1.setText(resource.getString("sp.diag.import.source.panel.select.source"));
+				projectsButton.setText(resource.getString("sp.diag.import.source.panel.opened.prjs"));
+				filesButton.setText(resource.getString("sp.diag.import.source.panel.proj.files"));
+				addFileButton.setText(resource.getString("sp.diag.import.source.panel.add.file"));
+				removeButton.setText(resource.getString("sp.diag.import.source.panel.remove.item"));
+				jLabel2.setText(resource.getString("sp.diag.import.source.panel.proj.4.import"));
+			}
+		});
+	}
 
 }

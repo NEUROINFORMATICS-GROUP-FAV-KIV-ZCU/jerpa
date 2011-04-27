@@ -16,7 +16,7 @@
 
 /*
  *  
- *    Copyright (C) 2009 - 2010 
+ *    Copyright (C) 2009 - 2011 
  *    							University of West Bohemia, 
  *                  Department of Computer Science and Engineering, 
  *                  Pilsen, Czech Republic
@@ -26,18 +26,21 @@ package ch.ethz.origo.jerpa.data;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+
+import ch.ethz.origo.jerpa.jerpalang.LangUtils;
 
 /**
- * Class contains utilities which are used by application. Next 
- * contains static methods provided some utilities for application and 
- * also contains main constants.
+ * Class contains utilities which are used by application. Next contains static
+ * methods provided some utilities for application and also contains main
+ * constants.
  * 
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
- * @version 0.1.4 (4/17/2010)
+ * @version 0.1.5 (5/27/2011)
  * @since 0.1.0 (07/18/09)
  */
 public class JERPAUtils {
-	
+
 	/** Extension of java classes */
 	public static final String JAVA_EXTENSION = ".java";
 	/** Path to application used images */
@@ -48,12 +51,13 @@ public class JERPAUtils {
 	public static final String PLUGIN_ALGORITHMS_KEY = "Algorithms";
 
 	private static List<String> listOfFilesToDelete;
-	
+
 	/**
-	 * Add full file name (path + file name) to list which contains the list of 
+	 * Add full file name (path + file name) to list which contains the list of
 	 * all files, which will be deleted while application is closing.
 	 * 
-	 * @param file full file name (path + file name)
+	 * @param file
+	 *          full file name (path + file name)
 	 * @version 0.1.0 (3/24/2010)
 	 * @since 0.1.1 (3/24/2010)
 	 */
@@ -63,7 +67,7 @@ public class JERPAUtils {
 		}
 		listOfFilesToDelete.add(file);
 	}
-	
+
 	/**
 	 * This method delete all created files from list.
 	 */
@@ -72,7 +76,40 @@ public class JERPAUtils {
 			for (String fileName : listOfFilesToDelete) {
 				File file = new File(fileName);
 				file.delete();
-			}			
+			}
+		}
+	}
+
+	/**
+	 * Return localized title of error based on <code>EErrorType</code> (type of
+	 * error).
+	 * 
+	 * @param errorType
+	 *          type of error - enum of <code>EErrorType</code>
+	 * 
+	 * @return localized title of error based on <code>EErrorType</code>
+	 * 
+	 * @since 0.1.5 (5/27/2011)
+	 */
+	public static String getLocalizedErrorTitle(EErrorTitleType errorType) {
+		ResourceBundle resource = ResourceBundle
+				.getBundle(LangUtils.MAIN_FILE_PATH);
+		switch (errorType) {
+		case AVERAGING_ERR:
+			return resource.getString("jerpa.error.averaging");
+		
+		case AVERAGING_WARN:
+			return resource.getString("jerpa.warn.averaging");
+		
+		case INTERNAL:
+			return resource.getString("jerpa.error.internal");
+			
+		case IMPORT:
+			return resource.getString("jerpa.error.import");
+
+		case UNEXPECTED:
+		default:
+			return resource.getString("jerpa.error.unexpected");
 		}
 	}
 }
