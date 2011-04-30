@@ -1,12 +1,12 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
+import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import javax.swing.JProgressBar;
@@ -23,7 +23,6 @@ import org.jdesktop.swingx.JXPanel;
 public class Working extends JXPanel implements ILanguage {
 
     private static Working instance;
-    private static int counter;
     private static HashMap<String, Integer> operations;
     private static JTextArea operationsField;
     private static String resourceBundlePath;
@@ -32,6 +31,7 @@ public class Working extends JXPanel implements ILanguage {
     public static Cursor busyCursor;
     public static Cursor defaultCursor;
     private static JScrollPane operationsPane;
+    private static HashMap<DataFileInfo, Integer> downloads;
 
     /**
      *  Method creating JDialog
@@ -50,6 +50,7 @@ public class Working extends JXPanel implements ILanguage {
         this.setLayout(new BorderLayout());
 
         operations = new HashMap<String, Integer>();
+        downloads = new HashMap<DataFileInfo, Integer>();
 
         operationsField = new JTextArea();
         operationsField.setEditable(false);
@@ -57,10 +58,9 @@ public class Working extends JXPanel implements ILanguage {
         operationsField.setForeground(this.getForeground());
 
         operationsPane = new JScrollPane(operationsField);
-        operationsPane.setMaximumSize(new Dimension(30, 50));
+        operationsPane.setPreferredSize(new Dimension(30, 50));
         operationsPane.setFocusable(false);
 
-        counter = 0;
         updateOperations();
 
         this.add(operationsPane, BorderLayout.CENTER);
@@ -80,19 +80,7 @@ public class Working extends JXPanel implements ILanguage {
 
         if (add) {
             operations.put(operation, (operations.get(operation) == null ? 1 : operations.get(operation) + 1));
-        } else {
-            if (operations.get(operation) != null && operations.get(operation) == 1) {
-                operations.remove(operation);
-            } else {
-                operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0
-                        ? 1 : operations.get(operation) - 1));
-            }
-        }
-
-        updateOperations();
-
-        if (tmp) {
-            if (counter == 0) {
+            if (operations.size() == 1) {
                 progress.setIndeterminate(true);
 
                 if (instance.getRootPane() != null) {
@@ -101,24 +89,52 @@ public class Working extends JXPanel implements ILanguage {
                     instance.setCursor(busyCursor);
                 }
             }
-            if (counter < Integer.MAX_VALUE) {
-                counter++;
-            }
         } else {
-            if (counter > 0) {
-                counter--;
-            }
+            if (operations.get(operation) != null && operations.get(operation) == 1) {
+                operations.remove(operation);
+                if (operations.isEmpty()) {
+                    progress.setIndeterminate(false);
 
-            if (counter == 0) {
-                progress.setIndeterminate(false);
-
-                if (instance.getRootPane() != null) {
-                    instance.getRootPane().setCursor(defaultCursor);
-                } else {
-                    instance.setCursor(defaultCursor);
+                    if (instance.getRootPane() != null) {
+                        instance.getRootPane().setCursor(defaultCursor);
+                    } else {
+                        instance.setCursor(defaultCursor);
+                    }
                 }
+            } else {
+                operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0
+                        ? 1 : operations.get(operation) - 1));
             }
         }
+
+        updateOperations();
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                instance.revalidate();
+                instance.repaint();
+            }
+        });
+    }
+
+    /**
+     * Setting currently downloading file.
+     * @param percent How many percents is downloaded
+     * @param file Specific file
+     */
+    public static void setDownload(int percent, DataFileInfo file) {
+        if (instance == null) {
+            new Working();
+        }
+
+        if (percent == 100) {
+            downloads.remove(file);
+        } else {
+            downloads.put(file, percent);
+        }
+
+        updateOperations();
 
         SwingUtilities.invokeLater(new Runnable() {
 
@@ -142,26 +158,26 @@ public class Working extends JXPanel implements ILanguage {
                 if (temp.equals("")) {
                     temp = "[" + operations.get(operation) + "] " + resource.getString(operation);
                 } else {
-                    temp += "\n [" + operations.get(operation) + "] " + resource.getString(operation);
+                    temp += "\n[" + operations.get(operation) + "] " + resource.getString(operation);
                 }
             }
         } else {
             temp = resource.getString("working.ededb.no");
         }
 
+        if (!downloads.isEmpty()) {
+            for (DataFileInfo file : downloads.keySet()) {
+                if (temp.equals("")) {
+                    temp = file.getFilename() + " (ID " + file.getFileId() + "):" + downloads.get(file) + "%";
+                } else {
+                    temp += "\n" + file.getFilename() + " (ID " + file.getFileId() + "):" + downloads.get(file) + "%";
+                }
+            }
+        }
+
         progress.setToolTipText(temp);
 
         operationsField.setText(temp);
-        operationsField.revalidate();
-        operationsField.repaint();
-
-        operationsPane.revalidate();
-        operationsPane.repaint();
-
-        if (operationsPane.getParent() != null) {
-            operationsPane.getParent().validate();
-            operationsPane.getParent().repaint();
-        }
     }
 
     /**

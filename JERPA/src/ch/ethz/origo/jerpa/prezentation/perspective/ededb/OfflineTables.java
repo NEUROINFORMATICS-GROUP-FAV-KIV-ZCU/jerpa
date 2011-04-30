@@ -33,6 +33,7 @@ public class OfflineTables extends JSplitPane {
     private EDEDBController controller;
     private String username;
     private ArrayList<String> folders;
+    private JXTable expTable;
 
     /**
      * Constructor method creating JSplitPane with tables.
@@ -93,7 +94,7 @@ public class OfflineTables extends JSplitPane {
      */
     private Container createExpTable() {
         expModel = new ExpTableModel();
-        final JXTable expTable = new JXTable(expModel);
+        expTable = new JXTable(expModel);
 
         expTable.setAutoCreateRowSorter(true);
         expTable.setFillsViewportHeight(true);
@@ -253,6 +254,8 @@ public class OfflineTables extends JSplitPane {
      */
     public synchronized void updateDataTable() {
 
+        final boolean tmpMode = controller.isOfflineMode();
+
         Thread updateDataThread = new Thread(new Runnable() {
 
             public void run() {
@@ -288,13 +291,17 @@ public class OfflineTables extends JSplitPane {
                     revalidate();
                     repaint();
                 }
-
-                Working.setActivity(false, "working.ededb.update.datatable");
+                if (tmpMode) {
+                    Working.setActivity(false, "working.ededb.update.datatable");
+                }
             }
         });
 
+        if (tmpMode) {
+            Working.setActivity(true, "working.ededb.update.datatable");
+        }
         updateDataThread.start();
-        Working.setActivity(true, "working.ededb.update.datatable");
+
     }
 
     /**

@@ -21,7 +21,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -101,7 +100,17 @@ public class OnlineTables extends JSplitPane implements ILanguage {
                     for (Integer i : expTable.getSelectedRows()) {
                         selectedExps.add((Integer) expTable.getValueAt(i, 0));
                     }
-                    updateDataTable();
+
+                    Thread updateDataThread = new Thread(new Runnable() {
+
+                        public void run() {
+                            updateDataTable();
+                            Working.setActivity(false, "working.ededb.update.datatable");
+                        }
+                    });
+
+                    Working.setActivity(true, "working.ededb.update.datatable");
+                    updateDataThread.start();
                 }
             }
         });
@@ -116,7 +125,7 @@ public class OnlineTables extends JSplitPane implements ILanguage {
     private Container createDataTable() {
         dataModel = new DataTableModel();
         dataTable = new JXTable(dataModel);
-        dataTable.setDefaultRenderer(Object.class, new DataCellRenderer(dataModel));
+        dataTable.setDefaultRenderer(Object.class, new DataCellRenderer());
 
         dataTable.setAutoCreateRowSorter(true);
         dataTable.setFillsViewportHeight(true);
@@ -128,7 +137,8 @@ public class OnlineTables extends JSplitPane implements ILanguage {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (dataTable.getSelectedColumn() != DataTableModel.ACTION_COLUMN) {
+                if (dataTable.getSelectedColumn() != DataTableModel.ACTION_COLUMN
+                        && dataTable.getSelectedRow() != -1) {
                     dataModel.getData().get(dataTable.getSelectedRow()).setSelected(!dataModel.getData().get(dataTable.getSelectedRow()).isSelected());
                 }
 
@@ -207,48 +217,41 @@ public class OnlineTables extends JSplitPane implements ILanguage {
      * Method filing data view table with experiment's files information. Shown information depends on selected experiment in experiment view table.
      * @param row selected experiment in experiment view table
      */
-    public void updateDataTable() {
+    public synchronized void updateDataTable() {
 
-        Thread updateDataThread = new Thread(new Runnable() {
+        java.util.List<DataFileInfo> dataFileInfos = new LinkedList<DataFileInfo>();
 
-            public void run() {
-                java.util.List<DataFileInfo> dataFileInfos = new LinkedList<DataFileInfo>();
+        ArrayList<Integer> tmp = new ArrayList<Integer>(selectedExps);
 
-                for (Integer expId : selectedExps) {
+        for (Integer expId : tmp) {
 
-                    try {
-                        dataFileInfos.addAll(session.getService().getExperimentFiles(expId));
-                    } catch (SOAPException_Exception e) {
+            try {
+                dataFileInfos.addAll(session.getService().getExperimentFiles(expId));
+            } catch (SOAPException_Exception e) {
 
-                        JUIGLErrorInfoUtils.showErrorDialog(
-                                e.getMessage(),
-                                resource.getString("soapexception.ededb.text"),
-                                e);
-                    } catch (Exception e) {
+                JUIGLErrorInfoUtils.showErrorDialog(
+                        e.getMessage(),
+                        resource.getString("soapexception.ededb.text"),
+                        e);
+            } catch (Exception e) {
 
-                        JUIGLErrorInfoUtils.showErrorDialog(
-                                errorRangeDesc,
-                                e.getMessage(),
-                                e);
-                    }
-                }
-                clearDataTable();
-
-                for (DataFileInfo info : dataFileInfos) {
-                    String downloadPath = controller.getDownloadPath()
-                            + File.separator + session.getUsername()
-                            + File.separator + info.getExperimentId()
-                            + " - " + info.getScenarioName();
-
-                    dataModel.addRow(info, controller.isAlreadyDownloaded(info), downloadPath);
-                }
-                repaint();
-                Working.setActivity(false, "working.ededb.update.datatable");
+                JUIGLErrorInfoUtils.showErrorDialog(
+                        errorRangeDesc,
+                        e.getMessage(),
+                        e);
             }
-        });
+        }
+        clearDataTable();
 
-        Working.setActivity(true, "working.ededb.update.datatable");
-        updateDataThread.start();
+        for (DataFileInfo info : dataFileInfos) {
+            String downloadPath = controller.getDownloadPath()
+                    + File.separator + session.getUsername()
+                    + File.separator + info.getExperimentId()
+                    + " - " + info.getScenarioName();
+
+            dataModel.addRow(info, controller.isAlreadyDownloaded(info), downloadPath);
+        }
+        repaint();
     }
 
     /**

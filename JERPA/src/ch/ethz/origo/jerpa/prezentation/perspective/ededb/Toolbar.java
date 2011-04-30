@@ -55,7 +55,7 @@ public class Toolbar extends JXPanel implements ILanguage {
         radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.LINE_AXIS));
 
         createButtons();
-        
+
         radioBar.add(allButton);
         radioBar.add(ownerButton);
         radioBar.add(subjectButton);
@@ -100,11 +100,11 @@ public class Toolbar extends JXPanel implements ILanguage {
         ButtonGroup group = new ButtonGroup();
 
         controller.setRights(Rights.ALL);
-        
+
         group.add(allButton);
         group.add(ownerButton);
         group.add(subjectButton);
-        
+
         connectButton.setHorizontalAlignment(SwingConstants.LEFT);
         disconnectButton.setHorizontalAlignment(SwingConstants.LEFT);
         downloadButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -129,7 +129,7 @@ public class Toolbar extends JXPanel implements ILanguage {
                 controller.setRights(Rights.ALL);
             }
         });
-        
+
         ownerButton.addActionListener(new ActionListener() {
 
             @Override
@@ -155,8 +155,8 @@ public class Toolbar extends JXPanel implements ILanguage {
     public void updateButtonsVisibility() {
 
         openFolderButton.setVisible(Desktop.isDesktopSupported());
-        
-        
+
+
         if (session.isConnected()) {
             connectButton.setVisible(false);
             disconnectButton.setVisible(true);
@@ -261,12 +261,12 @@ public class Toolbar extends JXPanel implements ILanguage {
             visualizeFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "ededb_48.png", 32, 32));
             openFolderButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "folder_48.png", 32, 32));
             chooseFolderButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "spanner_48.png", 32, 32));
-            
+
             connectButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32));
             disconnectButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "logout_48.png", 32, 32));
             downloadButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "arrow_down_green_48.png", 32, 32));
             deleteFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "cross_48.png", 32, 32));
-            
+
         } catch (PerspectiveException ex) {
             JUIGLErrorInfoUtils.showErrorDialog(
                     ex.getMessage(),

@@ -326,7 +326,7 @@ public class EDEDBController {
             return offlineTables.getSelectedFiles();
         } else {
             return onlineTables.getSelectedFiles();
-            
+
         }
     }
 

@@ -22,7 +22,6 @@ import javax.swing.table.TableCellRenderer;
  */
 public class DataCellRenderer extends JLabel implements TableCellRenderer, ILanguage {
 
-    private DataTableModel model;
     private String resourceBundlePath;
     private ResourceBundle resource;
 
@@ -30,8 +29,7 @@ public class DataCellRenderer extends JLabel implements TableCellRenderer, ILang
      * Constructor method, sets opaquity to true.
      * @param model DataTableModel of Online Table
      */
-    public DataCellRenderer(DataTableModel model) {
-        this.model = model;
+    public DataCellRenderer() {
         this.setOpaque(true);
 
         LanguageObservable.getInstance().attach(this);

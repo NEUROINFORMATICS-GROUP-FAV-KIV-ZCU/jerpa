@@ -94,13 +94,14 @@ public class FileDownload implements Runnable, ILanguage {
             try {
                 inStream = session.getService().downloadFile(rowData.getFileInfo().getFileId()).getInputStream();
                 rowData.setDownloaded(DataRowModel.DOWNLOADING);
+                Working.setDownload(0, rowData.getFileInfo());
                 while ((in = inStream.read()) != -1) {
                     fstream.write(in);
-                    /*change = (int) (((++counter * 100) / rowData.getFileInfo().getLength()));
-                    if(change - prev > 0){
-                    prev = change;
-                    System.out.println("Downloading file " + rowData.getFileInfo().getFilename() + ": " + change + "%");
-                    }*/
+                    change = (int) (((++counter * 100) / rowData.getFileInfo().getLength()));
+                    if (change - prev > 0) {
+                        prev = change;
+                        Working.setDownload(change, rowData.getFileInfo());
+                    }
                 }
                 fstream.close();
             } catch (SOAPException_Exception ex) {
