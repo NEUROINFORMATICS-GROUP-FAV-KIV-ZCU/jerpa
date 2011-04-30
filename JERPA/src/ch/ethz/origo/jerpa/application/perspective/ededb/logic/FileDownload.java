@@ -63,7 +63,7 @@ public class FileDownload implements Runnable, ILanguage {
 
         FileOutputStream fstream = null;
         File destFolder = new File(rowData.getLocation());
-        
+
         if (!destFolder.exists()) {
             boolean success = (new File(rowData.getLocation())).mkdirs();
 
@@ -94,13 +94,14 @@ public class FileDownload implements Runnable, ILanguage {
             try {
                 inStream = session.getService().downloadFile(rowData.getFileInfo().getFileId()).getInputStream();
                 rowData.setDownloaded(DataRowModel.DOWNLOADING);
+                Working.setDownload(0, rowData.getFileInfo());
                 while ((in = inStream.read()) != -1) {
                     fstream.write(in);
-                    /*change = (int) (((++counter * 100) / rowData.getFileInfo().getLength()));
+                    change = (int) (((++counter * 100) / rowData.getFileInfo().getLength()));
                     if(change - prev > 0){
-                        prev = change;
-                        System.out.println("Downloading file " + rowData.getFileInfo().getFilename() + ": " + change + "%");
-                    }*/
+                    prev = change;
+                    Working.setDownload(change, rowData.getFileInfo());
+                    }
                 }
                 fstream.close();
             } catch (SOAPException_Exception ex) {

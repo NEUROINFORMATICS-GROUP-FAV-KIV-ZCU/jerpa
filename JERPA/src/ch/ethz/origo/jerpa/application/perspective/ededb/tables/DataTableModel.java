@@ -54,7 +54,6 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         data = new LinkedList<DataRowModel>();
     }
 
-
     /**
      * Getter of column class type. Necessary for first column in order to be a check box.
      * @param columnIndex column index
@@ -117,10 +116,11 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
      */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        
-        if(rowIndex < 0 || rowIndex > data.size())
+
+        if (rowIndex < 0 || rowIndex > data.size()) {
             return null;
-        
+        }
+
         switch (columnIndex) {
             case 0:
                 return data.get(rowIndex).isSelected();
@@ -145,7 +145,6 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
         }
     }
 
-
     /**
      * Setter of table cell value
      * @param object input value
@@ -155,16 +154,16 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
     @Override
     public void setValueAt(Object object, int rowIndex, int columnIndex) {
         if (columnIndex == 0) {
-            try{
+            try {
                 boolean tmp = (Boolean) object;
                 data.get(rowIndex).setSelected(tmp);
-            }catch(Exception e){
+            } catch (Exception e) {
                 System.err.println("DataTableModel set value: " + e);
             }
         } else if (columnIndex == getColumnCount() - 1) {
-            try{
+            try {
                 data.get(rowIndex).setDownloaded((Integer) object);
-            }catch(Exception e){
+            } catch (Exception e) {
                 System.err.println("DataTableModel set value: " + e);
             }
         }
@@ -194,7 +193,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
                 || downloaded == DataRowModel.DOWNLOADING
                 || downloaded == DataRowModel.ERROR)) {
             data.add(new DataRowModel(fileInfo, downloaded, location));
-        }else{
+        } else {
             System.err.println("Row was not added - invalid data format!");
         }
         this.fireTableDataChanged();

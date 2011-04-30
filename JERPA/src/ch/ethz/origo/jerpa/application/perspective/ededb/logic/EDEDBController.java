@@ -143,7 +143,7 @@ public class EDEDBController {
             session.userLogout();
             setOfflineMode(true);
             updateTableView();
-            
+
             onlineTables.clearDataTable();
             onlineTables.clearExpTable();
         }
