@@ -9,6 +9,10 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
  * (5/01/2011) vsouhrada
+    # 233
+    
+      CHANGED: Added a new version of the WekaPerspective plug-in version 0.3.0
+ 
     # 232
     
       INTERNAL: Switched version of the PluginEngine-2.0.0-RC2b to PluginEngine-2.0.0-RC3
