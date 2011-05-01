@@ -8,11 +8,16 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+ * (5/01/2011) vsouhrada
+    # 230
+      
+      INTERNAL: Switched version of the PluginEngine-2.0.0-RC1 to PluginEngine-2.0.0-RC2b
+
  * (4/27/2011) vsouhrada
     # 227
     
-      CHANGED: INTERNAL - Switched version of the JUIGLE-2.0.0-RC1 to JUIGLE-2.0.0-RC2a
-      CHANGED: INTERNAL - Added a new method into JERPAUtils called String getLocalizedErrorTitle(EErrorTitleType errorType). 
+      INTERNAL: Switched version of the JUIGLE-2.0.0-RC1 to JUIGLE-2.0.0-RC2a
+      INTERNAL: Added a new method into JERPAUtils called String getLocalizedErrorTitle(EErrorTitleType errorType). 
                This method return a localized error title based on of EErrorTitleType.
                --------------------------------------------------------------------------------
                + Usage e.g.:                                                                  +
@@ -22,8 +27,8 @@
 			   +			JUIGLEErrorParser.getErrorMessage("JERPA026",                     +
 			   +					LangUtils.JERPA_ERROR_LIST_PATH), ex, Level.SEVERE);      +
 			   --------------------------------------------------------------------------------
-      ADDED  : INTERNAL - Added a enum called EErrorTitleType - defined a special title of the JERPA error
-      FIXED  : Issue #23 - Localize ImportDialogProvider class - http://jerpa.origo.ethz.ch/issues/23 
+      INTERNAL: Added a enum called EErrorTitleType - defined a special title of the JERPA error
+      FIXED   : Issue #23 - Localize ImportDialogProvider class - http://jerpa.origo.ethz.ch/issues/23 
 
  * (4/25/2011) vsouhrada
     # 222
