@@ -289,6 +289,7 @@ public class AveragingDataManager {
 	 */
 	public AveragingDataManager(SignalProject project) {
 		this.project = project;
+		if (project != null) project.setAveragingDataManager(this);
 	}
 
 	/**
@@ -956,6 +957,7 @@ public class AveragingDataManager {
 	 */
 	public void setProject(SignalProject project) {
 		this.project = project;
+		if (project != null) project.setAveragingDataManager(this);
 	}
 
 	/**

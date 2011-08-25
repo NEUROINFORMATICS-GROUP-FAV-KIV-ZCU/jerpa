@@ -253,6 +253,9 @@ public class SignalProject extends Project {
 	 */
 	private boolean[] channelsToExport; // NEUKL�DAT
 
+	private AveragingDataManager averagingDataManager;
+	
+	
 	public SignalProject() {
 		super();
 		averagingDataManagerInit();
@@ -282,6 +285,7 @@ public class SignalProject extends Project {
 	 * Inicializace atribut� nezbytn�ch pro pr�m�rov�n� epoch.
 	 */
 	private void averagingDataManagerInit() {
+		averagingDataManager = null;
 		applyChanges = null;
 		averagedSignalsIndexes = null;
 		currentEpochNumber = 0;
@@ -296,6 +300,20 @@ public class SignalProject extends Project {
 		zoomY = SignalViewerPanel.ZOOM_Y_ORIGINAL;
 	}
 
+	/**
+	 * @return the averagingDataManager
+	 */
+	public AveragingDataManager getAveragingDataManager() {
+		return averagingDataManager;
+	}
+
+	/**
+	 * @param averagingDataManager the averagingDataManager to set
+	 */
+	public void setAveragingDataManager(AveragingDataManager averagingDataManager) {
+		this.averagingDataManager = averagingDataManager;
+	}
+	
 	/**
 	 * Inicializace atribut� vzhledu exportovan�ch pr�m�r� a dal��ch atribut�
 	 * ovliv�uj�c�ch vzhled v�sledn�ho exportu.
