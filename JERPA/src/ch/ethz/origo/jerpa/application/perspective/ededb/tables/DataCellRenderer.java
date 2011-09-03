@@ -4,116 +4,143 @@
  */
 package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 
-import ch.ethz.origo.juigle.application.ILanguage;
-import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
-import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ResourceBundle;
+
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.FileState;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+
 /**
- * A cell renderer class used in Online Data Table.
- * It sets cell's background and forground in accordance to the isDownloaded variable.
- * @author Petr Miko
+ * A cell renderer class used in Online Data Table. It sets cell's background
+ * and foreground in accordance to the isDownloaded variable.
+ *
+ * @author Petr Miko - miko.petr (at) gmail.com
  */
 public class DataCellRenderer extends JLabel implements TableCellRenderer, ILanguage {
 
-    private String resourceBundlePath;
-    private ResourceBundle resource;
+	private static final long serialVersionUID = -2963552666207764494L;
+	private String resourceBundlePath;
+	private ResourceBundle resource;
 
-    /**
-     * Constructor method, sets opaquity to true.
-     * @param model DataTableModel of Online Table
-     */
-    public DataCellRenderer() {
-        this.setOpaque(true);
+	/**
+	 * Constructor method, sets opaquity to true.
+	 *
+	 * @param model DataTableModel of Online Table
+	 */
+	public DataCellRenderer() {
+		this.setOpaque(true);
 
-        LanguageObservable.getInstance().attach(this);
-        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
-    }
+		LanguageObservable.getInstance().attach(this);
+		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+	}
 
-    /**
-     * Most important method of cell renderer. In accordance to incomming parameters,
-     * cell is set up properly.
-     * 
-     * @param table JTable or JXTable of Data Table
-     * @param value Content inside the cell
-     * @param isSelected Boolean if is cell selected: true/false
-     * @param hasFocus Boolean whether is cell clicked on: true/false
-     * @param row Row index of selected cell
-     * @param column Column index of selected cell
-     * @return Properly set up cell
-     */
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+	/**
+	 * Most important method of cell renderer. In accordance to incoming
+	 * parameters, cell is set up properly.
+	 *
+	 * @param table JTable or JXTable of Data Table
+	 * @param value Content inside the cell
+	 * @param isSelected Boolean if is cell selected: true/false
+	 * @param hasFocus Boolean whether is cell clicked on: true/false
+	 * @param row Row index of selected cell
+	 * @param column Column index of selected cell
+	 * @return Properly set up cell
+	 */
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+			int row, int column) {
 
-        if (isSelected) {
-            this.setForeground(table.getSelectionForeground());
-            this.setBackground(table.getSelectionBackground());
-        } else {
-            if (column == DataTableModel.DOWNLOADED_COLUMN) {
+		Color background = table.getBackground();
 
-                if (value.equals(resource.getString("table.ededb.datatable.state.yes"))) {
-                    this.setBackground(Color.GREEN);
-                } else if (value.equals(resource.getString("table.ededb.datatable.state.error"))) {
-                    this.setBackground(Color.RED);
-                } else if (value.equals(resource.getString("table.ededb.datatable.state.downloading"))) {
-                    this.setBackground(Color.ORANGE);
-                } else {
-                    this.setBackground(table.getBackground());
-                }
+		if (column == DataTableModel.DOWNLOADED_COLUMN) {
+			if (FileState.HAS_COPY.equals(table.getModel().getValueAt(table.getRowSorter().convertRowIndexToModel(row),
+					column))) {
+				value = resource.getString("table.ededb.datatable.state.yes");
+				background = Color.GREEN;
+			}
+			else
+				if (FileState.CORRUPTED.equals(table.getModel().getValueAt(
+						table.getRowSorter().convertRowIndexToModel(row), column))) {
+					value = resource.getString("table.ededb.datatable.state.error");
+					background = Color.RED;
+				}
+				else
+					if (FileState.DOWNLOADING.equals(table.getModel().getValueAt(
+							table.getRowSorter().convertRowIndexToModel(row), column))) {
+						value = resource.getString("table.ededb.datatable.state.downloading");
+						background = Color.ORANGE;
+					}
+					else {
+						value = resource.getString("table.ededb.datatable.state.no");
+					}
+		}
 
-                this.setForeground(table.getForeground());
-            } else {
-                this.setBackground(table.getBackground());
-                this.setForeground(table.getForeground());
-            }
-        }
-        setText((value == null) ? "" : value.toString());
+		if (isSelected) {
+			System.out.println();
+			this.setForeground(table.getSelectionForeground());
+			this.setBackground(table.getSelectionBackground());
+		}
+		else {
+			this.setBackground(background);
+			this.setForeground(table.getForeground());
+		}
 
-        return this;
-    }
+		setText((value == null) ? "" : value.toString());
 
-    /**
-     * Setter of localization resource budle path
-     * @param path path to localization source file.
-     */
-    public void setLocalizedResourceBundle(String path) {
-        this.resourceBundlePath = path;
-        resource = ResourceBundle.getBundle(path);
-    }
+		return this;
+	}
 
-    /**
-     * Getter of path to resource bundle.
-     * @return path to localization file.
-     */
-    public String getResourceBundlePath() {
-        return resourceBundlePath;
-    }
+	/**
+	 * Setter of localization resource bundle path
+	 *
+	 * @param path path to localization source file.
+	 */
+	@Override
+	public void setLocalizedResourceBundle(String path) {
+		this.resourceBundlePath = path;
+		resource = ResourceBundle.getBundle(path);
+	}
 
-    /**
-     * Setter of resource budle key.
-     * @param string key
-     */
-    public void setResourceBundleKey(String string) {
-        throw new UnsupportedOperationException("Method is not implemented yet...");
-    }
+	/**
+	 * Getter of path to resource bundle.
+	 *
+	 * @return path to localization file.
+	 */
+	@Override
+	public String getResourceBundlePath() {
+		return resourceBundlePath;
+	}
 
-    /**
-     * Method invoked by change of LanguageObservable.
-     * @throws JUIGLELangException
-     */
-    public void updateText() throws JUIGLELangException {
-        SwingUtilities.invokeLater(new Runnable() {
+	/**
+	 * Setter of resource bundle key.
+	 *
+	 * @param string key
+	 */
+	@Override
+	public void setResourceBundleKey(String string) {
+		throw new UnsupportedOperationException("Method is not implemented yet...");
+	}
 
-            @Override
-            public void run() {
-            }
-        });
+	/**
+	 * Method invoked by change of LanguageObservable.
+	 *
+	 * @throws JUIGLELangException
+	 */
+	@Override
+	public void updateText() throws JUIGLELangException {
+		SwingUtilities.invokeLater(new Runnable() {
 
-    }
+			@Override
+			public void run() {}
+		});
+
+	}
 }

@@ -8,6 +8,16 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+ * (5/01/2011) kivan (Petr Miko)
+    # 235
+    
+      Following changes are related to EDEDB part of JERPA only.
+    
+      INTERNAL: File download state is now defined by enum and not an integer. DataTableModel, DataCellRenderer etc. changed to reflect these changes.
+      ADDED: DataRowSorter - default sorter cannot handle enum in sort (conversion issues => exceptions).
+      INTERNAL: Few minor changes in javadocs, first attempts to clean the code (file download and data tier will be revised in future). 
+      
+ 
  * (5/01/2011) vsouhrada
     # 233
     
