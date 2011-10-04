@@ -14,14 +14,14 @@ import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXPanel;
 
-import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
+import ch.ethz.origo.jerpa.data.tier.border.DataFile;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 
 /**
  * Class for creating undecorated dialog showing "working animation"
- *
+ * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
 public class Working extends JXPanel implements ILanguage {
@@ -36,7 +36,7 @@ public class Working extends JXPanel implements ILanguage {
 	public static Cursor busyCursor;
 	public static Cursor defaultCursor;
 	private final JScrollPane operationsPane;
-	private static Map<DataFileInfo, Integer> downloads;
+	private static Map<DataFile, Integer> downloads;
 
 	/**
 	 * Method creating JDialog
@@ -52,15 +52,15 @@ public class Working extends JXPanel implements ILanguage {
 		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
 		progress = new JProgressBar();
-		this.setLayout(new BorderLayout());
+		setLayout(new BorderLayout());
 
 		operations = new HashMap<String, Integer>();
-		downloads = new HashMap<DataFileInfo, Integer>();
+		downloads = new HashMap<DataFile, Integer>();
 
 		operationsField = new JTextArea();
 		operationsField.setEditable(false);
-		operationsField.setBackground(this.getBackground());
-		operationsField.setForeground(this.getForeground());
+		operationsField.setBackground(getBackground());
+		operationsField.setForeground(getForeground());
 
 		operationsPane = new JScrollPane(operationsField);
 		operationsPane.setPreferredSize(new Dimension(30, 50));
@@ -109,8 +109,7 @@ public class Working extends JXPanel implements ILanguage {
 				}
 			}
 			else {
-				operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0 ? 1
-						: operations.get(operation) - 1));
+				operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0 ? 1 : operations.get(operation) - 1));
 			}
 		}
 
@@ -128,11 +127,11 @@ public class Working extends JXPanel implements ILanguage {
 
 	/**
 	 * Setting currently downloading file.
-	 *
+	 * 
 	 * @param percent How many percents is downloaded
 	 * @param file Specific file
 	 */
-	public static void setDownload(int percent, DataFileInfo file) {
+	public static void setDownload(int percent, DataFile file) {
 		if (instance == null) {
 			new Working();
 		}
@@ -179,12 +178,12 @@ public class Working extends JXPanel implements ILanguage {
 		}
 
 		if (!downloads.isEmpty()) {
-			for (DataFileInfo file : downloads.keySet()) {
+			for (DataFile file : downloads.keySet()) {
 				if (temp.equals("")) {
-					temp = file.getFilename() + " (ID " + file.getFileId() + "):" + downloads.get(file) + "%";
+					temp = file.getFileName() + " (ID " + file.getFileId() + "):" + downloads.get(file) + "%";
 				}
 				else {
-					temp += "\n" + file.getFilename() + " (ID " + file.getFileId() + "):" + downloads.get(file) + "%";
+					temp += "\n" + file.getFileName() + " (ID " + file.getFileId() + "):" + downloads.get(file) + "%";
 				}
 			}
 		}
@@ -196,18 +195,18 @@ public class Working extends JXPanel implements ILanguage {
 
 	/**
 	 * Setter of localization resource bundle path
-	 *
+	 * 
 	 * @param path path to localization source file.
 	 */
 	@Override
 	public void setLocalizedResourceBundle(String path) {
-		this.resourceBundlePath = path;
+		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
 	}
 
 	/**
 	 * Getter of path to resource bundle.
-	 *
+	 * 
 	 * @return path to localization file.
 	 */
 	@Override
@@ -217,7 +216,7 @@ public class Working extends JXPanel implements ILanguage {
 
 	/**
 	 * Setter of resource bundle key.
-	 *
+	 * 
 	 * @param string key
 	 */
 	@Override
@@ -227,7 +226,7 @@ public class Working extends JXPanel implements ILanguage {
 
 	/**
 	 * Method invoked by change of LanguageObservable.
-	 *
+	 * 
 	 * @throws JUIGLELangException
 	 */
 	@Override

@@ -6,8 +6,26 @@
 * FIXED    - indicates a bug fix                                                            *
 * INTERNAL - indicates an internal change - information important only for JERPA developers *                                                                               *
 *********************************************************************************************
-*                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
+*                                  CHANGE LOG 1.0.1 - > 1.1.0sync                           *
 *********************************************************************************************
+
+
+  * (10/4/2011) kivan (Petr Miko)
+    # 237
+    
+      CHANGED: files are downloaded to Derby database - not yet fully functional
+      INTERNAL: only one view for experiment file browse, file download rewritten, not yet completed
+      FIXED: file download now stops with disconnect action.
+      
+      Known bugs: - file visualization not working from database
+                  - only one file can be downloaded to db at once (exclusive access restriction of db)
+                  - data wrappers are not all done (database will be synchronized in a new way) 
+
+*********************************************************************************************
+*                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
+*********************************************************************************************      
+
+
  * (5/01/2011) kivan (Petr Miko)
     # 235
     

@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -11,10 +12,15 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.jfree.util.Log;
+
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Downloader;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.FileState;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
+import ch.ethz.origo.jerpa.data.tier.Storage;
+import ch.ethz.origo.jerpa.data.tier.StorageException;
+import ch.ethz.origo.jerpa.data.tier.border.DataFile;
 import ch.ethz.origo.jerpa.prezentation.perspective.SignalPerspective;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import ch.ethz.origo.juigle.application.ILanguage;
@@ -27,11 +33,12 @@ import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 /**
  * Action class for opening selected file in SignalPerspective.
- *
+ * 
  * @author Petr Miko
  */
 public class ActionVisualizeSelected extends AbstractAction implements ILanguage {
 
+	private static final long serialVersionUID = -7447433391197216763L;
 	private ResourceBundle resource;
 	private String resourceBundlePath;
 	private String tooManyText, tooManyDesc;
@@ -41,15 +48,13 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 	private String doneText, doneDesc;
 	private String emptyText, emptyDesc;
 	private final EDEDBController controller;
-	private final String[] extensions = {
-			Const.EDF_FILE_EXTENSION,
-			Const.EDF_FILE_EXTENSION2,
-			Const.GENERATOR_EXTENSION,
-			Const.KIV_FILE_EXTENSION,
-			Const.VHDR_EXTENSION};
+	private final String[] extensions = { Const.EDF_FILE_EXTENSION, Const.EDF_FILE_EXTENSION2, Const.GENERATOR_EXTENSION, Const.KIV_FILE_EXTENSION,
+	        Const.VHDR_EXTENSION };
+	private Storage storage;
 
 	/**
-	 * Constructor method for action of analyse selected.
+	 * Constructor method for action of analyze selected.
+	 * 
 	 * @param controller EDEDBController
 	 */
 	public ActionVisualizeSelected(EDEDBController controller) {
@@ -64,86 +69,71 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 	}
 
 	/**
-	 * This method gets selected rows, get file ids a downloads them. During downloading changes state of file in table.
+	 * This method gets selected rows, get file ids a downloads them. During
+	 * downloading changes state of file in table.
+	 * 
 	 * @param e performed action
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
+		storage = controller.getStorage();
+
 		List<DataRowModel> selectedFiles = controller.getSelectedFiles();
 
 		if (selectedFiles.isEmpty()) {
-			JOptionPane.showMessageDialog(
-					new JFrame(),
-					emptyText,
-					emptyDesc,
-					JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(new JFrame(), emptyText, emptyDesc, JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
 
 		if (selectedFiles.size() > 1) {
-			JOptionPane.showMessageDialog(
-					new JFrame(),
-					tooManyText,
-					tooManyDesc,
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(new JFrame(), tooManyText, tooManyDesc, JOptionPane.ERROR_MESSAGE);
 			controller.unselectAllFiles();
 
 			return;
 		}
 
-		if (selectedFiles.size() == 1 && !controller.isDownloading()) {
+		if (selectedFiles.size() == 1 && Downloader.isDownloading()) {
 
 			DataRowModel selected = selectedFiles.get(0);
+			final DataFile file = selected.getFileInfo();
 
-			if(selected.getState() == FileState.DOWNLOADING)
-				return;
+			try {
+				switch (storage.getFileState(file)) {
+				case DOWNLOADING:
+					JOptionPane.showMessageDialog(new JFrame(), downloadingText, downloadingDesc, JOptionPane.ERROR_MESSAGE);
+					controller.unselectAllFiles();
+					return;
+				case HAS_COPY:
+					break;
+				default:
+					JOptionPane.showMessageDialog(new JFrame(), noFileText, noFileDesc, JOptionPane.ERROR_MESSAGE);
+					controller.unselectAllFiles();
 
-			if (selected.getState() == FileState.DOWNLOADING) {
-				JOptionPane.showMessageDialog(
-						new JFrame(),
-						downloadingText,
-						downloadingDesc,
-						JOptionPane.ERROR_MESSAGE);
-				controller.unselectAllFiles();
-				return;
+					return;
+				}
 			}
-
-			final File file = new File(selected.getLocation() + File.separator + selected.getFileInfo().getFilename());
-
-			if (!file.exists()) {
-				JOptionPane.showMessageDialog(
-						new JFrame(),
-						noFileText,
-						noFileDesc,
-						JOptionPane.ERROR_MESSAGE);
-				controller.unselectAllFiles();
-
-				return;
+			catch (HeadlessException e1) {
+				Log.error(e1.getMessage(), e1);
+			}
+			catch (StorageException e1) {
+				Log.error(e1.getMessage(), e1);
 			}
 
 			if (!isAnalysable(selected.getExtension())) {
-				JOptionPane.showMessageDialog(
-						new JFrame(),
-						notSupportedText + printExtensions(),
-						notSupportedDesc,
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(), notSupportedText + printExtensions(), notSupportedDesc, JOptionPane.ERROR_MESSAGE);
 				controller.unselectAllFiles();
 
 				return;
 			}
-
 
 			SignalPerspective signalPersp = null;
 
 			try {
-				signalPersp = (SignalPerspective) PerspectiveLoader.getInstance().getPerspective(
-						SignalPerspective.ID_PERSPECTIVE);
-			} catch (PerspectiveException ex) {
-				JUIGLErrorInfoUtils.showErrorDialog(
-						ex.getMessage(),
-						ex.getLocalizedMessage(),
-						ex);
+				signalPersp = (SignalPerspective) PerspectiveLoader.getInstance().getPerspective(SignalPerspective.ID_PERSPECTIVE);
+			}
+			catch (PerspectiveException ex) {
+				JUIGLErrorInfoUtils.showErrorDialog(ex.getMessage(), ex.getLocalizedMessage(), ex);
 			}
 
 			if (signalPersp != null) {
@@ -152,26 +142,30 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 
 					@Override
 					public void run() {
-						boolean opened = persp.openFile(file);
+						boolean opened = false;
+
+						try {
+							File tmpFile = storage.getFile(file.getFileId());
+							opened = persp.openFile(tmpFile);
+						}
+						catch (StorageException e) {
+							Log.error(e.getMessage(), e);
+						}
 
 						controller.setElementsActive(true);
 
 						controller.unselectAllFiles();
-						Working.setActivity(false,"working.ededb.visualise");
+						Working.setActivity(false, "working.ededb.visualise");
 
 						if (opened) {
 
-							JOptionPane.showMessageDialog(
-									new JFrame(),
-									doneText,
-									doneDesc,
-									JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(new JFrame(), doneText, doneDesc, JOptionPane.INFORMATION_MESSAGE);
 							PerspectiveObservable.getInstance().changePerspective(persp);
 						}
 					}
 				});
 				controller.setElementsActive(false);
-				Working.setActivity(true,"working.ededb.visualise");
+				Working.setActivity(true, "working.ededb.visualise");
 				openFile.start();
 
 			}
@@ -199,7 +193,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 
 	/**
 	 * Checks if file is analysable in JERPA.
-	 *
+	 * 
 	 * @param extension File extension
 	 * @return true/false
 	 */
@@ -216,6 +210,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 
 	/**
 	 * Prints extensions in format "extension, extension, ..."
+	 * 
 	 * @return String of extensions
 	 */
 	private String printExtensions() {
@@ -232,16 +227,18 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 
 	/**
 	 * Setter of localization resource budle path
+	 * 
 	 * @param path path to localization source file.
 	 */
 	@Override
 	public void setLocalizedResourceBundle(String path) {
-		this.resourceBundlePath = path;
+		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
 	}
 
 	/**
 	 * Getter of path to resource bundle.
+	 * 
 	 * @return path to localization file.
 	 */
 	@Override
@@ -251,6 +248,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 
 	/**
 	 * Setter of resource budle key.
+	 * 
 	 * @param string key
 	 */
 	@Override
@@ -260,6 +258,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 
 	/**
 	 * Method invoked by change of LanguageObservable.
+	 * 
 	 * @throws JUIGLELangException
 	 */
 	@Override
