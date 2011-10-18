@@ -6,6 +6,10 @@ import java.util.List;
 
 import ch.ethz.origo.jerpa.data.tier.border.DataFile;
 import ch.ethz.origo.jerpa.data.tier.border.Experiment;
+import ch.ethz.origo.jerpa.data.tier.border.Person;
+import ch.ethz.origo.jerpa.data.tier.border.ResearchGroup;
+import ch.ethz.origo.jerpa.data.tier.border.Scenario;
+import ch.ethz.origo.jerpa.data.tier.border.Weather;
 
 /**
  * Interface for EDEDB data tier.
@@ -23,16 +27,7 @@ public interface Storage {
 	 * @param inStream input stream to file
 	 * @throws StorageException exception on the side of storage
 	 */
-	public void writeFile(DataFile fileInfo, InputStream inStream) throws StorageException;
-
-	/**
-	 * Store file method (overwrite).
-	 * 
-	 * @param fileInfo file meta information
-	 * @param inStream input stream to file
-	 * @throws StorageException exception on the side of storage
-	 */
-	public void overwriteFile(DataFile fileInfo, InputStream inStream) throws StorageException;
+	public void writeDataFile(DataFile fileInfo, InputStream inStream) throws StorageException;
 
 	/**
 	 * Getter of file's size.
@@ -84,5 +79,53 @@ public interface Storage {
 	 * @throws StorageException exception on the side of storage
 	 */
 	public List<Experiment> getExperiments() throws StorageException;
+
+	/**
+	 * Method for setting all people into data layer.
+	 * 
+	 * @param people list of people
+	 * @throws StorageException exception on the side of storage
+	 */
+	public void setPeople(List<Person> people) throws StorageException;
+
+	/**
+	 * Setter of all experiments into data layer.
+	 * 
+	 * @param experiments list of experiments
+	 * @throws StorageException exception on the side of storage
+	 */
+	public void setExperiments(List<Experiment> experiments) throws StorageException;
+
+	/**
+	 * Setter of scenarios into data layer.
+	 * 
+	 * @param scenarios list of scenarios
+	 * @throws StorageException exception on the side of storage
+	 */
+	public void setScenarios(List<Scenario> scenarios) throws StorageException;
+
+	/**
+	 * Setter of weathers into data layer.
+	 * 
+	 * @param weathers list of weathers
+	 * @throws StorageException exception on the side of storage
+	 */
+	public void setWeathers(List<Weather> weathers) throws StorageException;
+
+	/**
+	 * Setter of research groups into data layer.
+	 * 
+	 * @param groups research group list
+	 * @throws StorageException exception on the side of storage
+	 */
+	public void setResearchGroups(List<ResearchGroup> groups) throws StorageException;
+
+	/**
+	 * Setter of data files into data layer.
+	 * 
+	 * @param dataFiles data files list
+	 * @throws StorageException exception on the side of storage
+	 */
+	public void setDataFiles(List<DataFile> dataFiles) throws StorageException;
 
 }

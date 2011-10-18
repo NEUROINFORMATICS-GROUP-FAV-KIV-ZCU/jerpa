@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.data.tier.border;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Experiment {
 
@@ -10,14 +10,14 @@ public class Experiment {
 	private int scenarioId;
 	private int weatherId;
 	private int researchGroupId;
-	private Date startTime;
-	private Date endTime;
+	private Timestamp startTime;
+	private Timestamp endTime;
 	private int temperature;
 	private String weatherNote;
 	private int privateFlag;
 
 	// this is important for table view
-	private String scenarioName;
+	private String title;
 
 	public Experiment() {}
 
@@ -69,19 +69,19 @@ public class Experiment {
 		this.researchGroupId = researchGroupId;
 	}
 
-	public Date getStartTime() {
+	public Timestamp getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Date startTime) {
+	public void setStartTime(Timestamp startTime) {
 		this.startTime = startTime;
 	}
 
-	public Date getEndTime() {
+	public Timestamp getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(Date endTime) {
+	public void setEndTime(Timestamp endTime) {
 		this.endTime = endTime;
 	}
 
@@ -109,11 +109,11 @@ public class Experiment {
 		this.privateFlag = privateFlag;
 	}
 
-	public String getScenarioName() {
-		return scenarioName;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setScenarioName(String scenarioName) {
-		this.scenarioName = scenarioName;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

@@ -3,16 +3,11 @@ package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.ResourceBundle;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -26,9 +21,6 @@ import ch.ethz.origo.jerpa.data.tier.Storage;
 import ch.ethz.origo.jerpa.data.tier.StorageException;
 import ch.ethz.origo.jerpa.data.tier.border.DataFile;
 import ch.ethz.origo.jerpa.data.tier.border.Experiment;
-import ch.ethz.origo.jerpa.ededclient.generated.DataDownloadException_Exception;
-import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -38,33 +30,22 @@ import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 public class ExperimentViewerLogic extends ExperimentViewer implements Observer, ILanguage {
 
 	private static final long serialVersionUID = 4318865850000265030L;
-	private ResourceBundle resource;
 	private String resourceBundlePath;
 
-	private final EDEDBController controller;
 	private final Storage storage;
-	private final EDEDClient session;
 
 	private final static Logger log = Logger.getLogger(ExperimentViewerLogic.class);
 
-	private String expInfoText;
-	private String expInfoDesc;
-	private String errorConnectionText;
-	private String errorConnectionDesc;
-	private String errorRangeDesc;
 	private List<Integer> selectedExps;
 
 	public ExperimentViewerLogic(EDEDBController controller, EDEDClient session) {
 		super();
 
-		this.controller = controller;
 		storage = controller.getStorage();
-		this.session = session;
 
 		LanguageObservable.getInstance().attach(this);
 
 		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
-		initTexts();
 
 		initExperimentTable();
 		initDataTable();
@@ -127,61 +108,23 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 			@Override
 			public void run() {
 
-				if (controller.isServiceOffline()) {
-					try {
-						List<Experiment> experiments = storage.getExperiments();
+				try {
 
-						for (Experiment exp : experiments) {
-							exp.setScenarioName("Test");
-							expModel.addRow(exp);
-						}
-					}
-					catch (StorageException exception) {
-						log.error(exception.getMessage(), exception);
-						JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", exception.getMessage(), exception);
+					expModel.clear();
+
+					List<Experiment> experiments = storage.getExperiments();
+
+					for (Experiment exp : experiments) {
+						expModel.addRow(exp);
 					}
 				}
-				else {
-
-					if (session.isConnected()) {
-						List<ExperimentInfo> availableExperiments;
-
-						availableExperiments = session.getService().getExperiments(controller.getRights());
-
-						if (availableExperiments != null) {
-							JOptionPane.showMessageDialog(new JFrame(), availableExperiments.size() + " " + expInfoText, expInfoDesc,
-							        JOptionPane.INFORMATION_MESSAGE);
-
-							clearExpTable();
-
-							for (ExperimentInfo availableExperiment : availableExperiments) {
-
-								Experiment experiment = new Experiment();
-								experiment.setExperimentId(availableExperiment.getExperimentId());
-								experiment.setScenarioId(availableExperiment.getScenarioId());
-
-								// experiment.setScenarioName(availableExperiment.getScenarioName());
-								experiment.setScenarioName("Temporary debug name");
-
-								expModel.addRow(experiment);
-							}
-
-							clearDataTable();
-						}
-						else {
-							JOptionPane.showMessageDialog(new JFrame(), errorConnectionText, errorConnectionDesc, JOptionPane.ERROR_MESSAGE);
-						}
-					}
-					else {
-						clearExpTable();
-						clearDataTable();
-					}
-
+				catch (StorageException exception) {
+					log.error(exception.getMessage(), exception);
+					JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", exception.getMessage(), exception);
 				}
 				repaint();
 				Working.setActivity(false, "working.ededb.update.exptable");
 			}
-
 		});
 
 		Working.setActivity(true, "working.ededb.update.exptable");
@@ -212,65 +155,20 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
 		clearDataTable();
 
-		if (controller.isServiceOffline()) {
+		try {
+			List<DataFile> dataFiles = storage.getDataFiles(selectedExps);
 
-			try {
-				List<DataFile> dataFiles = storage.getDataFiles(selectedExps);
-
-				for (DataFile file : dataFiles)
-					dataModel.addRow(file, storage.getFileState(file));
-			}
-			catch (StorageException exception) {
-				log.error(exception.getMessage(), exception);
-				JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", exception.getMessage(), exception);
-			}
-			finally {
-				repaint();
-			}
-
+			for (DataFile file : dataFiles)
+				dataModel.addRow(file, storage.getFileState(file));
 		}
-		else {
-
-			List<DataFileInfo> dataFileInfos = new LinkedList<DataFileInfo>();
-
-			List<Integer> tmp = new ArrayList<Integer>(selectedExps);
-
-			for (Integer expId : tmp) {
-
-				try {
-					dataFileInfos.addAll(session.getService().getExperimentFiles(expId));
-				}
-				catch (DataDownloadException_Exception e) {
-
-					JUIGLErrorInfoUtils.showErrorDialog(e.getMessage(), resource.getString("soapexception.ededb.text"), e);
-				}
-				catch (Exception e) {
-
-					JUIGLErrorInfoUtils.showErrorDialog(errorRangeDesc, e.getMessage(), e);
-				}
-			}
-
-			try {
-				for (DataFileInfo info : dataFileInfos) {
-
-					DataFile file = new DataFile();
-					file.setExperimentId(info.getExperimentId());
-					file.setFileId(info.getFileId());
-					file.setFileLength(info.getFileLength());
-					file.setFileName(info.getFileName());
-					file.setMimeType(info.getMimeType());
-
-					dataModel.addRow(file, storage.getFileState(file));
-				}
-			}
-			catch (StorageException exception) {
-				log.error(exception.getMessage(), exception);
-				JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", exception.getMessage(), exception);
-			}
-			finally {
-				repaint();
-			}
+		catch (StorageException exception) {
+			log.error(exception.getMessage(), exception);
+			JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", exception.getMessage(), exception);
 		}
+		finally {
+			repaint();
+		}
+
 	}
 
 	/**
@@ -301,26 +199,12 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	}
 
 	/**
-	 * Init/update text method. Vital for localization.
-	 */
-	private void initTexts() {
-		expInfoText = resource.getString("tables.ededb.exp.info.text");
-		expInfoDesc = resource.getString("tables.ededb.exp.info.desc");
-		errorConnectionText = resource.getString("tables.ededb.exp.connection.text");
-		errorConnectionDesc = resource.getString("tables.ededb.exp.connection.desc");
-		errorRangeDesc = resource.getString("tables.ededb.data.exception.desc");
-	}
-
-	/**
 	 * Setter of localization resource bundle path
 	 * 
 	 * @param path path to localization source file.
 	 */
 	@Override
-	public void setLocalizedResourceBundle(String path) {
-		resourceBundlePath = path;
-		resource = ResourceBundle.getBundle(path);
-	}
+	public void setLocalizedResourceBundle(String path) {}
 
 	/**
 	 * Getter of path to resource bundle.
@@ -349,13 +233,6 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	 */
 	@Override
 	public void updateText() throws JUIGLELangException {
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				initTexts();
-			}
-		});
 
 	}
 
@@ -363,6 +240,9 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	public void update(Observable o, Object arg) {
 
 		try {
+
+			updateExpTable();
+
 			for (DataRowModel row : dataModel.getData()) {
 				if (row.getState() != FileState.DOWNLOADING) {
 					row.setState(storage.getFileState(row.getFileInfo()));

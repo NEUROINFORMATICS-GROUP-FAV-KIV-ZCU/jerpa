@@ -8,7 +8,15 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0sync                           *
 *********************************************************************************************
-
+  * (10/18/2011) kivan
+    # 242
+    
+      CHANGED: After login, database content will be synchronized with the one in EEG Database server.
+      CHANGED: many new border classes, Data layer expanded, DataSync class for scheduling updates.
+      CHANGED: new EDEDClient.jar due to major changes on server side.
+      FIXED: table information download, basic view works correctly now.
+      
+      Known bugs: working status during synchronization, less disturbing repainting, visualize file from database, choice of rights.   
 
   * (10/4/2011) kivan (Petr Miko)
     # 237

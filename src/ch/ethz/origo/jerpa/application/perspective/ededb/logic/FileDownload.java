@@ -23,19 +23,17 @@ public class FileDownload extends Observable implements Runnable {
 	private final EDEDClient session;
 	private final DataFile fileInfo;
 	private final Storage storage;
-	private final boolean overwrite;
 	private ProgressInputStream inStream = null;
 	private boolean alive = true;
 
 	private final static Logger log = Logger.getLogger(FileDownload.class);
 
-	public FileDownload(EDEDClient session, Storage storage, DataFile fileInfo, boolean overwrite) {
+	public FileDownload(EDEDClient session, Storage storage, DataFile fileInfo) {
 		super();
 
 		this.session = session;
 		this.fileInfo = fileInfo;
 		this.storage = storage;
-		this.overwrite = overwrite;
 	}
 
 	/**
@@ -48,18 +46,14 @@ public class FileDownload extends Observable implements Runnable {
 
 			Working.setActivity(true, "working.ededb.downloading");
 
-			inStream = new ProgressInputStream(session.getService().downloadFile(fileInfo.getFileId()).getInputStream(), fileInfo);
+			inStream = new ProgressInputStream(session.getService().downloadDataFile(fileInfo.getFileId()).getInputStream(), fileInfo);
 			log.info("File " + fileInfo.getFileName() + ": beginning download");
 
 			DownloadProgress downProgress = new DownloadProgress();
 			downProgress.start();
 
-			if (overwrite) {
-				storage.overwriteFile(fileInfo, inStream);
-			}
-			else {
-				storage.writeFile(fileInfo, inStream);
-			}
+			storage.writeDataFile(fileInfo, inStream);
+
 			log.info("File " + fileInfo.getFileName() + ": download finished");
 		}
 		catch (Exception e) {

@@ -103,7 +103,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 				return data.get(rowIndex).getExperimentId();
 			}
 			else {
-				return data.get(rowIndex).getScenarioName();
+				return data.get(rowIndex).getTitle();
 
 			}
 		}
@@ -128,7 +128,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 	 * @param experiment ExperimentInfo
 	 */
 	public void addRow(Experiment experiment) {
-		if (experiment != null && experiment.getScenarioName() != null) {
+		if (experiment != null && experiment.getTitle() != null) {
 			data.add(experiment);
 		}
 		else {

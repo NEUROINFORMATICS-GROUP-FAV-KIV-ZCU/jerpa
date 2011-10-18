@@ -18,7 +18,6 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.data.tier.Storage;
 import ch.ethz.origo.jerpa.data.tier.StorageException;
 import ch.ethz.origo.jerpa.data.tier.StorageFactory;
-import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ExperimentViewerLogic;
@@ -41,7 +40,7 @@ public class EDEDBController extends Observable {
 	private LoginInfo loginInfo;
 	private ExperimentViewerLogic experimentViewer;
 	private Toolbar toolbar;
-	private Rights rights;
+	// private Rights rights;
 	private ActionVisualizeSelected actionVisualizeSelected;
 	private ActionDownloadSelected actionDownloadSelected;
 	private ActionDeleteSelected actionDeleteSelected;
@@ -69,6 +68,7 @@ public class EDEDBController extends Observable {
 
 		try {
 			storage = StorageFactory.getStorage();
+			new DataSyncer(session, this, storage);
 		}
 		catch (StorageException e) {
 			log.error(e);
@@ -239,28 +239,28 @@ public class EDEDBController extends Observable {
 		return actionVisualizeSelected;
 	}
 
-	/**
-	 * Returns which rigths has user selected in that time.
-	 * 
-	 * @return owner/subject
-	 */
-	public Rights getRights() {
-		return rights;
-	}
-
-	/**
-	 * Setter of rights.
-	 * 
-	 * @param rights owner/subject
-	 */
-	public void setRights(Rights rights) {
-		this.rights = rights;
-
-		if (session.isConnected()) {
-			experimentViewer.updateExpTable();
-			update();
-		}
-	}
+	// /**
+	// * Returns which rigths has user selected in that time.
+	// *
+	// * @return owner/subject
+	// */
+	// public Rights getRights() {
+	// return rights;
+	// }
+	//
+	// /**
+	// * Setter of rights.
+	// *
+	// * @param rights owner/subject
+	// */
+	// public void setRights(Rights rights) {
+	// this.rights = rights;
+	//
+	// if (session.isConnected()) {
+	// experimentViewer.updateExpTable();
+	// update();
+	// }
+	// }
 
 	/**
 	 * Method for finding out if are any rows in data view table selected.

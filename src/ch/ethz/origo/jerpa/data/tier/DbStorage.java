@@ -22,6 +22,10 @@ import org.apache.log4j.Logger;
 
 import ch.ethz.origo.jerpa.data.tier.border.DataFile;
 import ch.ethz.origo.jerpa.data.tier.border.Experiment;
+import ch.ethz.origo.jerpa.data.tier.border.Person;
+import ch.ethz.origo.jerpa.data.tier.border.ResearchGroup;
+import ch.ethz.origo.jerpa.data.tier.border.Scenario;
+import ch.ethz.origo.jerpa.data.tier.border.Weather;
 
 public class DbStorage implements Storage {
 
@@ -136,16 +140,7 @@ public class DbStorage implements Storage {
 	}
 
 	@Override
-	public void writeFile(DataFile fileInfo, InputStream inStream) throws StorageException {
-		write(fileInfo, inStream, false);
-	}
-
-	@Override
-	public void overwriteFile(DataFile fileInfo, InputStream inStream) throws StorageException {
-		write(fileInfo, inStream, true);
-	}
-
-	private synchronized void write(DataFile fileInfo, InputStream inStream, boolean overwrite) throws StorageException {
+	public synchronized void writeDataFile(DataFile fileInfo, InputStream inStream) throws StorageException {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		String sql;
@@ -153,26 +148,11 @@ public class DbStorage implements Storage {
 		try {
 			connection = getConnection();
 
-			if (overwrite) {
-				sql = "UPDATE DATA_FILE SET sampling_rate = ?, file_content = ?, experiment_id = ?, mimetype = ?, filename = ? where data_file_id = ?";
-				statement = connection.prepareStatement(sql);
-				statement.setFloat(1, 0);
-				statement.setBinaryStream(2, inStream, (int) fileInfo.getFileLength());
-				statement.setInt(3, fileInfo.getExperimentId());
-				statement.setString(4, fileInfo.getMimeType());
-				statement.setString(5, fileInfo.getFileName());
-				statement.setInt(6, fileInfo.getFileId());
-			}
-			else {
-				sql = "INSERT INTO DATA_FILE VALUES (?, ?, ?, ?, ?, ?)";
-				statement = connection.prepareStatement(sql);
-				statement.setInt(1, fileInfo.getFileId());
-				statement.setFloat(2, 0);
-				statement.setBinaryStream(3, inStream, (int) fileInfo.getFileLength());
-				statement.setInt(4, fileInfo.getExperimentId());
-				statement.setString(5, fileInfo.getMimeType());
-				statement.setString(6, fileInfo.getFileName());
-			}
+			sql = "UPDATE DATA_FILE SET file_content = ? where data_file_id = ?";
+			statement = connection.prepareStatement(sql);
+			statement.setBinaryStream(1, inStream, (int) fileInfo.getFileLength());
+			statement.setInt(2, fileInfo.getFileId());
+
 			statement.execute();
 		}
 		catch (SQLException e) {
@@ -369,7 +349,7 @@ public class DbStorage implements Storage {
 				file.setExperimentId(set.getInt("EXPERIMENT_ID"));
 				file.setMimeType(set.getString("MIMETYPE"));
 				file.setFileName(set.getString("FILENAME"));
-				file.setFileLength(getFileLength(file.getFileId()));
+				file.setFileLength(set.getLong("FILE_LENGTH"));
 
 				dataFiles.add(file);
 			}
@@ -418,11 +398,12 @@ public class DbStorage implements Storage {
 				experiment.setScenarioId(set.getInt("SCENARIO_ID"));
 				experiment.setWeatherId(set.getInt("WEATHER_ID"));
 				experiment.setResearchGroupId(set.getInt("RESEARCH_GROUP_ID"));
-				experiment.setStartTime(set.getDate("START_TIME"));
-				experiment.setEndTime(set.getDate("END_TIME"));
+				experiment.setStartTime(set.getTimestamp("START_TIME"));
+				experiment.setEndTime(set.getTimestamp("END_TIME"));
 				experiment.setTemperature(set.getInt("TEMPERATURE"));
 				experiment.setWeatherNote(set.getString("WEATHERNOTE"));
 				experiment.setPrivateFlag(set.getInt("PRIVATE"));
+				experiment.setTitle(set.getString("TITLE"));
 
 				experiments.add(experiment);
 			}
@@ -441,6 +422,338 @@ public class DbStorage implements Storage {
 					connection.commit();
 					connection.close();
 				}
+			}
+			catch (SQLException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	@Override
+	public void setPeople(List<Person> people) throws StorageException {
+
+		Connection connection = null;
+		Statement statement = null;
+		PreparedStatement prepStatement = null;
+
+		String sql_clean = "delete from PERSON";
+		String sql_insert = "INSERT INTO PERSON (PERSON_ID, DEFAULT_GROUP_ID, GIVENNAME, SURNAME, GENDER) VALUES (?, ?, ?, ?, ?)";
+		try {
+
+			connection = getConnection();
+			statement = connection.createStatement();
+			statement.executeUpdate(sql_clean);
+
+			for (Person person : people) {
+
+				prepStatement = connection.prepareStatement(sql_insert);
+				prepStatement.setInt(1, person.getPersonId());
+
+				if (person.getDefaultGroupId() != -1)
+					prepStatement.setInt(2, person.getDefaultGroupId());
+				else
+					prepStatement.setNull(2, java.sql.Types.INTEGER);
+
+				prepStatement.setString(3, person.getGivenName());
+				prepStatement.setString(4, person.getSurname());
+
+				prepStatement.setString(5, "" + person.getGender());
+
+				prepStatement.executeUpdate();
+
+				prepStatement.close();
+			}
+		}
+		catch (SQLException e) {
+			StorageException exception = new StorageException(e);
+			throw exception;
+		}
+		finally {
+			try {
+				if (prepStatement != null) {
+					prepStatement.close();
+				}
+				if (statement != null)
+					statement.close();
+				if (connection != null) {
+					connection.commit();
+					connection.close();
+				}
+
+				log.info("Person records updated.");
+			}
+			catch (SQLException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	@Override
+	public void setExperiments(List<Experiment> experiments) throws StorageException {
+		Connection connection = null;
+		Statement statement = null;
+		PreparedStatement prepStatement = null;
+
+		String sql_clean = "delete from EXPERIMENT";
+		String sql_insert = "INSERT INTO EXPERIMENT (EXPERIMENT_ID, OWNER_ID, SUBJECT_PERSON_ID, SCENARIO_ID, WEATHER_ID, RESEARCH_GROUP_ID, START_TIME, END_TIME"
+		        + ", TEMPERATURE, WEATHERNOTE, PRIVATE, TITLE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		try {
+
+			connection = getConnection();
+			statement = connection.createStatement();
+			statement.executeUpdate(sql_clean);
+
+			for (Experiment experiment : experiments) {
+
+				prepStatement = connection.prepareStatement(sql_insert);
+				prepStatement.setInt(1, experiment.getExperimentId());
+				prepStatement.setInt(2, experiment.getOwnerId());
+				prepStatement.setInt(3, experiment.getSubjectPersonId());
+				prepStatement.setInt(4, experiment.getScenarioId());
+				prepStatement.setInt(5, experiment.getWeatherId());
+				prepStatement.setInt(6, experiment.getResearchGroupId());
+				prepStatement.setTimestamp(7, experiment.getStartTime());
+				prepStatement.setTimestamp(8, experiment.getEndTime());
+				prepStatement.setInt(9, experiment.getTemperature());
+				prepStatement.setString(10, experiment.getWeatherNote());
+				prepStatement.setInt(11, experiment.getPrivateFlag());
+				prepStatement.setString(12, experiment.getTitle());
+
+				prepStatement.executeUpdate();
+
+				prepStatement.close();
+			}
+		}
+		catch (SQLException e) {
+			StorageException exception = new StorageException(e);
+			throw exception;
+		}
+		finally {
+			try {
+				if (prepStatement != null) {
+					prepStatement.close();
+				}
+				if (statement != null)
+					statement.close();
+				if (connection != null) {
+					connection.commit();
+					connection.close();
+				}
+
+				log.info("Experiments records updated.");
+			}
+			catch (SQLException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	@Override
+	public void setScenarios(List<Scenario> scenarios) throws StorageException {
+		Connection connection = null;
+		Statement statement = null;
+		PreparedStatement prepStatement = null;
+
+		String sql_clean = "delete from SCENARIO";
+		String sql_insert = "INSERT INTO SCENARIO (SCENARIO_ID, OWNER_ID, RESEARCH_GROUP_ID, TITLE, SCENARIO_LENGTH, DESCRIPTION, SCENARIO_NAME, MIMETYPE) "
+		        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		try {
+
+			connection = getConnection();
+			statement = connection.createStatement();
+			statement.executeUpdate(sql_clean);
+
+			for (Scenario scenario : scenarios) {
+
+				prepStatement = connection.prepareStatement(sql_insert);
+				prepStatement.setInt(1, scenario.getScenarioId());
+				prepStatement.setInt(2, scenario.getOwnerId());
+				prepStatement.setInt(3, scenario.getResearchGroupId());
+				prepStatement.setString(4, scenario.getTitle());
+				prepStatement.setInt(5, scenario.getScenarioLength());
+				prepStatement.setString(6, scenario.getDescription());
+				prepStatement.setString(7, scenario.getScenarioName());
+				prepStatement.setString(8, scenario.getMimeType());
+
+				prepStatement.executeUpdate();
+
+				prepStatement.close();
+			}
+		}
+		catch (SQLException e) {
+			StorageException exception = new StorageException(e);
+			throw exception;
+		}
+		finally {
+			try {
+				if (prepStatement != null) {
+					prepStatement.close();
+				}
+				if (statement != null)
+					statement.close();
+				if (connection != null) {
+					connection.commit();
+					connection.close();
+				}
+
+				log.info("Scenario records updated.");
+			}
+			catch (SQLException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	@Override
+	public void setWeathers(List<Weather> weathers) throws StorageException {
+
+		Connection connection = null;
+		Statement statement = null;
+		PreparedStatement prepStatement = null;
+
+		String sql_clean = "delete from WEATHER";
+		String sql_insert = "INSERT INTO WEATHER VALUES (?, ?, ?)";
+		try {
+
+			connection = getConnection();
+			statement = connection.createStatement();
+			statement.executeUpdate(sql_clean);
+
+			for (Weather weather : weathers) {
+
+				prepStatement = connection.prepareStatement(sql_insert);
+				prepStatement.setInt(1, weather.getWeatherId());
+				prepStatement.setString(2, weather.getDescription());
+				prepStatement.setString(3, weather.getTitle());
+
+				prepStatement.executeUpdate();
+
+				prepStatement.close();
+			}
+		}
+		catch (SQLException e) {
+			StorageException exception = new StorageException(e);
+			throw exception;
+		}
+		finally {
+			try {
+				if (prepStatement != null) {
+					prepStatement.close();
+				}
+				if (statement != null)
+					statement.close();
+				if (connection != null) {
+					connection.commit();
+					connection.close();
+				}
+
+				log.info("Weather records updated.");
+			}
+			catch (SQLException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	@Override
+	public void setResearchGroups(List<ResearchGroup> groups) throws StorageException {
+		Connection connection = null;
+		Statement statement = null;
+		PreparedStatement prepStatement = null;
+
+		String sql_clean = "delete from RESEARCH_GROUP";
+		String sql_insert = "INSERT INTO RESEARCH_GROUP VALUES (?, ?, ?, ?)";
+		try {
+
+			connection = getConnection();
+			statement = connection.createStatement();
+			statement.executeUpdate(sql_clean);
+
+			for (ResearchGroup group : groups) {
+
+				prepStatement = connection.prepareStatement(sql_insert);
+
+				prepStatement.setInt(1, group.getResearchGroupId());
+				prepStatement.setInt(2, group.getOwnerId());
+				prepStatement.setString(3, group.getTitle());
+				prepStatement.setString(4, group.getDescription());
+				prepStatement.executeUpdate();
+
+				prepStatement.close();
+			}
+		}
+		catch (SQLException e) {
+			StorageException exception = new StorageException(e);
+			throw exception;
+		}
+		finally {
+			try {
+				if (prepStatement != null) {
+					prepStatement.close();
+				}
+				if (statement != null)
+					statement.close();
+				if (connection != null) {
+					connection.commit();
+					connection.close();
+				}
+
+				log.info("Research groups records updated.");
+			}
+			catch (SQLException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	@Override
+	public void setDataFiles(List<DataFile> dataFiles) throws StorageException {
+
+		Connection connection = null;
+		Statement statement = null;
+		PreparedStatement prepStatement = null;
+
+		String sql_clean = "delete from DATA_FILE";
+		String sql_insert = "INSERT INTO DATA_FILE (DATA_FILE_ID, SAMPLING_RATE, EXPERIMENT_ID, MIMETYPE, FILENAME, FILE_LENGTH) VALUES (?, ?, ?, ?, ?, ?)";
+		try {
+
+			connection = getConnection();
+			statement = connection.createStatement();
+			statement.executeUpdate(sql_clean);
+
+			for (DataFile dataFile : dataFiles) {
+
+				prepStatement = connection.prepareStatement(sql_insert);
+
+				prepStatement.setInt(1, dataFile.getFileId());
+				prepStatement.setDouble(2, dataFile.getSamplingRate());
+				prepStatement.setInt(3, dataFile.getExperimentId());
+				prepStatement.setString(4, dataFile.getMimeType());
+				prepStatement.setString(5, dataFile.getFileName());
+				prepStatement.setLong(6, dataFile.getFileLength());
+
+				prepStatement.executeUpdate();
+
+				prepStatement.close();
+			}
+		}
+		catch (SQLException e) {
+			StorageException exception = new StorageException(e);
+			throw exception;
+		}
+		finally {
+			try {
+				if (prepStatement != null) {
+					prepStatement.close();
+				}
+				if (statement != null)
+					statement.close();
+				if (connection != null) {
+					connection.commit();
+					connection.close();
+				}
+
+				log.info("Data files records updated.");
 			}
 			catch (SQLException e) {
 				log.error(e.getMessage(), e);

@@ -88,7 +88,7 @@ public class Downloader extends Observable implements Observer {
 					return;
 			}
 
-			FileDownload fileDownload = new FileDownload(session, storage, fileInfo, overwrite);
+			FileDownload fileDownload = new FileDownload(session, storage, fileInfo);
 			fileDownload.addObserver(this);
 
 			synchronized (downloading) {

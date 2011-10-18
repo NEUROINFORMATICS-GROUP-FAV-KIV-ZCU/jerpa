@@ -20,7 +20,6 @@ import org.jdesktop.swingx.VerticalLayout;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Downloader;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
-import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -104,7 +103,7 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 
 		final ButtonGroup group = new ButtonGroup();
 
-		controller.setRights(Rights.ALL);
+		// controller.setRights(Rights.ALL);
 
 		group.add(allButton);
 		group.add(ownerButton);
@@ -261,15 +260,15 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 
 		if ("all".equals(event.getActionCommand())) {
 			allButton.setSelected(true);
-			controller.setRights(Rights.ALL);
+			// controller.setRights(Rights.ALL);
 		}
 		else if ("owner".equals(event.getActionCommand())) {
 			ownerButton.setSelected(true);
-			controller.setRights(Rights.OWNER);
+			// controller.setRights(Rights.OWNER);
 		}
 		else if ("subject".equals(event.getActionCommand())) {
 			subjectButton.setSelected(true);
-			controller.setRights(Rights.SUBJECT);
+			// controller.setRights(Rights.SUBJECT);
 		}
 
 	}
