@@ -15,10 +15,10 @@
  */
 
 /*
- *  
- *    Copyright (C) 2011 
- *    							University of West Bohemia, 
- *                  Department of Computer Science and Engineering, 
+ *
+ *    Copyright (C) 2011
+ *    							University of West Bohemia,
+ *                  Department of Computer Science and Engineering,
  *                  Pilsen, Czech Republic
  */
 package ch.ethz.origo.jerpa.data;

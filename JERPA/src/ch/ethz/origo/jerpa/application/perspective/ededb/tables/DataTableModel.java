@@ -7,21 +7,23 @@ import java.util.ResourceBundle;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.FileState;
-import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
+import org.apache.log4j.Logger;
+
+import ch.ethz.origo.jerpa.data.tier.FileState;
+import ch.ethz.origo.jerpa.data.tier.border.DataFile;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 
 /**
  * Table model for data view table.
- *
+ * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
 public class DataTableModel extends AbstractTableModel implements ILanguage {
 
-
 	private static final long serialVersionUID = -6966275553679729950L;
+	private static final Logger log = Logger.getLogger(DataTableModel.class);
 	private ResourceBundle resource;
 	private String resourceBundlePath;
 	private final List<DataRowModel> data;
@@ -62,7 +64,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 	/**
 	 * Getter of column class type. Necessary for first column in order to be a
 	 * check box.
-	 *
+	 * 
 	 * @param columnIndex column index
 	 * @return class
 	 */
@@ -90,7 +92,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of row count.
-	 *
+	 * 
 	 * @return integer - row count
 	 */
 	@Override
@@ -100,7 +102,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of column count.
-	 *
+	 * 
 	 * @return integer - column count
 	 */
 	@Override
@@ -110,7 +112,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of column name.
-	 *
+	 * 
 	 * @param columnIndex index of column
 	 * @return column name
 	 */
@@ -121,7 +123,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of value in table.
-	 *
+	 * 
 	 * @param rowIndex row index
 	 * @param columnIndex column index
 	 * @return Object (type depends of column index : 0 - boolean, 1 - String, 2
@@ -138,11 +140,11 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 		case 0:
 			return data.get(rowIndex).isSelected();
 		case 1:
-			return data.get(rowIndex).getFileInfo().getFilename();
+			return data.get(rowIndex).getFileInfo().getFileName();
 		case 2:
 			return data.get(rowIndex).getFileInfo().getMimeType();
 		case 3:
-			return countFileSize(data.get(rowIndex).getFileInfo().getLength());
+			return countFileSize(data.get(rowIndex).getFileInfo().getFileLength());
 		case 4:
 			return data.get(rowIndex).getState();
 		default:
@@ -152,7 +154,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Setter of table cell value
-	 *
+	 * 
 	 * @param object input value
 	 * @param rowIndex row index
 	 * @param columnIndex column index
@@ -168,21 +170,20 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 				System.err.println("DataTableModel set value: " + e);
 			}
 		}
-		else
-			if (columnIndex == getColumnCount() - 1) {
-				try {
-					data.get(rowIndex).setState((FileState) object);
-				}
-				catch (Exception e) {
-					System.err.println("DataTableModel set value: " + e);
-				}
+		else if (columnIndex == getColumnCount() - 1) {
+			try {
+				data.get(rowIndex).setState((FileState) object);
 			}
+			catch (Exception e) {
+				System.err.println("DataTableModel set value: " + e);
+			}
+		}
 
 	}
 
 	/**
 	 * Getter whether is cell modifiable.
-	 *
+	 * 
 	 * @param rowIndex Row index
 	 * @param columnIndex column index
 	 * @return true/false
@@ -194,27 +195,25 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Method for adding row in table.
-	 *
+	 * 
 	 * @param fileInfo File information class
 	 * @param state DataRowModel.VALUE
-	 * @param location experiment download folder path
 	 */
-	public void addRow(DataFileInfo fileInfo, FileState state, String location) {
+	public void addRow(DataFile fileInfo, FileState state) {
 
-		if (fileInfo != null && location != null
-				&& (state == FileState.NO_COPY || state == FileState.HAS_COPY || state == FileState.DOWNLOADING)
-				|| state == FileState.CORRUPTED) {
-			data.add(new DataRowModel(fileInfo, state, location));
+		if (fileInfo != null && (state == FileState.NO_COPY || state == FileState.HAS_COPY || state == FileState.DOWNLOADING)
+		        || state == FileState.CORRUPTED) {
+			data.add(new DataRowModel(fileInfo, state));
 		}
 		else {
-			System.err.println("Row was not added - invalid data format!");
+			log.error("Row was not added - invalid data format!");
 		}
-		this.fireTableDataChanged();
+		fireTableDataChanged();
 	}
 
 	/**
 	 * Getter of data List<>
-	 *
+	 * 
 	 * @return List<DataRowModel> data
 	 */
 	public List<DataRowModel> getData() {
@@ -226,23 +225,23 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 	 */
 	public void clear() {
 		data.clear();
-		this.fireTableDataChanged();
+		fireTableDataChanged();
 	}
 
 	/**
 	 * Setter of localization resource bundle path
-	 *
+	 * 
 	 * @param path path to localization source file.
 	 */
 	@Override
 	public void setLocalizedResourceBundle(String path) {
-		this.resourceBundlePath = path;
+		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
 	}
 
 	/**
 	 * Getter of path to resource bundle.
-	 *
+	 * 
 	 * @return path to localization file.
 	 */
 	@Override
@@ -252,7 +251,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Setter of resource bundle key.
-	 *
+	 * 
 	 * @param string key
 	 */
 	@Override
@@ -262,7 +261,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Method invoked by change of LanguageObservable.
-	 *
+	 * 
 	 * @throws JUIGLELangException
 	 */
 	@Override
@@ -279,7 +278,7 @@ public class DataTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Method for counting file size from long value
-	 *
+	 * 
 	 * @param length long value of file
 	 * @return number Ki/Mi/Gi/Ti/Pi/Ei b
 	 */

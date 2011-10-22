@@ -1,76 +1,64 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
 import java.awt.BorderLayout;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.Observable;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXPanel;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionChooseDownloadPath;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionConnect;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDeleteSelected;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDisconnect;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDownloadSelected;
-import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionOpenDownloadPath;
 import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionVisualizeSelected;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
-import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.Rights;
+import ch.ethz.origo.jerpa.data.tier.Storage;
+import ch.ethz.origo.jerpa.data.tier.StorageException;
+import ch.ethz.origo.jerpa.data.tier.StorageFactory;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.FirstRun;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ExperimentViewerLogic;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginDialog;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginInfo;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OfflineTables;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.OnlineTables;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 /**
  * Main class for EDEDB controlling.
- *
+ * 
  * @author Petr Miko
  */
-public class EDEDBController {
+public class EDEDBController extends Observable {
 
 	private final EDEDBPerspective parent;
 	private final EDEDClient session;
 	private LoginDialog loginDialog;
 	private LoginInfo loginInfo;
-	private OnlineTables onlineTables;
-	private OfflineTables offlineTables;
+	private ExperimentViewerLogic experimentViewer;
 	private Toolbar toolbar;
-	private Rights rights;
+	// private Rights rights;
 	private ActionVisualizeSelected actionVisualizeSelected;
 	private ActionDownloadSelected actionDownloadSelected;
 	private ActionDeleteSelected actionDeleteSelected;
 	private ActionDisconnect actionDisconnect;
 	private ActionConnect actionConnect;
-	private ActionChooseDownloadPath actionChooseDownloadFolder;
-	private ActionOpenDownloadPath actionOpenDownloadPath;
-	private String downloadPath;
-	private boolean firstRun;
 	private final JXPanel mainPanel;
 	private JXPanel tableViewPanel;
-	private final Properties properties;
-	private final String configFolder = "config";
-	private final String configFile = "config/ededb.properties";
-	private boolean offlineMode;
-	private boolean lock;
-	private final Set<Integer> downloadingFiles;
+	private Downloader downloader;
+
+	private final static Logger log = Logger.getLogger(EDEDBController.class);
+
+	private Storage storage;
+	private boolean offlineMode = true;
+	private boolean lockMode;
 
 	/**
 	 * Constructor.
-	 *
+	 * 
 	 * @param parent EDEDBPerspective
 	 * @param session EDEDClient.jar session
 	 */
@@ -78,16 +66,13 @@ public class EDEDBController {
 		this.parent = parent;
 		this.session = session;
 
-		properties = new Properties();
-		String temPath = getConfigKey("ededb.downloadfolder");
-		File tempDownloadFolder = (temPath == null ? null : new File(temPath));
-
-		if (tempDownloadFolder == null || !(tempDownloadFolder.exists())) {
-			firstRun = true;
+		try {
+			storage = StorageFactory.getStorage();
+			new DataSyncer(session, this, storage);
 		}
-		else {
-			setDownloadPath(temPath);
-			firstRun = false;
+		catch (StorageException e) {
+			log.error(e);
+			JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", e.getMessage(), e);
 		}
 
 		mainPanel = new JXPanel();
@@ -95,7 +80,6 @@ public class EDEDBController {
 
 		initClasses();
 
-		downloadingFiles = new HashSet<Integer>();
 	}
 
 	/**
@@ -103,15 +87,21 @@ public class EDEDBController {
 	 */
 	private void initClasses() {
 
-		onlineTables = new OnlineTables(this, session);
-		offlineTables = new OfflineTables(this);
-		loginDialog = new LoginDialog(this, session);
+		downloader = new Downloader(this, session);
+		experimentViewer = new ExperimentViewerLogic(this, session);
+		loginDialog = new LoginDialog(session);
 		loginInfo = new LoginInfo(this, session);
 
 		// Toolbar uses Actions so Actions HAS TO BE initialized firstly!
 		initActions();
 
 		toolbar = new Toolbar(this, session);
+
+		downloader.addObserver(experimentViewer);
+		downloader.addObserver(toolbar);
+		addObserver(experimentViewer);
+		addObserver(toolbar);
+		addObserver(parent);
 
 	}
 
@@ -122,10 +112,8 @@ public class EDEDBController {
 
 		actionConnect = new ActionConnect(this);
 		actionDisconnect = new ActionDisconnect(this);
-		actionDownloadSelected = new ActionDownloadSelected(this, session);
+		actionDownloadSelected = new ActionDownloadSelected(this, downloader);
 		actionDeleteSelected = new ActionDeleteSelected(this);
-		actionChooseDownloadFolder = new ActionChooseDownloadPath(this);
-		actionOpenDownloadPath = new ActionOpenDownloadPath(this);
 		actionVisualizeSelected = new ActionVisualizeSelected(this);
 	}
 
@@ -138,31 +126,19 @@ public class EDEDBController {
 		if (loggedIn) {
 			loginDialog.setVisible(true);
 			if (session.isConnected()) {
-				setOfflineMode(false);
-				updateTableView();
-				onlineTables.updateExpTable();
+				setServiceOffline(false);
 			}
 		}
 		else {
 			session.userLogout();
-			setOfflineMode(true);
-			updateTableView();
-
-			onlineTables.clearDataTable();
-			onlineTables.clearExpTable();
+			setServiceOffline(true);
 		}
 
-		update();
-	}
+		experimentViewer.clearDataTable();
+		experimentViewer.clearExpTable();
 
-	/**
-	 * Actions performed if file was deleted/downloaded. (updating file
-	 * information in online and offline tables)
-	 */
-	public void fileChange() {
-
-		onlineTables.checkLocalCopies();
-		offlineTables.updateDataTable();
+		updateTableView();
+		experimentViewer.updateExpTable();
 
 		update();
 	}
@@ -173,43 +149,31 @@ public class EDEDBController {
 	 */
 	public void update() {
 
-		parent.updateMenuItemVisibility();
-		loginInfo.updateLoginInfo();
-		toolbar.updateButtonsVisibility();
-
-		onlineTables.repaint();
-		offlineTables.repaint();
-		toolbar.repaint();
-		loginInfo.repaint();
+		setChanged();
+		notifyObservers();
 	}
 
 	/**
 	 * Method creating EDEDB Perspective's environment.
-	 *
+	 * 
 	 * @return JXPanel with all EDEDB Elements.
 	 */
 	public JXPanel initGraphics() {
 
 		mainPanel.removeAll();
 
-		if (firstRun) {
-			mainPanel.add(new FirstRun(this), BorderLayout.CENTER);
+		JXPanel sidebar = new JXPanel(new BorderLayout());
+		tableViewPanel = new JXPanel(new BorderLayout());
 
-		}
-		else {
-			JXPanel sidebar = new JXPanel(new BorderLayout());
-			tableViewPanel = new JXPanel(new BorderLayout());
+		offlineMode = true;
+		updateTableView();
 
-			offlineMode = true;
-			updateTableView();
+		sidebar.add(loginInfo, BorderLayout.NORTH);
+		sidebar.add(toolbar, BorderLayout.CENTER);
+		sidebar.add(new Working(), BorderLayout.SOUTH);
 
-			sidebar.add(loginInfo, BorderLayout.NORTH);
-			sidebar.add(toolbar, BorderLayout.CENTER);
-			sidebar.add(new Working(), BorderLayout.SOUTH);
-
-			mainPanel.add(tableViewPanel, BorderLayout.CENTER);
-			mainPanel.add(sidebar, BorderLayout.EAST);
-		}
+		mainPanel.add(tableViewPanel, BorderLayout.CENTER);
+		mainPanel.add(sidebar, BorderLayout.EAST);
 
 		mainPanel.revalidate();
 		mainPanel.repaint();
@@ -224,30 +188,15 @@ public class EDEDBController {
 	private void updateTableView() {
 		tableViewPanel.removeAll();
 
-		if (session.isConnected()) {
-			tableViewPanel.add(onlineTables, BorderLayout.CENTER);
-		}
-		else {
-			tableViewPanel.add(offlineTables, BorderLayout.CENTER);
-			offlineTables.updateUserTable();
-		}
+		tableViewPanel.add(experimentViewer, BorderLayout.CENTER);
 
 		tableViewPanel.revalidate();
 		tableViewPanel.repaint();
 	}
 
 	/**
-	 * Getter of choose download folder path.
-	 *
-	 * @return download action
-	 */
-	public ActionChooseDownloadPath getActionChooseDownloadFolder() {
-		return actionChooseDownloadFolder;
-	}
-
-	/**
 	 * Get action delete selected.
-	 *
+	 * 
 	 * @return delete action
 	 */
 	public ActionDeleteSelected getActionDeleteSelected() {
@@ -256,7 +205,7 @@ public class EDEDBController {
 
 	/**
 	 * Getter of action connect.
-	 *
+	 * 
 	 * @return connect action
 	 */
 	public ActionConnect getActionConnect() {
@@ -265,7 +214,7 @@ public class EDEDBController {
 
 	/**
 	 * Getter of action disconnect.
-	 *
+	 * 
 	 * @return disconnect action
 	 */
 	public ActionDisconnect getActionDisconnect() {
@@ -274,7 +223,7 @@ public class EDEDBController {
 
 	/**
 	 * Getter of action download selected.
-	 *
+	 * 
 	 * @return download action
 	 */
 	public ActionDownloadSelected getActionDownloadSelected() {
@@ -282,73 +231,53 @@ public class EDEDBController {
 	}
 
 	/**
-	 * Getter of action open download path.
-	 *
-	 * @return open download folder action
-	 */
-	public ActionOpenDownloadPath getActionOpenDownloadPath() {
-		return actionOpenDownloadPath;
-	}
-
-	/**
 	 * Getter of action visualize selected.
-	 *
+	 * 
 	 * @return open in analyze perspective action
 	 */
 	public ActionVisualizeSelected getActionVisualizeSelected() {
 		return actionVisualizeSelected;
 	}
 
-	/**
-	 * Returns which rigths has user selected in that time.
-	 *
-	 * @return owner/subject
-	 */
-	public Rights getRights() {
-		return rights;
-	}
-
-	/**
-	 * Setter of rights.
-	 *
-	 * @param rights owner/subject
-	 */
-	public void setRights(Rights rights) {
-		this.rights = rights;
-
-		if (session.isConnected()) {
-			onlineTables.updateExpTable();
-			update();
-		}
-	}
+	// /**
+	// * Returns which rigths has user selected in that time.
+	// *
+	// * @return owner/subject
+	// */
+	// public Rights getRights() {
+	// return rights;
+	// }
+	//
+	// /**
+	// * Setter of rights.
+	// *
+	// * @param rights owner/subject
+	// */
+	// public void setRights(Rights rights) {
+	// this.rights = rights;
+	//
+	// if (session.isConnected()) {
+	// experimentViewer.updateExpTable();
+	// update();
+	// }
+	// }
 
 	/**
 	 * Method for finding out if are any rows in data view table selected.
-	 *
+	 * 
 	 * @return true/false
 	 */
 	public boolean isSelectedFiles() {
-		if (offlineMode) {
-			return (!offlineTables.getSelectedFiles().isEmpty());
-		}
-		else {
-			return (!onlineTables.getSelectedFiles().isEmpty());
-		}
+		return (!experimentViewer.getSelectedFiles().isEmpty());
 	}
 
 	/**
 	 * Getter of list with info about selected rows in data table.
-	 *
+	 * 
 	 * @return List of DataRowModel
 	 */
 	public List<DataRowModel> getSelectedFiles() {
-		if (offlineMode) {
-			return offlineTables.getSelectedFiles();
-		}
-		else {
-			return onlineTables.getSelectedFiles();
-
-		}
+		return experimentViewer.getSelectedFiles();
 	}
 
 	/**
@@ -363,75 +292,8 @@ public class EDEDBController {
 	}
 
 	/**
-	 * Setter for absolute location of download folder path.
-	 *
-	 * @param downloadPath Absolute folder location String
-	 */
-	public void setDownloadPath(String downloadPath) {
-
-		setConfigKey("ededb.downloadfolder", downloadPath);
-		this.downloadPath = downloadPath;
-	}
-
-	/**
-	 * Getter of download path string.
-	 *
-	 * @return Absolute path to download folder
-	 */
-	public String getDownloadPath() {
-		return downloadPath;
-	}
-
-	/**
-	 * Setter of firstRun boolean.
-	 *
-	 * @param firstRun true/false
-	 */
-	public void setFirstRun(boolean firstRun) {
-		this.firstRun = firstRun;
-	}
-
-	/**
-	 * Getter of firstRun boolean.
-	 *
-	 * @return true/false
-	 */
-	public boolean isFirstRun() {
-		return firstRun;
-	}
-
-	/**
-	 * Method which finds out whether the files is already downloaded.
-	 *
-	 * @param info DataFile
-	 * @return state of file (HAS_COPY/NO_COPY/CORRUPTED)
-	 */
-	public synchronized FileState isAlreadyDownloaded(DataFileInfo info) {
-
-		String path = getDownloadPath() + File.separator + session.getUsername() + File.separator
-				+ info.getExperimentId() + " - " + info.getScenarioName() + File.separator + info.getFilename();
-
-		File file = new File(path);
-
-		if (!file.exists()) {
-			return FileState.NO_COPY;
-		}
-		else
-			if (isDownloading(info.getFileId())) {
-				return FileState.DOWNLOADING;
-			}
-			else
-				if (file.length() != info.getLength()) {
-					return FileState.CORRUPTED;
-				}
-				else {
-					return FileState.HAS_COPY;
-				}
-	}
-
-	/**
 	 * Sets whether control elements of EDEDB are active or not.
-	 *
+	 * 
 	 * @param active true/false
 	 */
 	public void setElementsActive(final boolean active) {
@@ -439,11 +301,11 @@ public class EDEDBController {
 
 			@Override
 			public void run() {
-				lock = !active;
+				lockMode = !active;
 				toolbar.setButtonsEnabled(active);
 				parent.setMenuItemEnabled(active);
 
-				update();
+				EDEDBController.this.update();
 			}
 		});
 	}
@@ -451,10 +313,11 @@ public class EDEDBController {
 	/**
 	 * Setter of EDEDB online/offline view selection. After setting the mode,
 	 * table view panel is updated.
-	 *
+	 * 
 	 * @param offlineMode true/false
 	 */
-	public void setOfflineMode(boolean offlineMode) {
+	public void setServiceOffline(boolean offlineMode) {
+
 		this.offlineMode = offlineMode;
 
 		updateTableView();
@@ -462,143 +325,38 @@ public class EDEDBController {
 
 	/**
 	 * Getter of EDEDB online/offline view selection
-	 *
+	 * 
 	 * @return true/false
 	 */
-	public boolean isOfflineMode() {
+	public boolean isServiceOffline() {
 		return offlineMode;
 	}
 
 	/**
 	 * Getter whether are EDEDB control elements locked (disabled).
-	 *
+	 * 
 	 * @return true/false
 	 */
 	public boolean isLock() {
-		return lock;
+		return lockMode;
 	}
 
 	/**
-	 * Getter of config file location.
-	 *
-	 * @return relative path to config file
+	 * Getter of data tier storage.
+	 * 
+	 * @return data storage
 	 */
-	public String getConfigFilePath() {
-		return configFile;
+	public Storage getStorage() {
+		return storage;
 	}
 
 	/**
-	 * Adds file id to set of downloading files.
-	 *
-	 * @param fileId
+	 * Getter of data file download manager.
+	 * 
+	 * @return download manager
 	 */
-	public synchronized void addDownloading(int fileId) {
-		downloadingFiles.add(fileId);
-
-		fileChange();
+	public Downloader getDownloader() {
+		return downloader;
 	}
 
-	/**
-	 * Checks whether the files is currently downloading.
-	 *
-	 * @param fileId
-	 * @return true/false
-	 */
-	public synchronized boolean isDownloading(int fileId) {
-		if (downloadingFiles.contains(fileId)) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	/**
-	 * Checking whether there is any downloading currently.
-	 *
-	 * @return
-	 */
-	public synchronized boolean isDownloading() {
-		return !downloadingFiles.isEmpty();
-	}
-
-	/**
-	 * Removes file id from set of currently downloading files.
-	 *
-	 * @param fileId
-	 * @return removal success true/false
-	 */
-	public synchronized boolean removeDownloading(int fileId) {
-		boolean success = downloadingFiles.remove(fileId);
-
-		for (DataRowModel row : onlineTables.getRows()) {
-			if (row.getFileInfo().getFileId() == fileId) {
-				row.setState(isAlreadyDownloaded(row.getFileInfo()));
-			}
-		}
-
-		fileChange();
-		return success;
-	}
-
-	/**
-	 * Count of currently downloading files.
-	 *
-	 * @return size of downloading files set
-	 */
-	public int getDownloadingSize() {
-		return downloadingFiles.size();
-	}
-
-	/**
-	 * Getter of String key from config properties file.
-	 *
-	 * @param key String key
-	 * @return String value
-	 */
-	public String getConfigKey(String key) {
-		FileInputStream inPropStream = null;
-		String tmp = null;
-		try {
-			inPropStream = new FileInputStream(configFile);
-			properties.load(inPropStream);
-			tmp = properties.getProperty(key);
-			inPropStream.close();
-
-		}
-		catch (IOException e) {}
-
-		return tmp;
-	}
-
-	/**
-	 * Add/Set key in config properties file.
-	 *
-	 * @param key String key
-	 * @param argument String value
-	 */
-	public void setConfigKey(String key, String argument) {
-
-		File config = new File(configFile);
-		if (!config.exists()) {
-			try {
-				(new File(configFolder)).mkdirs();
-				config.createNewFile();
-			}
-			catch (IOException ex) {
-				JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR", ex.getMessage(), ex);
-			}
-		}
-
-		FileOutputStream outPropStream = null;
-		try {
-			outPropStream = new FileOutputStream(configFile);
-			properties.setProperty(key, argument);
-			properties.store(outPropStream, null);
-			outPropStream.close();
-		}
-		catch (IOException ex) {
-			JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR", ex.getMessage(), ex);
-		}
-	}
 }

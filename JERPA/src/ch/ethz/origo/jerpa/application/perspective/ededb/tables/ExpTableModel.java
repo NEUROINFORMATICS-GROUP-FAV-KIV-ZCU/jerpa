@@ -7,14 +7,16 @@ import java.util.ResourceBundle;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
+import org.apache.log4j.Logger;
+
+import ch.ethz.origo.jerpa.data.tier.border.Experiment;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 
 /**
  * Table model for list of experiments.
- *
+ * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
 public class ExpTableModel extends AbstractTableModel implements ILanguage {
@@ -22,8 +24,9 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 	private static final long serialVersionUID = 1546774060278698090L;
 	private ResourceBundle resource;
 	private String resourceBundlePath;
-	private final List<ExperimentInfo> data;
+	private final List<Experiment> data;
 	private List<String> columnNames;
+	private static final Logger log = Logger.getLogger(ExpTableModel.class);
 
 	/**
 	 * Index of Experiment id column.
@@ -43,7 +46,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 		LanguageObservable.getInstance().attach(this);
 		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 		initColumns();
-		data = new LinkedList<ExperimentInfo>();
+		data = new LinkedList<Experiment>();
 	}
 
 	/**
@@ -57,7 +60,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of row count.
-	 *
+	 * 
 	 * @return row count
 	 */
 	@Override
@@ -67,7 +70,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of column count.
-	 *
+	 * 
 	 * @return column count
 	 */
 	@Override
@@ -77,7 +80,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of column name
-	 *
+	 * 
 	 * @param columnIndex
 	 * @return String of column name
 	 */
@@ -88,7 +91,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of table cell value according to row/column indices.
-	 *
+	 * 
 	 * @param rowIndex row index
 	 * @param columnIndex column index
 	 * @return Object (Integer or String}
@@ -100,7 +103,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 				return data.get(rowIndex).getExperimentId();
 			}
 			else {
-				return data.get(rowIndex).getScenarioName();
+				return data.get(rowIndex).getTitle();
 
 			}
 		}
@@ -109,7 +112,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Getter of cell modifiability state.
-	 *
+	 * 
 	 * @param rowIndex row index
 	 * @param columnIndex column index
 	 * @return false (this table cannot be edited)
@@ -121,15 +124,15 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Add row to table method.
-	 *
+	 * 
 	 * @param experiment ExperimentInfo
 	 */
-	public void addRow(ExperimentInfo experiment) {
-		if (experiment != null && experiment.getScenarioName() != null) {
+	public void addRow(Experiment experiment) {
+		if (experiment != null && experiment.getTitle() != null) {
 			data.add(experiment);
 		}
 		else {
-			System.err.println("Row wasn't added - experiment or its name was null");
+			log.error("Row wasn't added - experiment or its name was null");
 		}
 
 		fireTableDataChanged();
@@ -145,18 +148,18 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Setter of localization resource bundle path
-	 *
+	 * 
 	 * @param path path to localization source file.
 	 */
 	@Override
 	public void setLocalizedResourceBundle(String path) {
-		this.resourceBundlePath = path;
+		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
 	}
 
 	/**
 	 * Getter of path to resource bundle.
-	 *
+	 * 
 	 * @return path to localization file.
 	 */
 	@Override
@@ -166,7 +169,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Setter of resource bundle key.
-	 *
+	 * 
 	 * @param string key
 	 */
 	@Override
@@ -176,7 +179,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 
 	/**
 	 * Method invoked by change of LanguageObservable.
-	 *
+	 * 
 	 * @throws JUIGLELangException
 	 */
 	@Override

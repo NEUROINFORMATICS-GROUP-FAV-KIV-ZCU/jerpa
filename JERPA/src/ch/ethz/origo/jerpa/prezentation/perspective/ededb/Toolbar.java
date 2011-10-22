@@ -1,8 +1,9 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.ResourceBundle;
 
 import javax.swing.BoxLayout;
@@ -16,9 +17,9 @@ import javax.swing.SwingUtilities;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.VerticalLayout;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Downloader;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
-import ch.ethz.origo.jerpa.ededclient.generated.Rights;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -29,23 +30,22 @@ import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 /**
  * Class for creating side-toolbar for EDEDB.
- *
+ * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
-public class Toolbar extends JXPanel implements ILanguage {
+public class Toolbar extends JXPanel implements ILanguage, ActionListener, Observer {
 
 	private static final long serialVersionUID = 2538082288377712201L;
 	private ResourceBundle resource;
 	private String resourceBundlePath;
 	private final EDEDBController controller;
 	private final EDEDClient session;
-	private JButton connectButton, disconnectButton, downloadButton, chooseFolderButton, openFolderButton,
-	deleteFileButton, visualizeFileButton;
+	private JButton connectButton, disconnectButton, downloadButton, deleteFileButton, visualizeFileButton;
 	private JRadioButton ownerButton, subjectButton, allButton;
 
 	/**
 	 * Creating main panel and setting elements into proper positions.
-	 *
+	 * 
 	 * @param controller EDEDBController class of EDEDB
 	 * @param session EDEDSession class
 	 */
@@ -58,9 +58,9 @@ public class Toolbar extends JXPanel implements ILanguage {
 		this.session = session;
 		this.controller = controller;
 
-		JPanel radioBar = new JPanel();
+		final JPanel radioBar = new JPanel();
 
-		this.setLayout(new VerticalLayout());
+		setLayout(new VerticalLayout());
 		radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.LINE_AXIS));
 
 		createButtons();
@@ -71,8 +71,6 @@ public class Toolbar extends JXPanel implements ILanguage {
 
 		this.add(connectButton);
 		this.add(disconnectButton);
-		this.add(chooseFolderButton);
-		this.add(openFolderButton);
 		this.add(radioBar);
 		this.add(visualizeFileButton);
 		this.add(downloadButton);
@@ -80,11 +78,10 @@ public class Toolbar extends JXPanel implements ILanguage {
 
 		allButton.setSelected(true);
 		disconnectButton.setVisible(false);
-		openFolderButton.setVisible(Desktop.isDesktopSupported());
 		downloadButton.setEnabled(false);
 
 		revalidate();
-		repaint();
+		this.repaint();
 	}
 
 	/**
@@ -95,8 +92,6 @@ public class Toolbar extends JXPanel implements ILanguage {
 		connectButton = new JButton();
 		disconnectButton = new JButton();
 		downloadButton = new JButton();
-		openFolderButton = new JButton();
-		chooseFolderButton = new JButton();
 		visualizeFileButton = new JButton();
 		deleteFileButton = new JButton();
 		allButton = new JRadioButton();
@@ -106,9 +101,9 @@ public class Toolbar extends JXPanel implements ILanguage {
 		updateButtonsText();
 		createIcons();
 
-		ButtonGroup group = new ButtonGroup();
+		final ButtonGroup group = new ButtonGroup();
 
-		controller.setRights(Rights.ALL);
+		// controller.setRights(Rights.ALL);
 
 		group.add(allButton);
 		group.add(ownerButton);
@@ -118,52 +113,26 @@ public class Toolbar extends JXPanel implements ILanguage {
 		disconnectButton.setHorizontalAlignment(SwingConstants.LEFT);
 		downloadButton.setHorizontalAlignment(SwingConstants.LEFT);
 		deleteFileButton.setHorizontalAlignment(SwingConstants.LEFT);
-		chooseFolderButton.setHorizontalAlignment(SwingConstants.LEFT);
-		openFolderButton.setHorizontalAlignment(SwingConstants.LEFT);
 		visualizeFileButton.setHorizontalAlignment(SwingConstants.LEFT);
 
 		connectButton.addActionListener(controller.getActionConnect());
 		disconnectButton.addActionListener(controller.getActionDisconnect());
 		downloadButton.addActionListener(controller.getActionDownloadSelected());
 		deleteFileButton.addActionListener(controller.getActionDeleteSelected());
-		chooseFolderButton.addActionListener(controller.getActionChooseDownloadFolder());
-		openFolderButton.addActionListener(controller.getActionOpenDownloadPath());
 		visualizeFileButton.addActionListener(controller.getActionVisualizeSelected());
 
-		allButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				allButton.setSelected(true);
-				controller.setRights(Rights.ALL);
-			}
-		});
-
-		ownerButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ownerButton.setSelected(true);
-				controller.setRights(Rights.OWNER);
-			}
-		});
-
-		subjectButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				subjectButton.setSelected(true);
-				controller.setRights(Rights.SUBJECT);
-			}
-		});
+		allButton.addActionListener(this);
+		allButton.setActionCommand("all");
+		ownerButton.addActionListener(this);
+		ownerButton.setActionCommand("owner");
+		subjectButton.addActionListener(this);
+		subjectButton.setActionCommand("subject");
 	}
 
 	/**
 	 * Setting buttons visibility giving the exact situation.
 	 */
 	public void updateButtonsVisibility() {
-
-		openFolderButton.setVisible(Desktop.isDesktopSupported());
 
 		if (session.isConnected()) {
 			connectButton.setVisible(false);
@@ -181,11 +150,11 @@ public class Toolbar extends JXPanel implements ILanguage {
 			downloadButton.setEnabled(false);
 		}
 
-		if (!controller.isDownloading() && !controller.isLock()) {
-			visualizeFileButton.setEnabled(true);
+		if (Downloader.isDownloading() || controller.isLock()) {
+			visualizeFileButton.setEnabled(false);
 		}
 		else {
-			visualizeFileButton.setEnabled(false);
+			visualizeFileButton.setEnabled(true);
 		}
 	}
 
@@ -196,8 +165,6 @@ public class Toolbar extends JXPanel implements ILanguage {
 		connectButton.setText(resource.getString("sidebar.ededb.toolbar.connect"));
 		disconnectButton.setText(resource.getString("sidebar.ededb.toolbar.disconnect"));
 		downloadButton.setText(resource.getString("sidebar.ededb.toolbar.download"));
-		openFolderButton.setText(resource.getString("sidebar.ededb.toolbar.opendir"));
-		chooseFolderButton.setText(resource.getString("sidebar.ededb.toolbar.choosedir"));
 		visualizeFileButton.setText(resource.getString("sidebar.ededb.toolbar.visualise"));
 		deleteFileButton.setText(resource.getString("sidebar.ededb.toolbar.deletefile"));
 		allButton.setText(resource.getString("sidebar.ededb.toolbar.all"));
@@ -207,18 +174,18 @@ public class Toolbar extends JXPanel implements ILanguage {
 
 	/**
 	 * Setter of localization resource bundle path
-	 *
+	 * 
 	 * @param path path to localization source file.
 	 */
 	@Override
 	public void setLocalizedResourceBundle(String path) {
-		this.resourceBundlePath = path;
+		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
 	}
 
 	/**
 	 * Getter of path to resource bundle.
-	 *
+	 * 
 	 * @return path to localization file.
 	 */
 	@Override
@@ -228,7 +195,7 @@ public class Toolbar extends JXPanel implements ILanguage {
 
 	/**
 	 * Setter of resource bundle key.
-	 *
+	 * 
 	 * @param string key
 	 */
 	@Override
@@ -238,7 +205,7 @@ public class Toolbar extends JXPanel implements ILanguage {
 
 	/**
 	 * Method invoked by change of LanguageObservable.
-	 *
+	 * 
 	 * @throws JUIGLELangException
 	 */
 	@Override
@@ -247,7 +214,7 @@ public class Toolbar extends JXPanel implements ILanguage {
 
 			@Override
 			public void run() {
-				updateButtonsText();
+				Toolbar.this.updateButtonsText();
 			}
 		});
 
@@ -255,16 +222,14 @@ public class Toolbar extends JXPanel implements ILanguage {
 
 	/**
 	 * Method setting buttons on/off.
-	 *
+	 * 
 	 * @param active boolean setting buttons' activeness
 	 */
 	public void setButtonsEnabled(boolean active) {
 		connectButton.setEnabled(active);
 		disconnectButton.setEnabled(active);
-		chooseFolderButton.setEnabled(active);
 		deleteFileButton.setEnabled(active);
 		visualizeFileButton.setEnabled(active);
-		openFolderButton.setEnabled(active);
 		downloadButton.setEnabled(active);
 		allButton.setEnabled(active);
 		ownerButton.setEnabled(active);
@@ -278,24 +243,41 @@ public class Toolbar extends JXPanel implements ILanguage {
 	 */
 	private void createIcons() {
 		try {
-			visualizeFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "ededb_48.png", 32,
-					32));
-			openFolderButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "folder_48.png", 32,
-					32));
-			chooseFolderButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "spanner_48.png",
-					32, 32));
-
+			visualizeFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "ededb_48.png", 32, 32));
 			connectButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32));
-			disconnectButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "logout_48.png", 32,
-					32));
-			downloadButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH
-					+ "arrow_down_green_48.png", 32, 32));
-			deleteFileButton.setIcon(JUIGLEGraphicsUtils
-					.createImageIcon(JERPAUtils.IMAGE_PATH + "cross_48.png", 32, 32));
+			disconnectButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "logout_48.png", 32, 32));
+			downloadButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "arrow_down_green_48.png", 32, 32));
+			deleteFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "cross_48.png", 32, 32));
 
 		}
-		catch (PerspectiveException ex) {
+		catch (final PerspectiveException ex) {
 			JUIGLErrorInfoUtils.showErrorDialog(ex.getMessage(), ex.getLocalizedMessage(), ex);
 		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+
+		if ("all".equals(event.getActionCommand())) {
+			allButton.setSelected(true);
+			// controller.setRights(Rights.ALL);
+		}
+		else if ("owner".equals(event.getActionCommand())) {
+			ownerButton.setSelected(true);
+			// controller.setRights(Rights.OWNER);
+		}
+		else if ("subject".equals(event.getActionCommand())) {
+			subjectButton.setSelected(true);
+			// controller.setRights(Rights.SUBJECT);
+		}
+
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+
+		updateButtonsVisibility();
+		this.repaint();
+
 	}
 }

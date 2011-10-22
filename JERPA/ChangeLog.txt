@@ -5,9 +5,36 @@
 * CHANGED  - indicates a change in using/behavior JERPA                                     *
 * FIXED    - indicates a bug fix                                                            *
 * INTERNAL - indicates an internal change - information important only for JERPA developers *                                                                               *
+
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
-*********************************************************************************************
+*********************************************************************************************      
+ * (10/22/2011) kivan
+    # 243
+    
+      INTERNAL: trunk replaced by modified version with Derby DB. Branch of modified version removed.
+
+ * (10/18/2011) kivan
+    # 242
+    
+      CHANGED: After login, database content will be synchronized with the one in EEG Database server.
+      CHANGED: many new border classes, Data layer expanded, DataSync class for scheduling updates.
+      CHANGED: new EDEDClient.jar due to major changes on server side.
+      FIXED: table information download, basic view works correctly now.
+      
+      Known bugs: working status during synchronization, less disturbing repainting, visualize file from database, choice of rights.   
+
+  * (10/4/2011) kivan (Petr Miko)
+    # 237
+    
+      CHANGED: files are downloaded to Derby database - not yet fully functional
+      INTERNAL: only one view for experiment file browse, file download rewritten, not yet completed
+      FIXED: file download now stops with disconnect action.
+      
+      Known bugs: - file visualization not working from database
+                  - only one file can be downloaded to db at once (exclusive access restriction of db)
+                  - data wrappers are not all done (database will be synchronized in a new way) 
+
  * (5/01/2011) kivan (Petr Miko)
     # 235
     

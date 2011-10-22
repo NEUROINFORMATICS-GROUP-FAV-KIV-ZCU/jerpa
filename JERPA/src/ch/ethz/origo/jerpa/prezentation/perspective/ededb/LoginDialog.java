@@ -24,12 +24,13 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.xml.ws.WebServiceException;
 
 import org.jdesktop.swingx.JXLabel;
 import org.jdesktop.swingx.JXPanel;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBProperties;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
@@ -41,14 +42,13 @@ import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 /**
  * Class creating login dialog for setting up connection to EEG/ERP Database.
- *
+ * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
-public class LoginDialog implements ILanguage {
+public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener {
 
 	private ResourceBundle resource;
 	private String resourceBundlePath;
-	private final EDEDBController controller;
 	private final EDEDClient session;
 	private JFormattedTextField usernameField;
 	private JPasswordField passwordField;
@@ -60,27 +60,28 @@ public class LoginDialog implements ILanguage {
 	private JXLabel endpointLabel;
 	private JButton okButton, cancelButton;
 	private JToggleButton optionsButton;
+	private final JXPanel moreLabelPane = new JXPanel(new GridLayout(0, 1));
+	private final JXPanel moreFieldPane = new JXPanel(new GridLayout(0, 1));
 	private String inputsErrorText;
 	private String inputsErrorDesc;
 	private String credentialsErrorText;
 	private String credentialsErrorDesc;
 	private String connectionErrorText;
 	private String connectionErrorDesc;
+	private final JProgressBar progress = new JProgressBar();
 	public static Cursor busyCursor;
 	public static Cursor defaultCursor;
 
 	/**
 	 * Constructor.
-	 *
-	 * @param controller EDEDB EDEDBController
+	 * 
 	 * @param session EDEDSession from EDEDClient.jar
 	 */
-	public LoginDialog(EDEDBController controller, EDEDClient session) {
+	public LoginDialog(EDEDClient session) {
 
 		LanguageObservable.getInstance().attach(this);
 		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
-		this.controller = controller;
 		this.session = session;
 
 		busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
@@ -102,9 +103,6 @@ public class LoginDialog implements ILanguage {
 		JXPanel fieldPane = new JXPanel(new GridLayout(0, 1));
 		JXPanel buttonPane = new JXPanel(new FlowLayout());
 
-		final JXPanel moreLabelPane = new JXPanel(new GridLayout(0, 1));
-		final JXPanel moreFieldPane = new JXPanel(new GridLayout(0, 1));
-
 		updateErrorTexts();
 
 		info = new JTextArea(resource.getString("logindialog.ededb.caution"));
@@ -114,7 +112,6 @@ public class LoginDialog implements ILanguage {
 		info.setBackground(canvas.getBackground());
 		info.setForeground(canvas.getForeground());
 
-		final JProgressBar progress = new JProgressBar();
 		progress.setIndeterminate(true);
 		progress.setVisible(false);
 
@@ -132,9 +129,9 @@ public class LoginDialog implements ILanguage {
 		usernameField.setColumns(10);
 		passwordField.setColumns(10);
 
-		usernameField.setText(controller.getConfigKey("ededb.username"));
-		passwordField.setText(controller.getConfigKey("ededb.password"));
-		endpointField.setText(controller.getConfigKey("ededb.endpoint"));
+		usernameField.setText(EDEDBProperties.getConfigKey("ededb.username"));
+		passwordField.setText(EDEDBProperties.getConfigKey("ededb.password"));
+		endpointField.setText(EDEDBProperties.getConfigKey("ededb.endpoint"));
 
 		moreLabelPane.add(endpointLabel);
 		labelPane.add(usernameLabel);
@@ -148,151 +145,18 @@ public class LoginDialog implements ILanguage {
 		cancelButton = new JButton(resource.getString("logindialog.ededb.buttons.cancel"));
 		optionsButton = new JToggleButton(resource.getString("logindialog.ededb.buttons.more"));
 
-		okButton.addActionListener(new ActionListener() {
+		okButton.addActionListener(this);
+		okButton.setActionCommand("ok");
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		cancelButton.addActionListener(this);
+		cancelButton.setActionCommand("cancel");
 
-				final String tempEndpoint;
-				final String tempUsername;
-				final String tempPassword;
+		optionsButton.addActionListener(this);
+		optionsButton.setActionCommand("options");
 
-				if (!endpointField.getText().isEmpty() && !usernameField.getText().isEmpty()
-						&& passwordField.getPassword().length > 0) {
-
-					tempEndpoint = endpointField.getText();
-					tempUsername = usernameField.getText();
-					tempPassword = new String(passwordField.getPassword());
-
-					Thread loginThread = new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-
-							dialog.getRootPane().setCursor(busyCursor);
-
-							try {
-								session.userLogIn(tempUsername, tempPassword, tempEndpoint);
-								controller.setConfigKey("ededb.endpoint", tempEndpoint);
-								dialog.setVisible(false);
-
-								controller.setConfigKey("ededb.username", tempUsername);
-								controller.setConfigKey("ededb.password", tempPassword);
-							}
-							catch (WebServiceException ex) {
-
-								if (ex.getCause().getClass() == IOException.class) {
-									JUIGLErrorInfoUtils.showErrorDialog(credentialsErrorDesc, credentialsErrorText, ex);
-								}
-								else
-									if (ex.getCause().getClass() == ConnectException.class) {
-										JUIGLErrorInfoUtils.showErrorDialog(connectionErrorDesc, connectionErrorText,
-												ex);
-									}
-									else {
-										JUIGLErrorInfoUtils.showErrorDialog(ex.getMessage(), ex.getLocalizedMessage(),
-												ex);
-									}
-							}
-							catch (ConnectException ex) {
-								JUIGLErrorInfoUtils.showErrorDialog(connectionErrorDesc, connectionErrorText, ex);
-							}
-
-							okButton.setEnabled(true);
-							cancelButton.setEnabled(true);
-							dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-							Working.setActivity(false, "working.ededb.connecting");
-							progress.setVisible(false);
-
-							dialog.getRootPane().setCursor(defaultCursor);
-						}
-					});
-
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							okButton.setEnabled(false);
-							cancelButton.setEnabled(false);
-							dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-							Working.setActivity(true, "working.ededb.connecting");
-							progress.setVisible(true);
-						}
-					});
-
-					loginThread.start();
-
-				}
-				else {
-					JOptionPane.showMessageDialog(new JFrame(), inputsErrorText, inputsErrorDesc,
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-
-		cancelButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dialog.setVisible(false);
-			}
-		});
-
-		optionsButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				moreLabelPane.setVisible(optionsButton.isSelected());
-				moreFieldPane.setVisible(optionsButton.isSelected());
-
-				dialog.pack();
-			}
-		});
-
-		endpointField.addKeyListener(new KeyAdapter() {
-
-			@Override
-			public void keyPressed(KeyEvent ke) {
-				int kc = ke.getKeyCode();
-				if (kc == KeyEvent.VK_ENTER) {
-					okButton.doClick();
-				}
-				else
-					if (kc == KeyEvent.VK_ESCAPE) {
-						cancelButton.doClick();
-					}
-			}
-		});
-
-		usernameField.addKeyListener(new KeyAdapter() {
-
-			@Override
-			public void keyPressed(KeyEvent ke) {
-				int kc = ke.getKeyCode();
-				if (kc == KeyEvent.VK_ENTER) {
-					okButton.doClick();
-				}
-				else
-					if (kc == KeyEvent.VK_ESCAPE) {
-						cancelButton.doClick();
-					}
-			}
-		});
-
-		passwordField.addKeyListener(new KeyAdapter() {
-
-			@Override
-			public void keyPressed(KeyEvent ke) {
-				int kc = ke.getKeyCode();
-				if (kc == KeyEvent.VK_ENTER) {
-					okButton.doClick();
-				}
-				else
-					if (kc == KeyEvent.VK_ESCAPE) {
-						cancelButton.doClick();
-					}
-			}
-		});
+		endpointField.addKeyListener(this);
+		usernameField.addKeyListener(this);
+		passwordField.addKeyListener(this);
 
 		if (endpointField.getText().isEmpty()) {
 			optionsButton.setSelected(true);
@@ -348,7 +212,7 @@ public class LoginDialog implements ILanguage {
 
 	/**
 	 * Setter of LoginDialog visibility.
-	 *
+	 * 
 	 * @param visibility boolean
 	 */
 	public void setVisible(boolean visibility) {
@@ -359,18 +223,18 @@ public class LoginDialog implements ILanguage {
 
 	/**
 	 * Setter of localization resource bundle path
-	 *
+	 * 
 	 * @param path path to localization source file.
 	 */
 	@Override
 	public void setLocalizedResourceBundle(String path) {
-		this.resourceBundlePath = path;
+		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
 	}
 
 	/**
 	 * Getter of path to resource bundle.
-	 *
+	 * 
 	 * @return path to localization file.
 	 */
 	@Override
@@ -380,7 +244,7 @@ public class LoginDialog implements ILanguage {
 
 	/**
 	 * Setter of resource bundle key.
-	 *
+	 * 
 	 * @param string key
 	 */
 	@Override
@@ -390,7 +254,7 @@ public class LoginDialog implements ILanguage {
 
 	/**
 	 * Method invoked by change of LanguageObservable.
-	 *
+	 * 
 	 * @throws JUIGLELangException
 	 */
 	@Override
@@ -407,7 +271,7 @@ public class LoginDialog implements ILanguage {
 				okButton.setText(resource.getString("logindialog.ededb.buttons.ok"));
 				cancelButton.setText(resource.getString("logindialog.ededb.buttons.cancel"));
 				optionsButton.setText(resource.getString("logindialog.ededb.buttons.more"));
-				updateErrorTexts();
+				LoginDialog.this.updateErrorTexts();
 			}
 		});
 
@@ -424,4 +288,106 @@ public class LoginDialog implements ILanguage {
 		connectionErrorText = resource.getString("logindialog.ededb.errors.connection.text");
 		connectionErrorDesc = resource.getString("logindialog.ededb.errors.connection.desc");
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+
+		if ("ok".equals(event.getActionCommand())) {
+			final String tempEndpoint;
+			final String tempUsername;
+			final String tempPassword;
+
+			if (!LoginDialog.this.endpointField.getText().isEmpty() && !LoginDialog.this.usernameField.getText().isEmpty()
+			        && LoginDialog.this.passwordField.getPassword().length > 0) {
+
+				tempEndpoint = endpointField.getText();
+				tempUsername = usernameField.getText();
+				tempPassword = new String(passwordField.getPassword());
+
+				Thread loginThread = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+
+						dialog.getRootPane().setCursor(busyCursor);
+
+						try {
+							session.userLogIn(tempUsername, tempPassword, tempEndpoint);
+							EDEDBProperties.setConfigKey("ededb.endpoint", tempEndpoint);
+							dialog.setVisible(false);
+
+							EDEDBProperties.setConfigKey("ededb.username", tempUsername);
+							EDEDBProperties.setConfigKey("ededb.password", tempPassword);
+						}
+						catch (WebServiceException ex) {
+
+							if (ex.getCause().getClass() == IOException.class) {
+								JUIGLErrorInfoUtils.showErrorDialog(credentialsErrorDesc, credentialsErrorText, ex);
+							}
+							else if (ex.getCause().getClass() == ConnectException.class) {
+								JUIGLErrorInfoUtils.showErrorDialog(connectionErrorDesc, connectionErrorText, ex);
+							}
+							else {
+								JUIGLErrorInfoUtils.showErrorDialog(ex.getMessage(), ex.getLocalizedMessage(), ex);
+							}
+						}
+						catch (ConnectException ex) {
+							JUIGLErrorInfoUtils.showErrorDialog(connectionErrorDesc, connectionErrorText, ex);
+						}
+
+						okButton.setEnabled(true);
+						cancelButton.setEnabled(true);
+						dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+						Working.setActivity(false, "working.ededb.connecting");
+						progress.setVisible(false);
+
+						dialog.getRootPane().setCursor(defaultCursor);
+					}
+				});
+
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						okButton.setEnabled(false);
+						cancelButton.setEnabled(false);
+						dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+						Working.setActivity(true, "working.ededb.connecting");
+						progress.setVisible(true);
+					}
+				});
+
+				loginThread.start();
+
+			}
+			else {
+				JOptionPane.showMessageDialog(new JFrame(), LoginDialog.this.inputsErrorText, LoginDialog.this.inputsErrorDesc,
+				        JOptionPane.ERROR_MESSAGE);
+			}
+		}
+
+		else if ("cancel".equals(event.getActionCommand())) {
+			dialog.setVisible(false);
+		}
+
+		else if ("options".equals(event.getActionCommand())) {
+			moreLabelPane.setVisible(LoginDialog.this.optionsButton.isSelected());
+			moreFieldPane.setVisible(LoginDialog.this.optionsButton.isSelected());
+
+			dialog.pack();
+		}
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent event) {
+		int keyCode = event.getKeyCode();
+		if (keyCode == KeyEvent.VK_ENTER) {
+			LoginDialog.this.okButton.doClick();
+		}
+		else if (keyCode == KeyEvent.VK_ESCAPE) {
+			LoginDialog.this.cancelButton.doClick();
+		}
+	}
+
 }
