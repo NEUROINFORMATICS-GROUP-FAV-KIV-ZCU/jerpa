@@ -8,6 +8,7 @@ public class DataFile {
 	private long fileLength;
 	private int experimentId;
 	private String mimeType;
+    private long revision;
 
 	public DataFile() {}
 
@@ -59,4 +60,11 @@ public class DataFile {
 		this.mimeType = mimeType;
 	}
 
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision(long revision) {
+        this.revision = revision;
+    }
 }

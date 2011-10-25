@@ -29,9 +29,7 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
 public class EDEDBPerspective extends Perspective implements Observer {
 
 	private static final String ID_PERSPECTIVE = EDEDBPerspective.class.getName();
-	private JUIGLEMenuItem ededbMenu;
-	private JUIGLEMenuItem ededbMenu2;
-	private final EDEDClient session;
+    private final EDEDClient session;
 	private final EDEDBController controller;
 	private JUIGLEMenuItem connect;
 	private JUIGLEMenuItem disconnect;
@@ -110,7 +108,7 @@ public class EDEDBPerspective extends Perspective implements Observer {
 	 * Method creating initialised menu.
 	 * 
 	 * @return JUIGLEMenu inited
-	 * @throws PerspectiveException
+	 * @throws PerspectiveException error in perspective
 	 */
 	private JUIGLEMenu initMenu() throws PerspectiveException {
 
@@ -143,7 +141,7 @@ public class EDEDBPerspective extends Perspective implements Observer {
 	 * @return first EDEDB JUIGLEMenuItem
 	 */
 	private JUIGLEMenuItem createEdedbMenu() {
-		ededbMenu = new JUIGLEMenuItem(getLocalizedString("menu.ededb.title"));
+        JUIGLEMenuItem ededbMenu = new JUIGLEMenuItem(getLocalizedString("menu.ededb.title"));
 
 		connect = new JUIGLEMenuItem();
 		disconnect = new JUIGLEMenuItem();
@@ -167,7 +165,7 @@ public class EDEDBPerspective extends Perspective implements Observer {
 	 * @return second EDEDB JUIGLEMenuItem
 	 */
 	private JUIGLEMenuItem createEdedbMenu2() {
-		ededbMenu2 = new JUIGLEMenuItem(getLocalizedString("menu2.ededb.title"));
+        JUIGLEMenuItem ededbMenu2 = new JUIGLEMenuItem(getLocalizedString("menu2.ededb.title"));
 
 		downloadFile = new JUIGLEMenuItem();
 		visualizeFile = new JUIGLEMenuItem();
@@ -235,7 +233,6 @@ public class EDEDBPerspective extends Perspective implements Observer {
 		deleteFile.setEnabled(active);
 	}
 
-	@Override
 	public void update(Observable o, Object arg) {
 		updateMenuItemVisibility();
 

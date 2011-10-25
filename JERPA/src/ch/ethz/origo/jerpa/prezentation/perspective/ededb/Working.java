@@ -166,10 +166,10 @@ public class Working extends JXPanel implements ILanguage {
 		if (!operations.isEmpty()) {
 			for (String operation : operations.keySet()) {
 				if (temp.equals("")) {
-					temp = "[" + operations.get(operation) + "] " + resource.getString(operation);
+					temp = "[" + operations.get(operation) + "] " + operation;
 				}
 				else {
-					temp += "\n[" + operations.get(operation) + "] " + resource.getString(operation);
+					temp += "\n[" + operations.get(operation) + "] " + operation;
 				}
 			}
 		}

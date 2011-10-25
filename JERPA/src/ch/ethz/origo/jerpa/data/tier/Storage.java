@@ -128,4 +128,12 @@ public interface Storage {
 	 */
 	public void setDataFiles(List<DataFile> dataFiles) throws StorageException;
 
+    /**
+     * Getter of revision number of last synchronization.
+     *
+     * @return revision number
+     * @throws StorageException exception on the side of storage
+     */
+    public long getLastRevision(String table) throws StorageException;
+
 }

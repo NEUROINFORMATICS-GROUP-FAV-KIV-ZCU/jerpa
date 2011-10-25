@@ -120,7 +120,8 @@ public class EDEDBController extends Observable {
 	/**
 	 * Actions performed at changing connection status. logged in - show login
 	 * dialog logged out - closing connection, clearing online tables.
-	 */
+     * @param loggedIn is user logged in
+     */
 	public void setUserLoggedIn(boolean loggedIn) {
 
 		if (loggedIn) {
@@ -299,7 +300,6 @@ public class EDEDBController extends Observable {
 	public void setElementsActive(final boolean active) {
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {
 				lockMode = !active;
 				toolbar.setButtonsEnabled(active);

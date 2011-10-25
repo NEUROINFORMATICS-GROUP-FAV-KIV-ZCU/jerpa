@@ -1,299 +1,251 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
+import ch.ethz.origo.jerpa.data.tier.Storage;
+import ch.ethz.origo.jerpa.data.tier.StorageException;
+import ch.ethz.origo.jerpa.data.tier.border.*;
+import ch.ethz.origo.jerpa.ededclient.generated.*;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
+import org.apache.log4j.Logger;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import ch.ethz.origo.jerpa.data.tier.Storage;
-import ch.ethz.origo.jerpa.data.tier.StorageException;
-import ch.ethz.origo.jerpa.data.tier.border.DataFile;
-import ch.ethz.origo.jerpa.data.tier.border.Experiment;
-import ch.ethz.origo.jerpa.data.tier.border.Person;
-import ch.ethz.origo.jerpa.data.tier.border.ResearchGroup;
-import ch.ethz.origo.jerpa.data.tier.border.Scenario;
-import ch.ethz.origo.jerpa.data.tier.border.Weather;
-import ch.ethz.origo.jerpa.ededclient.generated.DataDownloadException_Exception;
-import ch.ethz.origo.jerpa.ededclient.generated.DataFileInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.ExperimentInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.PersonInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.ResearchGroupInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.ScenarioInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.SyncChangesInfo;
-import ch.ethz.origo.jerpa.ededclient.generated.WeatherInfo;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
-
 public class DataSyncer {
 
-	private final EDEDClient session;
-	private final Storage storage;
-	private final EDEDBController controller;
+    private final EDEDClient session;
+    private final Storage storage;
+    private final EDEDBController controller;
 
-	private final static Logger log = Logger.getLogger(DataSyncer.class);
+    private final static Logger log = Logger.getLogger(DataSyncer.class);
 
-	public DataSyncer(EDEDClient session, EDEDBController controller, Storage storage) {
-		this.session = session;
-		this.storage = storage;
-		this.controller = controller;
+    public DataSyncer(EDEDClient session, EDEDBController controller, Storage storage) {
+        this.session = session;
+        this.storage = storage;
+        this.controller = controller;
 
-		SyncThread syncThread = new SyncThread();
+        SyncThread syncThread = new SyncThread();
 
-		syncThread.start();
-	}
+        syncThread.start();
+    }
 
-	private class SyncThread extends Thread {
+    private class SyncThread extends Thread {
 
-		private final Object lock = new Object();
+        long SLEEP_INTERVAL = 10000;
+        private final Object lock = new Object();
 
-		private Timestamp lastUpdate = Timestamp.valueOf("1989-03-18 13:18:22");
+        @Override
+        public void run() {
+            setName("DataSyncThread");
 
-		List<SyncChangesInfo> changes = null;
-		boolean changed = false;
+            do {
 
-		@Override
-		public void run() {
+                synchronized (lock) {
+                    try {
+                        lock.wait(SLEEP_INTERVAL);
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }
 
-			setName("DataSyncThread");
-			Timestamp tmpUpdate = Timestamp.valueOf("1989-03-18 13:18:22");
+                if (!session.isConnected()) {
+                    continue;
+                }
 
-			while (true) {
+                try {
 
-				changed = false;
+                    Working.setActivity(true, "Weather data update");
+                    updateWeather(storage.getLastRevision("weather"));
+                    Working.setActivity(false, "Weather data update");
 
-				synchronized (lock) {
-					try {
-						lock.wait(5000);
-					}
-					catch (InterruptedException e) {
-						log.error(e.getMessage(), e);
-					}
-				}
+                    Working.setActivity(true, "Person data update");
+                    updatePerson(storage.getLastRevision("person"));
+                    Working.setActivity(false, "Person data update");
 
-				if (!session.isConnected()) {
-					continue;
-				}
+                    Working.setActivity(true, "Research group data update");
+                    updateResearchGroup(storage.getLastRevision("researchGroup"));
+                    Working.setActivity(false, "Research group data update");
 
-				changes = session.getService().getSyncChanges();
+                    Working.setActivity(true, "Scenario data update");
+                    updateScenario(storage.getLastRevision("scenario"));
+                    Working.setActivity(false, "Scenario data update");
 
-				try {
-					for (SyncChangesInfo change : changes) {
+                    Working.setActivity(true, "Experiment data update");
+                    updateExperiment(storage.getLastRevision("experiment"));
+                    Working.setActivity(false, "Experiment data update");
 
-						if ("weather".equalsIgnoreCase(change.getTableName()) && lastUpdate.getTime() < change.getLastChangeInMillis()) {
+                    Working.setActivity(true, "Data file data update");
+                    updateDataFile(storage.getLastRevision("dataFile"));
+                    Working.setActivity(false, "Data file data update");
 
-							updateWeather();
+                } catch (StorageException e) {
+                    log.error(e.getMessage(), e);
+                }
 
-							if (tmpUpdate.getTime() < change.getLastChangeInMillis())
-								tmpUpdate.setTime(change.getLastChangeInMillis());
-							changed = true;
+                controller.update();
+            } while (true);
 
-							continue;
-						}
+        }
 
-						if ("person".equalsIgnoreCase(change.getTableName()) && lastUpdate.getTime() < change.getLastChangeInMillis()) {
+        private void updateResearchGroup(long lastScn) throws StorageException {
+            List<ResearchGroupInfo> groups = session.getService().getResearchGroups(lastScn);
+            List<ResearchGroup> tempGroups = new ArrayList<ResearchGroup>();
 
-							updatePerson();
+            log.debug("Research Group update size: " + groups.size() + " | revision: " + lastScn);
 
-							if (tmpUpdate.getTime() < change.getLastChangeInMillis())
-								tmpUpdate.setTime(change.getLastChangeInMillis());
-							changed = true;
+            for (ResearchGroupInfo group : groups) {
+                ResearchGroup temp = new ResearchGroup();
 
-							continue;
-						}
+                temp.setDescription(group.getDescription());
+                temp.setOwnerId(group.getOwnerId());
+                temp.setResearchGroupId(group.getResearchGroupId());
+                temp.setTitle(group.getTitle());
+                temp.setRevision(group.getScn());
 
-						if ("research_group".equalsIgnoreCase(change.getTableName()) && lastUpdate.getTime() < change.getLastChangeInMillis()) {
+                tempGroups.add(temp);
+            }
 
-							updateResearchGroup();
+            if (!groups.isEmpty())
+                storage.setResearchGroups(tempGroups);
 
-							if (tmpUpdate.getTime() < change.getLastChangeInMillis())
-								tmpUpdate.setTime(change.getLastChangeInMillis());
-							changed = true;
+        }
 
-							continue;
-						}
+        private void updateDataFile(long lastScn) throws StorageException {
+            try {
+                List<DataFileInfo> files = session.getService().getDataFiles(lastScn);
+                List<DataFile> tempFiles = new ArrayList<DataFile>();
 
-						if ("scenario".equalsIgnoreCase(change.getTableName()) && lastUpdate.getTime() < change.getLastChangeInMillis()) {
+                log.debug("Data files update size: " + files.size() + " | revision: " + lastScn);
 
-							updateScenario();
+                for (DataFileInfo file : files) {
+                    DataFile temp = new DataFile();
 
-							if (tmpUpdate.getTime() < change.getLastChangeInMillis())
-								tmpUpdate.setTime(change.getLastChangeInMillis());
-							changed = true;
+                    temp.setExperimentId(file.getExperimentId());
+                    temp.setFileId(file.getFileId());
+                    temp.setFileLength(file.getFileLength());
+                    temp.setFileName(file.getFileName());
+                    temp.setMimeType(file.getMimeType());
+                    temp.setSamplingRate(file.getSamplingRate());
+                    temp.setRevision(file.getScn());
 
-							continue;
-						}
+                    tempFiles.add(temp);
+                }
 
-						if ("experiment".equalsIgnoreCase(change.getTableName()) && lastUpdate.getTime() < change.getLastChangeInMillis()) {
+                if (!files.isEmpty())
+                    storage.setDataFiles(tempFiles);
 
-							updateExperiment();
+            } catch (DataDownloadException_Exception exception) {
+                throw new StorageException(exception);
+            }
 
-							if (tmpUpdate.getTime() < change.getLastChangeInMillis())
-								tmpUpdate.setTime(change.getLastChangeInMillis());
-							changed = true;
+        }
 
-							continue;
-						}
+        private void updateExperiment(long lastScn) throws StorageException {
+            List<ExperimentInfo> experiments = session.getService().getExperiments(lastScn);
+            List<Experiment> tempExperiments = new ArrayList<Experiment>();
 
-						if ("data_file".equalsIgnoreCase(change.getTableName()) && lastUpdate.getTime() < change.getLastChangeInMillis()) {
+            log.debug("Experiments update size: " + experiments.size() + " | revision: " + lastScn);
 
-							updateDataFile();
+            for (ExperimentInfo experiment : experiments) {
+                Experiment temp = new Experiment();
 
-							if (tmpUpdate.getTime() < change.getLastChangeInMillis())
-								tmpUpdate.setTime(change.getLastChangeInMillis());
-							changed = true;
+                temp.setEndTime(new Timestamp(experiment.getEndTimeInMillis()));
+                temp.setStartTime(new Timestamp(experiment.getStartTimeInMillis()));
+                temp.setExperimentId(experiment.getExperimentId());
+                temp.setOwnerId(experiment.getOwnerId());
+                temp.setPrivateFlag(experiment.getPrivateFlag());
+                temp.setResearchGroupId(experiment.getResearchGroupId());
+                temp.setScenarioId(experiment.getScenarioId());
+                temp.setSubjectPersonId(experiment.getSubjectPersonId());
+                temp.setTemperature(experiment.getTemperature());
+                temp.setWeatherId(experiment.getWeatherId());
+                temp.setWeatherNote(experiment.getWeatherNote());
+                temp.setTitle(experiment.getTitle());
+                temp.setRevision(experiment.getScn());
 
-							continue;
-						}
+                tempExperiments.add(temp);
+            }
 
-					}
-				}
-				catch (StorageException e) {
-					log.error(e.getMessage(), e);
-				}
+            if (!experiments.isEmpty())
+                storage.setExperiments(tempExperiments);
 
-				if (changed) {
-					lastUpdate = tmpUpdate;
+        }
 
-					controller.update();
-				}
+        private void updateScenario(long lastScn) throws StorageException {
+            List<ScenarioInfo> scenarios = session.getService().getScenarios(lastScn);
+            List<Scenario> tempScenarios = new ArrayList<Scenario>();
 
-			}
+            log.debug("Scenarios update size: " + scenarios.size() + " | revision: " + lastScn);
 
-		}
 
-		private void updateResearchGroup() throws StorageException {
-			List<ResearchGroupInfo> groups = session.getService().getResearchGroups();
-			List<ResearchGroup> tempGroups = new ArrayList<ResearchGroup>();
+            for (ScenarioInfo scenario : scenarios) {
+                Scenario temp = new Scenario();
 
-			for (ResearchGroupInfo group : groups) {
-				ResearchGroup temp = new ResearchGroup();
+                temp.setDescription(scenario.getDescription());
+                temp.setMimeType(scenario.getMimeType());
+                temp.setOwnerId(scenario.getOwnerId());
+                temp.setResearchGroupId(scenario.getResearchGroupId());
+                temp.setScenarioId(scenario.getScenarioId());
+                temp.setScenarioLength(scenario.getScenarioLength());
+                temp.setScenarioName(scenario.getScenarioName());
+                temp.setTitle(scenario.getTitle());
+                temp.setRevision(scenario.getScn());
 
-				temp.setDescription(group.getDescription());
-				temp.setOwnerId(group.getOwnerId());
-				temp.setResearchGroupId(group.getResearchGroupId());
-				temp.setTitle(group.getTitle());
+                tempScenarios.add(temp);
+            }
 
-				tempGroups.add(temp);
-			}
+            if (!scenarios.isEmpty())
+                storage.setScenarios(tempScenarios);
 
-			storage.setResearchGroups(tempGroups);
+        }
 
-		}
+        private void updatePerson(long lastScn) throws StorageException {
+            List<PersonInfo> people = session.getService().getPeople(lastScn);
+            List<Person> tempPeople = new ArrayList<Person>();
 
-		private void updateDataFile() throws StorageException {
-			try {
-				List<DataFileInfo> files = session.getService().getDataFiles();
-				List<DataFile> tempFiles = new ArrayList<DataFile>();
+            log.debug("People update size: " + people.size() + " | revision: " + lastScn);
 
-				for (DataFileInfo file : files) {
-					DataFile temp = new DataFile();
 
-					temp.setExperimentId(file.getExperimentId());
-					temp.setFileId(file.getFileId());
-					temp.setFileLength(file.getFileLength());
-					temp.setFileName(file.getFileName());
-					temp.setMimeType(file.getMimeType());
-					temp.setSamplingRate(file.getSamplingRate());
+            for (PersonInfo person : people) {
+                Person temp = new Person();
 
-					tempFiles.add(temp);
-				}
+                temp.setDefaultGroupId(person.getDefaultGroupId());
+                temp.setGender((char) person.getGender());
+                temp.setGivenName(person.getGivenName());
+                temp.setPersonId(person.getPersonId());
+                temp.setSurname(person.getSurname());
+                temp.setRevision(person.getScn());
 
-				storage.setDataFiles(tempFiles);
+                tempPeople.add(temp);
+            }
 
-			}
-			catch (DataDownloadException_Exception exception) {
-				throw new StorageException(exception);
-			}
+            if (!people.isEmpty())
+                storage.setPeople(tempPeople);
 
-		}
+        }
 
-		private void updateExperiment() throws StorageException {
-			List<ExperimentInfo> experiments = session.getService().getExperiments();
-			List<Experiment> tempExperiments = new ArrayList<Experiment>();
+        private void updateWeather(long lastScn) throws StorageException {
+            List<WeatherInfo> weatherService = session.getService().getWeather(lastScn);
+            List<Weather> weathers = new ArrayList<Weather>();
 
-			for (ExperimentInfo experiment : experiments) {
-				Experiment temp = new Experiment();
+            log.debug("Weather update size: " + weatherService.size() + " | revision: " + lastScn);
 
-				temp.setEndTime(new Timestamp(experiment.getEndTimeInMillis()));
-				temp.setStartTime(new Timestamp(experiment.getStartTimeInMillis()));
-				temp.setExperimentId(experiment.getExperimentId());
-				temp.setOwnerId(experiment.getOwnerId());
-				temp.setPrivateFlag(experiment.getPrivateFlag());
-				temp.setResearchGroupId(experiment.getResearchGroupId());
-				temp.setScenarioId(experiment.getScenarioId());
-				temp.setSubjectPersonId(experiment.getSubjectPersonId());
-				temp.setTemperature(experiment.getTemperature());
-				temp.setWeatherId(experiment.getWeatherId());
-				temp.setWeatherNote(experiment.getWeatherNote());
-				temp.setTitle(experiment.getTitle());
+            for (WeatherInfo weather : weatherService) {
 
-				tempExperiments.add(temp);
-			}
+                Weather temp = new Weather();
 
-			storage.setExperiments(tempExperiments);
+                temp.setDescription(weather.getDescription());
+                temp.setTitle(weather.getTitle());
+                temp.setWeatherId(weather.getWeatherId());
+                temp.setRevision(weather.getScn());
 
-		}
+                weathers.add(temp);
+            }
 
-		private void updateScenario() throws StorageException {
-			List<ScenarioInfo> scenarios = session.getService().getScenarios();
-			List<Scenario> tempScenarios = new ArrayList<Scenario>();
+            if (!weathers.isEmpty())
+                storage.setWeathers(weathers);
 
-			for (ScenarioInfo scenario : scenarios) {
-				Scenario temp = new Scenario();
-
-				temp.setDescription(scenario.getDescription());
-				temp.setMimeType(scenario.getMimeType());
-				temp.setOwnerId(scenario.getOwnerId());
-				temp.setResearchGroupId(scenario.getResearchGroupId());
-				temp.setScenarioId(scenario.getScenarioId());
-				temp.setScenarioLength(scenario.getScenarioLength());
-				temp.setScenarioName(scenario.getScenarioName());
-				temp.setTitle(scenario.getTitle());
-
-				tempScenarios.add(temp);
-			}
-
-			storage.setScenarios(tempScenarios);
-
-		}
-
-		private void updatePerson() throws StorageException {
-			List<PersonInfo> people = session.getService().getPeople();
-			List<Person> tempPeople = new ArrayList<Person>();
-
-			for (PersonInfo person : people) {
-				Person temp = new Person();
-
-				temp.setDefaultGroupId(person.getDefaultGroupId());
-				temp.setGender((char) person.getGender());
-				temp.setGivenName(person.getGivenName());
-				temp.setPersonId(person.getPersonId());
-				temp.setSurname(person.getSurname());
-
-				tempPeople.add(temp);
-			}
-
-			storage.setPeople(tempPeople);
-
-		}
-
-		private void updateWeather() throws StorageException {
-			List<WeatherInfo> weatherService = session.getService().getWeather();
-			List<Weather> weathers = new ArrayList<Weather>();
-
-			for (WeatherInfo weather : weatherService) {
-
-				Weather temp = new Weather();
-
-				temp.setDescription(weather.getDescription());
-				temp.setTitle(weather.getTitle());
-				temp.setWeatherId(weather.getWeatherId());
-
-				weathers.add(temp);
-			}
-
-			storage.setWeathers(weathers);
-
-		}
-	}
+        }
+    }
 }

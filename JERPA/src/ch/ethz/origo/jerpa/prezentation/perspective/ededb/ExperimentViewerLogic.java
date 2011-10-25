@@ -60,7 +60,6 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 		ListSelectionModel selectionModel = expTable.getSelectionModel();
 		selectionModel.addListSelectionListener(new ListSelectionListener() {
 
-			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting() && expTable.getSelectedRow() != -1) {
 					selectedExps.clear();
@@ -70,7 +69,6 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
 					Thread updateDataThread = new Thread(new Runnable() {
 
-						@Override
 						public void run() {
 							updateDataTable();
 							Working.setActivity(false, "working.ededb.update.datatable");
@@ -105,7 +103,6 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	public void updateExpTable() {
 		Thread updateExpThread = new Thread(new Runnable() {
 
-			@Override
 			public void run() {
 
 				try {
@@ -146,10 +143,9 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	}
 
 	/**
-	 * Method filing data view table with experiment's files information. Shown
+	 * Method filling data view table with experiment's files information. Shown
 	 * information depends on selected experiment in experiment view table.
 	 * 
-	 * @param row selected experiment in experiment view table
 	 */
 	public synchronized void updateDataTable() {
 
@@ -203,7 +199,6 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	 * 
 	 * @param path path to localization source file.
 	 */
-	@Override
 	public void setLocalizedResourceBundle(String path) {}
 
 	/**
@@ -211,7 +206,6 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	 * 
 	 * @return path to localization file.
 	 */
-	@Override
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
@@ -221,7 +215,6 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	 * 
 	 * @param string key
 	 */
-	@Override
 	public void setResourceBundleKey(String string) {
 		throw new UnsupportedOperationException("Method is not implemented yet...");
 	}
@@ -231,12 +224,10 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 	 * 
 	 * @throws JUIGLELangException
 	 */
-	@Override
 	public void updateText() throws JUIGLELangException {
 
 	}
 
-	@Override
 	public void update(Observable o, Object arg) {
 
 		try {

@@ -6,6 +6,7 @@ public class ResearchGroup {
 	private int ownerId;
 	private String title;
 	private String description;
+    private long revision;
 
 	/**
 	 * Getter of research group identifier.
@@ -79,4 +80,11 @@ public class ResearchGroup {
 		this.description = description;
 	}
 
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision(long revision) {
+        this.revision = revision;
+    }
 }

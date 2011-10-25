@@ -7,6 +7,7 @@ public class Person {
 	private String givenName;
 	private String surname;
 	private char gender;
+    private long revision;
 
 	/**
 	 * Getter of person's identifier.
@@ -97,4 +98,12 @@ public class Person {
 	public void setGender(char gender) {
 		this.gender = gender;
 	}
+
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision(long revision) {
+        this.revision = revision;
+    }
 }

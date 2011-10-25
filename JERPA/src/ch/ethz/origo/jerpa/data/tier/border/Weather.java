@@ -5,6 +5,7 @@ public class Weather {
 	private int weatherId;
 	private String description;
 	private String title;
+    private long revision;
 
 	/**
 	 * Getter of weather identifier.
@@ -60,4 +61,11 @@ public class Weather {
 		this.title = title;
 	}
 
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision(long revision) {
+        this.revision = revision;
+    }
 }

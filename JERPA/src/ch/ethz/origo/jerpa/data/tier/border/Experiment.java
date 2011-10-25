@@ -15,6 +15,7 @@ public class Experiment {
 	private int temperature;
 	private String weatherNote;
 	private int privateFlag;
+    private long revision;
 
 	// this is important for table view
 	private String title;
@@ -116,4 +117,12 @@ public class Experiment {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision(long revision) {
+        this.revision = revision;
+    }
 }

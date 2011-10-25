@@ -10,6 +10,7 @@ public class Scenario {
 	private String description;
 	private String scenarioName;
 	private String mimeType;
+    private long revision;
 
 	/**
 	 * Getter of scenario identifier.
@@ -155,4 +156,11 @@ public class Scenario {
 		this.mimeType = mimeType;
 	}
 
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision(long revision) {
+        this.revision = revision;
+    }
 }

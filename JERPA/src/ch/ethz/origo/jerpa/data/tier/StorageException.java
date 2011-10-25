@@ -10,6 +10,10 @@ public class StorageException extends Exception {
 
 	private static final long serialVersionUID = -2108769821410352487L;
 
+    public StorageException(String description) {
+		super(description);
+	}
+
 	public StorageException(Throwable throwable) {
 		super(throwable);
 	}

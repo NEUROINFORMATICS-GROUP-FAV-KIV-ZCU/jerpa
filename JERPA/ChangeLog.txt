@@ -9,6 +9,16 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************      
+ * (10/25/2011) kivan
+    # 246
+    
+      CHANGED: EDEDClient lib updated to new version in order to work with "revisions" of provided data.
+      CHANGED: data are now synchronized in accordance to ORA_ROWSCN attribute of EEG Database (Oracle). This is similar to versions, revisions.
+      Due to this change, SQL files were updated as well as other java files.
+      FIXED: working status visible during synchronization.
+      
+      Known bugs: repainting, visualizing, rights, synced files are now only "inserted" and not updated if there are already present (not data safe).
+ 
  * (10/22/2011) kivan
     # 243
     
