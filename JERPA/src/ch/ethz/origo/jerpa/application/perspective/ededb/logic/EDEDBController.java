@@ -1,31 +1,17 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
-import java.awt.BorderLayout;
-import java.util.List;
-import java.util.Observable;
-
-import javax.swing.SwingUtilities;
-
+import ch.ethz.origo.jerpa.application.perspective.ededb.actions.*;
+import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
+import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.*;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXPanel;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionConnect;
-import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDeleteSelected;
-import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDisconnect;
-import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionDownloadSelected;
-import ch.ethz.origo.jerpa.application.perspective.ededb.actions.ActionVisualizeSelected;
-import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
-import ch.ethz.origo.jerpa.data.tier.Storage;
-import ch.ethz.origo.jerpa.data.tier.StorageException;
-import ch.ethz.origo.jerpa.data.tier.StorageFactory;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
-import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ExperimentViewerLogic;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginDialog;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.LoginInfo;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Toolbar;
-import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
-import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import java.util.Observable;
 
 /**
  * Main class for EDEDB controlling.
@@ -52,7 +38,6 @@ public class EDEDBController extends Observable {
 
 	private final static Logger log = Logger.getLogger(EDEDBController.class);
 
-	private Storage storage;
 	private boolean offlineMode = true;
 	private boolean lockMode;
 
@@ -65,15 +50,6 @@ public class EDEDBController extends Observable {
 	public EDEDBController(EDEDBPerspective parent, EDEDClient session) {
 		this.parent = parent;
 		this.session = session;
-
-		try {
-			storage = StorageFactory.getStorage();
-			new DataSyncer(session, this, storage);
-		}
-		catch (StorageException e) {
-			log.error(e);
-			JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", e.getMessage(), e);
-		}
 
 		mainPanel = new JXPanel();
 		mainPanel.setLayout(new BorderLayout());
@@ -102,6 +78,8 @@ public class EDEDBController extends Observable {
 		addObserver(experimentViewer);
 		addObserver(toolbar);
 		addObserver(parent);
+
+        new DataSyncer(session,this);
 
 	}
 
@@ -339,15 +317,6 @@ public class EDEDBController extends Observable {
 	 */
 	public boolean isLock() {
 		return lockMode;
-	}
-
-	/**
-	 * Getter of data tier storage.
-	 * 
-	 * @return data storage
-	 */
-	public Storage getStorage() {
-		return storage;
 	}
 
 	/**

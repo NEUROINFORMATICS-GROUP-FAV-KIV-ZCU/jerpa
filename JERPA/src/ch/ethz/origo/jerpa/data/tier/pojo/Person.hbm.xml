@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.Person" table="PERSON" schema="APP">
+        <id name="personId">
+            <column name="PERSON_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="name">
+            <column name="NAME" sql-type="varchar" length="50"/>
+        </property>
+        <property name="surname">
+            <column name="SURNAME" sql-type="varchar" length="50" not-null="true"/>
+        </property>
+        <property name="dateOfBirth">
+            <column name="DATE_OF_BIRTH" sql-type="date" length="10"/>
+        </property>
+        <property name="gender">
+            <column name="GENDER" sql-type="char" length="1" not-null="true"/>
+        </property>
+        <property name="note">
+            <column name="NOTE" sql-type="varchar"/>
+        </property>
+        <property name="username">
+            <column name="USERNAME" sql-type="varchar" length="50"/>
+        </property>
+        <property name="password">
+            <column name="PASSWORD" sql-type="varchar" length="50"/>
+        </property>
+        <property name="authority">
+            <column name="AUTHORITY" sql-type="varchar" length="50"/>
+        </property>
+        <property name="confirmed">
+            <column name="CONFIRMED" sql-type="integer" length="10"/>
+        </property>
+        <property name="authentication">
+            <column name="AUTHENTICATION" sql-type="varchar" length="50"/>
+        </property>
+        <property name="registrationDate">
+            <column name="REGISTRATION_DATE" sql-type="date" length="10"/>
+        </property>
+        <property name="version">
+            <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <many-to-one name="defaultGroup" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup">
+            <column name="DEFAULT_GROUP_ID"/>
+        </many-to-one>
+        <set name="articles" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Article"/>
+        </set>
+        <set name="articleComments" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ArticlesComments"/>
+        </set>
+        <set name="articleSubscribtions" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ArticlesSubscribtions"/>
+        </set>
+        <set name="experimentsAsSubject" inverse="true">
+            <key>
+                <column name="SUBJECT_PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Experiment"/>
+        </set>
+        <set name="experimentsAsOwner" inverse="true">
+            <key>
+                <column name="OWNER_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Experiment"/>
+        </set>
+        <set name="groupPermissionRequests" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.GroupPermissionRequest"/>
+        </set>
+        <set name="hearingImpairmentRels" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.HearingImpairmentRel"/>
+        </set>
+        <set name="histories" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.History"/>
+        </set>
+        <set name="personOptParamVals" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.PersonOptParamVal"/>
+        </set>
+        <set name="researchGroups" inverse="true">
+            <key>
+                <column name="OWNER_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup"/>
+        </set>
+        <set name="researchGroupMemberships" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroupMembership"/>
+        </set>
+        <set name="scenarios" inverse="true">
+            <key>
+                <column name="OWNER_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Scenario"/>
+        </set>
+        <set name="visualImpairmentRels" inverse="true">
+            <key>
+                <column name="PERSON_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.VisualImpairmentRel"/>
+        </set>
+    </class>
+</hibernate-mapping>

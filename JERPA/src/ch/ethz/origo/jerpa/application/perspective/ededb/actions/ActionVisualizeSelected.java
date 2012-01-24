@@ -1,26 +1,13 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
-import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javax.swing.AbstractAction;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import org.jfree.util.Log;
-
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Downloader;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
-import ch.ethz.origo.jerpa.data.tier.Storage;
-import ch.ethz.origo.jerpa.data.tier.StorageException;
-import ch.ethz.origo.jerpa.data.tier.border.DataFile;
+import ch.ethz.origo.jerpa.data.tier.DaoFactory;
+import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
+import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
+import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.prezentation.perspective.SignalPerspective;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import ch.ethz.origo.juigle.application.ILanguage;
@@ -30,6 +17,15 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.jfree.util.Log;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Action class for opening selected file in SignalPerspective.
@@ -39,6 +35,7 @@ import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 public class ActionVisualizeSelected extends AbstractAction implements ILanguage {
 
 	private static final long serialVersionUID = -7447433391197216763L;
+    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
 	private ResourceBundle resource;
 	private String resourceBundlePath;
 	private String tooManyText, tooManyDesc;
@@ -50,7 +47,6 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 	private final EDEDBController controller;
 	private final String[] extensions = { Const.EDF_FILE_EXTENSION, Const.EDF_FILE_EXTENSION2, Const.GENERATOR_EXTENSION, Const.KIV_FILE_EXTENSION,
 	        Const.VHDR_EXTENSION };
-	private Storage storage;
 
 	/**
 	 * Constructor method for action of analyze selected.
@@ -74,11 +70,8 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 	 * 
 	 * @param e performed action
 	 */
-	@Override
+	
 	public void actionPerformed(ActionEvent e) {
-
-		storage = controller.getStorage();
-
 		List<DataRowModel> selectedFiles = controller.getSelectedFiles();
 
 		if (selectedFiles.isEmpty()) {
@@ -96,10 +89,10 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 		if (selectedFiles.size() == 1 && Downloader.isDownloading()) {
 
 			DataRowModel selected = selectedFiles.get(0);
-			final DataFile file = selected.getFileInfo();
+			final DataFile file = selected.getDataFile();
 
 			try {
-				switch (storage.getFileState(file)) {
+				switch (dataFileDao.getFileState(file)) {
 				case DOWNLOADING:
 					JOptionPane.showMessageDialog(new JFrame(), downloadingText, downloadingDesc, JOptionPane.ERROR_MESSAGE);
 					controller.unselectAllFiles();
@@ -114,9 +107,6 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 				}
 			}
 			catch (HeadlessException e1) {
-				Log.error(e1.getMessage(), e1);
-			}
-			catch (StorageException e1) {
 				Log.error(e1.getMessage(), e1);
 			}
 
@@ -140,15 +130,15 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 				final SignalPerspective persp = signalPersp;
 				Thread openFile = new Thread(new Runnable() {
 
-					@Override
+					
 					public void run() {
 						boolean opened = false;
 
 						try {
-							File tmpFile = storage.getFile(file.getFileId());
+							File tmpFile = dataFileDao.getFile(file);
 							opened = persp.openFile(tmpFile);
 						}
-						catch (StorageException e) {
+						catch (DaoException e) {
 							Log.error(e.getMessage(), e);
 						}
 
@@ -230,7 +220,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 	 * 
 	 * @param path path to localization source file.
 	 */
-	@Override
+	
 	public void setLocalizedResourceBundle(String path) {
 		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
@@ -241,7 +231,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 	 * 
 	 * @return path to localization file.
 	 */
-	@Override
+	
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
@@ -251,7 +241,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 	 * 
 	 * @param string key
 	 */
-	@Override
+	
 	public void setResourceBundleKey(String string) {
 		throw new UnsupportedOperationException("Method is not implemented yet...");
 	}
@@ -261,11 +251,11 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 	 * 
 	 * @throws JUIGLELangException
 	 */
-	@Override
+	
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
+			
 			public void run() {
 				initTexts();
 			}

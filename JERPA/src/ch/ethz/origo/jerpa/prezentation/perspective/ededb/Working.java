@@ -1,23 +1,16 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-
-import org.jdesktop.swingx.JXPanel;
-
-import ch.ethz.origo.jerpa.data.tier.border.DataFile;
+import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import org.jdesktop.swingx.JXPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Class for creating undecorated dialog showing "working animation"
@@ -117,7 +110,6 @@ public class Working extends JXPanel implements ILanguage {
 
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {
 				instance.revalidate();
 				instance.repaint();
@@ -147,7 +139,6 @@ public class Working extends JXPanel implements ILanguage {
 
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {
 				instance.revalidate();
 				instance.repaint();
@@ -180,10 +171,10 @@ public class Working extends JXPanel implements ILanguage {
 		if (!downloads.isEmpty()) {
 			for (DataFile file : downloads.keySet()) {
 				if (temp.equals("")) {
-					temp = file.getFileName() + " (ID " + file.getFileId() + "):" + downloads.get(file) + "%";
+					temp = file.getFilename() + " (ID " + file.getDataFileId() + "):" + downloads.get(file) + "%";
 				}
 				else {
-					temp += "\n" + file.getFileName() + " (ID " + file.getFileId() + "):" + downloads.get(file) + "%";
+					temp += "\n" + file.getFilename() + " (ID " + file.getDataFileId() + "):" + downloads.get(file) + "%";
 				}
 			}
 		}
@@ -198,7 +189,6 @@ public class Working extends JXPanel implements ILanguage {
 	 * 
 	 * @param path path to localization source file.
 	 */
-	@Override
 	public void setLocalizedResourceBundle(String path) {
 		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
@@ -209,7 +199,6 @@ public class Working extends JXPanel implements ILanguage {
 	 * 
 	 * @return path to localization file.
 	 */
-	@Override
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
@@ -219,7 +208,6 @@ public class Working extends JXPanel implements ILanguage {
 	 * 
 	 * @param string key
 	 */
-	@Override
 	public void setResourceBundleKey(String string) {
 		throw new UnsupportedOperationException("Method is not implemented yet...");
 	}
@@ -229,11 +217,9 @@ public class Working extends JXPanel implements ILanguage {
 	 * 
 	 * @throws JUIGLELangException
 	 */
-	@Override
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {
 				updateOperations();
 			}

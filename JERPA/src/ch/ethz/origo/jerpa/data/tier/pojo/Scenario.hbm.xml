@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.Scenario" table="SCENARIO" schema="APP">
+        <id name="scenarioId">
+            <column name="SCENARIO_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="title">
+            <column name="TITLE" sql-type="varchar" length="40"/>
+        </property>
+        <property name="scenarioLength">
+            <column name="SCENARIO_LENGTH" sql-type="smallint" length="5"/>
+        </property>
+        <property name="scenarioXml">
+            <column name="SCENARIO_XML" sql-type="clob" length="2147483647"/>
+        </property>
+        <property name="description">
+            <column name="DESCRIPTION" sql-type="varchar"/>
+        </property>
+        <property name="isPrivate">
+            <column name="IS_PRIVATE" sql-type="boolean" length="10" not-null="true"/>
+        </property>
+        <property name="scenarioName">
+            <column name="SCENARIO_NAME" sql-type="varchar" length="100"/>
+        </property>
+        <property name="mimetype">
+            <column name="MIMETYPE" sql-type="varchar" length="30"/>
+        </property>
+        <property name="version">
+            <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <many-to-one name="owner" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
+            <column name="OWNER_ID" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="researchGroup" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup">
+            <column name="RESEARCH_GROUP_ID" not-null="true"/>
+        </many-to-one>
+        <set name="experiments" inverse="true">
+            <key>
+                <column name="SCENARIO_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Experiment"/>
+        </set>
+        <set name="histories" inverse="true">
+            <key>
+                <column name="SCENARIO_ID"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.History"/>
+        </set>
+    </class>
+</hibernate-mapping>

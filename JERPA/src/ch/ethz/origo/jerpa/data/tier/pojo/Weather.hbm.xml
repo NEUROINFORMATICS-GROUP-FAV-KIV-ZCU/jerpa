@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.Weather" table="WEATHER" schema="APP">
+        <id name="weatherId">
+            <column name="WEATHER_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="description">
+            <column name="DESCRIPTION" sql-type="varchar" length="30"/>
+        </property>
+        <property name="title">
+            <column name="TITLE" sql-type="varchar" length="30" not-null="true"/>
+        </property>
+        <property name="version">
+            <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <set name="experiments" inverse="true">
+            <key>
+                <column name="WEATHER_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Experiment"/>
+        </set>
+    </class>
+</hibernate-mapping>

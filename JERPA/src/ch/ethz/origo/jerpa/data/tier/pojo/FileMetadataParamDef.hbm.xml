@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.FileMetadataParamDef" table="FILE_METADATA_PARAM_DEF" schema="APP">
+        <id name="fileMetadataParamDefId">
+            <column name="FILE_METADATA_PARAM_DEF_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="paramName">
+            <column name="PARAM_NAME" sql-type="varchar" length="30" not-null="true"/>
+        </property>
+        <property name="paramDataType">
+            <column name="PARAM_DATA_TYPE" sql-type="varchar" length="20" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

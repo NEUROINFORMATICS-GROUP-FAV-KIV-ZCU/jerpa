@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.Hardware" table="HARDWARE" schema="APP">
+        <id name="hardwareId">
+            <column name="HARDWARE_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="title">
+            <column name="TITLE" sql-type="varchar" length="50" not-null="true"/>
+        </property>
+        <property name="type">
+            <column name="TYPE" sql-type="varchar" length="30" not-null="true"/>
+        </property>
+        <property name="description">
+            <column name="DESCRIPTION" sql-type="varchar" length="30"/>
+        </property>
+        <property name="version">
+            <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <set name="hardwareUsageRels" inverse="true">
+            <key>
+                <column name="HARDWARE_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.HardwareUsageRel"/>
+        </set>
+    </class>
+</hibernate-mapping>

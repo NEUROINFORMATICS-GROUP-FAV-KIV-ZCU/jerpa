@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.HearingImpairmentRel" table="HEARING_IMPAIRMENT_REL" schema="APP">
+        <composite-id mapped="true" class="ch.ethz.origo.jerpa.data.tier.pojo.HearingImpairmentRelPK">
+            <key-property name="personId">
+                <column name="PERSON_ID" sql-type="integer" length="10" not-null="true"/>
+            </key-property>
+            <key-property name="hearingImpairmentId">
+                <column name="HEARING_IMPAIRMENT_ID" sql-type="integer" length="10" not-null="true"/>
+            </key-property>
+        </composite-id>
+        <many-to-one name="hearingImpairment" class="ch.ethz.origo.jerpa.data.tier.pojo.HearingImpairment">
+            <column name="HEARING_IMPAIRMENT_ID" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="person" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
+            <column name="PERSON_ID" not-null="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

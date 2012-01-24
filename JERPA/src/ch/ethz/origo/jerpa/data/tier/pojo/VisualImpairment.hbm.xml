@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.VisualImpairment" table="VISUAL_IMPAIRMENT" schema="APP">
+        <id name="visualImpairmentId">
+            <column name="VISUAL_IMPAIRMENT_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="description">
+            <column name="DESCRIPTION" sql-type="varchar" length="30" not-null="true"/>
+        </property>
+        <set name="visualImpairmentRels" inverse="true">
+            <key>
+                <column name="VISUAL_IMPAIRMENT_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.VisualImpairmentRel"/>
+        </set>
+    </class>
+</hibernate-mapping>

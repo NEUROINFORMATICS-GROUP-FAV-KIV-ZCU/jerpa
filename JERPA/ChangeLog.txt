@@ -8,7 +8,16 @@
 
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
-*********************************************************************************************      
+*********************************************************************************************
+
+ * (01/24/2012) kivan
+	# 247
+	
+	INTERNAL: Hibernate mapping now used in order to work with local DB. Created DAOs.
+
+	EDEDB is now in "work-in-progress" state, plenty of bugs - commit was necessary
+				in order to prevent potential data loss.
+      
  * (10/25/2011) kivan
     # 246
     

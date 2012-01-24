@@ -1,7 +1,7 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 
 import ch.ethz.origo.jerpa.data.tier.FileState;
-import ch.ethz.origo.jerpa.data.tier.border.DataFile;
+import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 
 /**
  * Row Model used in data table.
@@ -11,23 +11,22 @@ import ch.ethz.origo.jerpa.data.tier.border.DataFile;
 public class DataRowModel {
 
 	private boolean selected;
-	private final DataFile fileInfo;
+	private final DataFile dataFile;
 	private FileState state;
 	private final String extension;
 
 	/**
 	 * Constructor of row model for data table.
 	 * 
-	 * @param fileInfo Obtained from web service
+	 * @param dataFile Obtained from web service
 	 * @param state Enumeration of file's current download state (downloaded,
 	 *            corrupted, etc.)
-	 * @param location path to download folder of the exact experiment
 	 */
-	public DataRowModel(DataFile fileInfo, FileState state) {
+	public DataRowModel(DataFile dataFile, FileState state) {
 		selected = false;
-		this.fileInfo = fileInfo;
+		this.dataFile = dataFile;
 		this.state = state;
-		String[] filename = fileInfo.getFileName().split("\\.");
+		String[] filename = dataFile.getFilename().split("\\.");
 		extension = filename[filename.length - 1];
 	}
 
@@ -54,8 +53,8 @@ public class DataRowModel {
 	 * 
 	 * @return
 	 */
-	public DataFile getFileInfo() {
-		return fileInfo;
+	public DataFile getDataFile() {
+		return dataFile;
 	}
 
 	/**
@@ -70,7 +69,7 @@ public class DataRowModel {
 	/**
 	 * Setter file's local copy status.
 	 * 
-	 * @param downloaded DataRowModel.HAS_COPY/NO_COPY/DOWNLOADING/ERROR
+	 * @param state DataRowModel.HAS_COPY/NO_COPY/DOWNLOADING/ERROR
 	 */
 	public void setState(FileState state) {
 		this.state = state;

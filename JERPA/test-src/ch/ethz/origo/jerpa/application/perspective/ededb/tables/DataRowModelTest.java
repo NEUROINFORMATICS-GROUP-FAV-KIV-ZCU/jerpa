@@ -51,7 +51,7 @@ public class DataRowModelTest {
     @Test
     public void getFileInfo() {
 
-        assertEquals(info, rowModel.getFileInfo());
+        assertEquals(info, rowModel.getDataFile());
         System.out.println("- get file info checked");
     }
 

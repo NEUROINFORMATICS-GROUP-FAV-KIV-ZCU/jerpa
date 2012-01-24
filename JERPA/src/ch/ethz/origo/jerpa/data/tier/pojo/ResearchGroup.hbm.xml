@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup" table="RESEARCH_GROUP" schema="APP">
+        <id name="researchGroupId">
+            <column name="RESEARCH_GROUP_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="title">
+            <column name="TITLE" sql-type="varchar" length="100" not-null="true"/>
+        </property>
+        <property name="description">
+            <column name="DESCRIPTION" sql-type="varchar" length="250" not-null="true"/>
+        </property>
+        <property name="version">
+            <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <many-to-one name="owner" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
+            <column name="OWNER_ID" not-null="true"/>
+        </many-to-one>
+        <set name="articleses" inverse="true">
+            <key>
+                <column name="RESEARCH_GROUP_ID"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Article"/>
+        </set>
+        <set name="experiments" inverse="true">
+            <key>
+                <column name="RESEARCH_GROUP_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Experiment"/>
+        </set>
+        <set name="groupPermissionRequests" inverse="true">
+            <key>
+                <column name="RESEARCH_GROUP_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.GroupPermissionRequest"/>
+        </set>
+        <set name="peopleWithThisAsDefault" inverse="true">
+            <key>
+                <column name="DEFAULT_GROUP_ID"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Person"/>
+        </set>
+        <set name="researchGroupMemberships" inverse="true">
+            <key>
+                <column name="RESEARCH_GROUP_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroupMembership"/>
+        </set>
+        <set name="scenarios" inverse="true">
+            <key>
+                <column name="RESEARCH_GROUP_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.Scenario"/>
+        </set>
+    </class>
+</hibernate-mapping>

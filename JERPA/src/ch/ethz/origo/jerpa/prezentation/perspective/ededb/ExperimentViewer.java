@@ -1,18 +1,13 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import java.awt.Container;
-
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-
-import org.jdesktop.swingx.JXTable;
-
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataCellRenderer;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowSorter;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
+import org.jdesktop.swingx.JXTable;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Class for displaying experiments and its data in online mode.
@@ -30,9 +25,6 @@ public class ExperimentViewer extends JSplitPane {
 
 	/**
 	 * Constructor creating basic JSplitPane interface.
-	 * 
-	 * @param controller EDEDB EDEDBController class
-	 * @param session EDEDSession session
 	 */
 	public ExperimentViewer() {
 		super(JSplitPane.HORIZONTAL_SPLIT, true);

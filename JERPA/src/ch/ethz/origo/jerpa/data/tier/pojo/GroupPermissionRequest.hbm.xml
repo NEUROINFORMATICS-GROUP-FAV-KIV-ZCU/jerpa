@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.GroupPermissionRequest" table="GROUP_PERMISSION_REQUEST"
+           schema="APP">
+        <id name="requestId">
+            <column name="REQUEST_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="requestedPermission">
+            <column name="REQUESTED_PERMISSION" sql-type="varchar" length="20" not-null="true"/>
+        </property>
+        <property name="granted">
+            <column name="GRANTED" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <property name="version">
+            <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <many-to-one name="person" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
+            <column name="PERSON_ID" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="researchGroup" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup">
+            <column name="RESEARCH_GROUP_ID" not-null="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

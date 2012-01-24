@@ -1,166 +1,164 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Observable;
-
-import org.apache.log4j.Logger;
-
+import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.DownloadException;
-import ch.ethz.origo.jerpa.data.tier.Storage;
-import ch.ethz.origo.jerpa.data.tier.border.DataFile;
+import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
+import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.Observable;
 
 /**
  * Thread extending class for file download.
- * 
+ *
  * @author Petr Miko
  */
 public class FileDownload extends Observable implements Runnable {
 
-	private final EDEDClient session;
-	private final DataFile fileInfo;
-	private final Storage storage;
-	private ProgressInputStream inStream = null;
-	private boolean alive = true;
+    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private final EDEDClient session;
+    private final DataFile dataFile;
+    private ProgressInputStream inStream = null;
+    private boolean alive = true;
 
-	private final static Logger log = Logger.getLogger(FileDownload.class);
+    private final static Logger log = Logger.getLogger(FileDownload.class);
 
-	public FileDownload(EDEDClient session, Storage storage, DataFile fileInfo) {
-		super();
+    public FileDownload(EDEDClient session, DataFile fileInfo) {
+        super();
 
-		this.session = session;
-		this.fileInfo = fileInfo;
-		this.storage = storage;
-	}
+        this.session = session;
+        this.dataFile = fileInfo;
+    }
 
-	/**
-	 * Synchronized run method of downloading process.
-	 */
-	@Override
-	public void run() {
+    /**
+     * Synchronized run method of downloading process.
+     */
 
-		try {
+    public void run() {
 
-			Working.setActivity(true, "working.ededb.downloading");
+        try {
 
-			inStream = new ProgressInputStream(session.getService().downloadDataFile(fileInfo.getFileId()).getInputStream(), fileInfo);
-			log.info("File " + fileInfo.getFileName() + ": beginning download");
+            Working.setActivity(true, "working.ededb.downloading");
 
-			DownloadProgress downProgress = new DownloadProgress();
-			downProgress.start();
+            inStream = new ProgressInputStream(session.getService().downloadDataFile(dataFile.getDataFileId()).getInputStream(), dataFile);
+            log.info("File " + dataFile.getFilename() + ": beginning download");
 
-			storage.writeDataFile(fileInfo, inStream);
+            DownloadProgress downProgress = new DownloadProgress();
+            downProgress.start();
 
-			log.info("File " + fileInfo.getFileName() + ": download finished");
-		}
-		catch (Exception e) {
-			// ignores exceptions when downloader is not supposed to be
-			// downloading
-			if (Downloader.isDownloading()) {
-				DownloadException exception = new DownloadException(e);
-				log.error(exception.getMessage(), exception);
-				JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", exception.getMessage(), exception);
-				notifyObservers(exception);
-			}
-		}
-		finally {
-			try {
-				if (inStream != null) {
-					inStream.close();
-				}
+            dataFileDao.writeFileContent(dataFile, inStream);
 
-				alive = false;
-				Working.setDownload(100, fileInfo);
-				Working.setActivity(false, "working.ededb.downloading");
+            log.info("File " + dataFile.getFilename() + ": download finished");
+        } catch (Exception e) {
+            // ignores exceptions when downloader is not supposed to be
+            // downloading
+            if (Downloader.isDownloading()) {
+                DownloadException exception = new DownloadException(e);
+                log.error(exception.getMessage(), exception);
+                JUIGLErrorInfoUtils.showErrorDialog("Storage exception.", exception.getMessage(), exception);
+                notifyObservers(exception);
+            }
+        } finally {
+            try {
+                if (inStream != null) {
+                    inStream.close();
+                }
 
-				setChanged();
-				notifyObservers(fileInfo.getFileId());
+                alive = false;
+                Working.setDownload(100, dataFile);
+                Working.setActivity(false, "working.ededb.downloading");
 
-			}
-			catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
+                setChanged();
+                notifyObservers(dataFile.getDataFileId());
 
-		}
-	}
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
 
-	private class DownloadProgress extends Thread {
+        }
+    }
 
-		@Override
-		public void run() {
+    private class DownloadProgress extends Thread {
 
-			int progress = 0;
 
-			while ((progress = inStream.progress()) < 100 && alive && Downloader.isDownloading()) {
-				Working.setDownload(progress, fileInfo);
-			}
+        public void run() {
 
-		}
-	}
+            int progress = 0;
 
-	private class ProgressInputStream extends InputStream {
+            while ((progress = inStream.progress()) < 100 && alive && Downloader.isDownloading()) {
+                Working.setDownload(progress, dataFile);
+            }
 
-		private InputStream in = null;
-		private int bytesRead = 0;
-		private final DataFile fileInfo;
-		private int progress = 0;
-		private int prev = 0;
+        }
+    }
 
-		public ProgressInputStream(InputStream in, DataFile fileInfo) {
-			this.in = in;
-			this.fileInfo = fileInfo;
-		}
+    private class ProgressInputStream extends InputStream {
 
-		@Override
-		public int available() {
-			return (int) (fileInfo.getFileLength() - bytesRead);
-		}
+        private InputStream in = null;
+        private int bytesRead = 0;
+        private final DataFile fileInfo;
+        private int progress = 0;
+        private int prev = 0;
 
-		@Override
-		public int read() throws IOException {
-			if (Downloader.isDownloading()) {
-				int b = in.read();
-				if (b != -1) {
-					bytesRead++;
-				}
-				return b;
-			}
-			else
-				return -1;
-		}
+        public ProgressInputStream(InputStream in, DataFile fileInfo) {
+            this.in = in;
+            this.fileInfo = fileInfo;
+        }
 
-		@Override
-		public int read(byte[] b) throws IOException {
-			if (Downloader.isDownloading()) {
-				int read = in.read(b);
-				bytesRead += read;
-				return read;
-			}
-			else
-				return -1;
-		}
 
-		@Override
-		public int read(byte[] b, int off, int len) throws IOException {
-			if (Downloader.isDownloading()) {
-				int read = in.read(b, off, len);
-				bytesRead += read;
-				return read;
-			}
-			else
-				return -1;
-		}
+        public int available() {
+            try {
+                return (int) (fileInfo.getFileContent().length() - bytesRead);
+            } catch (SQLException e) {
+                return 0;
+            }
+        }
 
-		public int progress() {
-			progress = (int) (((++bytesRead * 100) / fileInfo.getFileLength()));
-			if (progress - prev > 0) {
-				prev = progress;
-			}
-			return progress;
-		}
 
-	}
+        public int read() throws IOException {
+            if (Downloader.isDownloading()) {
+                int b = in.read();
+                if (b != -1) {
+                    bytesRead++;
+                }
+                return b;
+            } else
+                return -1;
+        }
+
+
+        public int read(byte[] b) throws IOException {
+            if (Downloader.isDownloading()) {
+                int read = in.read(b);
+                bytesRead += read;
+                return read;
+            } else
+                return -1;
+        }
+
+
+        public int read(byte[] b, int off, int len) throws IOException {
+            if (Downloader.isDownloading()) {
+                int read = in.read(b, off, len);
+                bytesRead += read;
+                return read;
+            } else
+                return -1;
+        }
+
+        public int progress() {
+            progress = (int) (((++bytesRead * 100) / fileInfo.getFileLength()));
+            if (progress - prev > 0) {
+                prev = progress;
+            }
+            return progress;
+        }
+
+    }
 }

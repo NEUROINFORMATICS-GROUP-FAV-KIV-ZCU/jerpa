@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.PersonOptParamVal" table="PERSON_OPT_PARAM_VAL" schema="APP">
+        <composite-id mapped="true" class="ch.ethz.origo.jerpa.data.tier.pojo.PersonOptParamValPK">
+            <key-property name="personId">
+                <column name="PERSON_ID" sql-type="integer" length="10" not-null="true"/>
+            </key-property>
+            <key-property name="personOptParamDefId">
+                <column name="PERSON_OPT_PARAM_DEF_ID" sql-type="integer" length="10" not-null="true"/>
+            </key-property>
+        </composite-id>
+        <property name="paramValue">
+            <column name="PARAM_VALUE" sql-type="varchar" length="30" not-null="true"/>
+        </property>
+        <many-to-one name="person" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
+            <column name="PERSON_ID" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="personOptParamDef" class="ch.ethz.origo.jerpa.data.tier.pojo.PersonOptParamDef">
+            <column name="PERSON_OPT_PARAM_DEF_ID" not-null="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

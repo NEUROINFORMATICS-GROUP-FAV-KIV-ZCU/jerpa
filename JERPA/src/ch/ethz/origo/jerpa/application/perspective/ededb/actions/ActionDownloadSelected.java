@@ -75,7 +75,7 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 				continue;
 			}
 
-			downloader.download(file.getFileInfo());
+			downloader.download(file.getDataFile());
 		}
 	}
 

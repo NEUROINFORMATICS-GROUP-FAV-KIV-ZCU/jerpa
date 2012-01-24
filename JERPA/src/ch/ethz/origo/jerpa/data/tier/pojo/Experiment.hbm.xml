@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.Experiment" table="EXPERIMENT" schema="APP">
+        <id name="experimentId">
+            <column name="EXPERIMENT_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="startTime">
+            <column name="START_TIME" sql-type="date" length="10"/>
+        </property>
+        <property name="endTime">
+            <column name="END_TIME" sql-type="date" length="10"/>
+        </property>
+        <property name="temperature">
+            <column name="TEMPERATURE" sql-type="smallint" length="5"/>
+        </property>
+        <property name="weathernote">
+            <column name="WEATHERNOTE" sql-type="varchar"/>
+        </property>
+        <property name="isPrivate">
+            <column name="IS_PRIVATE" sql-type="boolean" length="10" not-null="true"/>
+        </property>
+        <property name="version">
+            <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <many-to-one name="subject" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
+            <column name="SUBJECT_PERSON_ID" />
+        </many-to-one>
+        <many-to-one name="owner" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
+            <column name="OWNER_ID" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="researchGroup" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup">
+            <column name="RESEARCH_GROUP_ID" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="scenario" class="ch.ethz.origo.jerpa.data.tier.pojo.Scenario">
+            <column name="SCENARIO_ID" not-null="true" />
+        </many-to-one>
+        <many-to-one name="weather" class="ch.ethz.origo.jerpa.data.tier.pojo.Weather">
+            <column name="WEATHER_ID" not-null="true"/>
+        </many-to-one>
+        <set name="coexperimenterRels" inverse="true">
+            <key>
+                <column name="EXPERIMENT_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.CoexperimenterRel"/>
+        </set>
+        <set name="dataFiles" inverse="true" fetch="join">
+            <key>
+                <column name="EXPERIMENT_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.DataFile"/>
+        </set>
+        <set name="experimentOptParamVals" inverse="true">
+            <key>
+                <column name="EXPERIMENT_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ExperimentOptParamVal"/>
+        </set>
+        <set name="hardwareUsageRels" inverse="true">
+            <key>
+                <column name="EXPERIMENT_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.HardwareUsageRel"/>
+        </set>
+        <set name="histories" inverse="true">
+            <key>
+                <column name="EXPERIMENT_ID"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.History"/>
+        </set>
+    </class>
+</hibernate-mapping>

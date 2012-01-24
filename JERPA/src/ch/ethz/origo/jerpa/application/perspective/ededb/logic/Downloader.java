@@ -1,6 +1,15 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
-import java.awt.HeadlessException;
+import ch.ethz.origo.jerpa.data.tier.DaoFactory;
+import ch.ethz.origo.jerpa.data.tier.DownloadException;
+import ch.ethz.origo.jerpa.data.tier.FileState;
+import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
+import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -8,34 +17,20 @@ import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.JOptionPane;
-
-import org.apache.log4j.Logger;
-
-import ch.ethz.origo.jerpa.data.tier.DownloadException;
-import ch.ethz.origo.jerpa.data.tier.FileState;
-import ch.ethz.origo.jerpa.data.tier.Storage;
-import ch.ethz.origo.jerpa.data.tier.StorageException;
-import ch.ethz.origo.jerpa.data.tier.border.DataFile;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
-import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
-
 public class Downloader extends Observable implements Observer {
 
 	private static boolean isDownloading = false;
 	private static final Logger log = Logger.getLogger(Downloader.class);
 	private final EDEDBController controller;
 	private final EDEDClient session;
-	private final Storage storage;
 	private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	private final Map<Integer, Boolean> downloading;
 	private final static Object lock = new Object();
+    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
 
 	public Downloader(EDEDBController controller, EDEDClient session) {
 		this.controller = controller;
 		this.session = session;
-		storage = controller.getStorage();
-
 		downloading = new HashMap<Integer, Boolean>();
 		checkOnline();
 
@@ -44,7 +39,7 @@ public class Downloader extends Observable implements Observer {
 	private void checkOnline() {
 		Thread online = new Thread(new Runnable() {
 
-			@Override
+			
 			public void run() {
 				while (true) {
 					synchronized (lock) {
@@ -72,14 +67,14 @@ public class Downloader extends Observable implements Observer {
 		online.start();
 	}
 
-	public void download(DataFile fileInfo) {
+	public void download(DataFile dataFile) {
 
 		boolean overwrite = false;
 
 		try {
-			if (overwrite = (storage.getFileState(fileInfo) == FileState.HAS_COPY)) {
+			if (overwrite = (dataFileDao.getFileState(dataFile) == FileState.HAS_COPY)) {
 
-				int choice = JOptionPane.showConfirmDialog(null, "You're about to overwrite file " + fileInfo.getFileName() + ". Proceed?",
+				int choice = JOptionPane.showConfirmDialog(null, "You're about to overwrite file " + dataFile.getFilename() + ". Proceed?",
 				        "Overwrite prompt", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
 				controller.unselectAllFiles();
@@ -88,7 +83,7 @@ public class Downloader extends Observable implements Observer {
 					return;
 			}
 
-			FileDownload fileDownload = new FileDownload(session, storage, fileInfo);
+			FileDownload fileDownload = new FileDownload(session, dataFile);
 			fileDownload.addObserver(this);
 
 			synchronized (downloading) {
@@ -97,7 +92,7 @@ public class Downloader extends Observable implements Observer {
 				notifyObservers(DownloadState.DOWNLOADING);
 
 				pool.submit(fileDownload);
-				downloading.put(fileInfo.getFileId(), true);
+				downloading.put(dataFile.getDataFileId(), true);
 			}
 
 			synchronized (lock) {
@@ -107,14 +102,10 @@ public class Downloader extends Observable implements Observer {
 		catch (HeadlessException e) {
 			log.error(e.getMessage(), e);
 		}
-		catch (StorageException e) {
-			log.error(e.getMessage(), e);
-			JUIGLErrorInfoUtils.showErrorDialog(e.getMessage(), e.getLocalizedMessage(), e);
-		}
 	}
 
 	public boolean isDownloading(DataFile fileInfo) {
-		return isDownloading(fileInfo.getFileId());
+		return isDownloading(fileInfo.getDataFileId());
 	}
 
 	public boolean isDownloading(int fileId) {
@@ -127,7 +118,7 @@ public class Downloader extends Observable implements Observer {
 		return Downloader.isDownloading;
 	}
 
-	@Override
+	
 	public void update(Observable o, Object arg) {
 
 		if (arg instanceof Integer) {

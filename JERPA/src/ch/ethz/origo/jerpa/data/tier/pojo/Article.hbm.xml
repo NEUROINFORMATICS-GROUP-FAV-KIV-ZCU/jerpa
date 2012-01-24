@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="ch.ethz.origo.jerpa.data.tier.pojo.Article" table="ARTICLES" schema="APP">
+        <id name="articleId">
+            <column name="ARTICLE_ID" sql-type="integer" length="10" not-null="true"/>
+        </id>
+        <property name="text">
+            <column name="TEXT" sql-type="clob" length="2147483647" not-null="true"/>
+        </property>
+        <property name="time">
+            <column name="TIME" sql-type="date" length="10" not-null="true"/>
+        </property>
+        <property name="title">
+            <column name="TITLE" sql-type="varchar" length="150" not-null="true"/>
+        </property>
+        <property name="version">
+            <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
+        </property>
+        <many-to-one name="person" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
+            <column name="PERSON_ID" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="researchGroup" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup">
+            <column name="RESEARCH_GROUP_ID"/>
+        </many-to-one>
+        <set name="articleComments" inverse="true">
+            <key>
+                <column name="ARTICLE_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ArticlesComments"/>
+        </set>
+        <set name="articleSubscribtions" inverse="true">
+            <key>
+                <column name="ARTICLE_ID" not-null="true"/>
+            </key>
+            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ArticlesSubscribtions"/>
+        </set>
+    </class>
+</hibernate-mapping>
