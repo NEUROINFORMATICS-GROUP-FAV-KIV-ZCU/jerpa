@@ -1,22 +1,5 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.ResourceBundle;
-
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-
-import org.jdesktop.swingx.JXPanel;
-import org.jdesktop.swingx.VerticalLayout;
-
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Downloader;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
@@ -27,6 +10,15 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.VerticalLayout;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.ResourceBundle;
 
 /**
  * Class for creating side-toolbar for EDEDB.
@@ -65,9 +57,9 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 
 		createButtons();
 
-		radioBar.add(allButton);
-		radioBar.add(ownerButton);
-		radioBar.add(subjectButton);
+//		radioBar.add(allButton);
+//		radioBar.add(ownerButton);
+//		radioBar.add(subjectButton);
 
 		this.add(connectButton);
 		this.add(disconnectButton);
@@ -177,7 +169,6 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 	 * 
 	 * @param path path to localization source file.
 	 */
-	@Override
 	public void setLocalizedResourceBundle(String path) {
 		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
@@ -188,7 +179,6 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 	 * 
 	 * @return path to localization file.
 	 */
-	@Override
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
@@ -198,7 +188,6 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 	 * 
 	 * @param string key
 	 */
-	@Override
 	public void setResourceBundleKey(String string) {
 		throw new UnsupportedOperationException("Method is not implemented yet...");
 	}
@@ -208,11 +197,9 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 	 * 
 	 * @throws JUIGLELangException
 	 */
-	@Override
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {
 				Toolbar.this.updateButtonsText();
 			}
@@ -255,7 +242,6 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 		}
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent event) {
 
 		if ("all".equals(event.getActionCommand())) {
@@ -273,7 +259,6 @@ public class Toolbar extends JXPanel implements ILanguage, ActionListener, Obser
 
 	}
 
-	@Override
 	public void update(Observable o, Object arg) {
 
 		updateButtonsVisibility();

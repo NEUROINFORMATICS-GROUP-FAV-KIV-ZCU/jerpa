@@ -64,7 +64,7 @@ public class EDEDBController extends Observable {
 	private void initClasses() {
 
 		downloader = new Downloader(this, session);
-		experimentViewer = new ExperimentViewerLogic(this, session);
+		experimentViewer = new ExperimentViewerLogic();
 		loginDialog = new LoginDialog(session);
 		loginInfo = new LoginInfo(this, session);
 

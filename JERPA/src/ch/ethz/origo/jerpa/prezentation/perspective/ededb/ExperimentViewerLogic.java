@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.data.tier.DaoFactory;
@@ -9,7 +8,6 @@ import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.dao.ExperimentDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
-import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -25,6 +23,11 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * @author Petr Miko
+ *         <p/>
+ *         Logic part of EDEDB experiment browser.
+ */
 public class ExperimentViewerLogic extends ExperimentViewer implements Observer, ILanguage {
     private final static Logger log = Logger.getLogger(ExperimentViewerLogic.class);
     private static final long serialVersionUID = 4318865850000265030L;
@@ -32,10 +35,12 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
     private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
-
     private List<Experiment> selectedExps;
 
-    public ExperimentViewerLogic(EDEDBController controller, EDEDClient session) {
+    /**
+     * Constructor.
+     */
+    public ExperimentViewerLogic() {
         super();
 
         LanguageObservable.getInstance().attach(this);
@@ -49,6 +54,9 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
     }
 
+    /**
+     * Init method for experiments table.
+     */
     private void initExperimentTable() {
         selectedExps = new ArrayList<Experiment>();
 
@@ -57,27 +65,23 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting() && expTable.getSelectedRow() != -1) {
+
+                    Working.setActivity(true, "working.ededb.update.datatable");
                     selectedExps.clear();
                     for (Integer i : expTable.getSelectedRows()) {
                         int selected = (Integer) expTable.getValueAt(i, 0);
                         selectedExps.add(experimentDao.get(selected));
                     }
-
-                    Thread updateDataThread = new Thread(new Runnable() {
-
-                        public void run() {
-                            updateDataTable();
-                            Working.setActivity(false, "working.ededb.update.datatable");
-                        }
-                    });
-
-                    Working.setActivity(true, "working.ededb.update.datatable");
-                    updateDataThread.start();
+                    updateDataTable();
+                    Working.setActivity(false, "working.ededb.update.datatable");
                 }
             }
         });
     }
 
+    /**
+     * Init method for data files table.
+     */
     private void initDataTable() {
         dataTable.addMouseListener(new MouseAdapter() {
 
@@ -96,54 +100,58 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
     }
 
+    /**
+     * Method for updating experiment table.
+     */
     public void updateExpTable() {
-        Thread updateExpThread = new Thread(new Runnable() {
 
-            public void run() {
+        synchronized (expModel) {
 
-                expModel.clear();
+            Working.setActivity(true, "working.ededb.update.exptable");
+            expModel.clear();
+            List<Experiment> experiments = experimentDao.getAll();
 
-                List<Experiment> experiments = experimentDao.getAll();
-
-                for (Experiment exp : experiments) {
-                    expModel.addRow(exp);
-                }
-                repaint();
-                Working.setActivity(false, "working.ededb.update.exptable");
+            for (Experiment exp : experiments) {
+                expModel.addRow(exp);
             }
-        });
-
-        Working.setActivity(true, "working.ededb.update.exptable");
-        updateExpThread.start();
+            repaint();
+            Working.setActivity(false, "working.ededb.update.exptable");
+        }
     }
 
     /**
      * Method clearing all data from experiment view table
      */
     public void clearExpTable() {
-        expModel.clear();
+        synchronized (expModel) {
+            expModel.clear();
+        }
     }
 
     /**
      * Method clearing all data from data view table
      */
     public void clearDataTable() {
-        dataModel.clear();
+        synchronized (dataModel) {
+            dataModel.clear();
+        }
     }
 
     /**
      * Method filling data view table with experiment's files information. Shown
      * information depends on selected experiment in experiment view table.
      */
-    public synchronized void updateDataTable() {
+    public void updateDataTable() {
 
-        clearDataTable();
+        synchronized (dataModel) {
+            clearDataTable();
 
-        List<DataFile> dataFiles = dataFileDao.getAllFromExperiments(selectedExps);
+            List<DataFile> dataFiles = dataFileDao.getAllFromExperiments(selectedExps);
 
-        for (DataFile file : dataFiles)
-            dataModel.addRow(file, dataFileDao.getFileState(file));
-        repaint();
+            for (DataFile file : dataFiles)
+                dataModel.addRow(file, dataFileDao.getFileState(file));
+            repaint();
+        }
     }
 
     /**
@@ -153,15 +161,17 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
      *         table
      */
     public List<DataRowModel> getSelectedFiles() {
-        List<DataRowModel> data = dataModel.getData();
-        List<DataRowModel> selectedFiles = new ArrayList<DataRowModel>();
+        synchronized (dataModel) {
+            List<DataRowModel> data = dataModel.getData();
+            List<DataRowModel> selectedFiles = new ArrayList<DataRowModel>();
 
-        for (DataRowModel row : data) {
-            if (row.isSelected()) {
-                selectedFiles.add(row);
+            for (DataRowModel row : data) {
+                if (row.isSelected()) {
+                    selectedFiles.add(row);
+                }
             }
+            return selectedFiles;
         }
-        return selectedFiles;
     }
 
     /**
@@ -170,7 +180,9 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
      * @return rows of data table
      */
     public List<DataRowModel> getRows() {
-        return dataModel.getData();
+        synchronized (dataModel) {
+            return dataModel.getData();
+        }
     }
 
     /**
@@ -211,9 +223,11 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
     public void update(Observable o, Object arg) {
         updateExpTable();
 
-        for (DataRowModel row : dataModel.getData()) {
-            if (row.getState() != FileState.DOWNLOADING) {
-                row.setState(dataFileDao.getFileState(row.getDataFile()));
+        synchronized (dataModel) {
+            for (DataRowModel row : dataModel.getData()) {
+                if (row.getState() != FileState.DOWNLOADING) {
+                    row.setState(dataFileDao.getFileState(row.getDataFile()));
+                }
             }
         }
 

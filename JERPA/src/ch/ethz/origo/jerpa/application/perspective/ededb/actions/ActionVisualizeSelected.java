@@ -86,7 +86,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 			return;
 		}
 
-		if (selectedFiles.size() == 1 && Downloader.isDownloading()) {
+		if (selectedFiles.size() == 1 && !Downloader.isDownloading()) {
 
 			DataRowModel selected = selectedFiles.get(0);
 			final DataFile file = selected.getDataFile();

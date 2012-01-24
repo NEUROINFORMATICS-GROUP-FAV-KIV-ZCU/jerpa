@@ -17,125 +17,154 @@ import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * @author Petr Miko
+ *         <p/>
+ *         Class for download files purposes.
+ */
 public class Downloader extends Observable implements Observer {
 
-	private static boolean isDownloading = false;
-	private static final Logger log = Logger.getLogger(Downloader.class);
-	private final EDEDBController controller;
-	private final EDEDClient session;
-	private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-	private final Map<Integer, Boolean> downloading;
-	private final static Object lock = new Object();
+    private static boolean isDownloading = false;
+    private static final Logger log = Logger.getLogger(Downloader.class);
+    private final EDEDBController controller;
+    private final EDEDClient session;
+    private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final Map<Integer, Boolean> downloading;
+    private final static Object lock = new Object();
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
 
-	public Downloader(EDEDBController controller, EDEDClient session) {
-		this.controller = controller;
-		this.session = session;
-		downloading = new HashMap<Integer, Boolean>();
-		checkOnline();
+    /**
+     * Constructor.
+     *
+     * @param controller Experiment Browser Controller
+     * @param session    web service client
+     */
+    public Downloader(EDEDBController controller, EDEDClient session) {
+        this.controller = controller;
+        this.session = session;
+        downloading = new HashMap<Integer, Boolean>();
+        checkOnline();
 
-	}
+    }
 
-	private void checkOnline() {
-		Thread online = new Thread(new Runnable() {
+    /**
+     * Method for checking, whether the user is connected to server.
+     * Checks once per second.
+     */
+    private void checkOnline() {
+        Thread online = new Thread(new Runnable() {
 
-			
-			public void run() {
-				while (true) {
-					synchronized (lock) {
-						try {
-							if (!downloading.isEmpty())
-								lock.wait(1000L);
-							else
-								lock.wait();
 
-							if (controller.isServiceOffline()) {
-								downloading.clear();
-								Downloader.isDownloading = false;
-								setChanged();
-								notifyObservers(DownloadState.NOT_DOWNLOADING);
-							}
-						}
-						catch (InterruptedException e) {
-							log.error(e.getMessage(), e);
-						}
-					}
-				}
-			}
-		});
+            public void run() {
+                while (true) {
+                    synchronized (lock) {
+                        try {
+                            if (!downloading.isEmpty())
+                                lock.wait(1000L);
+                            else
+                                lock.wait();
 
-		online.start();
-	}
+                            if (controller.isServiceOffline()) {
+                                downloading.clear();
+                                Downloader.isDownloading = false;
+                                setChanged();
+                                notifyObservers(DownloadState.NOT_DOWNLOADING);
+                            }
+                        } catch (InterruptedException e) {
+                            log.error(e.getMessage(), e);
+                        }
+                    }
+                }
+            }
+        });
 
-	public void download(DataFile dataFile) {
+        online.start();
+    }
 
-		boolean overwrite = false;
+    /**
+     * Method for downloading specified data file.
+     */
+    public void download(DataFile dataFile) {
 
-		try {
-			if (overwrite = (dataFileDao.getFileState(dataFile) == FileState.HAS_COPY)) {
+        boolean overwrite = false;
 
-				int choice = JOptionPane.showConfirmDialog(null, "You're about to overwrite file " + dataFile.getFilename() + ". Proceed?",
-				        "Overwrite prompt", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        try {
+            if (overwrite = (dataFileDao.getFileState(dataFile) == FileState.HAS_COPY)) {
 
-				controller.unselectAllFiles();
+                int choice = JOptionPane.showConfirmDialog(null, "You're about to overwrite file " + dataFile.getFilename() + ". Proceed?",
+                        "Overwrite prompt", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
-				if (choice == JOptionPane.NO_OPTION)
-					return;
-			}
+                controller.unselectAllFiles();
 
-			FileDownload fileDownload = new FileDownload(session, dataFile);
-			fileDownload.addObserver(this);
+                if (choice == JOptionPane.NO_OPTION)
+                    return;
+            }
 
-			synchronized (downloading) {
-				Downloader.isDownloading = true;
-				setChanged();
-				notifyObservers(DownloadState.DOWNLOADING);
+            FileDownload fileDownload = new FileDownload(session, dataFile);
+            fileDownload.addObserver(this);
 
-				pool.submit(fileDownload);
-				downloading.put(dataFile.getDataFileId(), true);
-			}
+            synchronized (downloading) {
+                Downloader.isDownloading = true;
+                setChanged();
+                notifyObservers(DownloadState.DOWNLOADING);
 
-			synchronized (lock) {
-				lock.notify();
-			}
-		}
-		catch (HeadlessException e) {
-			log.error(e.getMessage(), e);
-		}
-	}
+                pool.submit(fileDownload);
+                downloading.put(dataFile.getDataFileId(), true);
+            }
 
-	public boolean isDownloading(DataFile fileInfo) {
-		return isDownloading(fileInfo.getDataFileId());
-	}
+            synchronized (lock) {
+                lock.notify();
+            }
+        } catch (HeadlessException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
 
-	public boolean isDownloading(int fileId) {
-		synchronized (downloading) {
-			return (downloading.containsKey(fileId) && downloading.get(fileId));
-		}
-	}
+    /**
+     * Checks whether specified file is being downloaded.
+     * @param fileInfo data file
+     * @return true/false
+     */
+    public boolean isDownloading(DataFile fileInfo) {
+        return isDownloading(fileInfo.getDataFileId());
+    }
 
-	public static boolean isDownloading() {
-		return Downloader.isDownloading;
-	}
+    /**
+     * Checks whether specified file is being downloaded.
+     * @param fileId data file identifier
+     * @return true/false
+     */
+    public boolean isDownloading(int fileId) {
+        synchronized (downloading) {
+            return (downloading.containsKey(fileId) && downloading.get(fileId));
+        }
+    }
 
-	
-	public void update(Observable o, Object arg) {
+    /**
+     * Checks whether is something being downloaded in general.
+     * @return true/false
+     */
+    public static boolean isDownloading() {
+        return Downloader.isDownloading;
+    }
 
-		if (arg instanceof Integer) {
-			Integer id = (Integer) arg;
-			synchronized (downloading) {
-				downloading.remove(id);
-				if (downloading.isEmpty()) {
-					Downloader.isDownloading = false;
-					setChanged();
-					notifyObservers(DownloadState.NOT_DOWNLOADING);
 
-				}
-			}
-			controller.update();
-		}
-		else if (arg instanceof DownloadException) {
-			controller.setUserLoggedIn(false);
-		}
-	}
+    public void update(Observable o, Object arg) {
+
+        if (arg instanceof Integer) {
+            Integer id = (Integer) arg;
+            synchronized (downloading) {
+                downloading.remove(id);
+                if (downloading.isEmpty()) {
+                    Downloader.isDownloading = false;
+                    setChanged();
+                    notifyObservers(DownloadState.NOT_DOWNLOADING);
+
+                }
+            }
+            controller.update();
+        } else if (arg instanceof DownloadException) {
+            controller.setUserLoggedIn(false);
+        }
+    }
 }

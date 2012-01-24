@@ -18,6 +18,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * @author Petr Miko
+ *         Class for basic synchronization of information about contents of EEG base database.
+ *         <p/>
+ *         Still under development, so far only downloads information.
+ */
 public class DataSyncer {
 
     private final EDEDClient session;
@@ -88,9 +94,8 @@ public class DataSyncer {
                 }
 
                 try {
-
+                    /*First we obtain all needed information from server in collections.*/
                     Working.setActivity(true, "Database update");
-
                     groupsInfo = session.getService().getResearchGroups(researchGroupDao.getLastRevision());
                     weathersInfo = session.getService().getWeather(weatherDao.getLastRevision());
                     peopleInfo = session.getService().getPeople(personDao.getLastRevision());
@@ -108,6 +113,7 @@ public class DataSyncer {
                     log.debug(filesInfo.size() + " new data files");
                     log.debug(weathersInfo.size() + " new weather types");
 
+                    /* initializing of collections for objects, which will be created based on server info */
                     groups = new ArrayList<ResearchGroup>();
                     people = new ArrayList<Person>();
                     scenarios = new ArrayList<Scenario>();
@@ -115,6 +121,7 @@ public class DataSyncer {
                     dataFiles = new ArrayList<DataFile>();
                     weathers = new ArrayList<Weather>();
 
+                    /* Registered people sync */
                     for (PersonInfo personInfo : peopleInfo) {
                         Person person = new Person();
                         person.setPersonId(personInfo.getPersonId());
@@ -127,6 +134,7 @@ public class DataSyncer {
 
                     commitCollection(people);
 
+                    /* Research groups sync */
                     for (ResearchGroupInfo groupInfo : groupsInfo) {
                         ResearchGroup group = new ResearchGroup();
                         group.setResearchGroupId(groupInfo.getResearchGroupId());
@@ -152,6 +160,9 @@ public class DataSyncer {
 
                     commitCollection(groups);
 
+                    /*
+                     Now we have people and groups. People's default group must be set.
+                     */
                     tmpPeople = new ArrayList<Person>();
                     for (PersonInfo personInfo : peopleInfo) {
                         personIterator = people.iterator();
@@ -173,6 +184,9 @@ public class DataSyncer {
 
                     commitCollection(tmpPeople);
 
+                    /*
+                    Scenarios sync.
+                     */
                     for (ScenarioInfo scenarioInfo : scenariosInfo) {
                         Scenario scenario = new Scenario();
                         scenario.setScenarioId(scenarioInfo.getScenarioId());
@@ -190,6 +204,9 @@ public class DataSyncer {
                             transaction.commit();
                         }
 
+                        /*
+                        Setting owner.
+                         */
                         for (Person person : people) {
                             if (person.getPersonId() == scenarioInfo.getOwnerId()) {
                                 scenario.setOwner(person);
@@ -204,6 +221,9 @@ public class DataSyncer {
                             transaction.commit();
                         }
 
+                        /*
+                        Setting proper research group.
+                         */
                         for (ResearchGroup group : groups) {
                             if (group.getResearchGroupId() == scenarioInfo.getResearchGroupId()) {
                                 scenario.setResearchGroup(group);
@@ -216,6 +236,9 @@ public class DataSyncer {
 
                     commitCollection(scenarios);
 
+                    /*
+                    Weathers sync.
+                     */
                     for (WeatherInfo weatherInfo : weathersInfo) {
                         Weather weather = new Weather();
                         weather.setWeatherId(weatherInfo.getWeatherId());
@@ -227,6 +250,9 @@ public class DataSyncer {
 
                     commitCollection(weathers);
 
+                    /*
+                    Experiments sync.
+                     */
                     for (ExperimentInfo expInfo : experimentsInfo) {
                         Experiment exp = new Experiment();
                         exp.setExperimentId(expInfo.getExperimentId());
@@ -243,6 +269,9 @@ public class DataSyncer {
                             transaction.commit();
                         }
 
+                        /*
+                        Every experiment must belong to some scenario.
+                         */
                         for (Scenario scn : scenarios) {
                             if (scn.getScenarioId() == expInfo.getScenarioId()) {
                                 exp.setScenario(scn);
@@ -256,6 +285,10 @@ public class DataSyncer {
                             weathers = hibSession.createCriteria(Weather.class).list();
                             transaction.commit();
                         }
+
+                        /*
+                       Weather conditions are usually set too.
+                        */
                         for (Weather weather : weathers) {
                             if (weather.getWeatherId() == expInfo.getWeatherId()) {
                                 exp.setWeather(weather);
@@ -270,6 +303,10 @@ public class DataSyncer {
                             transaction.commit();
                         }
 
+                        /*
+                        Experiment has owner and subject of measurement.
+                        If both are found, search loop breaks.
+                         */
                         found[0] = found[1] = false;
                         for (Person person : people) {
                             if ((found[0] && found[1])) {
@@ -294,6 +331,9 @@ public class DataSyncer {
                             transaction.commit();
                         }
 
+                        /*
+                        Setting proper research group.
+                         */
                         for (ResearchGroup group : groups) {
                             if (expInfo.getResearchGroupId() == group.getResearchGroupId()) {
                                 exp.setResearchGroup(group);
@@ -306,6 +346,9 @@ public class DataSyncer {
 
                     commitCollection(experiments);
 
+                    /*
+                    Data files sync.
+                     */
                     for (DataFileInfo fileInfo : filesInfo) {
                         DataFile file = new DataFile();
                         file.setDataFileId(fileInfo.getFileId());
@@ -322,6 +365,9 @@ public class DataSyncer {
                             transaction.commit();
                         }
 
+                        /*
+                        Every file belongs to an experiment.
+                         */
                         for (Experiment exp : experiments) {
                             if (exp.getExperimentId() == fileInfo.getExperimentId()) {
                                 file.setExperiment(exp);
@@ -346,6 +392,10 @@ public class DataSyncer {
 
         }
 
+        /**
+         * Method for saving or updating data in database using collection input.
+         * @param collection objects created in accordance to sync data from server
+         */
         private void commitCollection(Collection<?> collection) {
             SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
             Session session = sessionFactory.getCurrentSession();

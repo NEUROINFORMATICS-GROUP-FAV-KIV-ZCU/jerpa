@@ -1,14 +1,13 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.apache.log4j.Logger;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
-
-import org.apache.log4j.Logger;
-
-import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 
 /**
  * 
@@ -55,9 +54,10 @@ public class EDEDBProperties {
 
 	/**
 	 * Loader of properties files.
-	 * 
-	 * @param fileName properties file name
-	 */
+     *
+     * @param key identifier to value in properties file
+     * @return proper value from properties file
+     */
 	public static String getConfigKey(String key) {
 		if (instance == null) {
 			instance = new EDEDBProperties();

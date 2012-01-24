@@ -84,20 +84,23 @@ public class FileDownload extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Thread class for monitoring download progress.
+     */
     private class DownloadProgress extends Thread {
 
 
         public void run() {
-
-            int progress = 0;
-
+            int progress;
             while ((progress = inStream.progress()) < 100 && alive && Downloader.isDownloading()) {
                 Working.setDownload(progress, dataFile);
             }
-
         }
     }
 
+    /**
+     * Monitored input stream used in DownloadProgress thread class.
+     */
     private class ProgressInputStream extends InputStream {
 
         private InputStream in = null;
@@ -159,6 +162,5 @@ public class FileDownload extends Observable implements Runnable {
             }
             return progress;
         }
-
     }
 }

@@ -11,6 +11,11 @@
 *********************************************************************************************
 
  * (01/24/2012) kivan
+	# 248
+	
+	CHANGED: corrected few bugs (mostly in GUI), added some commentaries and javadoc. EDEDB still deeply unfunctional.
+ 
+ * (01/24/2012) kivan
 	# 247
 	
 	INTERNAL: Hibernate mapping now used in order to work with local DB. Created DAOs.
