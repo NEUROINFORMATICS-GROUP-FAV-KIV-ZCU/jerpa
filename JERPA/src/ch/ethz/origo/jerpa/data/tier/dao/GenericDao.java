@@ -48,6 +48,7 @@ public class GenericDao<T, PK extends Serializable> {
     public long getLastRevision() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
-        return (Long) session.createCriteria(type).setProjection(Projections.max("version")).uniqueResult();
+        Long version = (Long) session.createCriteria(type).setProjection(Projections.max("version")).uniqueResult();
+        return (version != null ? version : 0);
     }
 }

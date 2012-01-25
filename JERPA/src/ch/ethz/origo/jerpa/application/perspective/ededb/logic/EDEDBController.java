@@ -34,6 +34,7 @@ public class EDEDBController extends Observable {
 	private ActionConnect actionConnect;
 	private final JXPanel mainPanel;
     private Downloader downloader;
+    private DataSyncer syncer;
 
 	private final static Logger log = Logger.getLogger(EDEDBController.class);
 
@@ -78,7 +79,7 @@ public class EDEDBController extends Observable {
 		addObserver(toolbar);
 		addObserver(parent);
 
-        new DataSyncer(session,this);
+        syncer = new DataSyncer(session,this);
 
 	}
 
@@ -105,10 +106,12 @@ public class EDEDBController extends Observable {
 			loginDialog.setVisible(true);
 			if (session.isConnected()) {
 				setServiceOffline(false);
+                syncer.syncNow();
 			}
 		}
 		else {
 			session.userLogout();
+            syncer.interruptSync();
 			setServiceOffline(true);
 		}
         loginInfo.updateLoginInfo();

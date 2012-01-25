@@ -17,6 +17,7 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.application.observers.PerspectiveObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 
 import javax.swing.*;
@@ -35,6 +36,7 @@ import java.util.ResourceBundle;
 public class ActionVisualizeSelected extends AbstractAction implements ILanguage {
 
 	private static final long serialVersionUID = -7447433391197216763L;
+    private final static Logger log = Logger.getLogger(ActionVisualizeSelected.class);
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
 	private ResourceBundle resource;
 	private String resourceBundlePath;
@@ -134,15 +136,12 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 					public void run() {
 						boolean opened = false;
 
-						try {
-							File tmpFile = dataFileDao.getFile(file);
-							opened = persp.openFile(tmpFile);
-						}
-						catch (DaoException e) {
-							Log.error(e.getMessage(), e);
-						}
-
-						controller.setElementsActive(true);
+                        try {
+                            opened = persp.openFileFromDB(file);
+                        } catch (DaoException e1) {
+                           log.error(e1);
+                        }
+                        controller.setElementsActive(true);
 
 						controller.unselectAllFiles();
 						Working.setActivity(false, "working.ededb.visualise");

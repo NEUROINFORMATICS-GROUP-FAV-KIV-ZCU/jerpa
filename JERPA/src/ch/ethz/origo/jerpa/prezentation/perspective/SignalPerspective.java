@@ -33,6 +33,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -43,6 +46,13 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
+import ch.ethz.origo.jerpa.data.BufferCreator;
+import ch.ethz.origo.jerpa.data.tier.DaoFactory;
+import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
+import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
+import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
+import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.JXTaskPane;
 
@@ -83,17 +93,18 @@ import ch.ethz.origo.juigle.prezentation.perspective.Perspective;
  * main perspective of application JERPA. Contains component for display EEG
  * signals and tools for automatic artifact selection, baseline correction, EEG
  * signals info and a lot of others functions.
- * 
+ *
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 0.4.0 (4/3/2011)
- * @since 0.1.0 (05/18/09)
  * @see Perspective
  * @see IObserver
- * 
+ * @since 0.1.0 (05/18/09)
  */
 public class SignalPerspective extends Perspective implements IObserver {
 
-    /** Only for serialization */
+    /**
+     * Only for serialization
+     */
     private static final long serialVersionUID = 3313465073940475745L;
     private static final String RB_RESOURCE_KEY = "perspective.signalprocessing.lang";
     // file menu items
@@ -123,7 +134,9 @@ public class SignalPerspective extends Perspective implements IObserver {
     private GridBagConstraints gbcAveragingProv;
     private GridBagConstraints gbcSignalInfoProv;
     private GridBagConstraints gbcChannelProv;
-    /** Session manager for this perspective */
+    /**
+     * Session manager for this perspective
+     */
     private SignalSessionManager sessionManager;
     private SignalPerspectiveObservable spObservable;
     private SignalInfoProvider signalInfoProvider;
@@ -132,7 +145,9 @@ public class SignalPerspective extends Perspective implements IObserver {
     private ChannelsPanelProvider channelPanelProvider;
     private ArtefactSelectionDialog artefactSelectionDialog;
     private BaselineCorrectionDialog baselineCorrectionDialog;
-    
+
+    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+
     public static final String ID_PERSPECTIVE = SignalPerspective.class.getName();
 
     /**
@@ -217,7 +232,6 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
      * @throws PerspectiveException
      * @since 0.1.0
      */
@@ -257,14 +271,13 @@ public class SignalPerspective extends Perspective implements IObserver {
          * } });
          */
     }
-    
+
     @Override
     public String getID() {
-    	return ID_PERSPECTIVE;
+        return ID_PERSPECTIVE;
     }
 
     /**
-     * 
      * @return
      * @version 0.1.1
      * @since 0.1.0
@@ -308,7 +321,6 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
      * @return
      * @since 0.1.0
      */
@@ -330,9 +342,7 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
      * @return
-     * 
      * @version 0.1.1 (3/20/2010)
      * @since 0.1.0
      */
@@ -363,11 +373,10 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
      * Get items of menu Help.
-     * 
-     *TODO : enable keyboard shortcut item
-     * 
+     * <p/>
+     * TODO : enable keyboard shortcut item
+     *
      * @return
      * @since 0.1.0
      */
@@ -376,10 +385,10 @@ public class SignalPerspective extends Perspective implements IObserver {
         // keyboardShortcutItem = new JUIGLEMenuItem();
         aboutItem = new JUIGLEMenuItem();
         //
-		/*
-         * keyboardShortcutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
-         * KeyEvent.CTRL_MASK));
-         */
+        /*
+        * keyboardShortcutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+        * KeyEvent.CTRL_MASK));
+        */
         //
         helpItem.setResourceBundleKey("menu.help");
         /*
@@ -394,8 +403,6 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
-     * 
      * @version 0.1.3 (3/24/2010)
      * @since 0.1.1
      */
@@ -444,10 +451,7 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
-     * 
      * @return
-     * 
      * @version 0.1.0 (3/21/2010)
      * @since 0.3.5 (3/21/2010)
      */
@@ -472,10 +476,7 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
-     * 
      * @return
-     * 
      * @version 0.1.0 (3/21/2010)
      * @since 0.3.5 (3/21/2010)
      */
@@ -499,7 +500,6 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
      * @version 0.1.2 (4/14/2010)
      * @since 0.1.0
      */
@@ -594,7 +594,6 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
      * @param obj
      * @version 0.1.0
      * @since 0.2.0
@@ -603,7 +602,6 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
      * @version 0.1.0 (3/21/2010)
      * @since 0.3.5 (3/21/2010)
      */
@@ -641,8 +639,6 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
-     * 
      * @throws JUIGLEMenuException
      * @version 0.1.1 (3/20/2010)
      * @since 0.2.1 (2/14/2010)
@@ -792,13 +788,42 @@ public class SignalPerspective extends Perspective implements IObserver {
             spObservable.setState(SignalPerspectiveObservable.MSG_CURRENT_PROJECT_CHANGED);
         } catch (ProjectOperationException ex) {
             JUIGLErrorInfoUtils.showErrorDialog(
-                            ex.getMessage(),
-                            ex.getLocalizedMessage(),
-                            ex);
+                    ex.getMessage(),
+                    ex.getLocalizedMessage(),
+                    ex);
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Files from db are first copied in same directory, then they are opened using FileSystem approach.
+     * After the visualization is done, files are removed from file system.
+     * @param file data file to be visualized
+     * @return success true/false
+     * @throws DaoException issue with DAO
+     */
+    public boolean openFileFromDB(DataFile file) throws DaoException {
+        List<Experiment> exp = new ArrayList<Experiment>();
+        exp.add(file.getExperiment());
+        List<DataFile> files = dataFileDao.getAllFromExperiments(exp);
+        List<File> locFiles = new ArrayList<File>();
+
+        for (DataFile tmpFile : files) {
+            File tempFile = dataFileDao.getFile(tmpFile);
+            File newFile = new File(tmpFile.getFilename());
+            tempFile.renameTo(newFile);
+            locFiles.add(newFile);
+        }
+
+        boolean result = openFile(dataFileDao.getFile(file));
+
+        for(File tmpFile : locFiles){
+            tmpFile.delete();
+        }
+
+        return result;
     }
 
     public void createNewArtefactDialog() {
@@ -813,17 +838,14 @@ public class SignalPerspective extends Perspective implements IObserver {
 
     /**
      * Open component in a new <code>JXDialog</code>.
-     * 
-     * @param component
-     *          which will be added to the dialog
-     * @param gbcPosition
-     *          {@link GridBagConstraints} GridBagConstraints position
-     * 
+     *
+     * @param component   which will be added to the dialog
+     * @param gbcPosition {@link GridBagConstraints} GridBagConstraints position
      * @version 0.1.0 (3/20/2010)
      * @since 0.3.4 (3/20/2010)
      */
     private void openComponentInDialog(final JComponent component,
-            final GridBagConstraints gbcPosition) {
+                                       final GridBagConstraints gbcPosition) {
         JXDialog dialog = new JXDialog(component);
         dialog.setMinimumSize(new Dimension(800, 600));
         dialog.setAlwaysOnTop(true);
@@ -841,7 +863,7 @@ public class SignalPerspective extends Perspective implements IObserver {
             }
 
             private void addSignalPanelToContentPane(Component component,
-                    GridBagConstraints gbcPosition) {
+                                                     GridBagConstraints gbcPosition) {
                 mainPanel.add(component, gbcPosition);
                 mainPanel.revalidate();
                 mainPanel.repaint();
@@ -850,8 +872,6 @@ public class SignalPerspective extends Perspective implements IObserver {
     }
 
     /**
-     * 
-     * 
      * @param object
      * @param state
      * @version 0.1.1 (4/17/2010)

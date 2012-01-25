@@ -11,6 +11,13 @@
 *********************************************************************************************
 
  * (01/25/2012) kivan
+	# 250
+	
+	FIXED: dataFileDao - getter of data files by experiment objects - session issues
+	CHANGED: added some javadoc, DataFiles from local DB can be now visualized in Signal Perspective.
+	
+
+ * (01/25/2012) kivan
 	# 249
 	
 	CHANGED: updated JerpLang, Downloader now implements Language observable. Few code cleanings.

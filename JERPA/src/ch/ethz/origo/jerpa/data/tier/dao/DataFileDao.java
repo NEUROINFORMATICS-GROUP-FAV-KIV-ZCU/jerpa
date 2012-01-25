@@ -28,6 +28,11 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         super(DataFile.class);
     }
 
+    /**
+     * Method for saving binary stream into DataFile's blob.
+     * @param file data file
+     * @param inStream binary input stream
+     */
     public void writeFileContent(DataFile file, InputStream inStream) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
@@ -38,15 +43,29 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         session.getTransaction().commit();
     }
 
+    /**
+     * Getter of all data files from specified experiments.
+     * @param experiments specified data files source experiments
+     * @return data files
+     */
     public List<DataFile> getAllFromExperiments(List<Experiment> experiments) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
         List<DataFile> files = new ArrayList<DataFile>();
 
         for (Experiment experiment : experiments) {
+            session.refresh(experiment);
             files.addAll(experiment.getDataFiles());
         }
+        transaction.commit();
         return files;
     }
 
+    /**
+     * Getter of current data file state.
+     * @param file data file
+     * @return FileState value
+     */
     public synchronized FileState getFileState(DataFile file) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
@@ -74,15 +93,23 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
             if (transaction.isActive())
                 transaction.commit();
         }
-//        return FileState.NO_COPY;
     }
 
+    /**
+     * Getter of BLOB in File form. Returns temp File.
+     * @param file data file
+     * @return temp file with contents of data file blob
+     * @throws DaoException issue with DAO
+     */
     public File getFile(DataFile file) throws DaoException {
-
-        File fileContent = new File(file.getFilename());
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        File fileContent = null;
         FileOutputStream outputStream = null;
         InputStream inputStream = null;
         try {
+            fileContent = File.createTempFile("JERPA-tmp-",file.getFilename());
+            session.refresh(file);
             outputStream = new FileOutputStream(fileContent);
             inputStream = file.getFileContent().getBinaryStream();
 
@@ -96,9 +123,12 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
 
             inputStream.close();
             outputStream.close();
+            transaction.commit();
         } catch (SQLException e) {
+            transaction.rollback();
             throw new DaoException(e);
         } catch (IOException e) {
+            transaction.rollback();
             throw new DaoException(e);
         } finally {
             if (inputStream != null)
@@ -118,6 +148,11 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         return fileContent;
     }
 
+    /**
+     * Method for removing blob from data file.
+     *
+     * @param dataFile specified data file
+     */
     public void removeFile(DataFile dataFile) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();

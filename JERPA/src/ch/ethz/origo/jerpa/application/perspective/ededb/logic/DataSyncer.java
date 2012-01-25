@@ -37,22 +37,36 @@ public class DataSyncer {
     private WeatherDao weatherDao = DaoFactory.getWeatherDao();
     private PersonDao personDao = DaoFactory.getPersonDao();
 
+    private SyncThread syncThread;
+    private final Object lock = new Object();
+
     private final static Logger log = Logger.getLogger(DataSyncer.class);
 
     public DataSyncer(EDEDClient session, EDEDBController controller) {
         this.session = session;
         this.controller = controller;
 
-        SyncThread syncThread = new SyncThread();
+        syncThread = new SyncThread();
 
         syncThread.start();
+    }
+
+    public void syncNow() {
+        synchronized (lock) {
+            lock.notify();
+        }
+    }
+
+    public void interruptSync() {
+        synchronized (syncThread) {
+            syncThread.interrupt();
+        }
     }
 
     @SuppressWarnings("unchecked")
     private class SyncThread extends Thread {
 
-        long SLEEP_INTERVAL = 600000;
-        private final Object lock = new Object();
+        long SLEEP_INTERVAL = 60000;
 
         @Override
         public void run() {
@@ -394,6 +408,7 @@ public class DataSyncer {
 
         /**
          * Method for saving or updating data in database using collection input.
+         *
          * @param collection objects created in accordance to sync data from server
          */
         private void commitCollection(Collection<?> collection) {
