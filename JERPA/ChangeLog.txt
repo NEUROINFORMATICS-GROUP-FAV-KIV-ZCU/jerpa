@@ -11,6 +11,12 @@
 *********************************************************************************************
 
  * (01/25/2012) kivan
+	# 251
+	
+	FIXED: fixed FileState of file, which is being downloaded
+	"FIXED": EDEDB and its components fails to use Look And Feel as the rest of the app (??), at least mainPanel set manually
+
+ * (01/25/2012) kivan
 	# 250
 	
 	FIXED: dataFileDao - getter of data files by experiment objects - session issues

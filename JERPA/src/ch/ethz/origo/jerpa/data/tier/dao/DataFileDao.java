@@ -72,6 +72,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         try {
             session.refresh(file);
             Blob blob = file.getFileContent();
+
             if (blob == null) {
                 return FileState.NO_COPY;
             } else {

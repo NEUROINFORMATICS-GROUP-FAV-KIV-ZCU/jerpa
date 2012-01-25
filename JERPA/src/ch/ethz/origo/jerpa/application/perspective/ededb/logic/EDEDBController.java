@@ -21,7 +21,7 @@ import java.util.Observable;
 public class EDEDBController extends Observable {
 
 	private final EDEDBPerspective parent;
-	private final EDEDClient session;
+	private final EDEDClient service;
 	private LoginDialog loginDialog;
 	private LoginInfo loginInfo;
 	private ExperimentViewerLogic experimentViewer;
@@ -32,7 +32,6 @@ public class EDEDBController extends Observable {
 	private ActionDeleteSelected actionDeleteSelected;
 	private ActionDisconnect actionDisconnect;
 	private ActionConnect actionConnect;
-	private final JXPanel mainPanel;
     private Downloader downloader;
     private DataSyncer syncer;
 
@@ -45,14 +44,11 @@ public class EDEDBController extends Observable {
 	 * Constructor.
 	 * 
 	 * @param parent EDEDBPerspective
-	 * @param session EDEDClient.jar session
+	 * @param service EDEDClient.jar service
 	 */
-	public EDEDBController(EDEDBPerspective parent, EDEDClient session) {
+	public EDEDBController(EDEDBPerspective parent, EDEDClient service) {
 		this.parent = parent;
-		this.session = session;
-
-		mainPanel = new JXPanel();
-		mainPanel.setLayout(new BorderLayout());
+		this.service = service;
 
 		initClasses();
 
@@ -63,15 +59,15 @@ public class EDEDBController extends Observable {
 	 */
 	private void initClasses() {
 
-		downloader = new Downloader(this, session);
-		experimentViewer = new ExperimentViewerLogic();
-		loginDialog = new LoginDialog(session);
-		loginInfo = new LoginInfo(this, session);
+		downloader = new Downloader(this, service);
+		experimentViewer = new ExperimentViewerLogic(this);
+		loginDialog = new LoginDialog(service);
+		loginInfo = new LoginInfo(this, service);
 
 		// Toolbar uses Actions so Actions HAS TO BE initialized firstly!
 		initActions();
 
-		toolbar = new Toolbar(this, session);
+		toolbar = new Toolbar(this, service);
 
 		downloader.addObserver(experimentViewer);
 		downloader.addObserver(toolbar);
@@ -79,7 +75,7 @@ public class EDEDBController extends Observable {
 		addObserver(toolbar);
 		addObserver(parent);
 
-        syncer = new DataSyncer(session,this);
+        syncer = new DataSyncer(service,this);
 
 	}
 
@@ -104,14 +100,13 @@ public class EDEDBController extends Observable {
 
 		if (loggedIn) {
 			loginDialog.setVisible(true);
-			if (session.isConnected()) {
+			if (service.isConnected()) {
 				setServiceOffline(false);
                 syncer.syncNow();
 			}
 		}
 		else {
-			session.userLogout();
-            syncer.interruptSync();
+			service.userLogout();
 			setServiceOffline(true);
 		}
         loginInfo.updateLoginInfo();
@@ -131,11 +126,10 @@ public class EDEDBController extends Observable {
 	/**
 	 * Method creating EDEDB Perspective's environment.
 	 * 
-	 * @return JXPanel with all EDEDB Elements.
+//	 * @return JXPanel with all EDEDB Elements.
+     * @param mainPanel perspective panel
 	 */
-	public JXPanel initGraphics() {
-
-		mainPanel.removeAll();
+	public void initGraphics(JXPanel mainPanel) {
 
 		JXPanel sidebar = new JXPanel(new BorderLayout());
         JXPanel tableViewPanel = new JXPanel(new BorderLayout());
@@ -152,8 +146,6 @@ public class EDEDBController extends Observable {
 
 		mainPanel.revalidate();
 		mainPanel.repaint();
-
-		return mainPanel;
 	}
 
 	/**
@@ -218,7 +210,7 @@ public class EDEDBController extends Observable {
 	// public void setRights(Rights rights) {
 	// this.rights = rights;
 	//
-	// if (session.isConnected()) {
+	// if (service.isConnected()) {
 	// experimentViewer.updateExpTable();
 	// update();
 	// }

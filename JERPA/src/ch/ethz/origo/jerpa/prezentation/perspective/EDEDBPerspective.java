@@ -1,9 +1,10 @@
 package ch.ethz.origo.jerpa.prezentation.perspective;
 
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.Icon;
+import javax.swing.*;
 
 import org.jdesktop.swingx.JXTaskPane;
 
@@ -195,7 +196,9 @@ public class EDEDBPerspective extends Perspective implements Observer {
 	@Override
 	public void initPerspectivePanel() throws PerspectiveException {
 		super.initPerspectivePanel();
-		mainPanel = controller.initGraphics();
+        mainPanel.setLayout(new BorderLayout());
+        controller.initGraphics(mainPanel);
+        SwingUtilities.updateComponentTreeUI(mainPanel);
 	}
 
 	/**

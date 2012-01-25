@@ -120,6 +120,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
                 pool.submit(fileDownload);
                 downloading.put(dataFile.getDataFileId(), true);
+                controller.update();
             }
 
             synchronized (lock) {

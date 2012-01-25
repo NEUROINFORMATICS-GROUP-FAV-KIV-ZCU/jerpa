@@ -8,20 +8,31 @@ import org.hibernate.criterion.Projections;
 import java.io.Serializable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Petr
- * Date: 22.1.12
- * Time: 17:39
- * To change this template use File | Settings | File Templates.
+ * @param <T>  Object type
+ * @param <PK> Identifier, i.e. primary key
+ * @author Petr Miko
+ *         <p/>
+ *         Class with functionality shared among all the DAO instances.
  */
 public class GenericDao<T, PK extends Serializable> {
 
     private Class<T> type;
 
+    /**
+     * Constructor.
+     *
+     * @param type object/table type
+     */
     public GenericDao(Class<T> type) {
         this.type = type;
     }
 
+    /**
+     * Method for saving new record into database.
+     *
+     * @param newRecord new object
+     * @return object's identifier.
+     */
     public PK save(T newRecord) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
@@ -30,6 +41,11 @@ public class GenericDao<T, PK extends Serializable> {
         return primaryKey;
     }
 
+    /**
+     * Method for updating existing record in database.
+     *
+     * @param transientRecord updated object
+     */
     public void update(T transientRecord) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
@@ -37,6 +53,12 @@ public class GenericDao<T, PK extends Serializable> {
         transaction.commit();
     }
 
+    /**
+     * Method for retrieving object from DB by its identifier.
+     *
+     * @param identifier identifier, i.e. primary key
+     * @return specified object
+     */
     public T get(PK identifier) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
@@ -45,6 +67,11 @@ public class GenericDao<T, PK extends Serializable> {
         return object;
     }
 
+    /**
+     * Getter of the highest revision value from table specified by object's type.
+     *
+     * @return newest revision value
+     */
     public long getLastRevision() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();

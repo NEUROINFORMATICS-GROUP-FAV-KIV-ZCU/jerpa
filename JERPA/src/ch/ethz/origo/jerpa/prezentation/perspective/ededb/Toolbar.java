@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
  * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
-public class Toolbar extends JXPanel implements ILanguage, ActionListener, Observer {
+public class Toolbar extends JPanel implements ILanguage, ActionListener, Observer {
 
 	private static final long serialVersionUID = 2538082288377712201L;
 	private ResourceBundle resource;

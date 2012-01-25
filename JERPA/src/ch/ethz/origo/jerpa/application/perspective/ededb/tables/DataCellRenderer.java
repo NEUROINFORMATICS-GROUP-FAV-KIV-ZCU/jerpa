@@ -32,8 +32,6 @@ public class DataCellRenderer extends JLabel implements TableCellRenderer, ILang
 
 	/**
 	 * Constructor method, sets opaquity to true.
-	 * 
-	 * @param model DataTableModel of Online Table
 	 */
 	public DataCellRenderer() {
 		setOpaque(true);
@@ -54,7 +52,6 @@ public class DataCellRenderer extends JLabel implements TableCellRenderer, ILang
 	 * @param column Column index of selected cell
 	 * @return Properly set up cell
 	 */
-	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
 		Color background = table.getBackground();
@@ -96,7 +93,6 @@ public class DataCellRenderer extends JLabel implements TableCellRenderer, ILang
 	 * 
 	 * @param path path to localization source file.
 	 */
-	@Override
 	public void setLocalizedResourceBundle(String path) {
 		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
@@ -107,7 +103,6 @@ public class DataCellRenderer extends JLabel implements TableCellRenderer, ILang
 	 * 
 	 * @return path to localization file.
 	 */
-	@Override
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
@@ -117,7 +112,6 @@ public class DataCellRenderer extends JLabel implements TableCellRenderer, ILang
 	 * 
 	 * @param string key
 	 */
-	@Override
 	public void setResourceBundleKey(String string) {
 		throw new UnsupportedOperationException("Method is not implemented yet...");
 	}
@@ -127,11 +121,9 @@ public class DataCellRenderer extends JLabel implements TableCellRenderer, ILang
 	 * 
 	 * @throws JUIGLELangException
 	 */
-	@Override
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {}
 		});
 

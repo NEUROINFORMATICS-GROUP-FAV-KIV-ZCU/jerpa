@@ -20,8 +20,8 @@ public class ExperimentViewer extends JSplitPane {
 
 	protected ExpTableModel expModel;
 	protected DataTableModel dataModel;
-	protected JXTable expTable;
-	protected JXTable dataTable;
+	protected JTable expTable;
+	protected JTable dataTable;
 
 	/**
 	 * Constructor creating basic JSplitPane interface.
@@ -45,7 +45,7 @@ public class ExperimentViewer extends JSplitPane {
 	 */
 	private Container createExpTable() {
 		expModel = new ExpTableModel();
-		expTable = new JXTable(expModel);
+		expTable = new JTable(expModel);
 
 		expTable.setAutoCreateRowSorter(true);
 		expTable.setFillsViewportHeight(true);
@@ -62,7 +62,7 @@ public class ExperimentViewer extends JSplitPane {
 	 */
 	private Container createDataTable() {
 		dataModel = new DataTableModel();
-		dataTable = new JXTable(dataModel);
+		dataTable = new JTable(dataModel);
 		dataTable.setDefaultRenderer(Object.class, new DataCellRenderer());
 
 		dataTable.setRowSorter(new DataRowSorter(dataModel));

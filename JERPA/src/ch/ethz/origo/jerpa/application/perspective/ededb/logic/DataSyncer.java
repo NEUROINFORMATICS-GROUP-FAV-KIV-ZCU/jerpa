@@ -57,12 +57,6 @@ public class DataSyncer {
         }
     }
 
-    public void interruptSync() {
-        synchronized (syncThread) {
-            syncThread.interrupt();
-        }
-    }
-
     @SuppressWarnings("unchecked")
     private class SyncThread extends Thread {
 
@@ -97,6 +91,7 @@ public class DataSyncer {
 
                 synchronized (lock) {
                     try {
+                        controller.update();
                         lock.wait(SLEEP_INTERVAL);
                     } catch (InterruptedException e) {
                         log.error(e.getMessage(), e);
@@ -401,7 +396,6 @@ public class DataSyncer {
                     log.error(e.getMessage(), e);
                 }
 
-                controller.update();
             } while (!Thread.interrupted());
 
         }

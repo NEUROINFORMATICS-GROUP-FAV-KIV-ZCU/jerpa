@@ -9,8 +9,6 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
-import org.jdesktop.swingx.JXLabel;
-import org.jdesktop.swingx.JXPanel;
 
 import javax.swing.*;
 import javax.xml.ws.WebServiceException;
@@ -38,13 +36,13 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 	private JFormattedTextField endpointField;
 	private JDialog dialog;
 	private JTextArea info;
-	private JXLabel usernameLabel;
-	private JXLabel passwordLabel;
-	private JXLabel endpointLabel;
+	private JLabel usernameLabel;
+	private JLabel passwordLabel;
+	private JLabel endpointLabel;
 	private JButton okButton, cancelButton;
 	private JToggleButton optionsButton;
-	private final JXPanel moreLabelPane = new JXPanel(new GridLayout(0, 1));
-	private final JXPanel moreFieldPane = new JXPanel(new GridLayout(0, 1));
+	private final JPanel moreLabelPane = new JPanel(new GridLayout(0, 1));
+	private final JPanel moreFieldPane = new JPanel(new GridLayout(0, 1));
 	private String inputsErrorText;
 	private String inputsErrorDesc;
 	private String credentialsErrorText;
@@ -58,14 +56,14 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 	/**
 	 * Constructor.
 	 * 
-	 * @param session EDEDSession from EDEDClient.jar
+     * @param service EDEDClient from EDEDClient.jar
 	 */
-	public LoginDialog(EDEDClient session) {
+	public LoginDialog(EDEDClient service) {
 
 		LanguageObservable.getInstance().attach(this);
 		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
-		this.service = session;
+		this.service = service;
 
 		busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
 		defaultCursor = Cursor.getDefaultCursor();
@@ -76,15 +74,15 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 	/**
 	 * Creating LoginDialong JDialog with all its fields, labels and buttons
 	 * (with actions).
-	 */
+     */
 	private void createDialog() {
 		dialog = new JDialog();
 
-		JXPanel canvas = new JXPanel();
+		JPanel canvas = new JPanel();
 		canvas.setLayout(new BoxLayout(canvas, BoxLayout.PAGE_AXIS));
-		JXPanel labelPane = new JXPanel(new GridLayout(0, 1));
-		JXPanel fieldPane = new JXPanel(new GridLayout(0, 1));
-		JXPanel buttonPane = new JXPanel(new FlowLayout());
+		JPanel labelPane = new JPanel(new GridLayout(0, 1));
+		JPanel fieldPane = new JPanel(new GridLayout(0, 1));
+		JPanel buttonPane = new JPanel(new FlowLayout());
 
 		updateErrorTexts();
 
@@ -102,9 +100,9 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 		usernameField = new JFormattedTextField();
 		passwordField = new JPasswordField();
 
-		endpointLabel = new JXLabel(resource.getString("logindialog.ededb.endpoint"));
-		usernameLabel = new JXLabel(resource.getString("logindialog.ededb.username"));
-		passwordLabel = new JXLabel(resource.getString("logindialog.ededb.password"));
+		endpointLabel = new JLabel(resource.getString("logindialog.ededb.endpoint"));
+		usernameLabel = new JLabel(resource.getString("logindialog.ededb.username"));
+		passwordLabel = new JLabel(resource.getString("logindialog.ededb.password"));
 		usernameLabel.setLabelFor(usernameField);
 		passwordLabel.setLabelFor(passwordField);
 
@@ -157,7 +155,7 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 		buttonPane.add(cancelButton);
 		buttonPane.add(optionsButton);
 
-		JXPanel top = new JXPanel();
+		JPanel top = new JPanel();
 		top.setLayout(new BoxLayout(top, BoxLayout.LINE_AXIS));
 		try {
 			top.add(new JLabel(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32)));
@@ -168,12 +166,12 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 
 		top.add(info);
 
-		JXPanel center = new JXPanel();
+		JPanel center = new JPanel();
 		center.setLayout(new BoxLayout(center, BoxLayout.LINE_AXIS));
 		center.add(labelPane);
 		center.add(fieldPane);
 
-		JXPanel more = new JXPanel();
+		JPanel more = new JPanel();
 		more.setLayout(new FlowLayout());
 		more.add(moreLabelPane);
 		more.add(moreFieldPane);

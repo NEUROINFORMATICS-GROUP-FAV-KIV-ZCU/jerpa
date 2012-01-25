@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.data.tier.DaoFactory;
@@ -36,13 +37,15 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
     private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
     private List<Experiment> selectedExps;
+    private EDEDBController controller;
 
     /**
      * Constructor.
      */
-    public ExperimentViewerLogic() {
+    public ExperimentViewerLogic(EDEDBController controller) {
         super();
 
+        this.controller = controller;
         LanguageObservable.getInstance().attach(this);
 
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
@@ -148,8 +151,10 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
             List<DataFile> dataFiles = dataFileDao.getAllFromExperiments(selectedExps);
 
-            for (DataFile file : dataFiles)
-                dataModel.addRow(file, dataFileDao.getFileState(file));
+            for (DataFile file : dataFiles) {
+                FileState state = (controller.getDownloader().isDownloading(file) ? FileState.DOWNLOADING : dataFileDao.getFileState(file));
+                dataModel.addRow(file, state);
+            }
             repaint();
         }
     }
@@ -225,7 +230,10 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
         synchronized (dataModel) {
             for (DataRowModel row : dataModel.getData()) {
-                if (row.getState() != FileState.DOWNLOADING) {
+
+                if (controller.getDownloader().isDownloading(row.getDataFile())) {
+                    row.setState(FileState.DOWNLOADING);
+                } else {
                     row.setState(dataFileDao.getFileState(row.getDataFile()));
                 }
             }
