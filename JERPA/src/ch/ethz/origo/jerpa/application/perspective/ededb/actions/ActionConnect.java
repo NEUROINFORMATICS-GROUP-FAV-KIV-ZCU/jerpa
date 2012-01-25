@@ -1,11 +1,10 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-
-import javax.swing.AbstractAction;
-
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 
 /**
  * Connect action class "calling" LoginDialog.
@@ -33,7 +32,6 @@ public class ActionConnect extends AbstractAction {
 	 * 
 	 * @param e performed action
 	 */
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		controller.setUserLoggedIn(true);
 	}

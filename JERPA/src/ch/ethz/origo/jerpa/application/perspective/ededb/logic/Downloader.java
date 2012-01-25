@@ -6,14 +6,14 @@ import ch.ethz.origo.jerpa.data.tier.FileState;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,7 +22,10 @@ import java.util.concurrent.Executors;
  *         <p/>
  *         Class for download files purposes.
  */
-public class Downloader extends Observable implements Observer {
+public class Downloader extends Observable implements Observer, ILanguage {
+
+    private static String resourceBundlePath;
+	private static ResourceBundle resource;
 
     private static boolean isDownloading = false;
     private static final Logger log = Logger.getLogger(Downloader.class);
@@ -40,6 +43,10 @@ public class Downloader extends Observable implements Observer {
      * @param session    web service client
      */
     public Downloader(EDEDBController controller, EDEDClient session) {
+
+        LanguageObservable.getInstance().attach(this);
+		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+
         this.controller = controller;
         this.session = session;
         downloading = new HashMap<Integer, Boolean>();
@@ -83,16 +90,19 @@ public class Downloader extends Observable implements Observer {
 
     /**
      * Method for downloading specified data file.
+     * @param dataFile data file to be downloaded
      */
     public void download(DataFile dataFile) {
 
-        boolean overwrite = false;
-
         try {
-            if (overwrite = (dataFileDao.getFileState(dataFile) == FileState.HAS_COPY)) {
+            if (dataFileDao.getFileState(dataFile) == FileState.HAS_COPY) {
 
-                int choice = JOptionPane.showConfirmDialog(null, "You're about to overwrite file " + dataFile.getFilename() + ". Proceed?",
-                        "Overwrite prompt", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                int choice = JOptionPane.showConfirmDialog(null,
+                        resource.getString("actiondownload.ededb.existence.text.part1")
+                                + dataFile.getFilename()
+                                + resource.getString("actiondownload.ededb.existence.text.part2"),
+                        resource.getString("actiondownload.ededb.existence.desc"),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 
                 controller.unselectAllFiles();
 
@@ -166,5 +176,21 @@ public class Downloader extends Observable implements Observer {
         } else if (arg instanceof DownloadException) {
             controller.setUserLoggedIn(false);
         }
+    }
+
+    public void setLocalizedResourceBundle(String path) {
+        resourceBundlePath = path;
+		resource = ResourceBundle.getBundle(path);
+    }
+
+    public String getResourceBundlePath() {
+        return resourceBundlePath;
+    }
+
+    public void setResourceBundleKey(String s) {
+        throw new UnsupportedOperationException("Method is not implemented yet...");
+    }
+
+    public void updateText() throws JUIGLELangException {
     }
 }

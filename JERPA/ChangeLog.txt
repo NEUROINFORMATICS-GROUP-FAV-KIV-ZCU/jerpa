@@ -10,6 +10,12 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (01/25/2012) kivan
+	# 249
+	
+	CHANGED: updated JerpLang, Downloader now implements Language observable. Few code cleanings.
+	FIXED: file download notification fixed (was showing null percents)
+
  * (01/24/2012) kivan
 	# 248
 	

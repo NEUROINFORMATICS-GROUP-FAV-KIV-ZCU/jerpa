@@ -1,21 +1,17 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import java.util.Observable;
-import java.util.Observer;
-import java.util.ResourceBundle;
-
-import javax.swing.BoxLayout;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
-
-import org.jdesktop.swingx.JXPanel;
-
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import org.jdesktop.swingx.JXPanel;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.ResourceBundle;
 
 /**
  * Class of GUI fields containing login username and download folder
@@ -93,7 +89,6 @@ public class LoginInfo extends JXPanel implements Observer, ILanguage {
 	 * 
 	 * @param path path to localization source file.
 	 */
-	@Override
 	public void setLocalizedResourceBundle(String path) {
 		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
@@ -104,7 +99,6 @@ public class LoginInfo extends JXPanel implements Observer, ILanguage {
 	 * 
 	 * @return path to localization file.
 	 */
-	@Override
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
@@ -114,7 +108,6 @@ public class LoginInfo extends JXPanel implements Observer, ILanguage {
 	 * 
 	 * @param string key
 	 */
-	@Override
 	public void setResourceBundleKey(String string) {
 		throw new UnsupportedOperationException("Method is not implemented yet...");
 	}
@@ -124,11 +117,9 @@ public class LoginInfo extends JXPanel implements Observer, ILanguage {
 	 * 
 	 * @throws JUIGLELangException
 	 */
-	@Override
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {
 				usernameBorder.setTitle(resource.getString("sidebar.ededb.info.title.username"));
 
@@ -137,7 +128,6 @@ public class LoginInfo extends JXPanel implements Observer, ILanguage {
 		});
 	}
 
-	@Override
 	public void update(Observable o, Object arg) {
 
 		updateLoginInfo();

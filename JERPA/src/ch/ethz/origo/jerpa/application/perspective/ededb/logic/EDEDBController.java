@@ -33,8 +33,7 @@ public class EDEDBController extends Observable {
 	private ActionDisconnect actionDisconnect;
 	private ActionConnect actionConnect;
 	private final JXPanel mainPanel;
-	private JXPanel tableViewPanel;
-	private Downloader downloader;
+    private Downloader downloader;
 
 	private final static Logger log = Logger.getLogger(EDEDBController.class);
 
@@ -112,13 +111,7 @@ public class EDEDBController extends Observable {
 			session.userLogout();
 			setServiceOffline(true);
 		}
-
-		experimentViewer.clearDataTable();
-		experimentViewer.clearExpTable();
-
-		updateTableView();
-		experimentViewer.updateExpTable();
-
+        loginInfo.updateLoginInfo();
 		update();
 	}
 
@@ -142,10 +135,10 @@ public class EDEDBController extends Observable {
 		mainPanel.removeAll();
 
 		JXPanel sidebar = new JXPanel(new BorderLayout());
-		tableViewPanel = new JXPanel(new BorderLayout());
+        JXPanel tableViewPanel = new JXPanel(new BorderLayout());
 
 		offlineMode = true;
-		updateTableView();
+		tableViewPanel.add(experimentViewer, BorderLayout.CENTER);
 
 		sidebar.add(loginInfo, BorderLayout.NORTH);
 		sidebar.add(toolbar, BorderLayout.CENTER);
@@ -158,19 +151,6 @@ public class EDEDBController extends Observable {
 		mainPanel.repaint();
 
 		return mainPanel;
-	}
-
-	/**
-	 * This method sets up the table view panel in accordance to the offlineMode
-	 * boolean.
-	 */
-	private void updateTableView() {
-		tableViewPanel.removeAll();
-
-		tableViewPanel.add(experimentViewer, BorderLayout.CENTER);
-
-		tableViewPanel.revalidate();
-		tableViewPanel.repaint();
 	}
 
 	/**
@@ -291,14 +271,11 @@ public class EDEDBController extends Observable {
 	/**
 	 * Setter of EDEDB online/offline view selection. After setting the mode,
 	 * table view panel is updated.
-	 * 
+	 *
 	 * @param offlineMode true/false
 	 */
 	public void setServiceOffline(boolean offlineMode) {
-
 		this.offlineMode = offlineMode;
-
-		updateTableView();
 	}
 
 	/**

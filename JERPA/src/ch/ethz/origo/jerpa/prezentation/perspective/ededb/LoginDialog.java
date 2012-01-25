@@ -1,35 +1,5 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import java.awt.Cursor;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.net.ConnectException;
-import java.util.ResourceBundle;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JProgressBar;
-import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import javax.xml.ws.WebServiceException;
-
-import org.jdesktop.swingx.JXLabel;
-import org.jdesktop.swingx.JXPanel;
-
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBProperties;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
@@ -39,6 +9,19 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.jdesktop.swingx.JXLabel;
+import org.jdesktop.swingx.JXPanel;
+
+import javax.swing.*;
+import javax.xml.ws.WebServiceException;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.util.ResourceBundle;
 
 /**
  * Class creating login dialog for setting up connection to EEG/ERP Database.
@@ -49,7 +32,7 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 
 	private ResourceBundle resource;
 	private String resourceBundlePath;
-	private final EDEDClient session;
+	private final EDEDClient service;
 	private JFormattedTextField usernameField;
 	private JPasswordField passwordField;
 	private JFormattedTextField endpointField;
@@ -82,7 +65,7 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 		LanguageObservable.getInstance().attach(this);
 		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
-		this.session = session;
+		this.service = session;
 
 		busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
 		defaultCursor = Cursor.getDefaultCursor();
@@ -179,7 +162,9 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 		try {
 			top.add(new JLabel(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32)));
 		}
-		catch (PerspectiveException ex) {}
+		catch (PerspectiveException ex) {
+
+        }
 
 		top.add(info);
 
@@ -226,7 +211,6 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 	 * 
 	 * @param path path to localization source file.
 	 */
-	@Override
 	public void setLocalizedResourceBundle(String path) {
 		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
@@ -237,7 +221,6 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 	 * 
 	 * @return path to localization file.
 	 */
-	@Override
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
@@ -247,7 +230,6 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 	 * 
 	 * @param string key
 	 */
-	@Override
 	public void setResourceBundleKey(String string) {
 		throw new UnsupportedOperationException("Method is not implemented yet...");
 	}
@@ -257,11 +239,9 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 	 * 
 	 * @throws JUIGLELangException
 	 */
-	@Override
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {
 				dialog.setTitle(resource.getString("logindialog.ededb.title"));
 				info.setText(resource.getString("logindialog.ededb.caution"));
@@ -289,7 +269,6 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 		connectionErrorDesc = resource.getString("logindialog.ededb.errors.connection.desc");
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent event) {
 
 		if ("ok".equals(event.getActionCommand())) {
@@ -306,13 +285,12 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 
 				Thread loginThread = new Thread(new Runnable() {
 
-					@Override
 					public void run() {
 
 						dialog.getRootPane().setCursor(busyCursor);
 
 						try {
-							session.userLogIn(tempUsername, tempPassword, tempEndpoint);
+							service.userLogIn(tempUsername, tempPassword, tempEndpoint);
 							EDEDBProperties.setConfigKey("ededb.endpoint", tempEndpoint);
 							dialog.setVisible(false);
 
@@ -347,7 +325,6 @@ public class LoginDialog extends KeyAdapter implements ILanguage, ActionListener
 
 				SwingUtilities.invokeLater(new Runnable() {
 
-					@Override
 					public void run() {
 						okButton.setEnabled(false);
 						cancelButton.setEnabled(false);

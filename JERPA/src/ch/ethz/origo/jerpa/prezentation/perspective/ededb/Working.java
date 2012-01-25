@@ -1,5 +1,7 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
+import ch.ethz.origo.jerpa.data.tier.DaoFactory;
+import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -14,216 +16,214 @@ import java.util.ResourceBundle;
 
 /**
  * Class for creating undecorated dialog showing "working animation"
- * 
+ *
  * @author Petr Miko - miko.petr (at) gmail.com
  */
 public class Working extends JXPanel implements ILanguage {
 
-	private static final long serialVersionUID = 4807698208851104534L;
-	private static Working instance;
-	private static Map<String, Integer> operations;
-	private static JTextArea operationsField;
-	private String resourceBundlePath;
-	private static ResourceBundle resource;
-	private static JProgressBar progress;
-	public static Cursor busyCursor;
-	public static Cursor defaultCursor;
-	private final JScrollPane operationsPane;
-	private static Map<DataFile, Integer> downloads;
+    private static final long serialVersionUID = 4807698208851104534L;
+    private static Working instance;
+    private static Map<String, Integer> operations;
+    private static JTextArea operationsField;
+    private static String resourceBundlePath;
+    private static ResourceBundle resource;
+    private static JProgressBar progress;
+    public static Cursor busyCursor;
+    public static Cursor defaultCursor;
+    private static Map<Integer, Integer> downloads;
 
-	/**
-	 * Method creating JDialog
-	 */
-	public Working() {
-		super();
-		instance = this;
+    private static DataFileDao dataFileDao = DaoFactory.getDataFileDao();
 
-		busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-		defaultCursor = Cursor.getDefaultCursor();
+    /**
+     * Method creating JDialog
+     */
+    public Working() {
+        super();
+        instance = this;
 
-		LanguageObservable.getInstance().attach(this);
-		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+        busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+        defaultCursor = Cursor.getDefaultCursor();
 
-		progress = new JProgressBar();
-		setLayout(new BorderLayout());
+        LanguageObservable.getInstance().attach(this);
+        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
-		operations = new HashMap<String, Integer>();
-		downloads = new HashMap<DataFile, Integer>();
+        progress = new JProgressBar();
+        setLayout(new BorderLayout());
 
-		operationsField = new JTextArea();
-		operationsField.setEditable(false);
-		operationsField.setBackground(getBackground());
-		operationsField.setForeground(getForeground());
+        operations = new HashMap<String, Integer>();
+        downloads = new HashMap<Integer, Integer>();
 
-		operationsPane = new JScrollPane(operationsField);
-		operationsPane.setPreferredSize(new Dimension(30, 50));
-		operationsPane.setFocusable(false);
+        operationsField = new JTextArea();
+        operationsField.setEditable(false);
+        operationsField.setBackground(getBackground());
+        operationsField.setForeground(getForeground());
 
-		updateOperations();
+        JScrollPane operationsPane = new JScrollPane(operationsField);
+        operationsPane.setPreferredSize(new Dimension(30, 50));
+        operationsPane.setFocusable(false);
 
-		this.add(operationsPane, BorderLayout.CENTER);
-		this.add(progress, BorderLayout.SOUTH);
-	}
+        updateOperations();
 
-	/**
-	 * Method setting visibility according to input integer
-	 */
-	public static synchronized void setActivity(boolean add, String operation) {
+        this.add(operationsPane, BorderLayout.CENTER);
+        this.add(progress, BorderLayout.SOUTH);
+    }
 
-		if (instance == null) {
-			new Working();
-		}
+    /**
+     * Method setting visibility according to input integer
+     *
+     * @param add       operation of adding or removing Working action
+     * @param operation ongoing operation
+     */
+    public static synchronized void setActivity(boolean add, String operation) {
 
-		if (add) {
-			operations.put(operation, (operations.get(operation) == null ? 1 : operations.get(operation) + 1));
-			if (operations.size() == 1) {
-				progress.setIndeterminate(true);
+        if (instance == null) {
+            new Working();
+        }
 
-				if (instance.getRootPane() != null) {
-					instance.getRootPane().setCursor(busyCursor);
-				}
-				else {
-					instance.setCursor(busyCursor);
-				}
-			}
-		}
-		else {
-			if (operations.get(operation) != null && operations.get(operation) == 1) {
-				operations.remove(operation);
-				if (operations.isEmpty()) {
-					progress.setIndeterminate(false);
+        if (add) {
+            operations.put(operation, (operations.get(operation) == null ? 1 : operations.get(operation) + 1));
+            if (operations.size() == 1) {
+                progress.setIndeterminate(true);
 
-					if (instance.getRootPane() != null) {
-						instance.getRootPane().setCursor(defaultCursor);
-					}
-					else {
-						instance.setCursor(defaultCursor);
-					}
-				}
-			}
-			else {
-				operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0 ? 1 : operations.get(operation) - 1));
-			}
-		}
+                if (instance.getRootPane() != null) {
+                    instance.getRootPane().setCursor(busyCursor);
+                } else {
+                    instance.setCursor(busyCursor);
+                }
+            }
+        } else {
+            if (operations.get(operation) != null && operations.get(operation) == 1) {
+                operations.remove(operation);
+                if (operations.isEmpty()) {
+                    progress.setIndeterminate(false);
 
-		updateOperations();
+                    if (instance.getRootPane() != null) {
+                        instance.getRootPane().setCursor(defaultCursor);
+                    } else {
+                        instance.setCursor(defaultCursor);
+                    }
+                }
+            } else {
+                operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0 ? 1 : operations.get(operation) - 1));
+            }
+        }
 
-		SwingUtilities.invokeLater(new Runnable() {
+        updateOperations();
 
-			public void run() {
-				instance.revalidate();
-				instance.repaint();
-			}
-		});
-	}
+        SwingUtilities.invokeLater(new Runnable() {
 
-	/**
-	 * Setting currently downloading file.
-	 * 
-	 * @param percent How many percents is downloaded
-	 * @param file Specific file
-	 */
-	public static void setDownload(int percent, DataFile file) {
-		if (instance == null) {
-			new Working();
-		}
+            public void run() {
+                instance.revalidate();
+                instance.repaint();
+            }
+        });
+    }
 
-		if (percent == 100) {
-			downloads.remove(file);
-		}
-		else {
-			downloads.put(file, percent);
-		}
+    /**
+     * Setting currently downloading file.
+     *
+     * @param percent How many percents is downloaded
+     * @param file    Specific file
+     */
+    public static void setDownload(int percent, DataFile file) {
+        if (instance == null) {
+            new Working();
+        }
 
-		updateOperations();
+        if (percent == 100) {
+            downloads.remove(file.getDataFileId());
+        } else {
+            downloads.put(file.getDataFileId(), percent);
+        }
 
-		SwingUtilities.invokeLater(new Runnable() {
+        updateOperations();
 
-			public void run() {
-				instance.revalidate();
-				instance.repaint();
-			}
-		});
-	}
+        SwingUtilities.invokeLater(new Runnable() {
 
-	/**
-	 * Prints out ongoing operations into JTextArea
-	 */
-	private static void updateOperations() {
+            public void run() {
+                instance.revalidate();
+                instance.repaint();
+            }
+        });
+    }
 
-		String temp = "";
-		operationsField.removeAll();
+    /**
+     * Prints out ongoing operations into JTextArea
+     */
+    private static void updateOperations() {
 
-		if (!operations.isEmpty()) {
-			for (String operation : operations.keySet()) {
-				if (temp.equals("")) {
-					temp = "[" + operations.get(operation) + "] " + operation;
-				}
-				else {
-					temp += "\n[" + operations.get(operation) + "] " + operation;
-				}
-			}
-		}
-		else {
-			temp = resource.getString("working.ededb.no");
-		}
+        String temp = "";
+        operationsField.removeAll();
 
-		if (!downloads.isEmpty()) {
-			for (DataFile file : downloads.keySet()) {
-				if (temp.equals("")) {
-					temp = file.getFilename() + " (ID " + file.getDataFileId() + "):" + downloads.get(file) + "%";
-				}
-				else {
-					temp += "\n" + file.getFilename() + " (ID " + file.getDataFileId() + "):" + downloads.get(file) + "%";
-				}
-			}
-		}
+        if (!operations.isEmpty()) {
+            for (String operation : operations.keySet()) {
+                if (temp.equals("")) {
+                    temp = "[" + operations.get(operation) + "] " + resource.getString(operation);
+                } else {
+                    temp += "\n[" + operations.get(operation) + "] " + resource.getString(operation);
+                }
+            }
+        } else {
+            temp = resource.getString("working.ededb.no");
+        }
 
-		progress.setToolTipText(temp);
+        if (!downloads.isEmpty()) {
+            DataFile file;
+            for (Integer fileIds : downloads.keySet()) {
+                file = dataFileDao.get(fileIds);
+                if (temp.equals("")) {
+                    temp = file.getFilename() + " (ID " + file.getDataFileId() + "):" + downloads.get(fileIds) + "%";
+                } else {
+                    temp += "\n" + file.getFilename() + " (ID " + file.getDataFileId() + "):" + downloads.get(fileIds) + "%";
+                }
+            }
+        }
 
-		operationsField.setText(temp);
-	}
+        progress.setToolTipText(temp);
 
-	/**
-	 * Setter of localization resource bundle path
-	 * 
-	 * @param path path to localization source file.
-	 */
-	public void setLocalizedResourceBundle(String path) {
-		resourceBundlePath = path;
-		resource = ResourceBundle.getBundle(path);
-	}
+        operationsField.setText(temp);
+    }
 
-	/**
-	 * Getter of path to resource bundle.
-	 * 
-	 * @return path to localization file.
-	 */
-	public String getResourceBundlePath() {
-		return resourceBundlePath;
-	}
+    /**
+     * Setter of localization resource bundle path
+     *
+     * @param path path to localization source file.
+     */
+    public void setLocalizedResourceBundle(String path) {
+        resourceBundlePath = path;
+        resource = ResourceBundle.getBundle(path);
+    }
 
-	/**
-	 * Setter of resource bundle key.
-	 * 
-	 * @param string key
-	 */
-	public void setResourceBundleKey(String string) {
-		throw new UnsupportedOperationException("Method is not implemented yet...");
-	}
+    /**
+     * Getter of path to resource bundle.
+     *
+     * @return path to localization file.
+     */
+    public String getResourceBundlePath() {
+        return resourceBundlePath;
+    }
 
-	/**
-	 * Method invoked by change of LanguageObservable.
-	 * 
-	 * @throws JUIGLELangException
-	 */
-	public void updateText() throws JUIGLELangException {
-		SwingUtilities.invokeLater(new Runnable() {
+    /**
+     * Setter of resource bundle key.
+     *
+     * @param string key
+     */
+    public void setResourceBundleKey(String string) {
+        throw new UnsupportedOperationException("Method is not implemented yet...");
+    }
 
-			public void run() {
-				updateOperations();
-			}
-		});
+    /**
+     * Method invoked by change of LanguageObservable.
+     *
+     * @throws JUIGLELangException
+     */
+    public void updateText() throws JUIGLELangException {
+        SwingUtilities.invokeLater(new Runnable() {
 
-	}
+            public void run() {
+                updateOperations();
+            }
+        });
+
+    }
 }

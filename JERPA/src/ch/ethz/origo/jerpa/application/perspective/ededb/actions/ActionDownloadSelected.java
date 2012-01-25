@@ -1,15 +1,5 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javax.swing.AbstractAction;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Downloader;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
@@ -17,6 +7,12 @@ import ch.ethz.origo.jerpa.data.tier.FileState;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Action class for downloading files selected in data view table of EDEDB.
@@ -36,7 +32,7 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 	 * Constructor.
 	 * 
 	 * @param controller EDEDB EDEDBController
-	 * @param session EDEDClient.jar Session
+     * @param downloader EDEDB Downloader
 	 */
 	public ActionDownloadSelected(EDEDBController controller, Downloader downloader) {
 		super();
@@ -57,7 +53,6 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 	 * 
 	 * @param e action
 	 */
-	@Override
 	public void actionPerformed(ActionEvent e) {
 
 		List<DataRowModel> filesToDownload = controller.getSelectedFiles();
@@ -84,7 +79,6 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 	 * 
 	 * @param path path to localization source file.
 	 */
-	@Override
 	public void setLocalizedResourceBundle(String path) {
 		resourceBundlePath = path;
 		resource = ResourceBundle.getBundle(path);
@@ -95,17 +89,15 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 	 * 
 	 * @return path to localization file.
 	 */
-	@Override
 	public String getResourceBundlePath() {
 		return resourceBundlePath;
 	}
 
 	/**
-	 * Setter of resource budle key.
+	 * Setter of resource bundle key.
 	 * 
 	 * @param string key
 	 */
-	@Override
 	public void setResourceBundleKey(String string) {
 		throw new UnsupportedOperationException("Method is not implemented yet...");
 	}
@@ -115,11 +107,9 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 	 * 
 	 * @throws JUIGLELangException
 	 */
-	@Override
 	public void updateText() throws JUIGLELangException {
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
 			public void run() {
 				initTexts();
 			}

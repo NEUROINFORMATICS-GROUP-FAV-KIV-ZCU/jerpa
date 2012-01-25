@@ -156,7 +156,7 @@ public class FileDownload extends Observable implements Runnable {
         }
 
         public int progress() {
-            progress = (int) (((++bytesRead * 100) / fileInfo.getFileLength()));
+            progress = (int) (((++bytesRead * 100.0) / fileInfo.getFileLength()));
             if (progress - prev > 0) {
                 prev = progress;
             }

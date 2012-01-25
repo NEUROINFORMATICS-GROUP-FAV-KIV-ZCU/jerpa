@@ -51,7 +51,7 @@ public class DataSyncer {
     @SuppressWarnings("unchecked")
     private class SyncThread extends Thread {
 
-        long SLEEP_INTERVAL = 10000;
+        long SLEEP_INTERVAL = 600000;
         private final Object lock = new Object();
 
         @Override
@@ -95,14 +95,14 @@ public class DataSyncer {
 
                 try {
                     /*First we obtain all needed information from server in collections.*/
-                    Working.setActivity(true, "Database update");
+                    Working.setActivity(true, "working.ededb.dbsync");
                     groupsInfo = session.getService().getResearchGroups(researchGroupDao.getLastRevision());
                     weathersInfo = session.getService().getWeather(weatherDao.getLastRevision());
                     peopleInfo = session.getService().getPeople(personDao.getLastRevision());
                     scenariosInfo = session.getService().getScenarios(scenarioDao.getLastRevision());
                     experimentsInfo = session.getService().getExperiments(experimentDao.getLastRevision());
                     filesInfo = session.getService().getDataFiles(dataFileDao.getLastRevision());
-                    Working.setActivity(false, "Database update");
+                    Working.setActivity(false, "working.ededb.dbsync");
 
 
                     log.debug("DB update");
