@@ -14,6 +14,9 @@
         <property name="time">
             <column name="TIME" sql-type="date" length="10" not-null="true"/>
         </property>
+        <property name="changed">
+            <column name="CHANGED" sql-type="boolean" />
+        </property>
         <many-to-one name="articles" class="ch.ethz.origo.jerpa.data.tier.pojo.Article">
             <column name="ARTICLE_ID" not-null="true"/>
         </many-to-one>

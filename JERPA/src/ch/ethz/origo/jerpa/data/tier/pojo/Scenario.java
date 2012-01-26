@@ -12,6 +12,15 @@ import java.util.Collection;
  */
 public class Scenario {
     private int scenarioId;
+    private boolean changed;
+
+    public boolean getChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
 
     public int getScenarioId() {
         return scenarioId;

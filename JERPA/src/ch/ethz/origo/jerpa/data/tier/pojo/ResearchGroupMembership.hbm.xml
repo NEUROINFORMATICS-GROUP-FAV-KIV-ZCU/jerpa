@@ -17,6 +17,9 @@
         <property name="authority">
             <column name="AUTHORITY" sql-type="varchar" length="30" not-null="true"/>
         </property>
+        <property name="changed">
+            <column name="CHANGED" sql-type="boolean" />
+        </property>
         <many-to-one name="person" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
             <column name="PERSON_ID" not-null="true"/>
         </many-to-one>

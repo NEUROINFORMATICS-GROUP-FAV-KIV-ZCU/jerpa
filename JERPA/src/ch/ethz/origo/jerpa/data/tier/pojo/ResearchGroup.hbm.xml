@@ -17,6 +17,9 @@
         <property name="version">
             <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
         </property>
+        <property name="changed">
+            <column name="CHANGED" sql-type="boolean" />
+        </property>
         <many-to-one name="owner" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
             <column name="OWNER_ID" not-null="true"/>
         </many-to-one>

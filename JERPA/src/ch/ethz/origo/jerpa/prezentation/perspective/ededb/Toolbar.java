@@ -32,7 +32,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 	private String resourceBundlePath;
 	private final EDEDBController controller;
 	private final EDEDClient session;
-	private JButton connectButton, disconnectButton, downloadButton, deleteFileButton, visualizeFileButton;
+	private JButton connectButton, disconnectButton, downloadButton, deleteFileButton, visualizeFileButton, importToDbButton;
 	private JRadioButton ownerButton, subjectButton, allButton;
 
 	/**
@@ -66,6 +66,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		this.add(radioBar);
 		this.add(visualizeFileButton);
 		this.add(downloadButton);
+        this.add(importToDbButton);
 		this.add(deleteFileButton);
 
 		allButton.setSelected(true);
@@ -86,6 +87,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		downloadButton = new JButton();
 		visualizeFileButton = new JButton();
 		deleteFileButton = new JButton();
+        importToDbButton = new JButton();
 		allButton = new JRadioButton();
 		ownerButton = new JRadioButton();
 		subjectButton = new JRadioButton();
@@ -106,6 +108,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		downloadButton.setHorizontalAlignment(SwingConstants.LEFT);
 		deleteFileButton.setHorizontalAlignment(SwingConstants.LEFT);
 		visualizeFileButton.setHorizontalAlignment(SwingConstants.LEFT);
+        importToDbButton.setHorizontalAlignment(SwingConstants.LEFT);
 
 		connectButton.addActionListener(controller.getActionConnect());
 		disconnectButton.addActionListener(controller.getActionDisconnect());
@@ -162,6 +165,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		allButton.setText(resource.getString("sidebar.ededb.toolbar.all"));
 		ownerButton.setText(resource.getString("sidebar.ededb.toolbar.owner"));
 		subjectButton.setText(resource.getString("sidebar.ededb.toolbar.subject"));
+        importToDbButton.setText(resource.getString("sidebar.ededb.toolbar.importToDb"));
 	}
 
 	/**
@@ -221,6 +225,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		allButton.setEnabled(active);
 		ownerButton.setEnabled(active);
 		subjectButton.setEnabled(active);
+        importToDbButton.setEnabled(active);
 
 		updateButtonsVisibility();
 	}
@@ -235,7 +240,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 			disconnectButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "logout_48.png", 32, 32));
 			downloadButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "arrow_down_green_48.png", 32, 32));
 			deleteFileButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "cross_48.png", 32, 32));
-
+            importToDbButton.setIcon(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "database_48.png", 32, 32));
 		}
 		catch (final PerspectiveException ex) {
 			JUIGLErrorInfoUtils.showErrorDialog(ex.getMessage(), ex.getLocalizedMessage(), ex);

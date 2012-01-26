@@ -86,12 +86,12 @@ public class DataSyncer {
             Iterator<Person> personIterator;
 
             boolean found[] = new boolean[4];
+            boolean changed = false;
 
             do {
 
                 synchronized (lock) {
                     try {
-                        controller.update();
                         lock.wait(SLEEP_INTERVAL);
                     } catch (InterruptedException e) {
                         log.error(e.getMessage(), e);
@@ -121,6 +121,13 @@ public class DataSyncer {
                     log.debug(experimentsInfo.size() + " new experiments");
                     log.debug(filesInfo.size() + " new data files");
                     log.debug(weathersInfo.size() + " new weather types");
+
+                    changed = (!groupsInfo.isEmpty()
+                            && !peopleInfo.isEmpty()
+                            && !scenariosInfo.isEmpty()
+                            && !experimentsInfo.isEmpty()
+                            && !filesInfo.isEmpty()
+                            && !weathersInfo.isEmpty());
 
                     /* initializing of collections for objects, which will be created based on server info */
                     groups = new ArrayList<ResearchGroup>();
@@ -395,7 +402,8 @@ public class DataSyncer {
                 } catch (DataDownloadException_Exception e) {
                     log.error(e.getMessage(), e);
                 }
-
+                if (changed)
+                    controller.update();
             } while (!Thread.interrupted());
 
         }

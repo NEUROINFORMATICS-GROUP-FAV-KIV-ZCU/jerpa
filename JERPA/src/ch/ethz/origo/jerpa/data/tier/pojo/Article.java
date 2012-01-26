@@ -13,6 +13,15 @@ import java.util.Collection;
  */
 public class Article {
     private int articleId;
+    private boolean changed;
+
+    public boolean getChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
 
     public int getArticleId() {
         return articleId;

@@ -26,6 +26,9 @@
         <property name="version">
             <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
         </property>
+        <property name="changed">
+            <column name="CHANGED" sql-type="boolean" />
+        </property>
         <many-to-one name="experiment" class="ch.ethz.origo.jerpa.data.tier.pojo.Experiment">
             <column name="EXPERIMENT_ID" not-null="true"/>
         </many-to-one>

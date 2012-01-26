@@ -11,6 +11,15 @@ import java.sql.Date;
  */
 public class History {
     private int historyId;
+    private boolean changed;
+
+    public boolean getChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
 
     public int getHistoryId() {
         return historyId;

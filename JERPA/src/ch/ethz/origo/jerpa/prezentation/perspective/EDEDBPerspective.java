@@ -37,6 +37,7 @@ public class EDEDBPerspective extends Perspective implements Observer {
 	private JUIGLEMenuItem downloadFile;
 	private JUIGLEMenuItem visualizeFile;
 	private JUIGLEMenuItem deleteFile;
+    private JUIGLEMenuItem importToDb;
 	private boolean menuInited = false;
 
 	/**
@@ -171,11 +172,13 @@ public class EDEDBPerspective extends Perspective implements Observer {
 		downloadFile = new JUIGLEMenuItem();
 		visualizeFile = new JUIGLEMenuItem();
 		deleteFile = new JUIGLEMenuItem();
+        importToDb = new JUIGLEMenuItem();
 
 		ededbMenu2.setResourceBundleKey("menu2.ededb.title");
 		downloadFile.setResourceBundleKey("menu2.ededb.download");
 		visualizeFile.setResourceBundleKey("menu2.ededb.visualise");
 		deleteFile.setResourceBundleKey("menu2.ededb.delete");
+        importToDb.setResourceBundleKey("menu2.ededb.importToDb");
 
 		downloadFile.setAction(controller.getActionDownloadSelected());
 		deleteFile.setAction(controller.getActionDeleteSelected());
@@ -183,6 +186,7 @@ public class EDEDBPerspective extends Perspective implements Observer {
 
 		ededbMenu2.addSubItem(downloadFile);
 		ededbMenu2.addSubItem(visualizeFile);
+        ededbMenu2.addSubItem(importToDb);
 		ededbMenu2.addSubItem(deleteFile);
 
 		return ededbMenu2;
@@ -233,6 +237,7 @@ public class EDEDBPerspective extends Perspective implements Observer {
 
 		downloadFile.setEnabled(active);
 		visualizeFile.setEnabled(active);
+        importToDb.setEnabled(active);
 		deleteFile.setEnabled(active);
 	}
 

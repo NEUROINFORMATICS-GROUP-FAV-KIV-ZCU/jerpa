@@ -11,6 +11,9 @@
         <property name="description">
             <column name="DESCRIPTION" sql-type="varchar" length="30" not-null="true"/>
         </property>
+        <property name="changed">
+            <column name="CHANGED" sql-type="boolean" />
+        </property>
         <set name="visualImpairmentRels" inverse="true">
             <key>
                 <column name="VISUAL_IMPAIRMENT_ID" not-null="true"/>

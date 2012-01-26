@@ -11,6 +11,15 @@ import java.util.Collection;
  */
 public class HearingImpairment {
     private int hearingImpairmentId;
+    private boolean changed;
+
+    public boolean getChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
 
     public int getHearingImpairmentId() {
         return hearingImpairmentId;

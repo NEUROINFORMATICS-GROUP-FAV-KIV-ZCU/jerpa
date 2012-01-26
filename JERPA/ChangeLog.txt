@@ -10,6 +10,12 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (01/26/2012) kivan
+	# 252
+	
+	INTERNAL: SQL and DB structure changed - some tables now have field CHANGED due to comming need of sync files with EEG base
+	CHANGED: added button of Import files (no functionality now), JerpaLang updated. Few minor bug fixes.
+
  * (01/25/2012) kivan
 	# 251
 	

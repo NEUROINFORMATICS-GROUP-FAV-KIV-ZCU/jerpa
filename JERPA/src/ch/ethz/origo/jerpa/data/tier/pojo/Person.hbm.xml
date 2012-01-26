@@ -44,6 +44,9 @@
         <property name="version">
             <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
         </property>
+        <property name="changed">
+            <column name="CHANGED" sql-type="boolean" />
+        </property>
         <many-to-one name="defaultGroup" class="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup">
             <column name="DEFAULT_GROUP_ID"/>
         </many-to-one>

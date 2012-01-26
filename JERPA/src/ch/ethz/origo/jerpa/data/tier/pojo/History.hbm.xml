@@ -11,6 +11,9 @@
         <property name="dateOfDownload">
             <column name="DATE_OF_DOWNLOAD" sql-type="date" length="10" not-null="true"/>
         </property>
+        <property name="changed">
+            <column name="CHANGED" sql-type="boolean" />
+        </property>
         <many-to-one name="dataFile" class="ch.ethz.origo.jerpa.data.tier.pojo.DataFile">
             <column name="DATA_FILE_ID"/>
         </many-to-one>
