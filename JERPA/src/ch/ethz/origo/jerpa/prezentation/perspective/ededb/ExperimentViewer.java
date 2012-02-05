@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Class for displaying experiments and its data in online mode.
+ * Class for displaying experiments and its data.
  * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
@@ -18,10 +18,10 @@ public class ExperimentViewer extends JSplitPane {
 
 	private static final long serialVersionUID = -4454099765721853413L;
 
-	protected ExpTableModel expModel;
-	protected DataTableModel dataModel;
-	protected JTable expTable;
-	protected JTable dataTable;
+    protected ExpTableModel expModel;
+    protected DataTableModel dataModel;
+	protected ExperimentsTable expTable;
+	protected DataFilesTable dataTable;
 
 	/**
 	 * Constructor creating basic JSplitPane interface.
@@ -45,13 +45,7 @@ public class ExperimentViewer extends JSplitPane {
 	 */
 	private Container createExpTable() {
 		expModel = new ExpTableModel();
-		expTable = new JTable(expModel);
-
-		expTable.setAutoCreateRowSorter(true);
-		expTable.setFillsViewportHeight(true);
-		expTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		expTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
+		expTable = new ExperimentsTable(expModel);
 		return new JScrollPane(expTable);
 	}
 
@@ -62,14 +56,7 @@ public class ExperimentViewer extends JSplitPane {
 	 */
 	private Container createDataTable() {
 		dataModel = new DataTableModel();
-		dataTable = new JTable(dataModel);
-		dataTable.setDefaultRenderer(Object.class, new DataCellRenderer());
-
-		dataTable.setRowSorter(new DataRowSorter(dataModel));
-		dataTable.setFillsViewportHeight(true);
-		dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		dataTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+		dataTable = new DataFilesTable(dataModel);
 		return new JScrollPane(dataTable);
 	}
 }

@@ -10,6 +10,13 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (02/05/2012) kivan
+	# 253
+	
+	CHANGED: way of creating experiment view is a bit different now (more separate classes) - necessary because of MouseListener in each table.
+	CHANGED: HibernateUtil.rebind - new method for rebinding object which was not fully loaded from db (Lazy loading issue)
+	ADDED: Double-click on experiment in EDEDB now opens dialog with basic information about experiment itself (not editable for now)
+
  * (01/26/2012) kivan
 	# 252
 	
