@@ -11,6 +11,14 @@
 *********************************************************************************************
 
  * (02/06/2012) kivan
+	# 255
+	
+	ADDED: GUI part of Import Wizard for importing data files into database.
+	ADDED: ImportFilesTableModel - data model for table in Import Wizard.
+	CHANGED: some POJO classes of db extended of toString method
+	ADDED: added action to Import to DB buttons in EDEDB
+
+ * (02/06/2012) kivan
 	# 254
 	
 	ADDED: BlobViewer: so far only for text files. (issue with Blob.getBinaryStream().read(byte[]) - does not read whole blob, god knows why. Working workaround with Blob.getBytes)

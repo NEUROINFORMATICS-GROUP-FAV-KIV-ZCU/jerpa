@@ -337,4 +337,8 @@ public class Person {
     public void setVisualImpairmentRels(Collection<VisualImpairmentRel> visualImpairmentRels) {
         this.visualImpairmentRels = visualImpairmentRels;
     }
+
+    public String toString(){
+        return name + " " + surname + ": " + personId;
+    }
 }

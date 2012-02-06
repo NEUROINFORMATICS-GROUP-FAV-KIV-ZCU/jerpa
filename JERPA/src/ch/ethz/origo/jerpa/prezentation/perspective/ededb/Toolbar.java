@@ -115,6 +115,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		downloadButton.addActionListener(controller.getActionDownloadSelected());
 		deleteFileButton.addActionListener(controller.getActionDeleteSelected());
 		visualizeFileButton.addActionListener(controller.getActionVisualizeSelected());
+        importToDbButton.addActionListener(controller.getActionImportWizard());
 
 		allButton.addActionListener(this);
 		allButton.setActionCommand("all");

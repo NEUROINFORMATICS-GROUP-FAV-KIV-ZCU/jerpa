@@ -152,4 +152,8 @@ public class ResearchGroup {
     public void setScenarios(Collection<Scenario> scenarios) {
         this.scenarios = scenarios;
     }
+
+    public String toString(){
+        return getTitle() + " (" + researchGroupId + ")";
+    }
 }

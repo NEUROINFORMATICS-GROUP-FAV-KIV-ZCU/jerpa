@@ -92,4 +92,8 @@ public class Weather {
     public void setExperiments(Collection<Experiment> experiments) {
         this.experiments = experiments;
     }
+
+    public String toString(){
+        return title + " - " + description;
+    }
 }

@@ -184,4 +184,8 @@ public class Scenario {
     public void setResearchGroup(ResearchGroup researchGroup) {
         this.researchGroup = researchGroup;
     }
+
+    public String toString(){
+        return getTitle() + ": " + getDescription();
+    }
 }

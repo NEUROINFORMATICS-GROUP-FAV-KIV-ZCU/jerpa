@@ -32,6 +32,7 @@ public class EDEDBController extends Observable {
 	private ActionDeleteSelected actionDeleteSelected;
 	private ActionDisconnect actionDisconnect;
 	private ActionConnect actionConnect;
+    private ActionImportWizard actionImportWizard;
     private Downloader downloader;
     private DataSyncer syncer;
 
@@ -84,6 +85,7 @@ public class EDEDBController extends Observable {
 	 */
 	private void initActions() {
 
+        actionImportWizard = new ActionImportWizard();
 		actionConnect = new ActionConnect(this);
 		actionDisconnect = new ActionDisconnect(this);
 		actionDownloadSelected = new ActionDownloadSelected(this, downloader);
@@ -184,7 +186,15 @@ public class EDEDBController extends Observable {
 		return actionDownloadSelected;
 	}
 
-	/**
+    /**
+     * Getter of action import wizard.
+     * @return action of invoking new action wizard frame
+     */
+    public ActionImportWizard getActionImportWizard() {
+        return actionImportWizard;
+    }
+
+    /**
 	 * Getter of action visualize selected.
 	 * 
 	 * @return open in analyze perspective action

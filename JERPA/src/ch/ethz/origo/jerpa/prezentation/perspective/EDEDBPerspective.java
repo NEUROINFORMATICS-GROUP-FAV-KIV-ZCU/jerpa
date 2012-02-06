@@ -183,6 +183,7 @@ public class EDEDBPerspective extends Perspective implements Observer {
 		downloadFile.setAction(controller.getActionDownloadSelected());
 		deleteFile.setAction(controller.getActionDeleteSelected());
 		visualizeFile.setAction(controller.getActionVisualizeSelected());
+        importToDb.setAction(controller.getActionImportWizard());
 
 		ededbMenu2.addSubItem(downloadFile);
 		ededbMenu2.addSubItem(visualizeFile);

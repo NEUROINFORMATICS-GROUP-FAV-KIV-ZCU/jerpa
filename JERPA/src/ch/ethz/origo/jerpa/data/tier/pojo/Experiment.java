@@ -1,6 +1,10 @@
 package ch.ethz.origo.jerpa.data.tier.pojo;
 
+import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
+
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 /**
@@ -216,5 +220,11 @@ public class Experiment {
 
     public void setHistories(Collection<History> histories) {
         this.histories = histories;
+    }
+
+    public String toString(){
+        DateFormat timeFormat = new SimpleDateFormat("d.M.yyyy HH:mm:ss");
+
+        return experimentId + " | " + timeFormat.format(startTime) + " -> " + timeFormat.format(endTime) + " | " + scenario.getTitle();
     }
 }
