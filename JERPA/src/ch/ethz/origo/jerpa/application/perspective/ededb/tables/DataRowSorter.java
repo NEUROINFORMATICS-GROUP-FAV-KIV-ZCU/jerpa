@@ -26,7 +26,6 @@ public class DataRowSorter extends TableRowSorter<DataTableModel> {
 	public Comparator<?> getComparator(int column) {
 		return new Comparator<Object>() {
 
-			@Override
 			public int compare(Object o1, Object o2) {
 
 				if (o1 instanceof Number && o2 instanceof Number)

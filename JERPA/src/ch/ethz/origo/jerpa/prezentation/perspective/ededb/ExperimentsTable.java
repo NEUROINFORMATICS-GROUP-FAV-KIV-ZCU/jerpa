@@ -22,6 +22,7 @@ import java.awt.event.MouseListener;
 public class ExperimentsTable extends JTable implements MouseListener {
 
     private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
+    private ExpTableModel expTableModel;
 
     /**
      * Constructor.
@@ -31,6 +32,7 @@ public class ExperimentsTable extends JTable implements MouseListener {
     public ExperimentsTable(ExpTableModel expTableModel) {
         super(expTableModel);
 
+        this.expTableModel = expTableModel;
         this.setAutoCreateRowSorter(true);
         this.setFillsViewportHeight(true);
         this.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -41,8 +43,8 @@ public class ExperimentsTable extends JTable implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         if (2 == e.getClickCount()) {
             int selectedRow = this.getSelectedRow();
-            int selectedFile = (Integer) this.getValueAt(selectedRow, 0);
-
+            int modelId = this.convertRowIndexToModel(selectedRow);
+            int selectedFile = expTableModel.getExperimentAtIndex(modelId).getExperimentId();
             new ExperimentOverview(selectedFile);
         }
     }

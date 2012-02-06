@@ -73,7 +73,7 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
                     Working.setActivity(true, "working.ededb.update.datatable");
                     selectedExps.clear();
                     for (Integer i : expTable.getSelectedRows()) {
-                        int selected = (Integer) expTable.getValueAt(i, 0);
+                        int selected = expModel.getExperimentAtIndex(expTable.convertRowIndexToModel(i)).getExperimentId();
                         selectedExps.add(experimentDao.get(selected));
                     }
                     updateDataTable();

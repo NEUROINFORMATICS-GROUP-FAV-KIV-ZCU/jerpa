@@ -10,6 +10,13 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (02/06/2012) kivan
+	# 254
+	
+	ADDED: BlobViewer: so far only for text files. (issue with Blob.getBinaryStream().read(byte[]) - does not read whole blob, god knows why. Working workaround with Blob.getBytes)
+	CHANGED: DataFilesTable: after double-click on data file, BlobViewer is opened.
+	CHANGED: Removed dependency on ExperimentTable value od id - value is not converted from view to model wherever is needed.
+
  * (02/05/2012) kivan
 	# 253
 	

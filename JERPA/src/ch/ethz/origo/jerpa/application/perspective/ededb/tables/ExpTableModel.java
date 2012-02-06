@@ -136,6 +136,15 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 		fireTableDataChanged();
 	}
 
+    /**
+     * Getter of Experiment from data model by its position in model.
+     * @param index position
+     * @return experiment
+     */
+    public Experiment getExperimentAtIndex(int index){
+        return data.get(index);
+    }
+
 	/**
 	 * Method clearing table.
 	 */

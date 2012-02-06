@@ -3,10 +3,15 @@ package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataCellRenderer;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowSorter;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
+import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
+import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
 
 /**
  * @author Petr Miko
@@ -15,9 +20,11 @@ import java.awt.event.MouseListener;
  */
 public class DataFilesTable extends JTable implements MouseListener {
 
+    private DataTableModel tableModel;
+
     public DataFilesTable(DataTableModel tableModel) {
         super(tableModel);
-
+        this.tableModel = tableModel;
         this.setDefaultRenderer(Object.class, new DataCellRenderer());
         this.setRowSorter(new DataRowSorter(tableModel));
         this.setFillsViewportHeight(true);
@@ -27,9 +34,15 @@ public class DataFilesTable extends JTable implements MouseListener {
     }
 
     public void mouseClicked(MouseEvent e) {
-            if(2 == e.getClickCount()){
-               //visualize experiment information
-            }
+        if (2 == e.getClickCount()) {
+
+            int selectedRow = this.getSelectedRow();
+            int modelId = this.convertRowIndexToModel(selectedRow);
+            final DataFile selectedFile = tableModel.getDataFileAtIndex(modelId);
+            HibernateUtil.rebind(selectedFile);
+
+            new BlobViewer(selectedFile.getFileContent(), selectedFile.getFilename(), selectedFile.getFileLength(), selectedFile.getMimetype());
+        }
     }
 
     public void mousePressed(MouseEvent e) {
