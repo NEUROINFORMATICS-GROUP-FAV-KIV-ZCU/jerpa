@@ -16,6 +16,7 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.FocusEvent;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +31,7 @@ public class ImportWizard extends JFrame {
     private final static Logger log = Logger.getLogger(ImportWizard.class);
 
     protected JRadioButton existingRadio, newRadio;
-    protected JComboBox expOwnerCombo, expSubjectCombo, weatherCombo, scenarioCombo, groupCombo;
+    protected JComboBox expOwnerCombo, expSubjectCombo, weatherCombo, scenarioCombo, groupCombo, experimentsCombo;
     protected JFormattedTextField expStartTimeField, expEndTimeField, expTemperatureField;
     protected JTextArea weatherNoteArea;
     protected DateFormat timeFormat = new SimpleDateFormat("d.M.yyyy HH:mm:ss");
@@ -42,7 +43,40 @@ public class ImportWizard extends JFrame {
     protected WeatherDao weatherDao = DaoFactory.getWeatherDao();
     protected ScenarioDao scenarioDao = DaoFactory.getScenarioDao();
     protected ResearchGroupDao researchGroupDao = DaoFactory.getResearchGroupDao();
-    protected ImportFilesTableModel importTableModel = new ImportFilesTableModel();
+
+    /**
+     * Custom JTable for list of files to be imported.
+     */
+    protected class ImportFilesTable extends JTable{
+
+        public ImportFilesTable(){
+            super(new ImportFilesTableModel());
+        }
+
+        /**
+         * Add row to table method.
+         *
+         * @param file file on file system
+         */
+        public void add(File file) {
+            ImportFilesTableModel model = (ImportFilesTableModel) this.getModel();
+            model.addRow(file);
+        }
+
+        /**
+         * Method for removing specified row.
+         *
+         * @param index row index
+         */
+        public void remove(int index){
+            ImportFilesTableModel model = (ImportFilesTableModel) this.getModel();
+            model.removeRow(index);
+        }
+
+
+    }
+
+    protected ImportFilesTable importTable = new ImportFilesTable();
 
     private TooltipComboBoxRenderer tooltipComboBoxRenderer = new TooltipComboBoxRenderer();
 
@@ -72,7 +106,6 @@ public class ImportWizard extends JFrame {
      */
     private Component createCanvas() {
         JPanel canvas = new JPanel(new GridBagLayout());
-
         existingRadio = new JRadioButton("Add to existing experiment");
         newRadio = new JRadioButton("Create new experiment");
         ButtonGroup group = new ButtonGroup();
@@ -80,9 +113,9 @@ public class ImportWizard extends JFrame {
         group.add(newRadio);
 
         existingRadio.setSelected(true);
-        JComboBox experiments = new JComboBox(experimentDao.getAll().toArray());
-        experiments.setPreferredSize(COMBO_SIZE);
-        experiments.setRenderer(tooltipComboBoxRenderer);
+        experimentsCombo = new JComboBox(experimentDao.getAll().toArray());
+        experimentsCombo.setPreferredSize(COMBO_SIZE);
+        experimentsCombo.setRenderer(tooltipComboBoxRenderer);
 
         JPanel chooser = new JPanel(new BorderLayout());
 
@@ -100,7 +133,7 @@ public class ImportWizard extends JFrame {
 
         chooser.add(existingRadio, BorderLayout.LINE_START);
         chooser.add(newRadio, BorderLayout.CENTER);
-        chooser.add(experiments, BorderLayout.LINE_END);
+        chooser.add(experimentsCombo, BorderLayout.LINE_END);
 
         GridBagConstraints chooserPaneConstraints = new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(chooser, chooserPaneConstraints);
@@ -145,12 +178,11 @@ public class ImportWizard extends JFrame {
 
         addFile = new JButton("Add");
         removeFile = new JButton("Remove");
-        JTable filesTable = new JTable(importTableModel);
-        filesTable.setFillsViewportHeight(true);
-        filesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        filesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        importTable.setFillsViewportHeight(true);
+        importTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        importTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        JScrollPane importFileScroll = new JScrollPane(filesTable);
+        JScrollPane importFileScroll = new JScrollPane(importTable);
         importFileScroll.setPreferredSize(new Dimension(350, 150));
 
         GridBagConstraints filesTableConstraints = new GridBagConstraints(0, 0, 2, 1, 1.0, 1.0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);

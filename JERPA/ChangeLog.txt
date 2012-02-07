@@ -9,6 +9,12 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+ * (02/07/2012) kivan
+	# 256
+	
+	ADDED: ImportWizardLogic: logic part of import wizard. incomplete, but almost finished.
+	CHANGED: minor edits in ImportWizard, ImportTableModel and ActionImportWizard
+	CHANGED: HibernateUtil.rebind now returns rebinded object
 
  * (02/06/2012) kivan
 	# 255

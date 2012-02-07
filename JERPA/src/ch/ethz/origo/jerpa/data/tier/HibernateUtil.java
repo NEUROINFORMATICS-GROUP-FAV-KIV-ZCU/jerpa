@@ -26,9 +26,11 @@ public class HibernateUtil {
         return sessionFactory;
     }
 
-    public static void rebind(Object transientObject) {
+    public static Object rebind(Object transientObject) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         session.refresh(transientObject);
+
+        return transientObject;
     }
 }

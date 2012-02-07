@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.ImportWizardLogic;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ImportWizard;
 
 import javax.swing.*;
@@ -18,6 +19,6 @@ public class ActionImportWizard extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        new ImportWizard();
+        new ImportWizardLogic();
     }
 }

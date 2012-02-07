@@ -92,4 +92,15 @@ public class ImportFilesTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 
+    /**
+     * Method for removing specified file from model.
+     *
+     * @param index file index
+     */
+    public void removeRow(int index) {
+
+        if(index >=0 && index < data.size()){
+            data.remove(index);
+        }
+    }
 }
