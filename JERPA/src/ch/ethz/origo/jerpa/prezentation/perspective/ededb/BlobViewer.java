@@ -79,6 +79,7 @@ public class BlobViewer {
             dialog.pack();
             dialog.setVisible(true);
 
+            Working.setActivity(true, "working.ededb.open");
             int position = 1;
             while(position < fileLength && !open.isInterrupted()){
                 buffer = fileContent.getBytes(position, BUFFER_SIZE);
@@ -89,8 +90,8 @@ public class BlobViewer {
 
                 updateProgressBar(loading, position);
             }
-
             loading.setVisible(false);
+            Working.setActivity(false, "working.ededb.open");
         } catch (SQLException exception) {
             JUIGLErrorInfoUtils.showErrorDialog("Text reading failed.", exception.getMessage(), exception);
         }

@@ -4,14 +4,14 @@ import ch.ethz.origo.jerpa.data.tier.FileState;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.activation.MimetypesFileTypeMap;
+import java.io.*;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,13 +24,16 @@ import java.util.List;
  */
 public class DataFileDao extends GenericDao<DataFile, Integer> {
 
+    private final static Logger log = Logger.getLogger(DataFileDao.class);
+
     public DataFileDao() {
         super(DataFile.class);
     }
 
     /**
      * Method for saving binary stream into DataFile's blob.
-     * @param file data file
+     *
+     * @param file     data file
      * @param inStream binary input stream
      */
     public void writeFileContent(DataFile file, InputStream inStream) {
@@ -45,6 +48,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
 
     /**
      * Getter of all data files from specified experiments.
+     *
      * @param experiments specified data files source experiments
      * @return data files
      */
@@ -63,6 +67,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
 
     /**
      * Getter of current data file state.
+     *
      * @param file data file
      * @return FileState value
      */
@@ -77,9 +82,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
                 return FileState.NO_COPY;
             } else {
                 long fileSize = blob.length();
-                if (fileSize == 0) {
-                    return FileState.NO_COPY;
-                } else if (fileSize != file.getFileLength()) {
+                if (fileSize != file.getFileLength()) {
                     return FileState.CORRUPTED;
                 } else {
                     return FileState.HAS_COPY;
@@ -98,6 +101,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
 
     /**
      * Getter of BLOB in File form. Returns temp File.
+     *
      * @param file data file
      * @return temp file with contents of data file blob
      * @throws DaoException issue with DAO
@@ -109,7 +113,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         FileOutputStream outputStream = null;
         InputStream inputStream = null;
         try {
-            fileContent = File.createTempFile("JERPA-tmp-",file.getFilename());
+            fileContent = File.createTempFile("JERPA-tmp-", file.getFilename());
             session.refresh(file);
             outputStream = new FileOutputStream(fileContent);
             inputStream = file.getFileContent().getBinaryStream();
@@ -136,14 +140,14 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    //irrelevant
+                    log.error(e);
                 }
 
             if (outputStream != null)
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    //irrelevant
+                    log.error(e);
                 }
         }
         return fileContent;
@@ -160,5 +164,81 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         dataFile.setFileContent(null);
         session.update(dataFile);
         transaction.commit();
+    }
+
+    public void createDataFile(Experiment exp, File file) {
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        DataFile dataFile = new DataFile();
+        dataFile.setChanged(true);
+        dataFile.setExperiment(exp);
+        dataFile.setFileLength(file.length());
+        dataFile.setFilename(file.getName());
+        dataFile.setMimetype(new MimetypesFileTypeMap().getContentType(file));
+
+        InputStream inStream = null;
+        try {
+
+            inStream = new FileInputStream(file);
+            dataFile.setFileContent(Hibernate.getLobCreator(session).createBlob(inStream, file.length()));
+
+
+        } catch (FileNotFoundException e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            if (inStream != null) {
+                try {
+                    inStream.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
+        }
+
+        try {
+            session.save(dataFile);
+            transaction.commit();
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+            transaction.rollback();
+        }
+    }
+
+    /**
+     * Method for overwriting blob inside existing data file.
+     *
+     * @param dataFile data file
+     * @param file     java.io.File
+     */
+    public void overwriteDataFile(DataFile dataFile, File file) {
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        InputStream inStream = null;
+        try {
+            inStream = new FileInputStream(file);
+            dataFile.setFileContent(Hibernate.getLobCreator(session).createBlob(inStream, file.length()));
+        } catch (FileNotFoundException e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            if (inStream != null) {
+                try {
+                    inStream.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
+        }
+
+        try {
+            session.save(dataFile);
+            transaction.commit();
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+            transaction.rollback();
+        }
     }
 }

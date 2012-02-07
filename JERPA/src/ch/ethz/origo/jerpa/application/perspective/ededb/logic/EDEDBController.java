@@ -85,7 +85,7 @@ public class EDEDBController extends Observable {
 	 */
 	private void initActions() {
 
-        actionImportWizard = new ActionImportWizard();
+        actionImportWizard = new ActionImportWizard(this);
 		actionConnect = new ActionConnect(this);
 		actionDisconnect = new ActionDisconnect(this);
 		actionDownloadSelected = new ActionDownloadSelected(this, downloader);

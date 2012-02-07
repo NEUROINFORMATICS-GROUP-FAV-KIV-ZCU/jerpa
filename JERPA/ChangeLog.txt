@@ -10,6 +10,15 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
  * (02/07/2012) kivan
+	# 257
+	
+	CHANGED: JerpaLang jar and resource bundles - new translations
+	CHANGED: ImportWizard now has ILanguage interface, fixing back some rewritten actions with ILanguage
+	CHANGED: ImportWizard and BlobViewer are now connected to Working (i.e. EDEDB displays that they are working)
+	CHANGED: EDEDB should be from the most part in state as it was before ededb core and data layer rewritting.
+	ADDED: some classes (import file table model,...) created due to refactoring and fixing of existing code
+ 
+ * (02/07/2012) kivan
 	# 256
 	
 	ADDED: ImportWizardLogic: logic part of import wizard. incomplete, but almost finished.

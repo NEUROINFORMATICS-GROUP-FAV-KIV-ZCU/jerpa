@@ -7,6 +7,7 @@
     <class name="ch.ethz.origo.jerpa.data.tier.pojo.DataFile" table="DATA_FILE" schema="APP">
         <id name="dataFileId">
             <column name="DATA_FILE_ID" sql-type="integer" length="10" not-null="true"/>
+            <generator class="increment"/>
         </id>
         <property name="samplingRate">
             <column name="SAMPLING_RATE" sql-type="double" length="52" not-null="true"/>

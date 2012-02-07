@@ -1,13 +1,20 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesTableModel;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
+import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ImportWizard;
+import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  * Logic part of Import Wizard of EDEDB.
@@ -16,12 +23,18 @@ import java.io.File;
  */
 public class ImportWizardLogic extends ImportWizard implements ActionListener {
 
+    private EDEDBController controller;
+
     /**
      * Constructor.
      * Adds actions to all gui components.
+     *
+     * @param controller
      */
-    public ImportWizardLogic() {
+    public ImportWizardLogic(EDEDBController controller) {
         super();
+
+        this.controller = controller;
 
         existingRadio.addActionListener(this);
         newRadio.addActionListener(this);
@@ -72,10 +85,71 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         } else if ("removeFile".equals(e.getActionCommand())) {
             removeFile();
         } else if ("ok".equals(e.getActionCommand())) {
-             //TODO import to db logic
+            confirm();
         } else if ("cancel".equals(e.getActionCommand())) {
             closeWizard();
         }
+    }
+
+    /**
+     * Method for saving changes to experiment and storing them into db.
+     */
+    private void confirm() {
+
+        Thread saveThread = new Thread(new Runnable() {
+            public void run() {
+                Working.setActivity(true, "working.ededb.import");
+                confirmButton.setEnabled(false);
+                cancelButton.setEnabled(false);
+
+                progressBar.setVisible(true);
+
+                if (existingRadio.isSelected()) {
+                    ImportFilesTableModel model = (ImportFilesTableModel) importTable.getModel();
+                    List<File> files = model.getFiles();
+
+                    Experiment exp = (Experiment) experimentsCombo.getSelectedItem();
+                    Set<String> fileNames = new HashSet<String>();
+                    for (DataFile file : exp.getDataFiles()) {
+                        HibernateUtil.rebind(file);
+                        fileNames.add(file.getFilename());
+                    }
+
+
+                    for (File file : files) {
+                        if (!fileNames.contains(file.getName())) {
+                            dataFileDao.createDataFile(exp, file);
+                        } else {
+
+                            int choice = JOptionPane.showConfirmDialog(null, resource.getString("importWizard.ededb.addFile.overwrite1") + file.getName() + resource.getString("importWizard.ededb.addFile.overwrite2"),
+                                    resource.getString("importWizard.ededb.addFile.overwritePrompt"),
+                                    JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+
+                            if (choice == JOptionPane.YES_OPTION) {
+                                for (DataFile dataFile : exp.getDataFiles()) {
+                                    HibernateUtil.rebind(dataFile);
+
+                                    if (file.getName().equals(dataFile.getFilename())) {
+                                        dataFileDao.overwriteDataFile(dataFile, file);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                } else {
+                    //TODO store new experiment
+                }
+
+                controller.update();
+                progressBar.setVisible(false);
+                Working.setActivity(false, "working.ededb.import");
+                closeWizard();
+            }
+        });
+
+        saveThread.start();
     }
 
     /**
@@ -151,7 +225,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         JFileChooser fileChooser = new JFileChooser("/");
         fileChooser.setMultiSelectionEnabled(true);
 
-        int retValue = fileChooser.showDialog(this, "Add");
+        int retValue = fileChooser.showDialog(this, resource.getString("importWizard.ededb.addFile.add"));
         if (retValue == JFileChooser.APPROVE_OPTION) {
             File[] files = fileChooser.getSelectedFiles();
             for (File file : files) {

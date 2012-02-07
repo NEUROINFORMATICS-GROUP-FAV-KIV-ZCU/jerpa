@@ -43,139 +43,141 @@ import ch.ethz.origo.juigle.application.exception.PropertiesException;
 import ch.ethz.origo.juigle.context.exceptions.ApplicationException;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.hibernate.exception.GenericJDBCException;
 
 /**
  * Main class of this application. Contains main method for application startup.
- * 
+ *
  * @author Vaclav Souhrada (v.souhrada at gmail.com)
  * @version 2.0.0 (4/25/2011)
  * @since 0.1.0 (04/16/2009 - JERPA birthday)
- * 
  */
 public class Main {
 
-	public static Logger rootLogger = Logger.getRootLogger();
+    public static Logger rootLogger = Logger.getRootLogger();
 
-	private static JUIGLEApplication application;
+    private static JUIGLEApplication application;
 
-	/** */
-	private static final String PERSPECTIVE_PATH_XML = "config/perspectives.xml";
-	/** */
-	private static final String PERSPECTIVE_PATH_PROPERTIES = "config/perspectives.properties";
+    /** */
+    private static final String PERSPECTIVE_PATH_XML = "config/perspectives.xml";
+    /** */
+    private static final String PERSPECTIVE_PATH_PROPERTIES = "config/perspectives.properties";
 
-	/**
-	 * Main method - application start
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// create application instance
-		application = JUIGLEApplication.getInstance();
+    /**
+     * Main method - application start
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        // create application instance
+        application = JUIGLEApplication.getInstance();
 
-		// load configures
-		final Thread config = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					LanguagePropertiesLoader.loadProperties();
-					ConfigPropertiesLoader.loadProperties();
-					setLocale(LanguagePropertiesLoader.getApplicationLocale());
-					application.setVersion(Main.getAppVersion());
-					// init and load all plug-ins
-					application.initPluginEngine(
-							ConfigPropertiesLoader.getAppMajorVersionAsInt(),
-							ConfigPropertiesLoader.getAppMinorVersionAsInt(),
-							ConfigPropertiesLoader.getAppRevisionVersionAsInt());
-					application.loadPlugins(ConfigPropertiesLoader.getPluginsLocation());
-					application.setMainFrame(new MainFrame());
-				} catch (PropertiesException e) {
-					String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
-							LangUtils.JERPA_ERROR_LIST_PATH);
-					JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e,
-							Level.WARNING);
-					rootLogger.warn(e.getMessage(), e);
-				} catch (ApplicationException e) {
-					rootLogger.warn(e.getMessage(), e);
-				}
-			}
-		});
+        // load configures
+        final Thread config = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LanguagePropertiesLoader.loadProperties();
+                    ConfigPropertiesLoader.loadProperties();
+                    setLocale(LanguagePropertiesLoader.getApplicationLocale());
+                    application.setVersion(Main.getAppVersion());
+                    // init and load all plug-ins
+                    application.initPluginEngine(
+                            ConfigPropertiesLoader.getAppMajorVersionAsInt(),
+                            ConfigPropertiesLoader.getAppMinorVersionAsInt(),
+                            ConfigPropertiesLoader.getAppRevisionVersionAsInt());
+                    application.loadPlugins(ConfigPropertiesLoader.getPluginsLocation());
+                    application.setMainFrame(new MainFrame());
+                } catch (PropertiesException e) {
+                    String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
+                            LangUtils.JERPA_ERROR_LIST_PATH);
+                    JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e,
+                            Level.WARNING);
+                    rootLogger.warn(e.getMessage(), e);
+                } catch (ApplicationException e) {
+                    rootLogger.warn(e.getMessage(), e);
+                }
+            }
+        });
 
-		// show splashscreen
-		Thread splash = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					application.startSplashScreen(JUIGLEGraphicsUtils
-							.getImage(JERPAUtils.IMAGE_PATH + "Jerpa_logo.png"));
-					config.join();
-					Thread.sleep(1000);
-					application.stopSplashScreen();
-				} catch (InterruptedException e) {
-					rootLogger.error(e.getMessage(), e);
-					// FIXME ADD ERROR TO THE DIALOG
-				} catch (PerspectiveException e) {
-					rootLogger.error(e.getMessage(), e);
-				}
-			}
-		});
+        // show splashscreen
+        Thread splash = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    application.startSplashScreen(JUIGLEGraphicsUtils
+                            .getImage(JERPAUtils.IMAGE_PATH + "Jerpa_logo.png"));
+                    config.join();
+                    Thread.sleep(1000);
+                    application.stopSplashScreen();
+                } catch (InterruptedException e) {
+                    rootLogger.error(e.getMessage(), e);
+                    // FIXME ADD ERROR TO THE DIALOG
+                } catch (PerspectiveException e) {
+                    rootLogger.error(e.getMessage(), e);
+                }
+            }
+        });
 
-		splash.start();
-		config.start();
-		try {
-			splash.join();
-		} catch (InterruptedException e) {
-			rootLogger.error(e.getMessage(), e);
-			// FIXME ADD ERROR TO THE DIALOG
-		}
+        splash.start();
+        config.start();
+        try {
+            splash.join();
+        } catch (InterruptedException e) {
+            rootLogger.error(e.getMessage(), e);
+            // FIXME ADD ERROR TO THE DIALOG
+        }
 
-		// now invoke a Main Frame of JERPA application
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					application.startApplication(true, PERSPECTIVE_PATH_PROPERTIES);
-				} catch (PerspectiveException e) {
-					String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
-							LangUtils.JERPA_ERROR_LIST_PATH);
-					JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e,
-							Level.WARNING);
-					rootLogger.error(e.getMessage(), e);
-				}
-			}
-		});
-	}
+        // now invoke a Main Frame of JERPA application
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    application.startApplication(true, PERSPECTIVE_PATH_PROPERTIES);
+                } catch (PerspectiveException e) {
+                    String msg = JUIGLEErrorParser.getErrorMessage(e.getMessage(),
+                            LangUtils.JERPA_ERROR_LIST_PATH);
+                    JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", msg, e,
+                            Level.WARNING);
+                    rootLogger.error(e.getMessage(), e);
+                } catch (GenericJDBCException jdbcException) {
+                    JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", "Connection with database could not be established. Check whether there is no other connection to the database.", jdbcException,
+                            Level.SEVERE);
+                    rootLogger.error(jdbcException.getMessage(), jdbcException);
+                    System.exit(1);
+                }
+            }
+        });
+    }
 
-	/**
-	 * Set application locale
-	 * 
-	 * @param applicationLocale
-	 *          name of locale
-	 */
-	private static void setLocale(String applicationLocale) {
-		Locale locale = null;
-		if (applicationLocale.equals(ILanguage.ENGLISH)) {
-			locale = new Locale("en");
-		} else if (applicationLocale.equals(ILanguage.CZECH)) {
-			locale = new Locale("cs", "CZ");
-		}
-		Locale.setDefault(locale);
-	}
+    /**
+     * Set application locale
+     *
+     * @param applicationLocale name of locale
+     */
+    private static void setLocale(String applicationLocale) {
+        Locale locale = null;
+        if (applicationLocale.equals(ILanguage.ENGLISH)) {
+            locale = new Locale("en");
+        } else if (applicationLocale.equals(ILanguage.CZECH)) {
+            locale = new Locale("cs", "CZ");
+        }
+        Locale.setDefault(locale);
+    }
 
-	/**
-	 * 
-	 * 
-	 * @since 2.0.0 (4/25/2011)
-	 * @return
-	 */
-	public static String getAppVersion() {
-		StringBuffer titleBuff = new StringBuffer();
-		titleBuff.append(ConfigPropertiesLoader.getApplicationTitle());
-		titleBuff.append(" ");
-		titleBuff.append(ConfigPropertiesLoader.getAppMajorVersion());
-		titleBuff.append(".");
-		titleBuff.append(ConfigPropertiesLoader.getAppMinorVersion());
-		titleBuff.append(".");
-		titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
-		return titleBuff.toString();
-	}
+    /**
+     * @return
+     * @since 2.0.0 (4/25/2011)
+     */
+    public static String getAppVersion() {
+        StringBuffer titleBuff = new StringBuffer();
+        titleBuff.append(ConfigPropertiesLoader.getApplicationTitle());
+        titleBuff.append(" ");
+        titleBuff.append(ConfigPropertiesLoader.getAppMajorVersion());
+        titleBuff.append(".");
+        titleBuff.append(ConfigPropertiesLoader.getAppMinorVersion());
+        titleBuff.append(".");
+        titleBuff.append(ConfigPropertiesLoader.getAppRevisionVersion());
+        return titleBuff.toString();
+    }
 }

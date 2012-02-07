@@ -1,9 +1,16 @@
 package ch.ethz.origo.jerpa.data.tier;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Blob;
 
 public class HibernateUtil {
 
@@ -26,6 +33,12 @@ public class HibernateUtil {
         return sessionFactory;
     }
 
+    /**
+     * Method for rebinding object with session. Workaround for Lazy loading issues.
+     *
+     * @param transientObject transient object
+     * @return rebinded transient object
+     */
     public static Object rebind(Object transientObject) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();

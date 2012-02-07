@@ -1,5 +1,6 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.ImportWizardLogic;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ImportWizard;
 
@@ -14,11 +15,14 @@ import java.awt.event.KeyEvent;
  */
 public class ActionImportWizard extends AbstractAction {
 
-    public ActionImportWizard(){
+    private EDEDBController controller;
+
+    public ActionImportWizard(EDEDBController controller){
+        this.controller = controller;
         putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_I));
     }
 
     public void actionPerformed(ActionEvent e) {
-        new ImportWizardLogic();
+        new ImportWizardLogic(controller);
     }
 }

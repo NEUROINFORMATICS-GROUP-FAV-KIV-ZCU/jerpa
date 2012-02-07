@@ -40,6 +40,8 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
     private List<Experiment> selectedExps;
     private EDEDBController controller;
 
+    private int prevFilesCount = 0;
+
     /**
      * Constructor.
      */
@@ -228,6 +230,11 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer,
 
     public void update(Observable o, Object arg) {
         updateExpTable();
+
+        if(prevFilesCount != dataModel.getRowCount()){
+            updateDataTable();
+            prevFilesCount = dataModel.getRowCount();
+        }
 
         synchronized (dataModel) {
             for (DataRowModel row : dataModel.getData()) {

@@ -1,41 +1,45 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesTableModel;
 import ch.ethz.origo.jerpa.data.JERPAUtils;
 import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.dao.*;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import javax.swing.plaf.ButtonUI;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.FocusEvent;
-import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ResourceBundle;
 
 import static javax.swing.BorderFactory.createMatteBorder;
 
 /**
  * GUI frame with tools for import new scenarios, experiments and its files.
  */
-public class ImportWizard extends JFrame {
+public class ImportWizard extends JFrame implements ILanguage {
 
     private final static Logger log = Logger.getLogger(ImportWizard.class);
 
+    private JLabel weatherNoteLabel, ownerLabel, subjectLabel, startLabel, endLabel, temperatureLabel;
+    private TitledBorder filesBorder, groupBorder, scenarioBorder, experimentBorder, weatherBorder;
     protected JRadioButton existingRadio, newRadio;
     protected JComboBox expOwnerCombo, expSubjectCombo, weatherCombo, scenarioCombo, groupCombo, experimentsCombo;
     protected JFormattedTextField expStartTimeField, expEndTimeField, expTemperatureField;
     protected JTextArea weatherNoteArea;
     protected DateFormat timeFormat = new SimpleDateFormat("d.M.yyyy HH:mm:ss");
     protected JButton addWeather, addScenario, addFile, removeFile, addGroup, confirmButton, cancelButton;
+    protected JProgressBar progressBar = new JProgressBar();
 
     protected DataFileDao dataFileDao = DaoFactory.getDataFileDao();
     protected PersonDao personDao = DaoFactory.getPersonDao();
@@ -43,38 +47,6 @@ public class ImportWizard extends JFrame {
     protected WeatherDao weatherDao = DaoFactory.getWeatherDao();
     protected ScenarioDao scenarioDao = DaoFactory.getScenarioDao();
     protected ResearchGroupDao researchGroupDao = DaoFactory.getResearchGroupDao();
-
-    /**
-     * Custom JTable for list of files to be imported.
-     */
-    protected class ImportFilesTable extends JTable{
-
-        public ImportFilesTable(){
-            super(new ImportFilesTableModel());
-        }
-
-        /**
-         * Add row to table method.
-         *
-         * @param file file on file system
-         */
-        public void add(File file) {
-            ImportFilesTableModel model = (ImportFilesTableModel) this.getModel();
-            model.addRow(file);
-        }
-
-        /**
-         * Method for removing specified row.
-         *
-         * @param index row index
-         */
-        public void remove(int index){
-            ImportFilesTableModel model = (ImportFilesTableModel) this.getModel();
-            model.removeRow(index);
-        }
-
-
-    }
 
     protected ImportFilesTable importTable = new ImportFilesTable();
 
@@ -84,13 +56,20 @@ public class ImportWizard extends JFrame {
     private final static int LINES_VISIBLE = 6;
     private final static Dimension COMBO_SIZE = new Dimension(350, 30);
 
+    private static String resourceBundlePath;
+    protected static ResourceBundle resource;
+
     /**
      * Constructor - creates frame and invokes canvas creating method.
      */
     public ImportWizard() {
         super("Import Wizard");
 
+        LanguageObservable.getInstance().attach(this);
+        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+
         this.add(createCanvas());
+        updateTitles();
 
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.pack();
@@ -106,8 +85,8 @@ public class ImportWizard extends JFrame {
      */
     private Component createCanvas() {
         JPanel canvas = new JPanel(new GridBagLayout());
-        existingRadio = new JRadioButton("Add to existing experiment");
-        newRadio = new JRadioButton("Create new experiment");
+        existingRadio = new JRadioButton();
+        newRadio = new JRadioButton();
         ButtonGroup group = new ButtonGroup();
         group.add(existingRadio);
         group.add(newRadio);
@@ -151,14 +130,20 @@ public class ImportWizard extends JFrame {
         GridBagConstraints groupPaneConstraints = new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(createGroupPane(), groupPaneConstraints);
 
-        GridBagConstraints filesPaneConstraints = new GridBagConstraints(1, 2, 1, 2, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints progressBarConstraints = new GridBagConstraints(0, 4, 1, 1, 1, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        canvas.add(progressBar, progressBarConstraints);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisible(false);
+        progressBar.setStringPainted(true);
+
+        GridBagConstraints filesPaneConstraints = new GridBagConstraints(1, 2, 1, 3, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(createFilesPane(), filesPaneConstraints);
 
-        confirmButton = new JButton("Confirm and save");
-        cancelButton = new JButton("Cancel");
+        confirmButton = new JButton();
+        cancelButton = new JButton();
 
-        GridBagConstraints confirmButtonConstraints = new GridBagConstraints(0, 4, 1, 1, 0.2, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
-        GridBagConstraints cancelButtonConstraints = new GridBagConstraints(1, 4, 1, 1, 0.2, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints confirmButtonConstraints = new GridBagConstraints(0, 5, 1, 1, 0.2, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints cancelButtonConstraints = new GridBagConstraints(1, 5, 1, 1, 0.2, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
 
         canvas.add(confirmButton, confirmButtonConstraints);
         canvas.add(cancelButton, cancelButtonConstraints);
@@ -172,12 +157,12 @@ public class ImportWizard extends JFrame {
      * @return filled panel
      */
     private JPanel createFilesPane() {
-        Border filesBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "New data files", TitledBorder.CENTER, TitledBorder.CENTER);
+        filesBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "New data files", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel filesPane = new JPanel(new GridBagLayout());
         filesPane.setBorder(filesBorder);
 
-        addFile = new JButton("Add");
-        removeFile = new JButton("Remove");
+        addFile = new JButton();
+        removeFile = new JButton();
         importTable.setFillsViewportHeight(true);
         importTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         importTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -202,7 +187,7 @@ public class ImportWizard extends JFrame {
      * @return filled panel
      */
     private JPanel createGroupPane() {
-        Border groupBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Research group", TitledBorder.CENTER, TitledBorder.CENTER);
+        groupBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Research group", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel groupPane = new JPanel(new GridBagLayout());
         groupPane.setBorder(groupBorder);
 
@@ -210,7 +195,6 @@ public class ImportWizard extends JFrame {
         groupCombo.setRenderer(tooltipComboBoxRenderer);
         groupCombo.setPreferredSize(COMBO_SIZE);
         addGroup = new JButton("+");
-        addGroup.setToolTipText("Add new research group");
 
         GridBagConstraints groupComboConstraints = new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
         GridBagConstraints addGroupConstraints = new GridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.LINE_END, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
@@ -227,7 +211,7 @@ public class ImportWizard extends JFrame {
      * @return filled panel
      */
     private JPanel createScenarioPane() {
-        Border scenarioBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Scenario", TitledBorder.CENTER, TitledBorder.CENTER);
+        scenarioBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Scenario", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel scenarioPane = new JPanel(new GridBagLayout());
         scenarioPane.setBorder(scenarioBorder);
 
@@ -235,7 +219,6 @@ public class ImportWizard extends JFrame {
         scenarioCombo.setPreferredSize(COMBO_SIZE);
         scenarioCombo.setRenderer(tooltipComboBoxRenderer);
         addScenario = new JButton("+");
-        addScenario.setToolTipText("Add new scenario");
 
         GridBagConstraints scenarioComboConstraints = new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
         GridBagConstraints addScenarioConstraints = new GridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.LINE_END, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
@@ -252,13 +235,12 @@ public class ImportWizard extends JFrame {
      * @return filled panel
      */
     private JPanel createWeatherPane() {
-        Border weatherBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Weather", TitledBorder.CENTER, TitledBorder.CENTER);
+        weatherBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Weather", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel weatherPane = new JPanel(new GridBagLayout());
         weatherPane.setBorder(weatherBorder);
 
-        JLabel weatherNoteLabel = new JLabel("Note");
+        weatherNoteLabel = new JLabel();
         addWeather = new JButton("+");
-        addWeather.setToolTipText("Add new weather");
 
         weatherCombo = new JComboBox(weatherDao.getAll().toArray());
         weatherCombo.setPreferredSize(COMBO_SIZE);
@@ -286,15 +268,15 @@ public class ImportWizard extends JFrame {
      * @return filled panel
      */
     private JPanel createExperimentPane() {
-        Border experimentBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Experiment", TitledBorder.CENTER, TitledBorder.CENTER);
+        experimentBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Experiment", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel experimentPane = new JPanel(new GridBagLayout());
         experimentPane.setBorder(experimentBorder);
 
-        JLabel ownerLabel = new JLabel("Owner");
-        JLabel subjectLabel = new JLabel("Subject");
-        JLabel startLabel = new JLabel("Start time");
-        JLabel endLabel = new JLabel("End time");
-        JLabel temperatureLabel = new JLabel("Temperature");
+        ownerLabel = new JLabel();
+        subjectLabel = new JLabel();
+        startLabel = new JLabel();
+        endLabel = new JLabel();
+        temperatureLabel = new JLabel();
 
         try {
             MaskFormatter tempMask = new MaskFormatter("***°C");
@@ -385,4 +367,80 @@ public class ImportWizard extends JFrame {
             return this;
         }
     }
+
+    private void updateTitles() {
+
+        existingRadio.setText(resource.getString("importWizard.ededb.existingRadio"));
+        newRadio.setText(resource.getString("importWizard.ededb.newRadio"));
+        progressBar.setString(resource.getString("importWizard.ededb.progress"));
+        confirmButton.setText(resource.getString("importWizard.ededb.ok"));
+        cancelButton.setText(resource.getString("importWizard.ededb.cancel"));
+
+        experimentBorder.setTitle(resource.getString("importWizard.border.experiment"));
+        groupBorder.setTitle(resource.getString("importWizard.border.group"));
+        scenarioBorder.setTitle(resource.getString("importWizard.border.scenario"));
+        weatherBorder.setTitle(resource.getString("importWizard.border.weather"));
+        filesBorder.setTitle(resource.getString("importWizard.border.files"));
+
+        addFile.setText(resource.getString("importWizard.ededb.addFile"));
+        removeFile.setText(resource.getString("importWizard.ededb.removeFile"));
+
+        weatherNoteLabel.setText(resource.getString("importWizard.ededb.label.weatherNote"));
+
+        ownerLabel.setText(resource.getString("importWizard.ededb.label.owner"));
+        subjectLabel.setText(resource.getString("importWizard.ededb.label.subject"));
+        startLabel.setText(resource.getString("importWizard.ededb.label.startTime"));
+        endLabel.setText(resource.getString("importWizard.ededb.label.endTime"));
+        temperatureLabel.setText(resource.getString("importWizard.ededb.label.temperature"));
+
+        addWeather.setToolTipText(resource.getString("importWizard.ededb.add.weather"));
+        addGroup.setToolTipText(resource.getString("importWizard.ededb.add.group"));
+        addScenario.setToolTipText(resource.getString("importWizard.ededb.add.scenario"));
+
+        this.repaint();
+    }
+
+    /**
+     * Setter of localization resource bundle path
+     *
+     * @param path path to localization source file.
+     */
+    public void setLocalizedResourceBundle(String path) {
+        resourceBundlePath = path;
+        resource = ResourceBundle.getBundle(path);
+    }
+
+    /**
+     * Getter of path to resource bundle.
+     *
+     * @return path to localization file.
+     */
+    public String getResourceBundlePath() {
+        return resourceBundlePath;
+    }
+
+    /**
+     * Setter of resource bundle key.
+     *
+     * @param string key
+     */
+    public void setResourceBundleKey(String string) {
+        throw new UnsupportedOperationException("Method is not implemented yet...");
+    }
+
+    /**
+     * Method invoked by change of LanguageObservable.
+     *
+     * @throws ch.ethz.origo.juigle.application.exception.JUIGLELangException
+     */
+    public void updateText() throws JUIGLELangException {
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                updateTitles();
+            }
+        });
+
+    }
+
 }
