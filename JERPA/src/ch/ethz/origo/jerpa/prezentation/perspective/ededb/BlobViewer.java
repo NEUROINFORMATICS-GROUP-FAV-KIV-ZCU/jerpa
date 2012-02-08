@@ -1,6 +1,9 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import org.apache.log4j.Logger;
 
@@ -11,13 +14,14 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 
 /**
  * Frame for visualizing blob from db.
  *
  * @author Petr Miko
  */
-public class BlobViewer {
+public class BlobViewer implements ILanguage {
 
     private final static Logger log = Logger.getLogger(BlobViewer.class);
 
@@ -30,17 +34,23 @@ public class BlobViewer {
     private String mimeType;
 
     private Thread open;
+    
+    private static String resourceBundlePath;
+    private static ResourceBundle resource;
 
 
     public BlobViewer(final Blob fileContent, String filename, final long fileLength, final String mimeType) {
 
+        LanguageObservable.getInstance().attach(this);
+        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+        
         this.fileContent = fileContent;
         this.filename = filename;
         this.fileLength = fileLength;
         this.mimeType = mimeType;
 
         if (fileContent == null) {
-            JOptionPane.showMessageDialog(null, "No file to be visualized!");
+            JOptionPane.showMessageDialog(null, resource.getString("blobViewer.ededb.noFile"));
         } else {
             open = new Thread(new Runnable() {
                 public void run() {
@@ -93,7 +103,7 @@ public class BlobViewer {
             loading.setVisible(false);
             Working.setActivity(false, "working.ededb.open");
         } catch (SQLException exception) {
-            JUIGLErrorInfoUtils.showErrorDialog("Text reading failed.", exception.getMessage(), exception);
+            JUIGLErrorInfoUtils.showErrorDialog(resource.getString("blobViewer.ededb.error"), exception.getMessage(), exception);
         }
     }
 
@@ -121,5 +131,41 @@ public class BlobViewer {
                 }
             }
         }
+    }
+    
+    /**
+     * Setter of localization resource bundle path
+     *
+     * @param path path to localization source file.
+     */
+    public void setLocalizedResourceBundle(String path) {
+        resourceBundlePath = path;
+        resource = ResourceBundle.getBundle(path);
+    }
+
+    /**
+     * Getter of path to resource bundle.
+     *
+     * @return path to localization file.
+     */
+    public String getResourceBundlePath() {
+        return resourceBundlePath;
+    }
+
+    /**
+     * Setter of resource bundle key.
+     *
+     * @param string key
+     */
+    public void setResourceBundleKey(String string) {
+        throw new UnsupportedOperationException("Method is not implemented yet...");
+    }
+
+    /**
+     * Method invoked by change of LanguageObservable.
+     *
+     * @throws ch.ethz.origo.juigle.application.exception.JUIGLELangException
+     */
+    public void updateText() throws JUIGLELangException {
     }
 }

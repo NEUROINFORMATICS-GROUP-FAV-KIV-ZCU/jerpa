@@ -9,6 +9,11 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+ * (02/08/2012) kivan
+	# 258
+	
+	CHANGED: added missing localization into ExperimentOverview and BlobViewer (thus JerpaLang was updated too)
+ 
  * (02/07/2012) kivan
 	# 257
 	

@@ -7,6 +7,9 @@ import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 import ch.ethz.origo.jerpa.data.tier.pojo.Person;
 import ch.ethz.origo.jerpa.data.tier.pojo.Scenario;
 import ch.ethz.origo.jerpa.data.tier.pojo.Weather;
+import ch.ethz.origo.juigle.application.ILanguage;
+import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
+import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -18,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ResourceBundle;
 
 import static javax.swing.BorderFactory.*;
 
@@ -26,7 +30,14 @@ import static javax.swing.BorderFactory.*;
  *         <p/>
  *         Viewer of experiment information.
  */
-public class ExperimentOverview extends JDialog implements ActionListener {
+public class ExperimentOverview extends JDialog implements ActionListener, ILanguage {
+
+    private static String resourceBundlePath;
+    private static ResourceBundle resource;
+
+    private JButton closeButton;
+    private TitledBorder metaBorder, generalBorder, timeBorder, peopleBorder;
+    private JLabel ownerLabel, subjectLabel, startLabel, endLabel, idLabel, nameLabel, tempLabel, weatherLabel, weatherNoteLabel;
 
     private Experiment experiment;
     private Scenario scenario;
@@ -43,6 +54,10 @@ public class ExperimentOverview extends JDialog implements ActionListener {
      */
     public ExperimentOverview(int experimentId) {
         super();
+
+        LanguageObservable.getInstance().attach(this);
+        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         ExperimentDao experimentDao = DaoFactory.getExperimentDao();
         experiment = experimentDao.get(experimentId);
@@ -53,6 +68,8 @@ public class ExperimentOverview extends JDialog implements ActionListener {
 
         JPanel canvas = new JPanel();
         initViewer(canvas);
+
+        updateTitles();
 
         this.add(canvas);
         this.pack();
@@ -82,7 +99,7 @@ public class ExperimentOverview extends JDialog implements ActionListener {
         GridBagConstraints timePaneConstraints = new GridBagConstraints(1, 1, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(createTimePane(), timePaneConstraints);
 
-        JButton closeButton = new JButton("Close");
+        closeButton = new JButton();
         closeButton.addActionListener(this);
         closeButton.setActionCommand("close");
 
@@ -96,16 +113,16 @@ public class ExperimentOverview extends JDialog implements ActionListener {
      * @return panel with meta information of experiments'
      */
     private JPanel createMetaPane() {
-        Border metaBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Meta information", TitledBorder.CENTER, TitledBorder.CENTER);
+        metaBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Meta information", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel metaPane = new JPanel(new GridBagLayout());
         metaPane.setBorder(metaBorder);
 
         Weather weather = experiment.getWeather();
         HibernateUtil.rebind(weather);
 
-        JLabel tempLabel = new JLabel("Temperature");
-        JLabel weatherLabel = new JLabel("Weather");
-        JLabel weatherNoteLabel = new JLabel("Weather note");
+        tempLabel = new JLabel();
+        weatherLabel = new JLabel();
+        weatherNoteLabel = new JLabel();
 
         JTextField tempField = new JTextField(experiment.getTemperature() + " °C", LETTERS_VISIBLE);
         JTextField weatherField = new JTextField(weather.getTitle(), LETTERS_VISIBLE);
@@ -143,12 +160,12 @@ public class ExperimentOverview extends JDialog implements ActionListener {
      * @return panel with general information
      */
     private JPanel createGeneralPane() {
-        Border generalBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "General information", TitledBorder.CENTER, TitledBorder.CENTER);
+        generalBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "General information", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel generalPane = new JPanel(new GridBagLayout());
         generalPane.setBorder(generalBorder);
 
-        JLabel idLabel = new JLabel("Experiment id");
-        JLabel nameLabel = new JLabel("Scenario name");
+        idLabel = new JLabel();
+        nameLabel = new JLabel();
         JTextField idField = new JTextField("" + experiment.getExperimentId(), LETTERS_VISIBLE);
         JTextField nameField = new JTextField(scenario.getTitle(), LETTERS_VISIBLE);
         GridBagConstraints idLabelConstraints = new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
@@ -172,7 +189,7 @@ public class ExperimentOverview extends JDialog implements ActionListener {
      * @return panel with times
      */
     private JPanel createTimePane() {
-        Border timeBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Time", TitledBorder.CENTER, TitledBorder.CENTER);
+        timeBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Time", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel timePane = new JPanel(new GridBagLayout());
         timePane.setBorder(timeBorder);
 
@@ -181,8 +198,8 @@ public class ExperimentOverview extends JDialog implements ActionListener {
 
         DateFormat timeFormat = new SimpleDateFormat("d.M.yyyy HH:mm:ss");
 
-        JLabel startLabel = new JLabel("Start time");
-        JLabel endLabel = new JLabel("End time");
+        startLabel = new JLabel();
+        endLabel = new JLabel();
         JTextField startField = new JTextField(timeFormat.format(startTime), LETTERS_VISIBLE);
         JTextField endField = new JTextField(timeFormat.format(endTime), LETTERS_VISIBLE);
 
@@ -208,7 +225,7 @@ public class ExperimentOverview extends JDialog implements ActionListener {
      * @return panel with people names
      */
     private JPanel createPeoplePane() {
-        Border peopleBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "People", TitledBorder.CENTER, TitledBorder.CENTER);
+        peopleBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "People", TitledBorder.CENTER, TitledBorder.CENTER);
         JPanel peoplePane = new JPanel(new GridBagLayout());
         peoplePane.setBorder(peopleBorder);
 
@@ -217,8 +234,8 @@ public class ExperimentOverview extends JDialog implements ActionListener {
         HibernateUtil.rebind(owner);
         HibernateUtil.rebind(subject);
 
-        JLabel ownerLabel = new JLabel("Owner");
-        JLabel subjectLabel = new JLabel("Subject");
+        ownerLabel = new JLabel();
+        subjectLabel = new JLabel();
         JTextField ownerField = new JTextField(owner.getName() + " " + owner.getSurname(), LETTERS_VISIBLE);
         JTextField subjectField = new JTextField(subject.getName() + " " + subject.getSurname(), LETTERS_VISIBLE);
 
@@ -241,5 +258,68 @@ public class ExperimentOverview extends JDialog implements ActionListener {
         if ("close".equals(action.getActionCommand())) {
             this.dispose();
         }
+    }
+
+    /**
+     * Setter of localization resource bundle path
+     *
+     * @param path path to localization source file.
+     */
+    public void setLocalizedResourceBundle(String path) {
+        resourceBundlePath = path;
+        resource = ResourceBundle.getBundle(path);
+    }
+
+    /**
+     * Getter of path to resource bundle.
+     *
+     * @return path to localization file.
+     */
+    public String getResourceBundlePath() {
+        return resourceBundlePath;
+    }
+
+    /**
+     * Setter of resource bundle key.
+     *
+     * @param string key
+     */
+    public void setResourceBundleKey(String string) {
+        throw new UnsupportedOperationException("Method is not implemented yet...");
+    }
+
+    /**
+     * Method invoked by change of LanguageObservable.
+     *
+     * @throws ch.ethz.origo.juigle.application.exception.JUIGLELangException
+     *
+     */
+    public void updateText() throws JUIGLELangException {
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                updateTitles();
+            }
+        });
+
+    }
+
+    private void updateTitles() {
+
+        metaBorder.setTitle(resource.getString("expOverview.ededb.section.meta"));
+        generalBorder.setTitle(resource.getString("expOverview.ededb.section.general"));
+        timeBorder.setTitle(resource.getString("expOverview.ededb.section.time"));
+        peopleBorder.setTitle(resource.getString("expOverview.ededb.section.people"));
+
+        closeButton.setText(resource.getString("expOverview.ededb.close"));
+        ownerLabel.setText(resource.getString("expOverview.ededb.owner"));
+        subjectLabel.setText(resource.getString("expOverview.ededb.subject"));
+        startLabel.setText(resource.getString("expOverview.ededb.startTime"));
+        endLabel.setText(resource.getString("expOverview.ededb.endTime"));
+        idLabel.setText(resource.getString("expOverview.ededb.id"));
+        nameLabel.setText(resource.getString("expOverview.ededb.name"));
+        tempLabel.setText(resource.getString("expOverview.ededb.temperature"));
+        weatherLabel.setText(resource.getString("expOverview.ededb.weather"));
+        weatherNoteLabel.setText(resource.getString("expOverview.ededb.weatherNote"));
     }
 }
