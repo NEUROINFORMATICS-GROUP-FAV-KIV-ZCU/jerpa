@@ -13,10 +13,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Petr Miko
@@ -37,7 +34,6 @@ public class DataSyncer {
     private WeatherDao weatherDao = DaoFactory.getWeatherDao();
     private PersonDao personDao = DaoFactory.getPersonDao();
 
-    private SyncThread syncThread;
     private final Object lock = new Object();
 
     private final static Logger log = Logger.getLogger(DataSyncer.class);
@@ -46,8 +42,7 @@ public class DataSyncer {
         this.session = session;
         this.controller = controller;
 
-        syncThread = new SyncThread();
-
+        SyncThread syncThread = new SyncThread();
         syncThread.start();
     }
 
@@ -73,13 +68,18 @@ public class DataSyncer {
             List<ExperimentInfo> experimentsInfo;
             List<DataFileInfo> filesInfo;
             List<WeatherInfo> weathersInfo;
+            List<HardwareInfo> hardwareInfo;
 
-            List<ResearchGroup> groups;
-            List<Person> people;
-            List<Scenario> scenarios;
-            List<Experiment> experiments;
-            List<DataFile> dataFiles;
-            List<Weather> weathers;
+            List<ResearchGroup> groups = new ArrayList<ResearchGroup>();
+            List<Person> people = new ArrayList<Person>();
+            List<Scenario> scenarios = new ArrayList<Scenario>();
+            List<Experiment> experiments = new ArrayList<Experiment>();
+            List<DataFile> dataFiles = new ArrayList<DataFile>();
+            List<Weather> weathers = new ArrayList<Weather>();
+            List<Hardware> hardwares = new ArrayList<Hardware>();
+
+            Set<Experiment> exps;
+            Set<Hardware> hws;
 
             Person tmpPerson = null;
             List<Person> tmpPeople;
@@ -111,8 +111,16 @@ public class DataSyncer {
                     scenariosInfo = session.getService().getScenarios(scenarioDao.getLastRevision());
                     experimentsInfo = session.getService().getExperiments(experimentDao.getLastRevision());
                     filesInfo = session.getService().getDataFiles(dataFileDao.getLastRevision());
+                    hardwareInfo = session.getService().getHardware(hardwareDao.getLastRevision());
                     Working.setActivity(false, "working.ededb.dbsync");
 
+                    groups.clear();
+                    people.clear();
+                    scenarios.clear();
+                    experiments.clear();
+                    dataFiles.clear();
+                    weathers.clear();
+                    hardwares.clear();
 
                     log.debug("DB update");
                     log.debug(groupsInfo.size() + " new research groups");
@@ -121,6 +129,7 @@ public class DataSyncer {
                     log.debug(experimentsInfo.size() + " new experiments");
                     log.debug(filesInfo.size() + " new data files");
                     log.debug(weathersInfo.size() + " new weather types");
+                    log.debug(hardwareInfo.size() + " new hardwares");
 
                     changed = (!groupsInfo.isEmpty()
                             && !peopleInfo.isEmpty()
@@ -128,14 +137,6 @@ public class DataSyncer {
                             && !experimentsInfo.isEmpty()
                             && !filesInfo.isEmpty()
                             && !weathersInfo.isEmpty());
-
-                    /* initializing of collections for objects, which will be created based on server info */
-                    groups = new ArrayList<ResearchGroup>();
-                    people = new ArrayList<Person>();
-                    scenarios = new ArrayList<Scenario>();
-                    experiments = new ArrayList<Experiment>();
-                    dataFiles = new ArrayList<DataFile>();
-                    weathers = new ArrayList<Weather>();
 
                     /* Registered people sync */
                     for (PersonInfo personInfo : peopleInfo) {
@@ -399,6 +400,54 @@ public class DataSyncer {
 
                     commitCollection(dataFiles);
 
+
+                    /*
+                     * HW sync
+                     */
+
+                    for (HardwareInfo hw : hardwareInfo) {
+                        Hardware hardware = new Hardware();
+                        hardware.setTitle(hw.getTitle());
+                        hardware.setType(hw.getType());
+                        hardware.setDescription(hw.getDescription());
+                        hardware.setHardwareId(hw.getHardwareId());
+                        hardware.setVersion(hw.getScn());
+
+                        exps = new HashSet<Experiment>();
+                        for (Integer expId : hw.getExperimentIds()) {
+                            Experiment exp = experimentDao.get(expId);
+                            if (exp != null)
+                                exps.add(exp);
+                        }
+
+                        hardware.setExperiments(exps);
+
+                        hardwares.add(hardware);
+                    }
+
+                    commitCollection(hardwares);
+
+                    /**
+                     * Every time there is a new experiment, HW relations must be updated
+                     */
+
+                    experiments.clear();
+                    for(ExperimentInfo expInfo : experimentsInfo){
+                        Experiment exp = experimentDao.get(expInfo.getExperimentId());
+
+                        hws = new HashSet<Hardware>();
+                        for (Integer hwId : expInfo.getHwIds()) {
+                            Hardware hw = hardwareDao.get(hwId);
+                            if (hw != null)
+                                hws.add(hw);
+                        }
+
+                        exp.setHardwares(hws);
+                        experiments.add(exp);
+                    }
+
+                    commitCollection(experiments);
+
                 } catch (DataDownloadException_Exception e) {
                     log.error(e.getMessage(), e);
                 }
@@ -418,13 +467,15 @@ public class DataSyncer {
             Session session = sessionFactory.getCurrentSession();
             Transaction transaction = session.beginTransaction();
 
-            for (Object ob : collection) {
-                session.saveOrUpdate(ob);
-            }
             try {
+
+                for (Object ob : collection) {
+                    session.saveOrUpdate(ob);
+                    session.flush();
+                }
                 transaction.commit();
             } catch (HibernateException e) {
-                log.error(e);
+                log.error(e.getMessage(), e);
                 transaction.rollback();
             }
         }

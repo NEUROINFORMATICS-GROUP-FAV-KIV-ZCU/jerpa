@@ -1,11 +1,15 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesTableModel;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
+import ch.ethz.origo.jerpa.data.tier.dao.HardwareDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
+import ch.ethz.origo.jerpa.data.tier.pojo.Hardware;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ImportWizard;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
+import org.hibernate.Hibernate;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
@@ -106,7 +109,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
 
                 if (existingRadio.isSelected()) {
                     ImportFilesTableModel model = (ImportFilesTableModel) importTable.getModel();
-                    List<File> files = model.getFiles();
+                    List<ImportFilesRowModel> rows = model.getFiles();
 
                     Experiment exp = (Experiment) experimentsCombo.getSelectedItem();
                     Set<String> fileNames = new HashSet<String>();
@@ -116,9 +119,10 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
                     }
 
 
-                    for (File file : files) {
+                    for (ImportFilesRowModel row : rows) {
+                        File file = row.getFile();
                         if (!fileNames.contains(file.getName())) {
-                            dataFileDao.createDataFile(exp, file);
+                            dataFileDao.createDataFile(exp, file, row.getSamplingRate());
                         } else {
 
                             int choice = JOptionPane.showConfirmDialog(null, resource.getString("importWizard.ededb.addFile.overwrite1") + file.getName() + resource.getString("importWizard.ededb.addFile.overwrite2"),
@@ -130,7 +134,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
                                     HibernateUtil.rebind(dataFile);
 
                                     if (file.getName().equals(dataFile.getFilename())) {
-                                        dataFileDao.overwriteDataFile(dataFile, file);
+                                        dataFileDao.overwriteDataFile(dataFile, file, row.getSamplingRate());
                                         break;
                                     }
                                 }
@@ -172,6 +176,20 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         scenarioCombo.setSelectedItem(HibernateUtil.rebind(exp.getScenario()));
         groupCombo.setSelectedItem(HibernateUtil.rebind(exp.getResearchGroup()));
 
+        HibernateUtil.rebind(exp);
+        Set<Hardware> hardwares = exp.getHardwares();
+        if (hardwares.isEmpty()) {
+            hwCombo.setVisible(false);
+            addHw.setVisible(false);
+        } else {
+            hwCombo.setVisible(true);
+            hwCombo.setVisible(true);
+            for (Hardware hw : hardwares) {
+                hwCombo.setSelectedItem(HibernateUtil.rebind(hw));
+                break;
+            }
+        }
+
         expStartTimeField.setValue(exp.getStartTime());
         expEndTimeField.setValue(exp.getEndTime());
         expTemperatureField.setValue(exp.getTemperature());
@@ -193,6 +211,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         weatherCombo.setEnabled(!existing);
         scenarioCombo.setEnabled(!existing);
         groupCombo.setEnabled(!existing);
+        hwCombo.setEnabled(!existing);
 
         expStartTimeField.setEnabled(!existing);
         expEndTimeField.setEnabled(!existing);
@@ -202,17 +221,24 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         addWeather.setEnabled(!existing);
         addScenario.setEnabled(!existing);
         addGroup.setEnabled(!existing);
+        addHw.setEnabled(!existing);
 
         if (!existing) {
             expOwnerCombo.setSelectedIndex(0);
             expSubjectCombo.setSelectedIndex(0);
             weatherCombo.setSelectedIndex(0);
             groupCombo.setSelectedIndex(0);
+            hwCombo.setSelectedIndex(0);
 
             expEndTimeField.setValue(null);
             expStartTimeField.setValue(null);
             expTemperatureField.setValue(null);
             weatherNoteArea.setText(null);
+
+            hwCombo.setVisible(true);
+            addHw.setVisible(true);
+        }else{
+            expSelected();
         }
 
         super.repaint();
@@ -249,8 +275,8 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
             for (Integer selectedRow : selectedRows) {
                 int selectedModelRow = importTable.convertRowIndexToModel(selectedRow);
 
-                if (selectedModelRow > 0) {
-                    importTable.remove(selectedModelRow);
+                if (selectedModelRow >= 0) {
+                    importTable.removeRow(selectedModelRow);
                 }
             }
             importTable.revalidate();

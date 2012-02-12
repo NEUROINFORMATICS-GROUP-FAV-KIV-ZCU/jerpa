@@ -32,13 +32,13 @@ public class ImportWizard extends JFrame implements ILanguage {
     private final static Logger log = Logger.getLogger(ImportWizard.class);
 
     private JLabel weatherNoteLabel, ownerLabel, subjectLabel, startLabel, endLabel, temperatureLabel;
-    private TitledBorder filesBorder, groupBorder, scenarioBorder, experimentBorder, weatherBorder;
+    private TitledBorder filesBorder, groupBorder, scenarioBorder, experimentBorder, weatherBorder, hwBorder;
     protected JRadioButton existingRadio, newRadio;
-    protected JComboBox expOwnerCombo, expSubjectCombo, weatherCombo, scenarioCombo, groupCombo, experimentsCombo;
+    protected JComboBox expOwnerCombo, expSubjectCombo, weatherCombo, scenarioCombo, groupCombo, experimentsCombo, hwCombo;
     protected JFormattedTextField expStartTimeField, expEndTimeField, expTemperatureField;
     protected JTextArea weatherNoteArea;
     protected DateFormat timeFormat = new SimpleDateFormat("d.M.yyyy HH:mm:ss");
-    protected JButton addWeather, addScenario, addFile, removeFile, addGroup, confirmButton, cancelButton;
+    protected JButton addWeather, addScenario, addFile, removeFile, addGroup, confirmButton, cancelButton, addHw;
     protected JProgressBar progressBar = new JProgressBar();
 
     protected DataFileDao dataFileDao = DaoFactory.getDataFileDao();
@@ -47,6 +47,7 @@ public class ImportWizard extends JFrame implements ILanguage {
     protected WeatherDao weatherDao = DaoFactory.getWeatherDao();
     protected ScenarioDao scenarioDao = DaoFactory.getScenarioDao();
     protected ResearchGroupDao researchGroupDao = DaoFactory.getResearchGroupDao();
+    protected HardwareDao hardwareDao = DaoFactory.getHardwareDao();
 
     protected ImportFilesTable importTable = new ImportFilesTable();
 
@@ -114,7 +115,7 @@ public class ImportWizard extends JFrame implements ILanguage {
         chooser.add(newRadio, BorderLayout.CENTER);
         chooser.add(experimentsCombo, BorderLayout.LINE_END);
 
-        GridBagConstraints chooserPaneConstraints = new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints chooserPaneConstraints = new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(chooser, chooserPaneConstraints);
 
 
@@ -130,25 +131,50 @@ public class ImportWizard extends JFrame implements ILanguage {
         GridBagConstraints groupPaneConstraints = new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(createGroupPane(), groupPaneConstraints);
 
-        GridBagConstraints progressBarConstraints = new GridBagConstraints(0, 4, 1, 1, 1, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints hwPaneConstraints = new GridBagConstraints(0, 4, 1, 1, 1, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        canvas.add(createHwPane(), hwPaneConstraints);
+
+        GridBagConstraints progressBarConstraints = new GridBagConstraints(0, 5, 1, 1, 1, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(progressBar, progressBarConstraints);
         progressBar.setIndeterminate(true);
         progressBar.setVisible(false);
         progressBar.setStringPainted(true);
 
-        GridBagConstraints filesPaneConstraints = new GridBagConstraints(1, 2, 1, 3, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints filesPaneConstraints = new GridBagConstraints(1, 2, 1, 4, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(createFilesPane(), filesPaneConstraints);
 
         confirmButton = new JButton();
         cancelButton = new JButton();
 
-        GridBagConstraints confirmButtonConstraints = new GridBagConstraints(0, 5, 1, 1, 0.2, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
-        GridBagConstraints cancelButtonConstraints = new GridBagConstraints(1, 5, 1, 1, 0.2, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints confirmButtonConstraints = new GridBagConstraints(0, 6, 1, 1, 0.2, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints cancelButtonConstraints = new GridBagConstraints(1, 6, 1, 1, 0.2, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
 
         canvas.add(confirmButton, confirmButtonConstraints);
         canvas.add(cancelButton, cancelButtonConstraints);
 
         return new JScrollPane(canvas);
+    }
+
+    /**
+     * Method creating panel with Hardware selection list.
+     * @return hw panel
+     */
+    private JPanel createHwPane() {
+        hwBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Hardware", TitledBorder.CENTER, TitledBorder.CENTER);
+        JPanel hwPane = new JPanel(new GridBagLayout());
+        hwPane.setBorder(hwBorder);
+
+        hwCombo = new JComboBox(hardwareDao.getAll().toArray());
+        hwCombo.setRenderer(tooltipComboBoxRenderer);
+        hwCombo.setPreferredSize(COMBO_SIZE);
+        addHw = new JButton("+");
+
+        GridBagConstraints hwComboConstraints = new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
+        GridBagConstraints addHwConstraints = new GridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.LINE_END, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+
+        hwPane.add(hwCombo, hwComboConstraints);
+        hwPane.add(addHw, addHwConstraints);
+        return hwPane;
     }
 
     /**

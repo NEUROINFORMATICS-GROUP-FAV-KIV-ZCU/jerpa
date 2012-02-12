@@ -9,6 +9,19 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+ 
+ * (02/12/2012) kivan
+	# 259
+	
+	CHANGED: jerpa_db_derby.sql - removed unique constraints on hardware
+	CHANGED: EDEDClient (and its jar) - updated wsdl file, added support for hardwareinfo, added list into experimentinfo for m:n relation description with hardware
+	CHANGED: JerpaLang (and its jar) - added few new translations in ededb section
+	CHANGED: ExperimentOverView - added hardware information panel
+	CHANGED: Syncer - added download sync for hardware
+	CHANGED: ImportWizard - added harware information panel; added row model for importfiles table, minor changes in importfilestable model
+	CHANGED: Hibernate mapping - removed unnecessary mapings of HardwareUsageRel (M:N between experiments and hardware). M:N sets modified in Hardware and Experiment mappings.
+	CHANGED: Hardware pojo - added custom toString method for ImportWizard ComboBox.
+ 
  * (02/08/2012) kivan
 	# 258
 	

@@ -5,10 +5,9 @@ import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.*;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
@@ -166,17 +165,19 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         transaction.commit();
     }
 
-    public void createDataFile(Experiment exp, File file) {
+    public void createDataFile(Experiment exp, File file, double samplingRate) {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
         DataFile dataFile = new DataFile();
+        dataFile.setDataFileId((int) getNextAvailableId());
         dataFile.setChanged(true);
         dataFile.setExperiment(exp);
         dataFile.setFileLength(file.length());
         dataFile.setFilename(file.getName());
         dataFile.setMimetype(new MimetypesFileTypeMap().getContentType(file));
+        dataFile.setSamplingRate(samplingRate);
 
         InputStream inStream = null;
         try {
@@ -212,7 +213,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @param dataFile data file
      * @param file     java.io.File
      */
-    public void overwriteDataFile(DataFile dataFile, File file) {
+    public void overwriteDataFile(DataFile dataFile, File file, double samplingRate) {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
@@ -221,6 +222,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         try {
             inStream = new FileInputStream(file);
             dataFile.setFileContent(Hibernate.getLobCreator(session).createBlob(inStream, file.length()));
+            dataFile.setSamplingRate(samplingRate);
         } catch (FileNotFoundException e) {
             log.error(e.getMessage(), e);
         } finally {
@@ -240,5 +242,10 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
             log.error(e.getMessage(), e);
             transaction.rollback();
         }
+    }
+
+    protected int getNextAvailableId() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        return (Integer) session.createCriteria(DataFile.class).setProjection(Projections.max("dataFileId")).uniqueResult() + 1;
     }
 }

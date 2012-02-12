@@ -23,7 +23,6 @@
         <mapping resource="ch/ethz/origo/jerpa/data/tier/pojo/FileMetadataParamDef.hbm.xml"/>
         <mapping resource="ch/ethz/origo/jerpa/data/tier/pojo/GroupPermissionRequest.hbm.xml"/>
         <mapping resource="ch/ethz/origo/jerpa/data/tier/pojo/Hardware.hbm.xml"/>
-        <mapping resource="ch/ethz/origo/jerpa/data/tier/pojo/HardwareUsageRel.hbm.xml"/>
         <mapping resource="ch/ethz/origo/jerpa/data/tier/pojo/HearingImpairment.hbm.xml"/>
         <mapping resource="ch/ethz/origo/jerpa/data/tier/pojo/HearingImpairmentRel.hbm.xml"/>
         <mapping resource="ch/ethz/origo/jerpa/data/tier/pojo/History.hbm.xml"/>

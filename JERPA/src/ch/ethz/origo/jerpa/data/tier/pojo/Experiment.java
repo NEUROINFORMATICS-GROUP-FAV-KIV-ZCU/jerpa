@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +18,15 @@ import java.util.Collection;
 public class Experiment {
     private int experimentId;
     private boolean changed;
+    private Set<Hardware> hardwares;
+
+    public Set<Hardware> getHardwares() {
+        return hardwares;
+    }
+
+    public void setHardwares(Set<Hardware> hardwares) {
+        this.hardwares = hardwares;
+    }
 
     public boolean getChanged() {
         return changed;
@@ -200,16 +210,6 @@ public class Experiment {
 
     public void setExperimentOptParamVals(Collection<ExperimentOptParamVal> experimentOptParamVals) {
         this.experimentOptParamVals = experimentOptParamVals;
-    }
-
-    private Collection<HardwareUsageRel> hardwareUsageRels;
-
-    public Collection<HardwareUsageRel> getHardwareUsageRels() {
-        return hardwareUsageRels;
-    }
-
-    public void setHardwareUsageRels(Collection<HardwareUsageRel> hardwareUsageRels) {
-        this.hardwareUsageRels = hardwareUsageRels;
     }
 
     private Collection<History> histories;

@@ -23,11 +23,13 @@
         <property name="changed">
             <column name="CHANGED" sql-type="boolean" />
         </property>
-        <set name="hardwareUsageRels" inverse="true">
+        <set inverse="false" name="experiments" table="HARDWARE_USAGE_REL">
             <key>
-                <column name="HARDWARE_ID" not-null="true"/>
+                <column name="HARDWARE_ID" not-null="true" precision="22" scale="0"/>
             </key>
-            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.HardwareUsageRel"/>
+            <many-to-many entity-name="ch.ethz.origo.jerpa.data.tier.pojo.Experiment">
+                <column name="EXPERIMENT_ID" not-null="true" precision="22" scale="0"/>
+            </many-to-many>
         </set>
     </class>
 </hibernate-mapping>

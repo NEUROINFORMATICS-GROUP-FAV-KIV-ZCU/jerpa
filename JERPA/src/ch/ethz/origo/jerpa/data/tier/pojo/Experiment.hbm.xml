@@ -62,11 +62,13 @@
             </key>
             <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ExperimentOptParamVal"/>
         </set>
-        <set name="hardwareUsageRels" inverse="true">
+       <set inverse="true" name="hardwares" table="HARDWARE_USAGE_REL">
             <key>
-                <column name="EXPERIMENT_ID" not-null="true"/>
+                <column name="EXPERIMENT_ID" not-null="true" precision="22" scale="0"/>
             </key>
-            <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.HardwareUsageRel"/>
+            <many-to-many entity-name="ch.ethz.origo.jerpa.data.tier.pojo.Hardware">
+                <column name="HARDWARE_ID" not-null="true" precision="22" scale="0"/>
+            </many-to-many>
         </set>
         <set name="histories" inverse="true">
             <key>

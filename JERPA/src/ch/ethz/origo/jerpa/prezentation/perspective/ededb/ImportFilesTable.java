@@ -36,7 +36,7 @@ public class ImportFilesTable extends JTable {
      *
      * @param index row index
      */
-    public void remove(int index) {
+    public void removeRow(int index) {
         ImportFilesTableModel model = (ImportFilesTableModel) this.getModel();
         model.removeRow(index);
     }

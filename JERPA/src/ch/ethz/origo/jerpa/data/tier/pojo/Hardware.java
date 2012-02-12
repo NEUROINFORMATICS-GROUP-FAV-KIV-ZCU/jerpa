@@ -1,6 +1,6 @@
 package ch.ethz.origo.jerpa.data.tier.pojo;
 
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -96,13 +96,17 @@ public class Hardware {
         return result;
     }
 
-    private Collection<HardwareUsageRel> hardwareUsageRels;
+    private Set<Experiment> experiments;
 
-    public Collection<HardwareUsageRel> getHardwareUsageRels() {
-        return hardwareUsageRels;
+    public Set<Experiment> getExperiments() {
+        return experiments;
     }
 
-    public void setHardwareUsageRels(Collection<HardwareUsageRel> hardwareUsageRels) {
-        this.hardwareUsageRels = hardwareUsageRels;
+    public void setExperiments(Set<Experiment> experiments) {
+        this.experiments = experiments;
+    }
+
+    public String toString(){
+        return type + " | " + title + " | " + description;
     }
 }

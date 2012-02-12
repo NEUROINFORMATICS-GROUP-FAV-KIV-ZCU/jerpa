@@ -3,17 +3,12 @@ package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.jerpa.data.tier.dao.ExperimentDao;
-import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
-import ch.ethz.origo.jerpa.data.tier.pojo.Person;
-import ch.ethz.origo.jerpa.data.tier.pojo.Scenario;
-import ch.ethz.origo.jerpa.data.tier.pojo.Weather;
+import ch.ethz.origo.jerpa.data.tier.pojo.*;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,8 +31,9 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
     private static ResourceBundle resource;
 
     private JButton closeButton;
-    private TitledBorder metaBorder, generalBorder, timeBorder, peopleBorder;
-    private JLabel ownerLabel, subjectLabel, startLabel, endLabel, idLabel, nameLabel, tempLabel, weatherLabel, weatherNoteLabel;
+    private TitledBorder metaBorder, generalBorder, timeBorder, peopleBorder, hardwareBorder;
+    private JLabel ownerLabel, subjectLabel, startLabel, endLabel, idLabel, nameLabel, tempLabel,
+            weatherLabel, weatherNoteLabel, hwTitleLabel, hwTypeLabel, hwDescriptionLabel;
 
     private Experiment experiment;
     private Scenario scenario;
@@ -62,6 +58,7 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         ExperimentDao experimentDao = DaoFactory.getExperimentDao();
         experiment = experimentDao.get(experimentId);
         scenario = experiment.getScenario();
+        HibernateUtil.rebind(experiment);
         HibernateUtil.rebind(scenario);
 
         this.setTitle(experiment.getExperimentId() + " - " + scenario.getTitle());
@@ -93,11 +90,14 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         GridBagConstraints peoplePaneConstraints = new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(createPeoplePane(), peoplePaneConstraints);
 
-        GridBagConstraints metaPaneConstraints = new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints metaPaneConstraints = new GridBagConstraints(0, 1, 1, 2, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(createMetaPane(), metaPaneConstraints);
 
         GridBagConstraints timePaneConstraints = new GridBagConstraints(1, 1, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(createTimePane(), timePaneConstraints);
+
+        GridBagConstraints hwPaneConstraints = new GridBagConstraints(1, 2, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+        canvas.add(createHwPane(), hwPaneConstraints);
 
         closeButton = new JButton();
         closeButton.addActionListener(this);
@@ -106,6 +106,56 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         GridBagConstraints closeButtonConstraints = new GridBagConstraints(0, 3, 2, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(1, 1, 1, 1), 0, 0);
         canvas.add(closeButton, closeButtonConstraints);
     }
+
+    /**
+     * Creates panel with HW information.
+     * @return panel with HW
+     */
+    private JPanel createHwPane() {
+        hardwareBorder = BorderFactory.createTitledBorder(createMatteBorder(1, 1, 1, 1, Color.DARK_GRAY), "Hardware", TitledBorder.CENTER, TitledBorder.CENTER);
+        JPanel hwPane = new JPanel(new GridBagLayout());
+        hwPane.setBorder(hardwareBorder);
+
+        hwTitleLabel = new JLabel();
+        hwTypeLabel = new JLabel();
+        hwDescriptionLabel = new JLabel();
+
+        int row = 0;
+        for(Hardware hw : experiment.getHardwares()){
+            HibernateUtil.rebind(hw);
+
+            JTextField hwTitleField = new JTextField(hw.getTitle());
+            JTextField hwTypeField = new JTextField(hw.getType());
+            JTextField hwDescriptionField = new JTextField(hw.getDescription());
+
+            hwTitleField.setEditable(false);
+            hwTypeField.setEditable(false);
+            hwDescriptionField.setEditable(false);
+
+            hwTitleField.setColumns(LETTERS_VISIBLE);
+            hwTypeField.setColumns(LETTERS_VISIBLE);
+            hwDescriptionField.setColumns(LETTERS_VISIBLE);
+
+
+            GridBagConstraints hwTitleLabelConstraints = new GridBagConstraints(0, row, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
+            GridBagConstraints hwTitleFieldConstraints = new GridBagConstraints(1, row, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+            row++;
+            GridBagConstraints hwTypeLabelConstraints = new GridBagConstraints(0, row, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
+            GridBagConstraints hwTypeFieldConstraints = new GridBagConstraints(1, row, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+            row++;
+            GridBagConstraints hwDescriptionLabelConstraints = new GridBagConstraints(0, row, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
+            GridBagConstraints hwDescriptionFieldConstraints = new GridBagConstraints(1, row, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+
+            hwPane.add(hwTitleLabel, hwTitleLabelConstraints);
+            hwPane.add(hwTitleField, hwTitleFieldConstraints);
+            hwPane.add(hwTypeLabel, hwTypeLabelConstraints);
+            hwPane.add(hwTypeField, hwTypeFieldConstraints);
+            hwPane.add(hwDescriptionLabel, hwDescriptionLabelConstraints);
+            hwPane.add(hwDescriptionField, hwDescriptionFieldConstraints);
+        }
+        return hwPane;
+    }
+
 
     /**
      * Creates panel with experiment meta information.
@@ -310,6 +360,7 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         generalBorder.setTitle(resource.getString("expOverview.ededb.section.general"));
         timeBorder.setTitle(resource.getString("expOverview.ededb.section.time"));
         peopleBorder.setTitle(resource.getString("expOverview.ededb.section.people"));
+        hardwareBorder.setTitle("Hardware");
 
         closeButton.setText(resource.getString("expOverview.ededb.close"));
         ownerLabel.setText(resource.getString("expOverview.ededb.owner"));
@@ -321,5 +372,9 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         tempLabel.setText(resource.getString("expOverview.ededb.temperature"));
         weatherLabel.setText(resource.getString("expOverview.ededb.weather"));
         weatherNoteLabel.setText(resource.getString("expOverview.ededb.weatherNote"));
+
+        hwTitleLabel.setText(resource.getString("expOverview.ededb.hwTitle"));
+        hwTypeLabel.setText(resource.getString("expOverview.ededb.hwType"));
+        hwDescriptionLabel.setText(resource.getString("expOverview.ededb.hwDescription"));
     }
 }
