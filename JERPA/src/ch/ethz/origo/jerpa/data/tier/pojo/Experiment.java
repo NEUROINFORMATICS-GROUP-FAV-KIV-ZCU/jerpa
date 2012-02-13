@@ -225,6 +225,8 @@ public class Experiment {
     public String toString(){
         DateFormat timeFormat = new SimpleDateFormat("d.M.yyyy HH:mm:ss");
 
-        return experimentId + " | " + timeFormat.format(startTime) + " -> " + timeFormat.format(endTime) + " | " + scenario.getTitle();
+        return experimentId + " | " + (startTime == null ? " ? " : timeFormat.format(startTime)) +
+                " -> " + (endTime == null ? " ? " : timeFormat.format(endTime)) + " | "
+                + scenario.getTitle();
     }
 }

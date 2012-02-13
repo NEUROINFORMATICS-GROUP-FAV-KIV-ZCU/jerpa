@@ -62,7 +62,7 @@
             </key>
             <one-to-many not-found="ignore" class="ch.ethz.origo.jerpa.data.tier.pojo.ExperimentOptParamVal"/>
         </set>
-       <set inverse="true" name="hardwares" table="HARDWARE_USAGE_REL">
+       <set inverse="false" name="hardwares" table="HARDWARE_USAGE_REL">
             <key>
                 <column name="EXPERIMENT_ID" not-null="true" precision="22" scale="0"/>
             </key>

@@ -250,8 +250,8 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
 
         startLabel = new JLabel();
         endLabel = new JLabel();
-        JTextField startField = new JTextField(timeFormat.format(startTime), LETTERS_VISIBLE);
-        JTextField endField = new JTextField(timeFormat.format(endTime), LETTERS_VISIBLE);
+        JTextField startField = new JTextField(startTime == null ? null : timeFormat.format(startTime), LETTERS_VISIBLE);
+        JTextField endField = new JTextField(endTime == null ? null : timeFormat.format(endTime), LETTERS_VISIBLE);
 
         startField.setEditable(false);
         endField.setEditable(false);

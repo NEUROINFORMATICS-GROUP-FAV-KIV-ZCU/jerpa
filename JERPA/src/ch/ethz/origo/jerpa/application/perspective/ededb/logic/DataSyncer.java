@@ -413,15 +413,6 @@ public class DataSyncer {
                         hardware.setHardwareId(hw.getHardwareId());
                         hardware.setVersion(hw.getScn());
 
-                        exps = new HashSet<Experiment>();
-                        for (Integer expId : hw.getExperimentIds()) {
-                            Experiment exp = experimentDao.get(expId);
-                            if (exp != null)
-                                exps.add(exp);
-                        }
-
-                        hardware.setExperiments(exps);
-
                         hardwares.add(hardware);
                     }
 

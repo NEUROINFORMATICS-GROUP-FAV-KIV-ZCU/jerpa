@@ -4,9 +4,7 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesRowMo
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesTableModel;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.jerpa.data.tier.dao.HardwareDao;
-import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
-import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
-import ch.ethz.origo.jerpa.data.tier.pojo.Hardware;
+import ch.ethz.origo.jerpa.data.tier.pojo.*;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ImportWizard;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import org.hibernate.Hibernate;
@@ -15,6 +13,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -106,44 +105,12 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
                 cancelButton.setEnabled(false);
 
                 progressBar.setVisible(true);
-
                 if (existingRadio.isSelected()) {
-                    ImportFilesTableModel model = (ImportFilesTableModel) importTable.getModel();
-                    List<ImportFilesRowModel> rows = model.getFiles();
-
                     Experiment exp = (Experiment) experimentsCombo.getSelectedItem();
-                    Set<String> fileNames = new HashSet<String>();
-                    for (DataFile file : exp.getDataFiles()) {
-                        HibernateUtil.rebind(file);
-                        fileNames.add(file.getFilename());
-                    }
-
-
-                    for (ImportFilesRowModel row : rows) {
-                        File file = row.getFile();
-                        if (!fileNames.contains(file.getName())) {
-                            dataFileDao.createDataFile(exp, file, row.getSamplingRate());
-                        } else {
-
-                            int choice = JOptionPane.showConfirmDialog(null, resource.getString("importWizard.ededb.addFile.overwrite1") + file.getName() + resource.getString("importWizard.ededb.addFile.overwrite2"),
-                                    resource.getString("importWizard.ededb.addFile.overwritePrompt"),
-                                    JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-
-                            if (choice == JOptionPane.YES_OPTION) {
-                                for (DataFile dataFile : exp.getDataFiles()) {
-                                    HibernateUtil.rebind(dataFile);
-
-                                    if (file.getName().equals(dataFile.getFilename())) {
-                                        dataFileDao.overwriteDataFile(dataFile, file, row.getSamplingRate());
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    saveExisting(exp);
 
                 } else {
-                    //TODO store new experiment
+                    saveNew();
                 }
 
                 controller.update();
@@ -156,10 +123,92 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         saveThread.start();
     }
 
+    private void saveExisting(Experiment exp) {
+
+        ImportFilesTableModel model = (ImportFilesTableModel) importTable.getModel();
+        List<ImportFilesRowModel> rows = model.getFiles();
+
+        if (!rows.isEmpty()) {
+            Set<String> fileNames = new HashSet<String>();
+
+            if (exp.getDataFiles() != null)
+                for (DataFile file : exp.getDataFiles()) {
+                    HibernateUtil.rebind(file);
+                    fileNames.add(file.getFilename());
+                }
+
+
+            for (ImportFilesRowModel row : rows) {
+                File file = row.getFile();
+                if (!fileNames.contains(file.getName())) {
+                    dataFileDao.createDataFile(exp, file, row.getSamplingRate());
+                } else {
+
+                    int choice = JOptionPane.showConfirmDialog(null, resource.getString("importWizard.ededb.addFile.overwrite1") + file.getName() + resource.getString("importWizard.ededb.addFile.overwrite2"),
+                            resource.getString("importWizard.ededb.addFile.overwritePrompt"),
+                            JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+
+                    if (choice == JOptionPane.YES_OPTION) {
+                        for (DataFile dataFile : exp.getDataFiles()) {
+                            HibernateUtil.rebind(dataFile);
+
+                            if (file.getName().equals(dataFile.getFilename())) {
+                                dataFileDao.overwriteDataFile(dataFile, file, row.getSamplingRate());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void saveNew() {
+        Experiment exp = new Experiment();
+        exp.setChanged(true);
+
+        Hardware hw = (Hardware) hwCombo.getSelectedItem();
+        Set<Hardware> hws = new HashSet<Hardware>();
+        hws.add(hw);
+        ResearchGroup group = (ResearchGroup) groupCombo.getSelectedItem();
+        Weather weather = (Weather) weatherCombo.getSelectedItem();
+        Scenario scenario = (Scenario) scenarioCombo.getSelectedItem();
+        Person owner = (Person) expOwnerCombo.getSelectedItem();
+        Person subject = (Person) expSubjectCombo.getSelectedItem();
+
+        exp.setHardwares(hws);
+        exp.setScenario(scenario);
+        exp.setWeather(weather);
+        exp.setResearchGroup(group);
+        exp.setOwner(owner);
+        exp.setSubject(subject);
+        exp.setWeathernote(weatherNoteArea.getText());
+        exp.setExperimentId(experimentDao.getNextAvailableId());
+
+        String temperature = expTemperatureField.getText().substring(0, 2).trim();
+        exp.setTemperature(temperature.isEmpty() ? 0 : Short.parseShort(temperature));
+        Date startTime = (Date) expStartTimeField.getValue();
+        Date endTime = (Date) expEndTimeField.getValue();
+        exp.setStartTime((startTime == null ? null : new java.sql.Date(startTime.getTime())));
+        exp.setEndTime((endTime == null ? null : new java.sql.Date(endTime.getTime())));
+
+        experimentDao.save(exp);
+        saveExisting(exp);
+    }
+
     /**
      * Method for closing Import Wizard.
      */
     private void closeWizard() {
+        experimentsCombo = null;
+        expOwnerCombo = null;
+        expSubjectCombo = null;
+        experimentsCombo = null;
+        weatherCombo = null;
+        hwCombo = null;
+        groupCombo = null;
+        scenarioCombo = null;
         this.dispose();
     }
 
@@ -237,7 +286,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
 
             hwCombo.setVisible(true);
             addHw.setVisible(true);
-        }else{
+        } else {
             expSelected();
         }
 

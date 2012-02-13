@@ -9,6 +9,14 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+
+ * (02/13/2012) kivan
+	# 260
+	
+	CHANGED: Experiment mapping - M:N set inverse changed to false (in order to be able set HW reference by setting a set to experiment).
+	CHANGED: DataSyncer - only experiments now set Experiment/Hardware references.
+	ADDED: ImportWizardLogic - added import of a new experiment into local db.
+	FIXED: Nullpointer exceptions in ExperimentOverview, ImportWizard and Experiment, when date was null.
  
  * (02/12/2012) kivan
 	# 259
