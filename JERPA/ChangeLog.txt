@@ -9,6 +9,10 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+ * (02/13/2012) kivan
+	# 261
+	INTERNAL: DataSyncer: refactorized - every logic action has its method now, better performance due to better using DAO, javadoced.
+	ADDED: forgotten classes which should be committed in previous commits, my apologies.
 
  * (02/13/2012) kivan
 	# 260
