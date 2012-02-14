@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <property name="connection.url">jdbc:derby:c:\Users\Petr\Documents\Development\JERPA\JERPA\trunk\JERPA\storage\derby</property>
+        <property name="connection.url">jdbc:derby:storage\derby</property>
         <property name="connection.driver_class">org.apache.derby.jdbc.EmbeddedDriver</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
         <property name="hibernate.current_session_context_class">thread</property>

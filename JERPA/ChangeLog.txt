@@ -9,6 +9,11 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+ * (02/14/2012) kivan
+	#262
+	ADDED: edited sql file, dbtool package, DbTool interface, factory and DerbyTool class for creating DB using JDBC if it is not already existing.
+	CHANGED: config.properties and hibernate.cfg.xml - added/changed db information
+
  * (02/13/2012) kivan
 	# 261
 	INTERNAL: DataSyncer: refactorized - every logic action has its method now, better performance due to better using DAO, javadoced.

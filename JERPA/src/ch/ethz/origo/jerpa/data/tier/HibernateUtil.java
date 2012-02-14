@@ -1,16 +1,11 @@
 package ch.ethz.origo.jerpa.data.tier;
 
+import ch.ethz.origo.jerpa.data.dbtools.DbTool;
+import ch.ethz.origo.jerpa.data.dbtools.DbToolFactory;
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.Blob;
 
 public class HibernateUtil {
 
@@ -19,9 +14,12 @@ public class HibernateUtil {
 
     private static SessionFactory buildSessionFactory() {
         try {
+            DbTool dbTools = DbToolFactory.getDerbyCreator();
+            if(!dbTools.dbExists()){
+                dbTools.createDb();
+            }
             Configuration cfg = new Configuration().configure();
-            SessionFactory factory = cfg.buildSessionFactory();
-            return factory;
+            return cfg.buildSessionFactory();
         } catch (Throwable ex) {
             ex.printStackTrace();
             log.error("Initial SessionFactory creation failed.", ex);
