@@ -1,7 +1,6 @@
 package ch.ethz.origo.jerpa.data.tier.dao;
 
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
-import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -22,6 +21,7 @@ public class ExperimentDao extends GenericDao<Experiment, Integer> {
         super(Experiment.class);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Experiment> getAll() {
 
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();

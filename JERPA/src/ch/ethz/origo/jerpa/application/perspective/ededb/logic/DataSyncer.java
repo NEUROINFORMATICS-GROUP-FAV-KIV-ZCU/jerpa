@@ -26,7 +26,7 @@ public class DataSyncer {
     private final EDEDClient session;
     private final EDEDBController controller;
 
-    private long SLEEP_INTERVAL = 60000;
+    private long sleepInterval = 60000;
 
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
     private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
@@ -36,21 +36,23 @@ public class DataSyncer {
     private WeatherDao weatherDao = DaoFactory.getWeatherDao();
     private PersonDao personDao = DaoFactory.getPersonDao();
 
-    private final Object lock = new Object();
-
     private final static Logger log = Logger.getLogger(DataSyncer.class);
 
     public DataSyncer(EDEDClient session, EDEDBController controller) {
         this.session = session;
         this.controller = controller;
 
+        String tmpSleep = EDEDBProperties.getConfigKey("ededb.sync.miliseconds");
+        if (tmpSleep != null)
+            sleepInterval = Long.parseLong(tmpSleep);
+
         SyncThread syncThread = new SyncThread();
         syncThread.start();
     }
 
     public void syncNow() {
-        synchronized (lock) {
-            lock.notify();
+        synchronized (DataSyncer.class) {
+            DataSyncer.class.notify();
         }
     }
 
@@ -59,23 +61,12 @@ public class DataSyncer {
         @Override
         public void run() {
             setName("DataSyncThread");
-
-
-            List<ResearchGroupInfo> groupsInfo;
-            List<PersonInfo> peopleInfo;
-            List<ScenarioInfo> scenariosInfo;
-            List<ExperimentInfo> experimentsInfo;
-            List<DataFileInfo> filesInfo;
-            List<WeatherInfo> weathersInfo;
-            List<HardwareInfo> hardwareInfo;
-
-            boolean changed = false;
-
+            boolean changed;
             do {
 
-                synchronized (lock) {
+                synchronized (DataSyncer.class) {
                     try {
-                        lock.wait(SLEEP_INTERVAL);
+                        DataSyncer.class.wait(sleepInterval);
                     } catch (InterruptedException e) {
                         log.error(e.getMessage(), e);
                     }
@@ -87,57 +78,86 @@ public class DataSyncer {
 
                 log.debug("DB syncing begins");
 
-                try {
-                    /*First we obtain all needed information from server in collections.*/
-                    Working.setActivity(true, "working.ededb.dbsync");
+                Working.setActivity(true, "working.ededb.dbsync");
 
-                    log.debug("Obtaining data from server");
-                    groupsInfo = session.getService().getResearchGroups(researchGroupDao.getLastRevision());
-                    weathersInfo = session.getService().getWeather(weatherDao.getLastRevision());
-                    peopleInfo = session.getService().getPeople(personDao.getLastRevision());
-                    scenariosInfo = session.getService().getScenarios(scenarioDao.getLastRevision());
-                    experimentsInfo = session.getService().getExperiments(experimentDao.getLastRevision());
-                    filesInfo = session.getService().getDataFiles(dataFileDao.getLastRevision());
-                    hardwareInfo = session.getService().getHardware(hardwareDao.getLastRevision());
-                    log.debug("Data obtained - proceeding to update");
+                //download section of syncing
+                changed = download();
 
-                    changed = (!groupsInfo.isEmpty()
-                            && !peopleInfo.isEmpty()
-                            && !scenariosInfo.isEmpty()
-                            && !experimentsInfo.isEmpty()
-                            && !filesInfo.isEmpty()
-                            && !weathersInfo.isEmpty());
-
-                    if (!peopleInfo.isEmpty())
-                        importNewPeople(peopleInfo);
-                    if (!groupsInfo.isEmpty())
-                        importNewResearchGroups(groupsInfo);
-                    if (!peopleInfo.isEmpty())
-                        updatePeopleGroupsRelations(peopleInfo);
-                    if (!scenariosInfo.isEmpty())
-                        importNewScenarios(scenariosInfo);
-                    if (!weathersInfo.isEmpty())
-                        importNewWeather(weathersInfo);
-                    if (!experimentsInfo.isEmpty())
-                        importNewExperiments(experimentsInfo);
-                    if (!filesInfo.isEmpty())
-                        importNewDataFiles(filesInfo);
-                    if (!hardwareInfo.isEmpty())
-                        importNewHardware(hardwareInfo);
-                    if (!experimentsInfo.isEmpty())
-                        updateExperimentHwRelations(experimentsInfo);
-
-                } catch (DataDownloadException_Exception e) {
-                    log.error(e.getMessage(), e);
-                } finally {
-                    Working.setActivity(false, "working.ededb.dbsync");
-                }
+                Working.setActivity(false, "working.ededb.dbsync");
                 if (changed)
                     controller.update();
                 log.debug("DB syncing done");
             } while (!Thread.interrupted());
 
         }
+
+        /**
+         * Download synchronization method.
+         *
+         * @return data in DB had changed
+         */
+        private boolean download() {
+            log.debug("Download - Obtaining data from server");
+
+            List<ResearchGroupInfo> groupsInfo = null;
+            List<WeatherInfo> weathersInfo = null;
+            List<PersonInfo> peopleInfo = null;
+            List<ScenarioInfo> scenariosInfo = null;
+            List<ExperimentInfo> experimentsInfo = null;
+            List<DataFileInfo> filesInfo = null;
+            List<HardwareInfo> hardwareInfo = null;
+
+            try {
+                groupsInfo = session.getService().getResearchGroups(researchGroupDao.getLastRevision());
+                weathersInfo = session.getService().getWeather(weatherDao.getLastRevision());
+                peopleInfo = session.getService().getPeople(personDao.getLastRevision());
+                scenariosInfo = session.getService().getScenarios(scenarioDao.getLastRevision());
+                experimentsInfo = session.getService().getExperiments(experimentDao.getLastRevision());
+                filesInfo = session.getService().getDataFiles(dataFileDao.getLastRevision());
+                hardwareInfo = session.getService().getHardware(hardwareDao.getLastRevision());
+                log.debug("Download - Data obtained: proceeding to update");
+
+                if (!peopleInfo.isEmpty())
+                    importNewPeople(peopleInfo);
+                if (!groupsInfo.isEmpty())
+                    importNewResearchGroups(groupsInfo);
+                if (!peopleInfo.isEmpty())
+                    updatePeopleGroupsRelations(peopleInfo);
+                if (!scenariosInfo.isEmpty())
+                    importNewScenarios(scenariosInfo);
+                if (!weathersInfo.isEmpty())
+                    importNewWeather(weathersInfo);
+                if (!experimentsInfo.isEmpty())
+                    importNewExperiments(experimentsInfo);
+                if (!filesInfo.isEmpty())
+                    importNewDataFiles(filesInfo);
+                if (!hardwareInfo.isEmpty())
+                    importNewHardware(hardwareInfo);
+                if (!experimentsInfo.isEmpty())
+                    updateExperimentHwRelations(experimentsInfo);
+
+                log.debug("Download - DB updated");
+
+            } catch (DataDownloadException_Exception e) {
+                log.error(e.getMessage(), e);
+            }
+            return !isListEmpty(groupsInfo)
+                    && !isListEmpty(peopleInfo)
+                    && !isListEmpty(scenariosInfo)
+                    && !isListEmpty(experimentsInfo)
+                    && !isListEmpty(filesInfo)
+                    && !isListEmpty(weathersInfo)
+                    && !isListEmpty(hardwareInfo);
+        }
+    }
+
+    /**
+     * Method for simple checking whether the list is empty or not.
+     * @param list java.util.List implementation
+     * @return empty state
+     */
+    private boolean isListEmpty(List list) {
+        return !(list != null && !list.isEmpty());
     }
 
     /**

@@ -122,10 +122,5 @@ public class DataCellRenderer extends JLabel implements TableCellRenderer, ILang
 	 * @throws JUIGLELangException
 	 */
 	public void updateText() throws JUIGLELangException {
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {}
-		});
-
 	}
 }

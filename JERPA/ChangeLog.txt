@@ -9,6 +9,19 @@
 *********************************************************************************************
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
+
+ * (02/19/2012) kivan
+	#263
+	
+	CHANGED: EDEDB code cleanup, removed unused references, old segments of code, synchronized locks changed to class reference, added missing javadocs.
+	INTERNAL: LoginDialog in EDEDB is now refactored into two parts - gui and logic. Logic part is a singleton, unlike previous implementation.
+	FIXED: LookAndFeel in EDEDB seems to be OK again, after LoginDialog was refactored.
+	FIXED: removed blink effect after file downloaded - caused by refresh after every download. Now refreshes only if row count had changed.
+	CHANGED: DataSyncer - small refactor - download methods now gathered into separate method (preparations for upload method). Sleep time is now read from properties file.
+	CHANGED: Working - added synchronized blocks and maps changed to volatile - it should solve occasional glitches in this class.
+	CHANGED: EDEDBProperties - small change in creating of an instance, nothing major.
+	CHANGED: removed old EDEDB tests - new set of test is need to be written.
+
  * (02/14/2012) kivan
 	#262
 	ADDED: edited sql file, dbtool package, DbTool interface, factory and DerbyTool class for creating DB using JDBC if it is not already existing.

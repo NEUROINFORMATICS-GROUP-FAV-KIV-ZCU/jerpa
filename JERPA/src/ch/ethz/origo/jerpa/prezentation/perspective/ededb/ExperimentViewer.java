@@ -1,10 +1,7 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataCellRenderer;
-import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowSorter;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
-import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.*;

@@ -16,7 +16,7 @@ public class DownloadException extends Exception {
 
 	@Override
 	public String getMessage() {
-		return "Error occured during downloading! " + super.getMessage();
+		return "Error occurred during downloading! " + super.getMessage();
 	}
 
 }

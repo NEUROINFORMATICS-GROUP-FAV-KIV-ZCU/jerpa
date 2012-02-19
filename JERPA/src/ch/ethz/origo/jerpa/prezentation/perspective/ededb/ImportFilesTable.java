@@ -4,7 +4,6 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesTable
 
 import javax.swing.*;
 import java.io.File;
-import java.util.ResourceBundle;
 
 /**
  * Custom JTable for list of files to be imported.

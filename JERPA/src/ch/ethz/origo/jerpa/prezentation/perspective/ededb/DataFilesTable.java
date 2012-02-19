@@ -9,9 +9,6 @@ import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
 
 /**
  * @author Petr Miko
@@ -45,19 +42,11 @@ public class DataFilesTable extends JTable implements MouseListener {
         }
     }
 
-    public void mousePressed(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void mousePressed(MouseEvent e) {}
 
-    public void mouseReleased(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void mouseReleased(MouseEvent e) {}
 
-    public void mouseEntered(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void mouseEntered(MouseEvent e) {}
 
-    public void mouseExited(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    public void mouseExited(MouseEvent e) {}
 }

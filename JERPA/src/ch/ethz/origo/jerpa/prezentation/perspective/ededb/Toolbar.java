@@ -10,12 +10,9 @@ import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
-import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.VerticalLayout;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
@@ -25,7 +22,7 @@ import java.util.ResourceBundle;
  * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
-public class Toolbar extends JPanel implements ILanguage, ActionListener, Observer {
+public class Toolbar extends JPanel implements ILanguage,Observer {
 
 	private static final long serialVersionUID = 2538082288377712201L;
 	private ResourceBundle resource;
@@ -33,7 +30,6 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 	private final EDEDBController controller;
 	private final EDEDClient session;
 	private JButton connectButton, disconnectButton, downloadButton, deleteFileButton, visualizeFileButton, importToDbButton;
-	private JRadioButton ownerButton, subjectButton, allButton;
 
 	/**
 	 * Creating main panel and setting elements into proper positions.
@@ -54,12 +50,7 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 
 		setLayout(new VerticalLayout());
 		radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.LINE_AXIS));
-
 		createButtons();
-
-//		radioBar.add(allButton);
-//		radioBar.add(ownerButton);
-//		radioBar.add(subjectButton);
 
 		this.add(connectButton);
 		this.add(disconnectButton);
@@ -69,7 +60,6 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
         this.add(importToDbButton);
 		this.add(deleteFileButton);
 
-		allButton.setSelected(true);
 		disconnectButton.setVisible(false);
 		downloadButton.setEnabled(false);
 
@@ -88,20 +78,9 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		visualizeFileButton = new JButton();
 		deleteFileButton = new JButton();
         importToDbButton = new JButton();
-		allButton = new JRadioButton();
-		ownerButton = new JRadioButton();
-		subjectButton = new JRadioButton();
 
 		updateButtonsText();
 		createIcons();
-
-		final ButtonGroup group = new ButtonGroup();
-
-		// controller.setRights(Rights.ALL);
-
-		group.add(allButton);
-		group.add(ownerButton);
-		group.add(subjectButton);
 
 		connectButton.setHorizontalAlignment(SwingConstants.LEFT);
 		disconnectButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -116,13 +95,6 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		deleteFileButton.addActionListener(controller.getActionDeleteSelected());
 		visualizeFileButton.addActionListener(controller.getActionVisualizeSelected());
         importToDbButton.addActionListener(controller.getActionImportWizard());
-
-		allButton.addActionListener(this);
-		allButton.setActionCommand("all");
-		ownerButton.addActionListener(this);
-		ownerButton.setActionCommand("owner");
-		subjectButton.addActionListener(this);
-		subjectButton.setActionCommand("subject");
 	}
 
 	/**
@@ -163,9 +135,6 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		downloadButton.setText(resource.getString("sidebar.ededb.toolbar.download"));
 		visualizeFileButton.setText(resource.getString("sidebar.ededb.toolbar.visualise"));
 		deleteFileButton.setText(resource.getString("sidebar.ededb.toolbar.deletefile"));
-		allButton.setText(resource.getString("sidebar.ededb.toolbar.all"));
-		ownerButton.setText(resource.getString("sidebar.ededb.toolbar.owner"));
-		subjectButton.setText(resource.getString("sidebar.ededb.toolbar.subject"));
         importToDbButton.setText(resource.getString("sidebar.ededb.toolbar.importToDb"));
 	}
 
@@ -223,9 +192,6 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		deleteFileButton.setEnabled(active);
 		visualizeFileButton.setEnabled(active);
 		downloadButton.setEnabled(active);
-		allButton.setEnabled(active);
-		ownerButton.setEnabled(active);
-		subjectButton.setEnabled(active);
         importToDbButton.setEnabled(active);
 
 		updateButtonsVisibility();
@@ -246,23 +212,6 @@ public class Toolbar extends JPanel implements ILanguage, ActionListener, Observ
 		catch (final PerspectiveException ex) {
 			JUIGLErrorInfoUtils.showErrorDialog(ex.getMessage(), ex.getLocalizedMessage(), ex);
 		}
-	}
-
-	public void actionPerformed(ActionEvent event) {
-
-		if ("all".equals(event.getActionCommand())) {
-			allButton.setSelected(true);
-			// controller.setRights(Rights.ALL);
-		}
-		else if ("owner".equals(event.getActionCommand())) {
-			ownerButton.setSelected(true);
-			// controller.setRights(Rights.OWNER);
-		}
-		else if ("subject".equals(event.getActionCommand())) {
-			subjectButton.setSelected(true);
-			// controller.setRights(Rights.SUBJECT);
-		}
-
 	}
 
 	public void update(Observable o, Object arg) {

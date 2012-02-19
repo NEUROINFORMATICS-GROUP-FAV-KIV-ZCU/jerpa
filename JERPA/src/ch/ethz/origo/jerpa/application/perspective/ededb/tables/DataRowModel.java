@@ -51,7 +51,7 @@ public class DataRowModel {
 	/**
 	 * Getter of further file information
 	 * 
-	 * @return
+	 * @return data file for this row instance
 	 */
 	public DataFile getDataFile() {
 		return dataFile;

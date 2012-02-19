@@ -6,11 +6,10 @@ import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import org.jdesktop.swingx.JXPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -19,30 +18,27 @@ import java.util.ResourceBundle;
  *
  * @author Petr Miko - miko.petr (at) gmail.com
  */
-public class Working extends JXPanel implements ILanguage {
+public final class Working extends JPanel implements ILanguage {
 
     private static final long serialVersionUID = 4807698208851104534L;
-    private static Working instance;
-    private static Map<String, Integer> operations;
+    private static Working instance = new Working();
+
+    private static volatile Map<String, Integer> operations;
+    private static volatile Map<Integer, Integer> downloads;
+
     private static JTextArea operationsField;
+    private static JProgressBar progress;
+
     private static String resourceBundlePath;
     private static ResourceBundle resource;
-    private static JProgressBar progress;
-    public static Cursor busyCursor;
-    public static Cursor defaultCursor;
-    private static Map<Integer, Integer> downloads;
 
     private static DataFileDao dataFileDao = DaoFactory.getDataFileDao();
 
     /**
      * Method creating JDialog
      */
-    public Working() {
+    private Working() {
         super();
-        instance = this;
-
-        busyCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-        defaultCursor = Cursor.getDefaultCursor();
 
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
@@ -50,8 +46,8 @@ public class Working extends JXPanel implements ILanguage {
         progress = new JProgressBar();
         setLayout(new BorderLayout());
 
-        operations = new HashMap<String, Integer>();
-        downloads = new HashMap<Integer, Integer>();
+        operations = new LinkedHashMap<String, Integer>();
+        downloads = new LinkedHashMap<Integer, Integer>();
 
         operationsField = new JTextArea();
         operationsField.setEditable(false);
@@ -74,37 +70,35 @@ public class Working extends JXPanel implements ILanguage {
      * @param add       operation of adding or removing Working action
      * @param operation ongoing operation
      */
-    public static synchronized void setActivity(boolean add, String operation) {
+    public static void setActivity(boolean add, String operation) {
 
-        if (instance == null) {
-            new Working();
-        }
-
-        if (add) {
-            operations.put(operation, (operations.get(operation) == null ? 1 : operations.get(operation) + 1));
-            if (operations.size() == 1) {
-                progress.setIndeterminate(true);
-
-                if (instance.getRootPane() != null) {
-                    instance.getRootPane().setCursor(busyCursor);
-                } else {
-                    instance.setCursor(busyCursor);
-                }
-            }
-        } else {
-            if (operations.get(operation) != null && operations.get(operation) == 1) {
-                operations.remove(operation);
-                if (operations.isEmpty()) {
-                    progress.setIndeterminate(false);
+        synchronized (Working.class) {
+            if (add) {
+                operations.put(operation, (operations.get(operation) == null ? 1 : operations.get(operation) + 1));
+                if (operations.size() == 1) {
+                    progress.setIndeterminate(true);
 
                     if (instance.getRootPane() != null) {
-                        instance.getRootPane().setCursor(defaultCursor);
+                        instance.getRootPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     } else {
-                        instance.setCursor(defaultCursor);
+                        instance.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     }
                 }
             } else {
-                operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0 ? 1 : operations.get(operation) - 1));
+                if (operations.get(operation) != null && operations.get(operation) == 1) {
+                    operations.remove(operation);
+                    if (operations.isEmpty()) {
+                        progress.setIndeterminate(false);
+
+                        if (instance.getRootPane() != null) {
+                            instance.getRootPane().setCursor(Cursor.getDefaultCursor());
+                        } else {
+                            instance.setCursor(Cursor.getDefaultCursor());
+                        }
+                    }
+                } else {
+                    operations.put(operation, (operations.get(operation) == null || operations.get(operation) <= 0 ? 1 : operations.get(operation) - 1));
+                }
             }
         }
 
@@ -126,14 +120,13 @@ public class Working extends JXPanel implements ILanguage {
      * @param file    Specific file
      */
     public static void setDownload(int percent, DataFile file) {
-        if (instance == null) {
-            new Working();
-        }
 
-        if (percent == 100) {
-            downloads.remove(file.getDataFileId());
-        } else {
-            downloads.put(file.getDataFileId(), percent);
+        synchronized (Working.class) {
+            if (percent == 100) {
+                downloads.remove(file.getDataFileId());
+            } else {
+                downloads.put(file.getDataFileId(), percent);
+            }
         }
 
         updateOperations();
@@ -152,36 +145,40 @@ public class Working extends JXPanel implements ILanguage {
      */
     private static void updateOperations() {
 
-        String temp = "";
-        operationsField.removeAll();
+        StringBuilder builder = new StringBuilder();
+        synchronized (Working.class) {
+            operationsField.removeAll();
 
-        if (!operations.isEmpty()) {
-            for (String operation : operations.keySet()) {
-                if (temp.equals("")) {
-                    temp = "[" + operations.get(operation) + "] " + resource.getString(operation);
-                } else {
-                    temp += "\n[" + operations.get(operation) + "] " + resource.getString(operation);
+            if (!operations.isEmpty()) {
+                for (String operation : operations.keySet()) {
+                    if (builder.length() != 0) {
+                        builder.append("\n");
+                    }
+                    builder.append("[").append(operations.get(operation)).append("] ").append(resource.getString(operation));
+                }
+            } else {
+                builder.append(resource.getString("working.ededb.no"));
+            }
+
+            if (!downloads.isEmpty()) {
+                DataFile file;
+                for (Integer fileIds : downloads.keySet()) {
+                    file = dataFileDao.get(fileIds);
+                    if (builder.length() != 0) {
+                        builder.append("\n");
+                    }
+                    builder.append(file.getFilename()).append(" (ID ").append(file.getDataFileId()).append("):").append(downloads.get(fileIds)).append("%");
                 }
             }
-        } else {
-            temp = resource.getString("working.ededb.no");
+
+            progress.setToolTipText(builder.toString());
+            operationsField.setText(builder.toString());
         }
 
-        if (!downloads.isEmpty()) {
-            DataFile file;
-            for (Integer fileIds : downloads.keySet()) {
-                file = dataFileDao.get(fileIds);
-                if (temp.equals("")) {
-                    temp = file.getFilename() + " (ID " + file.getDataFileId() + "):" + downloads.get(fileIds) + "%";
-                } else {
-                    temp += "\n" + file.getFilename() + " (ID " + file.getDataFileId() + "):" + downloads.get(fileIds) + "%";
-                }
-            }
-        }
+    }
 
-        progress.setToolTipText(temp);
-
-        operationsField.setText(temp);
+    public static JPanel getWorkingPanel() {
+        return instance;
     }
 
     /**

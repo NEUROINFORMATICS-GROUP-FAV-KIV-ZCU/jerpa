@@ -5,7 +5,6 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.prezentation.perspective.EDEDBPerspective;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.*;
-import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXPanel;
 
 import javax.swing.*;
@@ -22,11 +21,9 @@ public class EDEDBController extends Observable {
 
 	private final EDEDBPerspective parent;
 	private final EDEDClient service;
-	private LoginDialog loginDialog;
 	private LoginInfo loginInfo;
 	private ExperimentViewerLogic experimentViewer;
 	private Toolbar toolbar;
-	// private Rights rights;
 	private ActionVisualizeSelected actionVisualizeSelected;
 	private ActionDownloadSelected actionDownloadSelected;
 	private ActionDeleteSelected actionDeleteSelected;
@@ -36,9 +33,8 @@ public class EDEDBController extends Observable {
     private Downloader downloader;
     private DataSyncer syncer;
 
-	private final static Logger log = Logger.getLogger(EDEDBController.class);
+//	private final static Logger log = Logger.getLogger(EDEDBController.class);
 
-	private boolean offlineMode = true;
 	private boolean lockMode;
 
 	/**
@@ -62,8 +58,7 @@ public class EDEDBController extends Observable {
 
 		downloader = new Downloader(this, service);
 		experimentViewer = new ExperimentViewerLogic(this);
-		loginDialog = new LoginDialog(service);
-		loginInfo = new LoginInfo(this, service);
+		loginInfo = new LoginInfo(service);
 
 		// Toolbar uses Actions so Actions HAS TO BE initialized firstly!
 		initActions();
@@ -86,7 +81,7 @@ public class EDEDBController extends Observable {
 	private void initActions() {
 
         actionImportWizard = new ActionImportWizard(this);
-		actionConnect = new ActionConnect(this);
+		actionConnect = new ActionConnect(this, service);
 		actionDisconnect = new ActionDisconnect(this);
 		actionDownloadSelected = new ActionDownloadSelected(this, downloader);
 		actionDeleteSelected = new ActionDeleteSelected(this);
@@ -101,15 +96,12 @@ public class EDEDBController extends Observable {
 	public void setUserLoggedIn(boolean loggedIn) {
 
 		if (loggedIn) {
-			loginDialog.setVisible(true);
 			if (service.isConnected()) {
-				setServiceOffline(false);
                 syncer.syncNow();
 			}
 		}
 		else {
 			service.userLogout();
-			setServiceOffline(true);
 		}
         loginInfo.updateLoginInfo();
 		update();
@@ -136,12 +128,11 @@ public class EDEDBController extends Observable {
 		JXPanel sidebar = new JXPanel(new BorderLayout());
         JXPanel tableViewPanel = new JXPanel(new BorderLayout());
 
-		offlineMode = true;
 		tableViewPanel.add(experimentViewer, BorderLayout.CENTER);
 
 		sidebar.add(loginInfo, BorderLayout.NORTH);
 		sidebar.add(toolbar, BorderLayout.CENTER);
-		sidebar.add(new Working(), BorderLayout.SOUTH);
+		sidebar.add(Working.getWorkingPanel(), BorderLayout.SOUTH);
 
 		mainPanel.add(tableViewPanel, BorderLayout.CENTER);
 		mainPanel.add(sidebar, BorderLayout.EAST);
@@ -203,38 +194,6 @@ public class EDEDBController extends Observable {
 		return actionVisualizeSelected;
 	}
 
-	// /**
-	// * Returns which rigths has user selected in that time.
-	// *
-	// * @return owner/subject
-	// */
-	// public Rights getRights() {
-	// return rights;
-	// }
-	//
-	// /**
-	// * Setter of rights.
-	// *
-	// * @param rights owner/subject
-	// */
-	// public void setRights(Rights rights) {
-	// this.rights = rights;
-	//
-	// if (service.isConnected()) {
-	// experimentViewer.updateExpTable();
-	// update();
-	// }
-	// }
-
-	/**
-	 * Method for finding out if are any rows in data view table selected.
-	 * 
-	 * @return true/false
-	 */
-	public boolean isSelectedFiles() {
-		return (!experimentViewer.getSelectedFiles().isEmpty());
-	}
-
 	/**
 	 * Getter of list with info about selected rows in data table.
 	 * 
@@ -274,22 +233,12 @@ public class EDEDBController extends Observable {
 	}
 
 	/**
-	 * Setter of EDEDB online/offline view selection. After setting the mode,
-	 * table view panel is updated.
-	 *
-	 * @param offlineMode true/false
-	 */
-	public void setServiceOffline(boolean offlineMode) {
-		this.offlineMode = offlineMode;
-	}
-
-	/**
 	 * Getter of EDEDB online/offline view selection
 	 * 
 	 * @return true/false
 	 */
 	public boolean isServiceOffline() {
-		return offlineMode;
+		return !service.isConnected();
 	}
 
 	/**

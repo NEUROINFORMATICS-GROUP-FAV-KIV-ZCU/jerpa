@@ -79,7 +79,7 @@ public class ExpTableModel extends AbstractTableModel implements ILanguage {
 	/**
 	 * Getter of column name
 	 *
-	 * @param columnIndex
+	 * @param columnIndex index of column
 	 * @return String of column name
 	 */
 

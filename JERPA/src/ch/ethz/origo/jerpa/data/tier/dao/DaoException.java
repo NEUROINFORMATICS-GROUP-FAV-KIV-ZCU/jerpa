@@ -10,8 +10,4 @@ public class DaoException extends Exception {
     public DaoException(Throwable throwable) {
         super(throwable);
     }
-
-    public DaoException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
 }

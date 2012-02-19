@@ -2,7 +2,6 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 
 import ch.ethz.origo.jerpa.data.tier.FileState;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
-import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;

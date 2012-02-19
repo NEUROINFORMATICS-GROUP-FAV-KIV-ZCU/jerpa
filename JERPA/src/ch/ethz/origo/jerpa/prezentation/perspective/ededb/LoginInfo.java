@@ -1,11 +1,9 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import org.jdesktop.swingx.JXPanel;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -19,24 +17,22 @@ import java.util.ResourceBundle;
  * 
  * @author Petr Miko - miko.petr (at) gmail.com
  */
-public class LoginInfo extends JXPanel implements Observer, ILanguage {
+public class LoginInfo extends JPanel implements Observer, ILanguage {
 
 	private static final long serialVersionUID = 8282126523750543895L;
 	private ResourceBundle resource;
 	private String resourceBundlePath;
 	private final JTextArea usernameText;
 	private final EDEDClient session;
-	private final EDEDBController controller;
 
 	private final TitledBorder usernameBorder;
 
 	/**
 	 * Constructor creating JXPanel for information fields.
 	 * 
-	 * @param controller EDEDB EDEDBController
 	 * @param session EDEDSession
 	 */
-	public LoginInfo(EDEDBController controller, EDEDClient session) {
+	public LoginInfo(EDEDClient session) {
 		super();
 
 		LanguageObservable.getInstance().attach(this);
@@ -44,7 +40,6 @@ public class LoginInfo extends JXPanel implements Observer, ILanguage {
 
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.session = session;
-		this.controller = controller;
 
 		usernameText = createArea();
 		usernameBorder = new TitledBorder(resource.getString("sidebar.ededb.info.title.username"));
@@ -58,7 +53,7 @@ public class LoginInfo extends JXPanel implements Observer, ILanguage {
 	/**
 	 * Method creating JTextArea with certain parameters.
 	 * 
-	 * @return
+	 * @return area with username of logged user
 	 */
 	private JTextArea createArea() {
 		JTextArea area = new JTextArea();

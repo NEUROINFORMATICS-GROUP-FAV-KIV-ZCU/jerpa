@@ -1,7 +1,5 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.tables;
 
-import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
-
 import java.io.File;
 
 /**
@@ -37,7 +35,7 @@ public class ImportFilesRowModel {
     }
 
     /**
-     * Setter of DataFiles's sampling rate.
+     * Setter of DataFile's sampling rate.
      * @param samplingRate sampling rate
      */
     public void setSamplingRate(double samplingRate) {

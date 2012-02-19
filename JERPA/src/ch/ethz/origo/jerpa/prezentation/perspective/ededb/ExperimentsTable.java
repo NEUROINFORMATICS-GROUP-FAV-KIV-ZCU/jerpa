@@ -1,16 +1,8 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
-import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
-import ch.ethz.origo.jerpa.data.tier.dao.ExperimentDao;
-import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
-import ch.ethz.origo.jerpa.data.tier.pojo.Scenario;
-import org.hibernate.Hibernate;
-import org.hibernate.Session;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -21,7 +13,6 @@ import java.awt.event.MouseListener;
  */
 public class ExperimentsTable extends JTable implements MouseListener {
 
-    private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
     private ExpTableModel expTableModel;
 
     /**
@@ -49,19 +40,11 @@ public class ExperimentsTable extends JTable implements MouseListener {
         }
     }
 
-    public void mousePressed(MouseEvent e) {
-        //do nothing
-    }
+    public void mousePressed(MouseEvent e) {}
 
-    public void mouseReleased(MouseEvent e) {
-        //do nothing
-    }
+    public void mouseReleased(MouseEvent e) {}
 
-    public void mouseEntered(MouseEvent e) {
-        //do nothing
-    }
+    public void mouseEntered(MouseEvent e) {}
 
-    public void mouseExited(MouseEvent e) {
-        //do nothing
-    }
+    public void mouseExited(MouseEvent e) {}
 }

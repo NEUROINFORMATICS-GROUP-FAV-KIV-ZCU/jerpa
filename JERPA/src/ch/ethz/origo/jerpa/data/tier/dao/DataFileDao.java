@@ -6,7 +6,6 @@ import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 import org.apache.log4j.Logger;
 import org.hibernate.*;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -81,6 +80,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
                 return FileState.NO_COPY;
             } else {
                 long fileSize = blob.length();
+                transaction.commit();
                 if (fileSize != file.getFileLength()) {
                     return FileState.CORRUPTED;
                 } else {
@@ -92,9 +92,6 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
                 transaction.rollback();
             e.printStackTrace();
             return FileState.DOWNLOADING;
-        } finally {
-            if (transaction.isActive())
-                transaction.commit();
         }
     }
 
@@ -171,7 +168,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         Transaction transaction = session.beginTransaction();
 
         DataFile dataFile = new DataFile();
-        dataFile.setDataFileId((int) getNextAvailableId());
+        dataFile.setDataFileId(getNextAvailableId());
         dataFile.setChanged(true);
         dataFile.setExperiment(exp);
         dataFile.setFileLength(file.length());
@@ -212,6 +209,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      *
      * @param dataFile data file
      * @param file     java.io.File
+     * @param samplingRate value of data file sampling rate
      */
     public void overwriteDataFile(DataFile dataFile, File file, double samplingRate) {
 

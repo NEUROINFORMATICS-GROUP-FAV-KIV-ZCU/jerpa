@@ -1,6 +1,8 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.LoginDialogLogic;
+import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -15,15 +17,16 @@ public class ActionConnect extends AbstractAction {
 
 	private static final long serialVersionUID = 6355605804293660348L;
 	private final EDEDBController controller;
+    private final EDEDClient service;
 
 	/**
 	 * Constructor method for action connect to EEG/ERP Database
 	 * 
-	 * @param controller
+	 * @param controller EEG/ERP Database Experiment Data Browser Controller instance
 	 */
-	public ActionConnect(EDEDBController controller) {
+	public ActionConnect(EDEDBController controller, EDEDClient service) {
 		this.controller = controller;
-
+        this.service = service;
 		putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_C));
 	}
 
@@ -33,6 +36,6 @@ public class ActionConnect extends AbstractAction {
 	 * @param e performed action
 	 */
 	public void actionPerformed(ActionEvent e) {
-		controller.setUserLoggedIn(true);
+        LoginDialogLogic.showLoginDialog(service, controller);
 	}
 }

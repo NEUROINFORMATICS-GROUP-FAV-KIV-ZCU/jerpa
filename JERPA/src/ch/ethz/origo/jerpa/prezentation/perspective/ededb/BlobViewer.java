@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
@@ -11,7 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.*;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -71,7 +69,7 @@ public class BlobViewer implements ILanguage {
             dialog.setTitle(filename);
             dialog.setLayout(new BorderLayout());
 
-            byte[] buffer = new byte[BUFFER_SIZE];
+            byte[] buffer;
 
             JTextArea textArea = new JTextArea();
             textArea.setEditable(false);
@@ -120,7 +118,7 @@ public class BlobViewer implements ILanguage {
         public void windowClosing
                 (WindowEvent e) {
 
-            synchronized (open) {
+            synchronized (BlobViewer.class) {
                 if (open != null && open.isAlive() && !open.isInterrupted()) {
                     try {
                         open.interrupt();

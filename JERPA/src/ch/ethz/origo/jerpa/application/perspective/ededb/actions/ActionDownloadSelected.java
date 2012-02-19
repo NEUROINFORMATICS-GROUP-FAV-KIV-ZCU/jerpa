@@ -26,7 +26,6 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 	private String resourceBundlePath;
 	private final EDEDBController controller;
 	private final Downloader downloader;
-	private String emptyText, emptyDesc;
 
 	/**
 	 * Constructor.
@@ -39,8 +38,6 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 
 		LanguageObservable.getInstance().attach(this);
 		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
-
-		initTexts();
 
 		this.controller = controller;
 		this.downloader = downloader;
@@ -58,7 +55,7 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 		List<DataRowModel> filesToDownload = controller.getSelectedFiles();
 
 		if (filesToDownload.isEmpty()) {
-			JOptionPane.showMessageDialog(new JFrame(), emptyText, emptyDesc, JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(new JFrame(),resource.getString("actiondownload.ededb.empty.text"), resource.getString("actiondownload.ededb.empty.desc"), JOptionPane.INFORMATION_MESSAGE);
 		}
 
 		for (DataRowModel file : filesToDownload) {
@@ -107,20 +104,5 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 	 * @throws JUIGLELangException
 	 */
 	public void updateText() throws JUIGLELangException {
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {
-				initTexts();
-			}
-		});
-
-	}
-
-	/**
-	 * Update/init text method. Vital for localization.
-	 */
-	public void initTexts() {
-		emptyText = resource.getString("actiondownload.ededb.empty.text");
-		emptyDesc = resource.getString("actiondownload.ededb.empty.desc");
 	}
 }

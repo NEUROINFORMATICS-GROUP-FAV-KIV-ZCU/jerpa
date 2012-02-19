@@ -33,6 +33,7 @@ public class GenericDao<T, PK extends Serializable> {
      * @param newRecord new object
      * @return object's identifier.
      */
+    @SuppressWarnings("unchecked")
     public PK save(T newRecord) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
@@ -59,6 +60,7 @@ public class GenericDao<T, PK extends Serializable> {
      * @param identifier identifier, i.e. primary key
      * @return specified object
      */
+    @SuppressWarnings("unchecked")
     public T get(PK identifier) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
@@ -79,6 +81,7 @@ public class GenericDao<T, PK extends Serializable> {
         return (version != null ? version : 0);
     }
 
+    @SuppressWarnings("unchecked")
     public List<T> getAll() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();

@@ -31,9 +31,8 @@ public class Downloader extends Observable implements Observer, ILanguage {
     private static final Logger log = Logger.getLogger(Downloader.class);
     private final EDEDBController controller;
     private final EDEDClient session;
-    private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
     private final Map<Integer, Boolean> downloading;
-    private final static Object lock = new Object();
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
 
     /**
@@ -63,13 +62,13 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
 
             public void run() {
-                while (true) {
-                    synchronized (lock) {
+                while (!Thread.interrupted()) {
+                    synchronized (Downloader.class) {
                         try {
                             if (!downloading.isEmpty())
-                                lock.wait(1000L);
+                                Downloader.class.wait(1000L);
                             else
-                                lock.wait();
+                                Downloader.class.wait();
 
                             if (controller.isServiceOffline()) {
                                 downloading.clear();
@@ -123,8 +122,8 @@ public class Downloader extends Observable implements Observer, ILanguage {
                 controller.update();
             }
 
-            synchronized (lock) {
-                lock.notify();
+            synchronized (Downloader.class) {
+                Downloader.class.notify();
             }
         } catch (HeadlessException e) {
             log.error(e.getMessage(), e);

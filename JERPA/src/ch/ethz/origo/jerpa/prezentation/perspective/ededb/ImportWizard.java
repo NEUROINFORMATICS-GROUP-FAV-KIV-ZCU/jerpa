@@ -11,7 +11,6 @@ import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.MaskFormatter;
@@ -37,7 +36,6 @@ public class ImportWizard extends JFrame implements ILanguage {
     protected JComboBox expOwnerCombo, expSubjectCombo, weatherCombo, scenarioCombo, groupCombo, experimentsCombo, hwCombo;
     protected JFormattedTextField expStartTimeField, expEndTimeField, expTemperatureField;
     protected JTextArea weatherNoteArea;
-    protected DateFormat timeFormat = new SimpleDateFormat("d.M.yyyy HH:mm:ss");
     protected JButton addWeather, addScenario, addFile, removeFile, addGroup, confirmButton, cancelButton, addHw;
     protected JProgressBar progressBar = new JProgressBar();
 
@@ -51,6 +49,7 @@ public class ImportWizard extends JFrame implements ILanguage {
 
     protected ImportFilesTable importTable = new ImportFilesTable();
 
+    private DateFormat timeFormat = new SimpleDateFormat("d.M.yyyy HH:mm:ss");
     private TooltipComboBoxRenderer tooltipComboBoxRenderer = new TooltipComboBoxRenderer();
 
     private final static int LETTERS_VISIBLE = 15;

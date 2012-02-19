@@ -2,12 +2,12 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesTableModel;
+import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
-import ch.ethz.origo.jerpa.data.tier.dao.HardwareDao;
+import ch.ethz.origo.jerpa.data.tier.dao.*;
 import ch.ethz.origo.jerpa.data.tier.pojo.*;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ImportWizard;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
-import org.hibernate.Hibernate;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -31,7 +31,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
      * Constructor.
      * Adds actions to all gui components.
      *
-     * @param controller
+     * @param controller EDEDB Controller instance
      */
     public ImportWizardLogic(EDEDBController controller) {
         super();
@@ -123,6 +123,10 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         saveThread.start();
     }
 
+    /**
+     * Method for saving changes into an existing experiment.
+     * @param exp existing experiment
+     */
     private void saveExisting(Experiment exp) {
 
         ImportFilesTableModel model = (ImportFilesTableModel) importTable.getModel();
@@ -163,7 +167,9 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         }
     }
 
-
+    /**
+     * Saving changes into a new experiment.
+     */
     private void saveNew() {
         Experiment exp = new Experiment();
         exp.setChanged(true);
