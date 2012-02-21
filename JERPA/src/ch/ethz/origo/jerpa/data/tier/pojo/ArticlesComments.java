@@ -14,6 +14,15 @@ import java.util.Collection;
 public class ArticlesComments {
     private int commentId;
     private boolean changed;
+    private boolean added;
+
+    public boolean getAdded() {
+        return added;
+    }
+
+    public void setAdded(boolean added) {
+        this.added = added;
+    }
 
     public boolean getChanged() {
         return changed;

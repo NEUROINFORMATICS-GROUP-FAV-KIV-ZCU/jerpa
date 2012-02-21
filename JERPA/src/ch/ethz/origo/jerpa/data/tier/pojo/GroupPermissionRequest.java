@@ -10,6 +10,15 @@ package ch.ethz.origo.jerpa.data.tier.pojo;
 public class GroupPermissionRequest {
     private int requestId;
     private boolean changed;
+    private boolean added;
+
+    public boolean getAdded() {
+        return added;
+    }
+
+    public void setAdded(boolean added) {
+        this.added = added;
+    }
 
     public boolean getChanged() {
         return changed;

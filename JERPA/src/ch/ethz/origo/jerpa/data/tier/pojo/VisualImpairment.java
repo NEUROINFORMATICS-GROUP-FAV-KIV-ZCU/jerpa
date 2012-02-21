@@ -12,6 +12,15 @@ import java.util.Collection;
 public class VisualImpairment {
     private int visualImpairmentId;
     private boolean changed;
+    private boolean added;
+
+    public boolean getAdded() {
+        return added;
+    }
+
+    public void setAdded(boolean added) {
+        this.added = added;
+    }
 
     public boolean getChanged() {
         return changed;

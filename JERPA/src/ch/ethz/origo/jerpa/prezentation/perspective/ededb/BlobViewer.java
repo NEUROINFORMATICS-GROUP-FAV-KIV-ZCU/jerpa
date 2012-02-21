@@ -8,8 +8,7 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -19,7 +18,7 @@ import java.util.ResourceBundle;
  *
  * @author Petr Miko
  */
-public class BlobViewer implements ILanguage {
+public class BlobViewer extends JDialog implements ILanguage, ActionListener {
 
     private final static Logger log = Logger.getLogger(BlobViewer.class);
 
@@ -32,20 +31,26 @@ public class BlobViewer implements ILanguage {
     private String mimeType;
 
     private Thread open;
-    
+
     private static String resourceBundlePath;
     private static ResourceBundle resource;
 
 
     public BlobViewer(final Blob fileContent, String filename, final long fileLength, final String mimeType) {
+        super();
 
-        LanguageObservable.getInstance().attach(this);
-        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
-        
         this.fileContent = fileContent;
         this.filename = filename;
         this.fileLength = fileLength;
         this.mimeType = mimeType;
+
+        LanguageObservable.getInstance().attach(this);
+        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+
+        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        this.getRootPane().registerKeyboardAction(this, "close", stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        this.addWindowListener(new WindowCloseListener());
 
         if (fileContent == null) {
             JOptionPane.showMessageDialog(null, resource.getString("blobViewer.ededb.noFile"));
@@ -63,11 +68,8 @@ public class BlobViewer implements ILanguage {
 
     private void openText() {
         try {
-            JDialog dialog = new JDialog();
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.addWindowListener(new WindowCloseListener());
-            dialog.setTitle(filename);
-            dialog.setLayout(new BorderLayout());
+            this.setTitle(filename);
+            this.setLayout(new BorderLayout());
 
             byte[] buffer;
 
@@ -81,19 +83,19 @@ public class BlobViewer implements ILanguage {
             JProgressBar loading = new JProgressBar();
             loading.setStringPainted(true);
 
-            dialog.add(scrollPane, BorderLayout.CENTER);
-            dialog.add(loading, BorderLayout.SOUTH);
-            dialog.validate();
-            dialog.pack();
-            dialog.setVisible(true);
+            this.add(scrollPane, BorderLayout.CENTER);
+            this.add(loading, BorderLayout.SOUTH);
+            this.validate();
+            this.pack();
+            this.setVisible(true);
 
             Working.setActivity(true, "working.ededb.open");
             int position = 1;
-            while(position < fileLength && !open.isInterrupted()){
+            while (position < fileLength && !open.isInterrupted()) {
                 buffer = fileContent.getBytes(position, BUFFER_SIZE);
                 textArea.append(new String(buffer));
                 position += BUFFER_SIZE;
-                if(position > fileLength)
+                if (position > fileLength)
                     position = (int) fileLength;
 
                 updateProgressBar(loading, position);
@@ -113,24 +115,37 @@ public class BlobViewer implements ILanguage {
         loading.setValue(progress);
     }
 
+    public void actionPerformed(ActionEvent e) {
+        if ("close".equals(e.getActionCommand())) {
+            stopLoading();
+            this.dispose();
+        }
+    }
+
     private class WindowCloseListener extends WindowAdapter {
         @Override
         public void windowClosing
                 (WindowEvent e) {
+            stopLoading();
+        }
+    }
 
-            synchronized (BlobViewer.class) {
-                if (open != null && open.isAlive() && !open.isInterrupted()) {
-                    try {
-                        open.interrupt();
-                        open.join();
-                    } catch (InterruptedException e1) {
-                        log.error(e1);
-                    }
+    /**
+     * Method for stopping the file opening thread.
+     */
+    private void stopLoading() {
+        synchronized (BlobViewer.class) {
+            if (open != null && open.isAlive() && !open.isInterrupted()) {
+                try {
+                    open.interrupt();
+                    open.join();
+                } catch (InterruptedException e1) {
+                    log.error(e1);
                 }
             }
         }
     }
-    
+
     /**
      * Setter of localization resource bundle path
      *
@@ -163,6 +178,7 @@ public class BlobViewer implements ILanguage {
      * Method invoked by change of LanguageObservable.
      *
      * @throws ch.ethz.origo.juigle.application.exception.JUIGLELangException
+     *
      */
     public void updateText() throws JUIGLELangException {
     }

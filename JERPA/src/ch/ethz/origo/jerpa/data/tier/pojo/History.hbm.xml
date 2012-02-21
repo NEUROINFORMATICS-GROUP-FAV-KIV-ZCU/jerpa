@@ -11,6 +11,9 @@
         <property name="dateOfDownload">
             <column name="DATE_OF_DOWNLOAD" sql-type="date" length="10" not-null="true"/>
         </property>
+        <property name="added">
+            <column name="ADDED" sql-type="boolean" />
+        </property>
         <property name="changed">
             <column name="CHANGED" sql-type="boolean" />
         </property>

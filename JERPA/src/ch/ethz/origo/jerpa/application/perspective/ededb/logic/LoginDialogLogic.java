@@ -12,7 +12,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.ConnectException;
 
@@ -21,7 +20,7 @@ import java.net.ConnectException;
  *
  * @author Petr Miko
  */
-public final class LoginDialogLogic extends LoginDialog implements KeyListener, ActionListener {
+public final class LoginDialogLogic extends LoginDialog implements ActionListener {
 
     private static LoginDialogLogic instance;
 
@@ -35,13 +34,19 @@ public final class LoginDialogLogic extends LoginDialog implements KeyListener, 
      * Constructor.
      *
      * @param controller EDEDB Controller instance
-     * @param service EDEDClient from EDEDClient.jar
+     * @param service    EDEDClient from EDEDClient.jar
      */
     private LoginDialogLogic(EDEDBController controller, EDEDClient service) {
         super();
 
         this.controller = controller;
         this.service = service;
+
+        KeyStroke login = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+        KeyStroke close = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+
+        this.getRootPane().registerKeyboardAction(this, "ok", login, JComponent.WHEN_IN_FOCUSED_WINDOW);
+        this.getRootPane().registerKeyboardAction(this, "cancel", close, JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         setButtonActions();
         initTextFields();
@@ -66,10 +71,6 @@ public final class LoginDialogLogic extends LoginDialog implements KeyListener, 
 
         optionsButton.addActionListener(this);
         optionsButton.setActionCommand("options");
-
-        endpointField.addKeyListener(this);
-        usernameField.addKeyListener(this);
-        passwordField.addKeyListener(this);
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -86,9 +87,8 @@ public final class LoginDialogLogic extends LoginDialog implements KeyListener, 
                         JOptionPane.ERROR_MESSAGE);
             }
         } else if ("cancel".equals(event.getActionCommand())) {
-            if(loginThread.isAlive())
-                loginThread.interrupt();
-            this.dispose();
+            if (loginThread == null)
+                this.dispose();
         } else if ("options".equals(event.getActionCommand())) {
             morePane.setVisible(optionsButton.isSelected());
             this.pack();
@@ -121,7 +121,8 @@ public final class LoginDialogLogic extends LoginDialog implements KeyListener, 
 
     /**
      * Singleton getter of Login Dialog instance.
-     * @param service web service instance
+     *
+     * @param service    web service instance
      * @param controller EDEDB Controller instance
      */
     public static void showLoginDialog(EDEDClient service, EDEDBController controller) {
@@ -129,21 +130,6 @@ public final class LoginDialogLogic extends LoginDialog implements KeyListener, 
             instance = new LoginDialogLogic(controller, service);
         } else if (!instance.isShowing()) {
             instance.setVisible(true);
-        }
-    }
-
-    public void keyTyped(KeyEvent e) {
-    }
-
-    public void keyPressed(KeyEvent e) {
-    }
-
-    public void keyReleased(KeyEvent event) {
-        int keyCode = event.getKeyCode();
-        if (keyCode == KeyEvent.VK_ENTER) {
-            okButton.doClick();
-        } else if (keyCode == KeyEvent.VK_ESCAPE) {
-            cancelButton.doClick();
         }
     }
 

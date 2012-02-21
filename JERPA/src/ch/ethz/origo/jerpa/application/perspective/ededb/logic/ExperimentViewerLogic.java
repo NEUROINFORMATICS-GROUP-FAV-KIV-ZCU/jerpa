@@ -31,9 +31,6 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
     private List<Experiment> selectedExps;
     private EDEDBController controller;
 
-    private int prevFilesCount = 0;
-    private int prevExperimentsCount = 0;
-
     /**
      * Constructor.
      *
@@ -103,13 +100,14 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
         synchronized (ExperimentViewerLogic.class) {
 
             Working.setActivity(true, "working.ededb.update.exptable");
-            expModel.clear();
             List<Experiment> experiments = experimentDao.getAll();
-
-            for (Experiment exp : experiments) {
-                expModel.addRow(exp);
+            if (experiments.size() != expModel.getRowCount()) {
+                expModel.clear();
+                for (Experiment exp : experiments) {
+                    expModel.addRow(exp);
+                }
+                repaint();
             }
-            repaint();
             Working.setActivity(false, "working.ededb.update.exptable");
         }
     }
@@ -121,15 +119,17 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
     public void updateDataTable() {
 
         synchronized (ExperimentViewerLogic.class) {
-            dataModel.clear();
 
             List<DataFile> dataFiles = dataFileDao.getAllFromExperiments(selectedExps);
 
-            for (DataFile file : dataFiles) {
-                FileState state = (controller.getDownloader().isDownloading(file) ? FileState.DOWNLOADING : dataFileDao.getFileState(file));
-                dataModel.addRow(file, state);
+            if (dataFiles.size() != dataModel.getRowCount()) {
+                dataModel.clear();
+                for (DataFile file : dataFiles) {
+                    FileState state = (controller.getDownloader().isDownloading(file) ? FileState.DOWNLOADING : dataFileDao.getFileState(file));
+                    dataModel.addRow(file, state);
+                }
+                repaint();
             }
-            repaint();
         }
     }
 
@@ -154,15 +154,8 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
     }
 
     public void update(Observable o, Object arg) {
-        if (prevExperimentsCount != expModel.getRowCount()) {
-            prevExperimentsCount = expModel.getRowCount();
-            updateExpTable();
-        }
-
-        if (prevFilesCount != dataModel.getRowCount()) {
-            updateDataTable();
-            prevFilesCount = dataModel.getRowCount();
-        }
+        updateExpTable();
+        updateDataTable();
 
         synchronized (ExperimentViewerLogic.class) {
             for (DataRowModel row : dataModel.getData()) {

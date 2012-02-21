@@ -11,6 +11,9 @@
         <property name="description">
             <column name="DESCRIPTION" sql-type="varchar" length="30" not-null="true"/>
         </property>
+        <property name="added">
+            <column name="ADDED" sql-type="boolean" />
+        </property>
         <property name="changed">
             <column name="CHANGED" sql-type="boolean" />
         </property>

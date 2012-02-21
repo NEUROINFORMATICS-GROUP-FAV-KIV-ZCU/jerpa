@@ -18,6 +18,9 @@
         <property name="version">
             <column name="VERSION" sql-type="bigint" length="19" not-null="true"/>
         </property>
+        <property name="added">
+            <column name="ADDED" sql-type="boolean" />
+        </property>
         <property name="changed">
             <column name="CHANGED" sql-type="boolean" />
         </property>

@@ -80,6 +80,7 @@ public class DataSyncer {
 
                 Working.setActivity(true, "working.ededb.dbsync");
 
+                upload();
                 //download section of syncing
                 changed = download();
 
@@ -91,68 +92,76 @@ public class DataSyncer {
 
         }
 
-        /**
-         * Download synchronization method.
-         *
-         * @return data in DB had changed
-         */
-        private boolean download() {
-            log.debug("Download - Obtaining data from server");
+    }
 
-            List<ResearchGroupInfo> groupsInfo = null;
-            List<WeatherInfo> weathersInfo = null;
-            List<PersonInfo> peopleInfo = null;
-            List<ScenarioInfo> scenariosInfo = null;
-            List<ExperimentInfo> experimentsInfo = null;
-            List<DataFileInfo> filesInfo = null;
-            List<HardwareInfo> hardwareInfo = null;
+    /**
+     * Upload synchronization method.
+     */
+    private void upload() {
+    }
 
-            try {
-                groupsInfo = session.getService().getResearchGroups(researchGroupDao.getLastRevision());
-                weathersInfo = session.getService().getWeather(weatherDao.getLastRevision());
-                peopleInfo = session.getService().getPeople(personDao.getLastRevision());
-                scenariosInfo = session.getService().getScenarios(scenarioDao.getLastRevision());
-                experimentsInfo = session.getService().getExperiments(experimentDao.getLastRevision());
-                filesInfo = session.getService().getDataFiles(dataFileDao.getLastRevision());
-                hardwareInfo = session.getService().getHardware(hardwareDao.getLastRevision());
-                log.debug("Download - Data obtained: proceeding to update");
+    /**
+     * Download synchronization method.
+     *
+     * @return data in DB had changed
+     */
+    private boolean download() {
+        log.debug("Download - Obtaining data from server");
 
-                if (!peopleInfo.isEmpty())
-                    importNewPeople(peopleInfo);
-                if (!groupsInfo.isEmpty())
-                    importNewResearchGroups(groupsInfo);
-                if (!peopleInfo.isEmpty())
-                    updatePeopleGroupsRelations(peopleInfo);
-                if (!scenariosInfo.isEmpty())
-                    importNewScenarios(scenariosInfo);
-                if (!weathersInfo.isEmpty())
-                    importNewWeather(weathersInfo);
-                if (!experimentsInfo.isEmpty())
-                    importNewExperiments(experimentsInfo);
-                if (!filesInfo.isEmpty())
-                    importNewDataFiles(filesInfo);
-                if (!hardwareInfo.isEmpty())
-                    importNewHardware(hardwareInfo);
-                if (!experimentsInfo.isEmpty())
-                    updateExperimentHwRelations(experimentsInfo);
+        List<ResearchGroupInfo> groupsInfo = null;
+        List<WeatherInfo> weathersInfo = null;
+        List<PersonInfo> peopleInfo = null;
+        List<ScenarioInfo> scenariosInfo = null;
+        List<ExperimentInfo> experimentsInfo = null;
+        List<DataFileInfo> filesInfo = null;
+        List<HardwareInfo> hardwareInfo = null;
 
-                log.debug("Download - DB updated");
+        try {
+            groupsInfo = session.getService().getResearchGroups(researchGroupDao.getLastRevision());
+            weathersInfo = session.getService().getWeather(weatherDao.getLastRevision());
+            peopleInfo = session.getService().getPeople(personDao.getLastRevision());
+            scenariosInfo = session.getService().getScenarios(scenarioDao.getLastRevision());
+            experimentsInfo = session.getService().getExperiments(experimentDao.getLastRevision());
+            filesInfo = session.getService().getDataFiles(dataFileDao.getLastRevision());
+            hardwareInfo = session.getService().getHardware(hardwareDao.getLastRevision());
+            log.debug("Download - Data obtained: proceeding to update");
 
-            } catch (DataDownloadException_Exception e) {
-                log.error(e.getMessage(), e);
-            }
-            return !isListEmpty(groupsInfo)
-                    && !isListEmpty(peopleInfo)
-                    && !isListEmpty(scenariosInfo)
-                    && !isListEmpty(experimentsInfo)
-                    && !isListEmpty(filesInfo)
-                    && !isListEmpty(weathersInfo)
-                    && !isListEmpty(hardwareInfo);
+            if (!peopleInfo.isEmpty())
+                importNewPeople(peopleInfo);
+            if (!groupsInfo.isEmpty())
+                importNewResearchGroups(groupsInfo);
+            if (!peopleInfo.isEmpty())
+                updatePeopleGroupsRelations(peopleInfo);
+            if (!scenariosInfo.isEmpty())
+                importNewScenarios(scenariosInfo);
+            if (!weathersInfo.isEmpty())
+                importNewWeather(weathersInfo);
+            if (!experimentsInfo.isEmpty())
+                importNewExperiments(experimentsInfo);
+            if (!filesInfo.isEmpty())
+                importNewDataFiles(filesInfo);
+            if (!hardwareInfo.isEmpty())
+                importNewHardware(hardwareInfo);
+            if (!experimentsInfo.isEmpty())
+                updateExperimentHwRelations(experimentsInfo);
+
+            log.debug("Download - DB updated");
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
+        return !isListEmpty(groupsInfo)
+                && !isListEmpty(peopleInfo)
+                && !isListEmpty(scenariosInfo)
+                && !isListEmpty(experimentsInfo)
+                && !isListEmpty(filesInfo)
+                && !isListEmpty(weathersInfo)
+                && !isListEmpty(hardwareInfo);
     }
 
     /**
      * Method for simple checking whether the list is empty or not.
+     *
      * @param list java.util.List implementation
      * @return empty state
      */

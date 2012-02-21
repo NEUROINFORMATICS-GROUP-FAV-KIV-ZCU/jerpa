@@ -19,6 +19,15 @@ public class Experiment {
     private int experimentId;
     private boolean changed;
     private Set<Hardware> hardwares;
+    private boolean added;
+
+    public boolean getAdded() {
+        return added;
+    }
+
+    public void setAdded(boolean added) {
+        this.added = added;
+    }
 
     public Set<Hardware> getHardwares() {
         return hardwares;

@@ -12,6 +12,15 @@ import java.util.Set;
 public class Hardware {
     private int hardwareId;
     private boolean changed;
+    private boolean added;
+
+    public boolean getAdded() {
+        return added;
+    }
+
+    public void setAdded(boolean added) {
+        this.added = added;
+    }
 
     public boolean getChanged() {
         return changed;

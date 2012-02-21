@@ -10,6 +10,17 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (02/21/2012) kivan
+ 
+	CHANGED: derby.sql and mappings - added "ADDED" property in order to distinguish new records in db
+	CHANGED: BlobViewer, ImportWizard and ExperimentOverview are now closable by Escape key stroke
+	INTERNAL: LoginDialogLogic - KeyListener removed, instead are Keystrokes Enter and Escape above focused windows
+			handled by ActionListener an registered like this:
+			
+			//code
+			KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+			((JDialog)this).getRootPane().registerKeyboardAction(this, "close", stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+
  * (02/19/2012) kivan
 	#263
 	

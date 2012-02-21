@@ -34,17 +34,24 @@ public class ExperimentsTable extends JTable implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         if (2 == e.getClickCount()) {
             int selectedRow = this.getSelectedRow();
-            int modelId = this.convertRowIndexToModel(selectedRow);
-            int selectedFile = expTableModel.getExperimentAtIndex(modelId).getExperimentId();
-            new ExperimentOverview(selectedFile);
+            if (selectedRow >= 0 && selectedRow < expTableModel.getRowCount()) {
+                int modelId = this.convertRowIndexToModel(selectedRow);
+                int selectedFile = expTableModel.getExperimentAtIndex(modelId).getExperimentId();
+                new ExperimentOverview(selectedFile);
+            }
         }
+
     }
 
-    public void mousePressed(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+    }
 
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {
+    }
 
-    public void mouseEntered(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {
+    }
 
-    public void mouseExited(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {
+    }
 }

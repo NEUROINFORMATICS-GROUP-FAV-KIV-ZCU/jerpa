@@ -12,6 +12,7 @@ import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Date;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import java.util.Set;
 public class ImportWizardLogic extends ImportWizard implements ActionListener {
 
     private EDEDBController controller;
+    private Thread saveThread;
 
     /**
      * Constructor.
@@ -37,6 +39,9 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         super();
 
         this.controller = controller;
+
+        KeyStroke close = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        this.getRootPane().registerKeyboardAction(this, "cancel", close, JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         existingRadio.addActionListener(this);
         newRadio.addActionListener(this);
@@ -89,7 +94,8 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         } else if ("ok".equals(e.getActionCommand())) {
             confirm();
         } else if ("cancel".equals(e.getActionCommand())) {
-            closeWizard();
+            if (!(saveThread != null && saveThread.isAlive()))
+                closeWizard();
         }
     }
 
@@ -98,7 +104,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
      */
     private void confirm() {
 
-        Thread saveThread = new Thread(new Runnable() {
+        saveThread = new Thread(new Runnable() {
             public void run() {
                 Working.setActivity(true, "working.ededb.import");
                 confirmButton.setEnabled(false);
@@ -125,6 +131,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
 
     /**
      * Method for saving changes into an existing experiment.
+     *
      * @param exp existing experiment
      */
     private void saveExisting(Experiment exp) {
