@@ -8,16 +8,12 @@ import ch.ethz.origo.jerpa.ededclient.generated.*;
 import ch.ethz.origo.jerpa.ededclient.sources.EDEDClient;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import java.io.*;
 import java.io.InputStream;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -110,10 +106,14 @@ public class DataSyncer {
     @SuppressWarnings("unchecked")
     private void upload() {
         log.debug("Upload - upload process started");
-        uploadExperiments(experimentDao.getChanged());
-        uploadExperiments(experimentDao.getAdded());
-        uploadDataFiles(dataFileDao.getChanged());
-        uploadDataFiles(dataFileDao.getAdded());
+        try {
+            uploadExperiments(experimentDao.getChanged());
+            uploadExperiments(experimentDao.getAdded());
+            uploadDataFiles(dataFileDao.getChanged());
+            uploadDataFiles(dataFileDao.getAdded());
+        } catch (DaoException e) {
+            log.error(e.getMessage(), e);
+        }
         log.debug("Upload - upload process finished");
     }
 
@@ -121,8 +121,10 @@ public class DataSyncer {
      * Method for uploading new and updated experiments information.
      *
      * @param experiments experiment information
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void uploadExperiments(List<Experiment> experiments) {
+    private void uploadExperiments(List<Experiment> experiments) throws DaoException {
         UserDataService uService = service.getService();
         Date startTime, endTime;
         Person owner, subject;
@@ -131,14 +133,15 @@ public class DataSyncer {
         Weather weather;
 
         for (Experiment exp : experiments) {
+            Session session = HibernateUtil.getActiveSession();
             ExperimentInfo info = new ExperimentInfo();
             startTime = exp.getStartTime();
             endTime = exp.getEndTime();
-            owner = (Person) HibernateUtil.rebind(exp.getOwner());
-            subject = (Person) HibernateUtil.rebind(exp.getSubject());
-            group = (ResearchGroup) HibernateUtil.rebind(exp.getResearchGroup());
-            scenario = (Scenario) HibernateUtil.rebind(exp.getScenario());
-            weather = (Weather) HibernateUtil.rebind(exp.getWeather());
+            owner = (Person) HibernateUtil.reattachObject(session, exp.getOwner());
+            subject = (Person) HibernateUtil.reattachObject(session, exp.getSubject());
+            group = (ResearchGroup) HibernateUtil.reattachObject(session, exp.getResearchGroup());
+            scenario = (Scenario) HibernateUtil.reattachObject(session, exp.getScenario());
+            weather = (Weather) HibernateUtil.reattachObject(session, exp.getWeather());
 
             info.setTemperature(exp.getTemperature());
             if (endTime != null)
@@ -161,43 +164,42 @@ public class DataSyncer {
             info.setWeatherNote(exp.getWeathernote());
             info.setTemperature(exp.getTemperature());
 
+            HibernateUtil.reattachObject(session, exp);
             for (Hardware hardware : exp.getHardwares()) {
                 info.getHwIds().add(hardware.getHardwareId());
             }
+
             exp.setExperimentId(uService.addOrUpdateExperiment(info));
-        }
+            Transaction transaction = session.getTransaction();
 
-        // sorted from greatest to lowest in order to prevent primary key collision
-        Collections.sort(experiments, new Comparator<Experiment>() {
-            public int compare(Experiment o1, Experiment o2) {
-                int id1 = o1.getExperimentId(), id2 = o2.getExperimentId();
+            try {
+                exp.setAdded(false);
+                exp.setChanged(false);
 
-                if (id1 > id2)
-                    return -1;
-                else if (id1 < id2)
-                    return 1;
-                else
-                    return 0;
+                session.update(exp);
+                transaction.commit();
+            } catch (HibernateException e) {
+                log.error(e.getMessage(), e);
+                transaction.rollback();
+            } finally {
+                session.close();
             }
-        });
-
-        for (Experiment exp : experiments) {
-            exp.setChanged(false);
-            exp.setAdded(false);
-            experimentDao.update(exp);
         }
     }
 
-    private void uploadDataFiles(List<DataFile> files) {
+    private void uploadDataFiles(List<DataFile> files) throws DaoException {
         Experiment exp;
-
         try {
+
             for (DataFile file : files) {
                 DataFileInfo info = new DataFileInfo();
-                HibernateUtil.rebind(file);
-                exp = (Experiment) HibernateUtil.rebind(file.getExperiment());
+                Session session = HibernateUtil.getActiveSession();
+
+                HibernateUtil.reattachObject(session, file);
+                exp = (Experiment) HibernateUtil.reattachObject(session, file.getExperiment());
                 if (exp != null)
                     info.setExperimentId(exp.getExperimentId());
+
                 info.setFileId(file.getDataFileId());
                 info.setFileName(file.getFilename());
                 info.setFileLength(file.getFileLength());
@@ -226,32 +228,27 @@ public class DataSyncer {
                 };
                 DataHandler handler = new DataHandler(rawData);
                 file.setDataFileId(service.getService().addOrUpdateDataFile(info, handler));
+
+                Transaction transaction = session.getTransaction();
+
+                try {
+                    file.setAdded(false);
+                    file.setChanged(false);
+
+                    session.update(file);
+                    transaction.commit();
+                } catch (HibernateException e) {
+                    transaction.rollback();
+                    log.error(e.getMessage(), e);
+                } finally {
+                    session.close();
+                }
             }
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         } catch (UserDataServiceException_Exception e) {
             log.error(e.getMessage(), e);
-        }
-
-        if (!files.isEmpty()) {
-            Collections.sort(files, new Comparator<DataFile>() {
-                public int compare(DataFile o1, DataFile o2) {
-                    int id1 = o1.getDataFileId(), id2 = o2.getDataFileId();
-                    if (id1 > id2)
-                        return -1;
-                    else if (id1 < id2)
-                        return 1;
-                    else
-                        return 0;
-                }
-            });
-
-            for (DataFile file : files) {
-                file.setChanged(false);
-                file.setAdded(false);
-                dataFileDao.update(file);
-            }
         }
     }
 
@@ -328,10 +325,11 @@ public class DataSyncer {
      * This method imports new people, without any references.
      *
      * @param peopleInfo people info from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void importNewPeople(List<PersonInfo> peopleInfo) {
+    private void importNewPeople(List<PersonInfo> peopleInfo) throws DaoException {
         log.debug(peopleInfo.size() + " new people");
-
         for (PersonInfo personInfo : peopleInfo) {
             Person person = personDao.get(personInfo.getPersonId());
             if (person == null) {
@@ -343,7 +341,7 @@ public class DataSyncer {
             person.setName(personInfo.getGivenName());
             person.setSurname(personInfo.getSurname());
             person.setVersion(personInfo.getScn());
-            saveOrUpdate(person);
+            saveOrUpdate(HibernateUtil.getActiveSession(), person);
         }
     }
 
@@ -352,10 +350,11 @@ public class DataSyncer {
      * Requires people imported first!
      *
      * @param groupsInfo research groups info from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void importNewResearchGroups(List<ResearchGroupInfo> groupsInfo) {
+    private void importNewResearchGroups(List<ResearchGroupInfo> groupsInfo) throws DaoException {
         log.debug(groupsInfo.size() + " new research groups");
-
         for (ResearchGroupInfo groupInfo : groupsInfo) {
             ResearchGroup group = researchGroupDao.get(groupInfo.getResearchGroupId());
             if (group == null) {
@@ -370,7 +369,7 @@ public class DataSyncer {
             if (owner != null) {
                 group.setOwner(owner);
             }
-            saveOrUpdate(group);
+            saveOrUpdate(HibernateUtil.getActiveSession(), group);
         }
     }
 
@@ -379,8 +378,10 @@ public class DataSyncer {
      * Requires people and research groups imported first!
      *
      * @param peopleInfo information about people from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void updatePeopleGroupsRelations(List<PersonInfo> peopleInfo) {
+    private void updatePeopleGroupsRelations(List<PersonInfo> peopleInfo) throws DaoException {
         log.debug("Linking people and research groups");
 
         for (PersonInfo personInfo : peopleInfo) {
@@ -389,7 +390,7 @@ public class DataSyncer {
 
             if (person != null && group != null) {
                 person.setDefaultGroup(group);
-                saveOrUpdate(person);
+                saveOrUpdate(HibernateUtil.getActiveSession(), person);
             }
         }
     }
@@ -399,8 +400,10 @@ public class DataSyncer {
      * Requires people and research groups imported first!
      *
      * @param scenariosInfo scenarios info from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void importNewScenarios(List<ScenarioInfo> scenariosInfo) {
+    private void importNewScenarios(List<ScenarioInfo> scenariosInfo) throws DaoException {
         log.debug(scenariosInfo.size() + " new scenarios");
 
         for (ScenarioInfo scenarioInfo : scenariosInfo) {
@@ -427,7 +430,7 @@ public class DataSyncer {
                 scenario.setResearchGroup(group);
             }
 
-            saveOrUpdate(scenario);
+            saveOrUpdate(HibernateUtil.getActiveSession(), scenario);
         }
 
     }
@@ -437,8 +440,10 @@ public class DataSyncer {
      * Does not require any other data from server.
      *
      * @param weathersInfo weather info from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void importNewWeather(List<WeatherInfo> weathersInfo) {
+    private void importNewWeather(List<WeatherInfo> weathersInfo) throws DaoException {
         log.debug(weathersInfo.size() + " new weather types");
 
 
@@ -452,7 +457,7 @@ public class DataSyncer {
             weather.setDescription(weatherInfo.getDescription());
             weather.setVersion(weatherInfo.getScn());
             weather.setTitle(weatherInfo.getTitle());
-            saveOrUpdate(weather);
+            saveOrUpdate(HibernateUtil.getActiveSession(), weather);
         }
 
     }
@@ -462,8 +467,10 @@ public class DataSyncer {
      * Requires people, research groups, scenarios and weather data imported first!
      *
      * @param experimentsInfo experiment information from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void importNewExperiments(List<ExperimentInfo> experimentsInfo) {
+    private void importNewExperiments(List<ExperimentInfo> experimentsInfo) throws DaoException {
         log.debug(experimentsInfo.size() + " new experiments");
 
         for (ExperimentInfo expInfo : experimentsInfo) {
@@ -504,7 +511,7 @@ public class DataSyncer {
                 exp.setResearchGroup(group);
             }
 
-            saveOrUpdate(exp);
+            saveOrUpdate(HibernateUtil.getActiveSession(), exp);
         }
     }
 
@@ -513,18 +520,21 @@ public class DataSyncer {
      * Requires experiments data imported first!
      *
      * @param filesInfo data files information from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void importNewDataFiles(List<DataFileInfo> filesInfo) {
+    private void importNewDataFiles(List<DataFileInfo> filesInfo) throws DaoException {
         log.debug(filesInfo.size() + " new data files");
 
         for (DataFileInfo fileInfo : filesInfo) {
 
+            Session session = HibernateUtil.getActiveSession();
             DataFile file = dataFileDao.get(fileInfo.getFileId());
             if (file == null) {
                 file = new DataFile();
                 file.setDataFileId(fileInfo.getFileId());
-            }else{
-                HibernateUtil.rebind(file);
+            } else {
+                HibernateUtil.reattachObject(session, file);
             }
             file.setFileLength(fileInfo.getFileLength());
             file.setMimetype(fileInfo.getMimeType());
@@ -535,7 +545,7 @@ public class DataSyncer {
             Experiment exp = experimentDao.get(fileInfo.getExperimentId());
             if (exp != null) {
                 file.setExperiment(exp);
-                saveOrUpdate(file);
+                saveOrUpdate(session, file);
             }
         }
     }
@@ -545,8 +555,10 @@ public class DataSyncer {
      * Does not require any other previous data.
      *
      * @param hardwareInfo hardware types information from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void importNewHardware(List<HardwareInfo> hardwareInfo) {
+    private void importNewHardware(List<HardwareInfo> hardwareInfo) throws DaoException {
         log.debug(hardwareInfo.size() + " new hardware types");
 
         for (HardwareInfo hw : hardwareInfo) {
@@ -561,7 +573,7 @@ public class DataSyncer {
             hardware.setHardwareId(hw.getHardwareId());
             hardware.setVersion(hw.getScn());
 
-            saveOrUpdate(hardware);
+            saveOrUpdate(HibernateUtil.getActiveSession(), hardware);
         }
     }
 
@@ -570,8 +582,10 @@ public class DataSyncer {
      * Requires experiments and hardware types data imported first!
      *
      * @param experimentsInfo experiments information from server
+     * @throws ch.ethz.origo.jerpa.data.tier.dao.DaoException
+     *          error during communication with database
      */
-    private void updateExperimentHwRelations(List<ExperimentInfo> experimentsInfo) {
+    private void updateExperimentHwRelations(List<ExperimentInfo> experimentsInfo) throws DaoException {
         log.debug("Linking experiments and hardware");
 
         for (ExperimentInfo expInfo : experimentsInfo) {
@@ -585,27 +599,27 @@ public class DataSyncer {
             }
 
             exp.setHardwares(hws);
-            saveOrUpdate(exp);
+            saveOrUpdate(HibernateUtil.getActiveSession(), exp);
         }
     }
 
     /**
      * Method for saving or updating data in database using collection input.
      *
-     * @param o object to be commited
+     * @param session active hibernate session
+     * @param o       object to be commited
      */
-    private void saveOrUpdate(Object o) {
-        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-        Session session = sessionFactory.getCurrentSession();
+    private void saveOrUpdate(Session session, Object o) {
         Transaction transaction = session.beginTransaction();
 
         try {
-
             session.saveOrUpdate(o);
             transaction.commit();
         } catch (HibernateException e) {
             log.error(e.getMessage(), e);
             transaction.rollback();
         }
+
+        session.close();
     }
 }

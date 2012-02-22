@@ -1,10 +1,12 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
+import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -103,6 +105,7 @@ public class BlobViewer extends JDialog implements ILanguage, ActionListener {
             loading.setVisible(false);
             Working.setActivity(false, "working.ededb.open");
         } catch (SQLException exception) {
+            log.error(exception.getMessage(), exception);
             JUIGLErrorInfoUtils.showErrorDialog(resource.getString("blobViewer.ededb.error"), exception.getMessage(), exception);
         }
     }

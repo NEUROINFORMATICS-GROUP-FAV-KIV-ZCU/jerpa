@@ -1,6 +1,7 @@
 package ch.ethz.origo.jerpa.data.tier.dao;
 
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
+import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.criterion.Projections;
 
@@ -33,26 +34,42 @@ public class GenericDao<T, PK extends Serializable> {
      *
      * @param newRecord new object
      * @return object's identifier.
+     * @throws DaoException error during save
      */
     @SuppressWarnings("unchecked")
-    public PK save(T newRecord) {
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Transaction transaction = session.beginTransaction();
-            PK primaryKey = (PK) session.save(newRecord);
+    public PK save(T newRecord) throws DaoException {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        PK primaryKey = (PK) session.save(newRecord);
+        try {
             transaction.commit();
             return primaryKey;
+        } catch (HibernateException e) {
+            transaction.rollback();
+            throw new DaoException(e);
+        } finally {
+            session.close();
+        }
     }
 
     /**
      * Method for updating existing record in database.
      *
      * @param transientRecord updated object
+     * @throws DaoException error during update
      */
-    public void update(T transientRecord) {
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Transaction transaction = session.beginTransaction();
-            session.update(transientRecord);
+    public void update(T transientRecord) throws DaoException {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        session.update(transientRecord);
+        try {
             transaction.commit();
+        } catch (HibernateException e) {
+            transaction.rollback();
+            throw new DaoException(e);
+        } finally {
+            session.close();
+        }
     }
 
     /**
@@ -60,14 +77,22 @@ public class GenericDao<T, PK extends Serializable> {
      *
      * @param identifier identifier, i.e. primary key
      * @return specified object
+     * @throws DaoException error during getting object
      */
     @SuppressWarnings("unchecked")
-    public T get(PK identifier) {
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Transaction transaction = session.beginTransaction();
-            T object = (T) session.get(type, identifier);
+    public T get(PK identifier) throws DaoException {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        T object = (T) session.get(type, identifier);
+        try {
             transaction.commit();
             return object;
+        } catch (HibernateException e) {
+            transaction.rollback();
+            throw new DaoException(e);
+        } finally {
+            session.close();
+        }
     }
 
     /**
@@ -76,18 +101,46 @@ public class GenericDao<T, PK extends Serializable> {
      * @return newest revision value
      */
     public long getLastRevision() {
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            session.beginTransaction();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        try {
             Long version = (Long) session.createCriteria(type).setProjection(Projections.max("version")).uniqueResult();
             return (version != null ? version : 0);
+        } finally {
+            session.close();
+        }
     }
 
     @SuppressWarnings("unchecked")
-    public List<T> getAll() {
-            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-            Transaction transaction = session.beginTransaction();
-            List<T> allRecords = session.createCriteria(type).list();
+    public List<T> getAll() throws DaoException {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        List<T> allRecords = session.createCriteria(type).list();
+        try {
             transaction.commit();
             return allRecords;
+        } catch (HibernateException e) {
+            transaction.rollback();
+            throw new DaoException(e);
+        } finally {
+            session.close();
+        }
+    }
+
+    public void remove(PK primaryKey) throws DaoException {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+
+        Object object = session.get(type, primaryKey);
+        session.delete(object);
+
+        try {
+            transaction.commit();
+        } catch (HibernateException e) {
+            transaction.rollback();
+            throw new DaoException(e);
+        } finally {
+            session.close();
+        }
     }
 }

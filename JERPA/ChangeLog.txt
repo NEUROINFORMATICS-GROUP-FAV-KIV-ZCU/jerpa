@@ -10,8 +10,21 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (02/23/2012) kivan
+	#266
+	
+	This is other :backup: commit.
+	FIXED: deadlock during downloading files
+	INTERNAL: because Hibernate over JDBC creates for each session its thread, it is neccessary explicitely create own session and close it after work is done!
+		For creating such work a bit easier, HibernateUtil.createActiveSession and HibernateUtil.reattachObject is available.
+	
+	Known bugs(solving in progress) 
+		- AWT thread does not "refresh" GUI while multiple files are downloaded (don't know why yet)
+		- upload is now working (upload experiments cannot change primary key of existing record, upload data files throws exception about transient objects)
+
  * (02/22/2012) kivan
- 
+	#265
+	
 	CHANGED: DataSyncer - added upload
 	FIXED: Downloader - fixed potential deadlock during download
 	
@@ -19,7 +32,8 @@
 	Commit was neccessary in order to prevent possible losing data.
 
  * (02/21/2012) kivan
- 
+	#264
+	
 	CHANGED: derby.sql and mappings - added "ADDED" property in order to distinguish new records in db
 	CHANGED: BlobViewer, ImportWizard and ExperimentOverview are now closable by Escape key stroke
 	INTERNAL: LoginDialogLogic - KeyListener removed, instead are Keystrokes Enter and Escape above focused windows

@@ -67,9 +67,9 @@ public class Downloader extends Observable implements Observer, ILanguage {
                     synchronized (lock) {
                         try {
                             if (!downloading.isEmpty())
-                                Downloader.class.wait(1000L);
+                                lock.wait(1000L);
                             else
-                                Downloader.class.wait();
+                                lock.wait();
 
                             if (controller.isServiceOffline()) {
                                 downloading.clear();

@@ -36,13 +36,20 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @param inStream binary input stream
      */
     public synchronized void writeFileContent(DataFile file, InputStream inStream) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        session.refresh(file);
         Blob blob = Hibernate.getLobCreator(session).createBlob(inStream, file.getFileLength());
         file.setDataFileId(file.getDataFileId());
         file.setFileContent(blob);
         session.saveOrUpdate(file);
-        session.getTransaction().commit();
+        try {
+            transaction.commit();
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+            transaction.rollback();
+        }
+        session.close();
     }
 
     /**
@@ -52,7 +59,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @return data files
      */
     public List<DataFile> getAllFromExperiments(List<Experiment> experiments) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         List<DataFile> files = new ArrayList<DataFile>();
 
@@ -60,8 +67,16 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
             session.refresh(experiment);
             files.addAll(experiment.getDataFiles());
         }
-        transaction.commit();
-        return files;
+        try {
+            transaction.commit();
+            return files;
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+            transaction.rollback();
+            return Collections.emptyList();
+        } finally {
+            session.close();
+        }
     }
 
     /**
@@ -71,7 +86,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @return FileState value
      */
     public FileState getFileState(DataFile file) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         try {
             session.refresh(file);
@@ -91,8 +106,8 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         } catch (SQLException e) {
             if (transaction.isActive())
                 transaction.rollback();
-            e.printStackTrace();
-            return FileState.DOWNLOADING;
+            log.error(e.getMessage(), e);
+            return FileState.NO_COPY;
         }
     }
 
@@ -104,7 +119,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @throws DaoException issue with DAO
      */
     public File getFile(DataFile file) throws DaoException {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         File fileContent = null;
         FileOutputStream outputStream = null;
@@ -126,10 +141,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
             inputStream.close();
             outputStream.close();
             transaction.commit();
-        } catch (SQLException e) {
-            transaction.rollback();
-            throw new DaoException(e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             transaction.rollback();
             throw new DaoException(e);
         } finally {
@@ -146,6 +158,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
                 } catch (IOException e) {
                     log.error(e);
                 }
+            session.close();
         }
         return fileContent;
     }
@@ -156,15 +169,22 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @param dataFile specified data file
      */
     public void removeFile(DataFile dataFile) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         dataFile.setFileContent(null);
         session.update(dataFile);
-        transaction.commit();
+        try {
+            transaction.commit();
+        } catch (HibernateException e) {
+            log.error(e.getMessage(), e);
+            transaction.rollback();
+        } finally {
+            session.close();
+        }
     }
 
     public void createDataFile(Experiment exp, File file, double samplingRate) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
         DataFile dataFile = new DataFile();
@@ -201,6 +221,8 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         } catch (HibernateException e) {
             log.error(e.getMessage(), e);
             transaction.rollback();
+        } finally {
+            session.close();
         }
     }
 
@@ -212,9 +234,9 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @param samplingRate value of data file sampling rate
      */
     public void overwriteDataFile(DataFile dataFile, File file, double samplingRate) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-
+        session.refresh(dataFile);
         InputStream inStream = null;
         try {
             inStream = new FileInputStream(file);
@@ -238,6 +260,8 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         } catch (HibernateException e) {
             log.error(e.getMessage(), e);
             transaction.rollback();
+        }  finally {
+            session.close();
         }
     }
 
@@ -247,14 +271,18 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @return identifier
      */
     private int getNextAvailableId() {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        return (Integer) session.createCriteria(DataFile.class).setProjection(Projections.max("dataFileId")).uniqueResult() + 1;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            return (Integer) session.createCriteria(DataFile.class).setProjection(Projections.max("dataFileId")).uniqueResult() + 1;
+        } finally {
+            session.close();
+        }
     }
 
     public List getChanged() {
         String hql = "from DataFile d where CAST(d.added as boolean) = true";
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
         Query query = session.createQuery(hql);
@@ -265,13 +293,14 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
                 return query.list();
         } finally {
             transaction.commit();
+            session.close();
         }
     }
 
     public List getAdded() {
         String hql = "from DataFile d where CAST(d.changed as boolean) = true";
 
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
         Query query = session.createQuery(hql);
@@ -282,6 +311,22 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
                 return query.list();
         } finally {
             transaction.commit();
+            session.close();
         }
     }
+
+//    @Override
+//    public DataFile get(Integer identifier) throws DaoException {
+//
+//        String hql = "from DataFile d where d.dataFileId = :identifier";
+//
+//        Session session = HibernateUtil.getSessionFactory().openSession();
+//        Transaction transaction = session.beginTransaction();
+//        try {
+//            return (DataFile) session.createQuery(hql).setInteger("identifier",identifier).uniqueResult();
+//        } finally {
+//            transaction.commit();
+//            session.close();
+//        }
+//    }
 }

@@ -2,11 +2,15 @@ package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
+import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
 import ch.ethz.origo.jerpa.data.tier.dao.ExperimentDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.*;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLEErrorDialog;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.hibernate.Session;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -19,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import static javax.swing.BorderFactory.*;
 
@@ -57,16 +62,24 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-        this.getRootPane().registerKeyboardAction(this,"close", stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+        this.getRootPane().registerKeyboardAction(this, "close", stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         ExperimentDao experimentDao = DaoFactory.getExperimentDao();
-        experiment = experimentDao.get(experimentId);
+        try {
+            experiment = experimentDao.get(experimentId);
+        } catch (DaoException e) {
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", e.getMessage(), e,
+                    Level.WARNING);
+            this.dispose();
+            return;
+        }
         scenario = experiment.getScenario();
-        HibernateUtil.rebind(experiment);
-        HibernateUtil.rebind(scenario);
+        Session session = HibernateUtil.getActiveSession();
+        HibernateUtil.reattachObject(session, experiment);
+        HibernateUtil.reattachObject(session, scenario);
 
         this.setTitle(experiment.getExperimentId() + " - " + scenario.getTitle());
-
+        session.close();
         JPanel canvas = new JPanel();
         initViewer(canvas);
 
@@ -113,6 +126,7 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
 
     /**
      * Creates panel with HW information.
+     *
      * @return panel with HW
      */
     private JPanel createHwPane() {
@@ -124,9 +138,10 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         hwTypeLabel = new JLabel();
         hwDescriptionLabel = new JLabel();
 
+        Session session = HibernateUtil.getActiveSession();
         int row = 0;
-        for(Hardware hw : experiment.getHardwares()){
-            HibernateUtil.rebind(hw);
+        for (Hardware hw : experiment.getHardwares()) {
+            HibernateUtil.reattachObject(session, hw);
 
             JTextField hwTitleField = new JTextField(hw.getTitle());
             JTextField hwTypeField = new JTextField(hw.getType());
@@ -157,6 +172,8 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
             hwPane.add(hwDescriptionLabel, hwDescriptionLabelConstraints);
             hwPane.add(hwDescriptionField, hwDescriptionFieldConstraints);
         }
+
+        session.close();
         return hwPane;
     }
 
@@ -171,8 +188,9 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         JPanel metaPane = new JPanel(new GridBagLayout());
         metaPane.setBorder(metaBorder);
 
+        Session session = HibernateUtil.getActiveSession();
         Weather weather = experiment.getWeather();
-        HibernateUtil.rebind(weather);
+        HibernateUtil.reattachObject(session, weather);
 
         tempLabel = new JLabel();
         weatherLabel = new JLabel();
@@ -205,6 +223,7 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         metaPane.add(weatherNoteLabel, weatherNoteLabelConstraints);
         metaPane.add(weatherNoteScroll, weatherNoteAreaConstraints);
 
+        session.close();
         return metaPane;
     }
 
@@ -285,8 +304,10 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
 
         Person owner = experiment.getOwner();
         Person subject = experiment.getSubject();
-        HibernateUtil.rebind(owner);
-        HibernateUtil.rebind(subject);
+
+        Session session = HibernateUtil.getActiveSession();
+        HibernateUtil.reattachObject(session, owner);
+        HibernateUtil.reattachObject(session, subject);
 
         ownerLabel = new JLabel();
         subjectLabel = new JLabel();
@@ -305,6 +326,8 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         peoplePane.add(ownerField, ownerFieldConstraints);
         peoplePane.add(subjectLabel, subjectLabelConstraints);
         peoplePane.add(subjectField, subjectFieldConstraints);
+
+        session.close();
         return peoplePane;
     }
 

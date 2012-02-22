@@ -8,6 +8,7 @@ import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -20,6 +21,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import static javax.swing.BorderFactory.createMatteBorder;
 
@@ -156,6 +158,7 @@ public class ImportWizard extends JFrame implements ILanguage {
 
     /**
      * Method creating panel with Hardware selection list.
+     *
      * @return hw panel
      */
     private JPanel createHwPane() {
@@ -163,7 +166,13 @@ public class ImportWizard extends JFrame implements ILanguage {
         JPanel hwPane = new JPanel(new GridBagLayout());
         hwPane.setBorder(hwBorder);
 
-        hwCombo = new JComboBox(hardwareDao.getAll().toArray());
+        try {
+            hwCombo = new JComboBox(hardwareDao.getAll().toArray());
+        } catch (DaoException e) {
+            log.error(e.getMessage(), e);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", e.getMessage(), e,
+                    Level.WARNING);
+        }
         hwCombo.setRenderer(tooltipComboBoxRenderer);
         hwCombo.setPreferredSize(COMBO_SIZE);
         addHw = new JButton("+");
@@ -216,7 +225,13 @@ public class ImportWizard extends JFrame implements ILanguage {
         JPanel groupPane = new JPanel(new GridBagLayout());
         groupPane.setBorder(groupBorder);
 
-        groupCombo = new JComboBox(researchGroupDao.getAll().toArray());
+        try {
+            groupCombo = new JComboBox(researchGroupDao.getAll().toArray());
+        } catch (DaoException e) {
+            log.error(e.getMessage(), e);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", e.getMessage(), e,
+                    Level.WARNING);
+        }
         groupCombo.setRenderer(tooltipComboBoxRenderer);
         groupCombo.setPreferredSize(COMBO_SIZE);
         addGroup = new JButton("+");
@@ -240,7 +255,13 @@ public class ImportWizard extends JFrame implements ILanguage {
         JPanel scenarioPane = new JPanel(new GridBagLayout());
         scenarioPane.setBorder(scenarioBorder);
 
-        scenarioCombo = new JComboBox(scenarioDao.getAll().toArray());
+        try {
+            scenarioCombo = new JComboBox(scenarioDao.getAll().toArray());
+        } catch (DaoException e) {
+            log.error(e.getMessage(), e);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", e.getMessage(), e,
+                    Level.WARNING);
+        }
         scenarioCombo.setPreferredSize(COMBO_SIZE);
         scenarioCombo.setRenderer(tooltipComboBoxRenderer);
         addScenario = new JButton("+");
@@ -267,7 +288,13 @@ public class ImportWizard extends JFrame implements ILanguage {
         weatherNoteLabel = new JLabel();
         addWeather = new JButton("+");
 
-        weatherCombo = new JComboBox(weatherDao.getAll().toArray());
+        try {
+            weatherCombo = new JComboBox(weatherDao.getAll().toArray());
+        } catch (DaoException e) {
+            log.error(e.getMessage(), e);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", e.getMessage(), e,
+                    Level.WARNING);
+        }
         weatherCombo.setPreferredSize(COMBO_SIZE);
         weatherCombo.setRenderer(tooltipComboBoxRenderer);
         weatherNoteArea = new JTextArea(LINES_VISIBLE, LETTERS_VISIBLE);
@@ -312,8 +339,14 @@ public class ImportWizard extends JFrame implements ILanguage {
             log.error(e.getMessage(), e);
         }
 
-        expOwnerCombo = new JComboBox(personDao.getAll().toArray());
-        expSubjectCombo = new JComboBox(personDao.getAll().toArray());
+        try {
+            expOwnerCombo = new JComboBox(personDao.getAll().toArray());
+            expSubjectCombo = new JComboBox(personDao.getAll().toArray());
+        } catch (DaoException e) {
+            log.error(e.getMessage(), e);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", e.getMessage(), e,
+                    Level.WARNING);
+        }
         expOwnerCombo.setPreferredSize(COMBO_SIZE);
         expSubjectCombo.setPreferredSize(COMBO_SIZE);
         expOwnerCombo.setRenderer(tooltipComboBoxRenderer);
@@ -457,6 +490,7 @@ public class ImportWizard extends JFrame implements ILanguage {
      * Method invoked by change of LanguageObservable.
      *
      * @throws ch.ethz.origo.juigle.application.exception.JUIGLELangException
+     *
      */
     public void updateText() throws JUIGLELangException {
         SwingUtilities.invokeLater(new Runnable() {

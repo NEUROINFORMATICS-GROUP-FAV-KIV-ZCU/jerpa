@@ -2,14 +2,17 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
+import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
 import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.FileState;
+import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.dao.ExperimentDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ExperimentViewer;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -25,6 +28,7 @@ import java.util.*;
  */
 public class ExperimentViewerLogic extends ExperimentViewer implements Observer {
     private static final long serialVersionUID = 4318865850000265030L;
+    private static final Logger log = Logger.getLogger(ExperimentViewer.class);
 
     private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
@@ -62,7 +66,11 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
                     selectedExps.clear();
                     for (Integer i : expTable.getSelectedRows()) {
                         int selected = expModel.getExperimentAtIndex(expTable.convertRowIndexToModel(i)).getExperimentId();
-                        selectedExps.add(experimentDao.get(selected));
+                        try {
+                            selectedExps.add(experimentDao.get(selected));
+                        } catch (DaoException e1) {
+                            log.error(e1.getMessage(), e1);
+                        }
                     }
                     updateDataTable();
                     Working.setActivity(false, "working.ededb.update.datatable");
@@ -96,7 +104,7 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
      * Method for updating experiment table.
      */
     public void updateExpTable() {
-        synchronized (ExperimentViewerLogic.class) {
+        synchronized (ExpTableModel.class) {
             Working.setActivity(true, "working.ededb.update.exptable");
             List<Experiment> experiments = experimentDao.getAll();
             if (experiments.size() != expModel.getRowCount()) {
@@ -116,7 +124,7 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
      */
     public void updateDataTable() {
 
-        synchronized (ExperimentViewerLogic.class) {
+        synchronized (DataTableModel.class) {
 
             List<DataFile> dataFiles = dataFileDao.getAllFromExperiments(selectedExps);
             if (dataFiles.size() != dataModel.getRowCount()) {
@@ -162,7 +170,11 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
     }
 
     public void update(Observable o, Object arg) {
-        updateExpTable();
-        updateDataTable();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                updateExpTable();
+                updateDataTable();
+            }
+        });
     }
 }

@@ -5,6 +5,8 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowSorter;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -36,9 +38,12 @@ public class DataFilesTable extends JTable implements MouseListener {
             int selectedRow = this.getSelectedRow();
             int modelId = this.convertRowIndexToModel(selectedRow);
             final DataFile selectedFile = tableModel.getDataFileAtIndex(modelId);
-            HibernateUtil.rebind(selectedFile);
+
+            Session session = HibernateUtil.getActiveSession();
+            HibernateUtil.reattachObject(session, selectedFile);
 
             new BlobViewer(selectedFile.getFileContent(), selectedFile.getFilename(), selectedFile.getFileLength(), selectedFile.getMimetype());
+            session.close();
         }
     }
 

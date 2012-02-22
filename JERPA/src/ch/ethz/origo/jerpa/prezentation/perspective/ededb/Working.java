@@ -1,17 +1,21 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.data.tier.DaoFactory;
+import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 /**
  * Class for creating undecorated dialog showing "working animation"
@@ -19,7 +23,7 @@ import java.util.ResourceBundle;
  * @author Petr Miko - miko.petr (at) gmail.com
  */
 public final class Working extends JPanel implements ILanguage {
-
+    private static final Logger log = Logger.getLogger(Working.class);
     private static final long serialVersionUID = 4807698208851104534L;
     private static Working instance = new Working();
 
@@ -163,11 +167,17 @@ public final class Working extends JPanel implements ILanguage {
             if (!downloads.isEmpty()) {
                 DataFile file;
                 for (Integer fileIds : downloads.keySet()) {
-                    file = dataFileDao.get(fileIds);
-                    if (builder.length() != 0) {
-                        builder.append("\n");
+                    try {
+                        file = dataFileDao.get(fileIds);
+                        if (builder.length() != 0) {
+                            builder.append("\n");
+                        }
+                        builder.append(file.getFilename()).append(" (ID ").append(file.getDataFileId()).append("):").append(downloads.get(fileIds)).append("%");
+                    } catch (DaoException e) {
+                        log.error(e.getMessage(), e);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", e.getMessage(), e,
+                    Level.WARNING);
                     }
-                    builder.append(file.getFilename()).append(" (ID ").append(file.getDataFileId()).append("):").append(downloads.get(fileIds)).append("%");
                 }
             }
 

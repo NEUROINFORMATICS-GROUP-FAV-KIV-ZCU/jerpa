@@ -2,13 +2,14 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ImportFilesTableModel;
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.jerpa.data.tier.dao.*;
 import ch.ethz.origo.jerpa.data.tier.pojo.*;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ImportWizard;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
-import com.sun.codemodel.JOp;
+import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Logic part of Import Wizard of EDEDB.
@@ -26,6 +28,8 @@ import java.util.Set;
  * @author Petr Miko
  */
 public class ImportWizardLogic extends ImportWizard implements ActionListener {
+
+    private static final Logger log = Logger.getLogger(ImportWizardLogic.class);
 
     private EDEDBController controller;
     private Thread saveThread;
@@ -154,10 +158,11 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
 
         if (!rows.isEmpty()) {
             Set<String> fileNames = new HashSet<String>();
-
+            Session session = HibernateUtil.getActiveSession();
+            HibernateUtil.reattachObject(session, exp);
             if (exp.getDataFiles() != null)
                 for (DataFile file : exp.getDataFiles()) {
-                    HibernateUtil.rebind(file);
+                    session.refresh(file);
                     fileNames.add(file.getFilename());
                 }
 
@@ -174,7 +179,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
 
                     if (choice == JOptionPane.YES_OPTION) {
                         for (DataFile dataFile : exp.getDataFiles()) {
-                            HibernateUtil.rebind(dataFile);
+                            session.refresh(dataFile);
 
                             if (file.getName().equals(dataFile.getFilename())) {
                                 dataFileDao.overwriteDataFile(dataFile, file, row.getSamplingRate());
@@ -184,6 +189,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
                     }
                 }
             }
+            session.close();
         }
     }
 
@@ -219,7 +225,13 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         exp.setStartTime((startTime == null ? null : new java.sql.Date(startTime.getTime())));
         exp.setEndTime((endTime == null ? null : new java.sql.Date(endTime.getTime())));
 
-        experimentDao.save(exp);
+        try {
+            experimentDao.save(exp);
+        } catch (DaoException e) {
+            log.error(e.getMessage(), e);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA ERROR", e.getMessage(), e,
+                    Level.WARNING);
+        }
         saveExisting(exp);
     }
 
@@ -246,14 +258,14 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         Experiment exp = (Experiment) experimentsCombo.getSelectedItem();
 
         if (exp == null) return;
+        Session session = HibernateUtil.getActiveSession();
+        expOwnerCombo.setSelectedItem(HibernateUtil.reattachObject(session, exp.getOwner()));
+        expSubjectCombo.setSelectedItem(HibernateUtil.reattachObject(session, exp.getSubject()));
+        weatherCombo.setSelectedItem(HibernateUtil.reattachObject(session, exp.getWeather()));
+        scenarioCombo.setSelectedItem(HibernateUtil.reattachObject(session, exp.getScenario()));
+        groupCombo.setSelectedItem(HibernateUtil.reattachObject(session, exp.getResearchGroup()));
 
-        expOwnerCombo.setSelectedItem(HibernateUtil.rebind(exp.getOwner()));
-        expSubjectCombo.setSelectedItem(HibernateUtil.rebind(exp.getSubject()));
-        weatherCombo.setSelectedItem(HibernateUtil.rebind(exp.getWeather()));
-        scenarioCombo.setSelectedItem(HibernateUtil.rebind(exp.getScenario()));
-        groupCombo.setSelectedItem(HibernateUtil.rebind(exp.getResearchGroup()));
-
-        HibernateUtil.rebind(exp);
+        HibernateUtil.reattachObject(session, exp);
         Set<Hardware> hardwares = exp.getHardwares();
         if (hardwares.isEmpty()) {
             hwCombo.setVisible(false);
@@ -262,7 +274,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
             hwCombo.setVisible(true);
             hwCombo.setVisible(true);
             for (Hardware hw : hardwares) {
-                hwCombo.setSelectedItem(HibernateUtil.rebind(hw));
+                hwCombo.setSelectedItem(HibernateUtil.reattachObject(session, hw));
                 break;
             }
         }
@@ -271,7 +283,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         expEndTimeField.setValue(exp.getEndTime());
         expTemperatureField.setValue(exp.getTemperature());
         weatherNoteArea.setText(exp.getWeathernote());
-
+        session.close();
         super.repaint();
 
     }
