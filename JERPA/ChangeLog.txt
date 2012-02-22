@@ -10,6 +10,14 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (02/22/2012) kivan
+ 
+	CHANGED: DataSyncer - added upload
+	FIXED: Downloader - fixed potential deadlock during download
+	
+	Note: many bugs have occurred (mostly due to Derby and Hibernate) - please, have patience, all will be fixed.
+	Commit was neccessary in order to prevent possible losing data.
+
  * (02/21/2012) kivan
  
 	CHANGED: derby.sql and mappings - added "ADDED" property in order to distinguish new records in db

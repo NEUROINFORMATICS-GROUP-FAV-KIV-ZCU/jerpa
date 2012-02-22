@@ -87,8 +87,11 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
                         JOptionPane.ERROR_MESSAGE);
             }
         } else if ("cancel".equals(event.getActionCommand())) {
-            if (loginThread == null)
-                this.dispose();
+            if (loginThread != null) {
+                loginThread.interrupt();
+                loginThread = null;
+            }
+            this.dispose();
         } else if ("options".equals(event.getActionCommand())) {
             morePane.setVisible(optionsButton.isSelected());
             this.pack();
@@ -111,7 +114,7 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
                 if (inProgress) {
                     LoginDialogLogic.this.getRootPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 } else {
-                    controller.setUserLoggedIn(true);
+                    controller.setUserLoggedIn(service.isConnected());
                     LoginDialogLogic.this.getRootPane().setCursor(Cursor.getDefaultCursor());
                     LoginDialogLogic.this.dispose();
                 }
@@ -146,7 +149,10 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 service.userLogIn(username, password, endpoint);
-
+                if(this.isInterrupted()){
+                    service.userLogout();
+                    return;
+                }
                 EDEDBProperties.setConfigKey("ededb.endpoint", endpoint);
                 EDEDBProperties.setConfigKey("ededb.username", username);
                 EDEDBProperties.setConfigKey("ededb.password", password);

@@ -5,6 +5,7 @@ import org.hibernate.*;
 import org.hibernate.criterion.Projections;
 
 import java.io.Serializable;
+import java.lang.reflect.GenericDeclaration;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class GenericDao<T, PK extends Serializable> {
      *
      * @param type object/table type
      */
-    public GenericDao(Class<T> type) {
+    protected GenericDao(Class<T> type) {
         this.type = type;
     }
 
@@ -35,11 +36,11 @@ public class GenericDao<T, PK extends Serializable> {
      */
     @SuppressWarnings("unchecked")
     public PK save(T newRecord) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-        PK primaryKey = (PK) session.save(newRecord);
-        transaction.commit();
-        return primaryKey;
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Transaction transaction = session.beginTransaction();
+            PK primaryKey = (PK) session.save(newRecord);
+            transaction.commit();
+            return primaryKey;
     }
 
     /**
@@ -48,10 +49,10 @@ public class GenericDao<T, PK extends Serializable> {
      * @param transientRecord updated object
      */
     public void update(T transientRecord) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-        session.update(transientRecord);
-        transaction.commit();
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Transaction transaction = session.beginTransaction();
+            session.update(transientRecord);
+            transaction.commit();
     }
 
     /**
@@ -62,11 +63,11 @@ public class GenericDao<T, PK extends Serializable> {
      */
     @SuppressWarnings("unchecked")
     public T get(PK identifier) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-        T object = (T) session.get(type, identifier);
-        transaction.commit();
-        return object;
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Transaction transaction = session.beginTransaction();
+            T object = (T) session.get(type, identifier);
+            transaction.commit();
+            return object;
     }
 
     /**
@@ -75,18 +76,18 @@ public class GenericDao<T, PK extends Serializable> {
      * @return newest revision value
      */
     public long getLastRevision() {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Long version = (Long) session.createCriteria(type).setProjection(Projections.max("version")).uniqueResult();
-        return (version != null ? version : 0);
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            session.beginTransaction();
+            Long version = (Long) session.createCriteria(type).setProjection(Projections.max("version")).uniqueResult();
+            return (version != null ? version : 0);
     }
 
     @SuppressWarnings("unchecked")
     public List<T> getAll() {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Transaction transaction = session.beginTransaction();
-        List<T> allRecords = session.createCriteria(type).list();
-        transaction.commit();
-        return allRecords;
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+            Transaction transaction = session.beginTransaction();
+            List<T> allRecords = session.createCriteria(type).list();
+            transaction.commit();
+            return allRecords;
     }
 }

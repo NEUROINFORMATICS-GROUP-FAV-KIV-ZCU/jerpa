@@ -13,6 +13,7 @@ import java.io.*;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @param file     data file
      * @param inStream binary input stream
      */
-    public void writeFileContent(DataFile file, InputStream inStream) {
+    public synchronized void writeFileContent(DataFile file, InputStream inStream) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         Blob blob = Hibernate.getLobCreator(session).createBlob(inStream, file.getFileLength());
@@ -69,7 +70,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
      * @param file data file
      * @return FileState value
      */
-    public synchronized FileState getFileState(DataFile file) {
+    public FileState getFileState(DataFile file) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
         try {
@@ -163,13 +164,12 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
     }
 
     public void createDataFile(Experiment exp, File file, double samplingRate) {
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
         DataFile dataFile = new DataFile();
         dataFile.setDataFileId(getNextAvailableId());
-        dataFile.setChanged(true);
+        dataFile.setAdded(true);
         dataFile.setExperiment(exp);
         dataFile.setFileLength(file.length());
         dataFile.setFilename(file.getName());
@@ -207,12 +207,11 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
     /**
      * Method for overwriting blob inside existing data file.
      *
-     * @param dataFile data file
-     * @param file     java.io.File
+     * @param dataFile     data file
+     * @param file         java.io.File
      * @param samplingRate value of data file sampling rate
      */
     public void overwriteDataFile(DataFile dataFile, File file, double samplingRate) {
-
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
@@ -242,8 +241,47 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         }
     }
 
-    protected int getNextAvailableId() {
+    /**
+     * Return identifier of following primary key (ie. first free identifier).
+     *
+     * @return identifier
+     */
+    private int getNextAvailableId() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         return (Integer) session.createCriteria(DataFile.class).setProjection(Projections.max("dataFileId")).uniqueResult() + 1;
+    }
+
+    public List getChanged() {
+        String hql = "from DataFile d where CAST(d.added as boolean) = true";
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        Query query = session.createQuery(hql);
+        try {
+            if (query == null) {
+                return Collections.<DataFile>emptyList();
+            } else
+                return query.list();
+        } finally {
+            transaction.commit();
+        }
+    }
+
+    public List getAdded() {
+        String hql = "from DataFile d where CAST(d.changed as boolean) = true";
+
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        Query query = session.createQuery(hql);
+        try {
+            if (query == null) {
+                return Collections.<DataFile>emptyList();
+            } else
+                return query.list();
+        } finally {
+            transaction.commit();
+        }
     }
 }

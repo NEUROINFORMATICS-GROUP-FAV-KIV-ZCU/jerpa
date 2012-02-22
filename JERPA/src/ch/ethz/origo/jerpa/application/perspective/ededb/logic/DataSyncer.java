@@ -13,6 +13,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import java.io.*;
+import java.io.InputStream;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -23,7 +29,7 @@ import java.util.*;
  */
 public class DataSyncer {
 
-    private final EDEDClient session;
+    private final EDEDClient service;
     private final EDEDBController controller;
 
     private long sleepInterval = 60000;
@@ -38,8 +44,8 @@ public class DataSyncer {
 
     private final static Logger log = Logger.getLogger(DataSyncer.class);
 
-    public DataSyncer(EDEDClient session, EDEDBController controller) {
-        this.session = session;
+    public DataSyncer(EDEDClient service, EDEDBController controller) {
+        this.service = service;
         this.controller = controller;
 
         String tmpSleep = EDEDBProperties.getConfigKey("ededb.sync.miliseconds");
@@ -64,30 +70,34 @@ public class DataSyncer {
             boolean changed;
             do {
 
-                synchronized (DataSyncer.class) {
-                    try {
-                        DataSyncer.class.wait(sleepInterval);
-                    } catch (InterruptedException e) {
-                        log.error(e.getMessage(), e);
+                try {
+                    synchronized (DataSyncer.class) {
+                        try {
+                            DataSyncer.class.wait(sleepInterval);
+                        } catch (InterruptedException e) {
+                            log.error(e.getMessage(), e);
+                        }
                     }
+
+                    if (!service.isConnected()) {
+                        continue;
+                    }
+
+                    log.debug("DB syncing begins");
+
+                    Working.setActivity(true, "working.ededb.dbsync");
+                    //upload section of syncing
+                    upload();
+                    //download section of syncing
+                    changed = download();
+
+                    Working.setActivity(false, "working.ededb.dbsync");
+                    if (changed)
+                        controller.update();
+                    log.debug("DB syncing done");
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
                 }
-
-                if (!session.isConnected()) {
-                    continue;
-                }
-
-                log.debug("DB syncing begins");
-
-                Working.setActivity(true, "working.ededb.dbsync");
-
-                upload();
-                //download section of syncing
-                changed = download();
-
-                Working.setActivity(false, "working.ededb.dbsync");
-                if (changed)
-                    controller.update();
-                log.debug("DB syncing done");
             } while (!Thread.interrupted());
 
         }
@@ -97,7 +107,152 @@ public class DataSyncer {
     /**
      * Upload synchronization method.
      */
+    @SuppressWarnings("unchecked")
     private void upload() {
+        log.debug("Upload - upload process started");
+        uploadExperiments(experimentDao.getChanged());
+        uploadExperiments(experimentDao.getAdded());
+        uploadDataFiles(dataFileDao.getChanged());
+        uploadDataFiles(dataFileDao.getAdded());
+        log.debug("Upload - upload process finished");
+    }
+
+    /**
+     * Method for uploading new and updated experiments information.
+     *
+     * @param experiments experiment information
+     */
+    private void uploadExperiments(List<Experiment> experiments) {
+        UserDataService uService = service.getService();
+        Date startTime, endTime;
+        Person owner, subject;
+        ResearchGroup group;
+        Scenario scenario;
+        Weather weather;
+
+        for (Experiment exp : experiments) {
+            ExperimentInfo info = new ExperimentInfo();
+            startTime = exp.getStartTime();
+            endTime = exp.getEndTime();
+            owner = (Person) HibernateUtil.rebind(exp.getOwner());
+            subject = (Person) HibernateUtil.rebind(exp.getSubject());
+            group = (ResearchGroup) HibernateUtil.rebind(exp.getResearchGroup());
+            scenario = (Scenario) HibernateUtil.rebind(exp.getScenario());
+            weather = (Weather) HibernateUtil.rebind(exp.getWeather());
+
+            info.setTemperature(exp.getTemperature());
+            if (endTime != null)
+                info.setEndTimeInMillis(endTime.getTime());
+            if (startTime != null)
+                info.setStartTimeInMillis(startTime.getTime());
+            info.setAdded(exp.getAdded());
+            info.setChanged(exp.getChanged());
+            info.setExperimentId(exp.getExperimentId());
+            if (owner != null)
+                info.setOwnerId(owner.getPersonId());
+            if (subject != null)
+                info.setSubjectPersonId(subject.getPersonId());
+            if (group != null)
+                info.setResearchGroupId(group.getResearchGroupId());
+            if (scenario != null)
+                info.setScenarioId(scenario.getScenarioId());
+            if (weather != null)
+                info.setWeatherId(weather.getWeatherId());
+            info.setWeatherNote(exp.getWeathernote());
+            info.setTemperature(exp.getTemperature());
+
+            for (Hardware hardware : exp.getHardwares()) {
+                info.getHwIds().add(hardware.getHardwareId());
+            }
+            exp.setExperimentId(uService.addOrUpdateExperiment(info));
+        }
+
+        // sorted from greatest to lowest in order to prevent primary key collision
+        Collections.sort(experiments, new Comparator<Experiment>() {
+            public int compare(Experiment o1, Experiment o2) {
+                int id1 = o1.getExperimentId(), id2 = o2.getExperimentId();
+
+                if (id1 > id2)
+                    return -1;
+                else if (id1 < id2)
+                    return 1;
+                else
+                    return 0;
+            }
+        });
+
+        for (Experiment exp : experiments) {
+            exp.setChanged(false);
+            exp.setAdded(false);
+            experimentDao.update(exp);
+        }
+    }
+
+    private void uploadDataFiles(List<DataFile> files) {
+        Experiment exp;
+
+        try {
+            for (DataFile file : files) {
+                DataFileInfo info = new DataFileInfo();
+                HibernateUtil.rebind(file);
+                exp = (Experiment) HibernateUtil.rebind(file.getExperiment());
+                if (exp != null)
+                    info.setExperimentId(exp.getExperimentId());
+                info.setFileId(file.getDataFileId());
+                info.setFileName(file.getFilename());
+                info.setFileLength(file.getFileLength());
+                info.setMimeType(file.getMimetype());
+                info.setSamplingRate(file.getSamplingRate());
+                info.setAdded(file.getAdded());
+                info.setChanged(file.getChanged());
+
+                final InputStream in = file.getFileContent().getBinaryStream();
+                DataSource rawData = new DataSource() {
+                    public String getContentType() {
+                        return "application/octet-stream";
+                    }
+
+                    public java.io.InputStream getInputStream() throws IOException {
+                        return in;
+                    }
+
+                    public String getName() {
+                        return "application/octet-stream";
+                    }
+
+                    public OutputStream getOutputStream() throws IOException {
+                        return null;
+                    }
+                };
+                DataHandler handler = new DataHandler(rawData);
+                file.setDataFileId(service.getService().addOrUpdateDataFile(info, handler));
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } catch (UserDataServiceException_Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        if (!files.isEmpty()) {
+            Collections.sort(files, new Comparator<DataFile>() {
+                public int compare(DataFile o1, DataFile o2) {
+                    int id1 = o1.getDataFileId(), id2 = o2.getDataFileId();
+                    if (id1 > id2)
+                        return -1;
+                    else if (id1 < id2)
+                        return 1;
+                    else
+                        return 0;
+                }
+            });
+
+            for (DataFile file : files) {
+                file.setChanged(false);
+                file.setAdded(false);
+                dataFileDao.update(file);
+            }
+        }
     }
 
     /**
@@ -117,13 +272,13 @@ public class DataSyncer {
         List<HardwareInfo> hardwareInfo = null;
 
         try {
-            groupsInfo = session.getService().getResearchGroups(researchGroupDao.getLastRevision());
-            weathersInfo = session.getService().getWeather(weatherDao.getLastRevision());
-            peopleInfo = session.getService().getPeople(personDao.getLastRevision());
-            scenariosInfo = session.getService().getScenarios(scenarioDao.getLastRevision());
-            experimentsInfo = session.getService().getExperiments(experimentDao.getLastRevision());
-            filesInfo = session.getService().getDataFiles(dataFileDao.getLastRevision());
-            hardwareInfo = session.getService().getHardware(hardwareDao.getLastRevision());
+            groupsInfo = service.getService().getResearchGroups(researchGroupDao.getLastRevision());
+            weathersInfo = service.getService().getWeather(weatherDao.getLastRevision());
+            peopleInfo = service.getService().getPeople(personDao.getLastRevision());
+            scenariosInfo = service.getService().getScenarios(scenarioDao.getLastRevision());
+            experimentsInfo = service.getService().getExperiments(experimentDao.getLastRevision());
+            filesInfo = service.getService().getDataFiles(dataFileDao.getLastRevision());
+            hardwareInfo = service.getService().getHardware(hardwareDao.getLastRevision());
             log.debug("Download - Data obtained: proceeding to update");
 
             if (!peopleInfo.isEmpty())
@@ -177,18 +332,19 @@ public class DataSyncer {
     private void importNewPeople(List<PersonInfo> peopleInfo) {
         log.debug(peopleInfo.size() + " new people");
 
-        List<Person> people = new ArrayList<Person>();
         for (PersonInfo personInfo : peopleInfo) {
-            Person person = new Person();
-            person.setPersonId(personInfo.getPersonId());
+            Person person = personDao.get(personInfo.getPersonId());
+            if (person == null) {
+                person = new Person();
+                person.setPersonId(personInfo.getPersonId());
+            }
+
             person.setGender((char) personInfo.getGender());
             person.setName(personInfo.getGivenName());
             person.setSurname(personInfo.getSurname());
             person.setVersion(personInfo.getScn());
-            people.add(person);
+            saveOrUpdate(person);
         }
-
-        commitCollection(people);
     }
 
     /**
@@ -200,11 +356,12 @@ public class DataSyncer {
     private void importNewResearchGroups(List<ResearchGroupInfo> groupsInfo) {
         log.debug(groupsInfo.size() + " new research groups");
 
-        List<ResearchGroup> groups = new ArrayList<ResearchGroup>();
-
         for (ResearchGroupInfo groupInfo : groupsInfo) {
-            ResearchGroup group = new ResearchGroup();
-            group.setResearchGroupId(groupInfo.getResearchGroupId());
+            ResearchGroup group = researchGroupDao.get(groupInfo.getResearchGroupId());
+            if (group == null) {
+                group = new ResearchGroup();
+                group.setResearchGroupId(groupInfo.getResearchGroupId());
+            }
             group.setVersion(groupInfo.getScn());
             group.setTitle(groupInfo.getTitle());
             group.setDescription(groupInfo.getDescription());
@@ -213,10 +370,8 @@ public class DataSyncer {
             if (owner != null) {
                 group.setOwner(owner);
             }
-            groups.add(group);
+            saveOrUpdate(group);
         }
-
-        commitCollection(groups);
     }
 
     /**
@@ -228,19 +383,15 @@ public class DataSyncer {
     private void updatePeopleGroupsRelations(List<PersonInfo> peopleInfo) {
         log.debug("Linking people and research groups");
 
-        List<Person> people = new ArrayList<Person>();
-
         for (PersonInfo personInfo : peopleInfo) {
             Person person = personDao.get(personInfo.getPersonId());
             ResearchGroup group = researchGroupDao.get(personInfo.getDefaultGroupId());
 
             if (person != null && group != null) {
                 person.setDefaultGroup(group);
-                people.add(person);
+                saveOrUpdate(person);
             }
         }
-
-        commitCollection(people);
     }
 
     /**
@@ -252,11 +403,13 @@ public class DataSyncer {
     private void importNewScenarios(List<ScenarioInfo> scenariosInfo) {
         log.debug(scenariosInfo.size() + " new scenarios");
 
-        List<Scenario> scenarios = new ArrayList<Scenario>();
-
         for (ScenarioInfo scenarioInfo : scenariosInfo) {
-            Scenario scenario = new Scenario();
-            scenario.setScenarioId(scenarioInfo.getScenarioId());
+            Scenario scenario = scenarioDao.get(scenarioInfo.getScenarioId());
+            if (scenario == null) {
+                scenario = new Scenario();
+                scenario.setScenarioId(scenarioInfo.getScenarioId());
+            }
+
             scenario.setScenarioName(scenarioInfo.getScenarioName());
             scenario.setScenarioLength((short) scenarioInfo.getScenarioLength());
             scenario.setVersion(scenarioInfo.getScn());
@@ -274,10 +427,9 @@ public class DataSyncer {
                 scenario.setResearchGroup(group);
             }
 
-            scenarios.add(scenario);
+            saveOrUpdate(scenario);
         }
 
-        commitCollection(scenarios);
     }
 
     /**
@@ -289,18 +441,20 @@ public class DataSyncer {
     private void importNewWeather(List<WeatherInfo> weathersInfo) {
         log.debug(weathersInfo.size() + " new weather types");
 
-        List<Weather> weathers = new ArrayList<Weather>();
 
         for (WeatherInfo weatherInfo : weathersInfo) {
-            Weather weather = new Weather();
-            weather.setWeatherId(weatherInfo.getWeatherId());
+            Weather weather = weatherDao.get(weatherInfo.getWeatherId());
+            if (weather == null) {
+                weather = new Weather();
+                weather.setWeatherId(weatherInfo.getWeatherId());
+            }
+
             weather.setDescription(weatherInfo.getDescription());
             weather.setVersion(weatherInfo.getScn());
             weather.setTitle(weatherInfo.getTitle());
-            weathers.add(weather);
+            saveOrUpdate(weather);
         }
 
-        commitCollection(weathers);
     }
 
     /**
@@ -312,11 +466,13 @@ public class DataSyncer {
     private void importNewExperiments(List<ExperimentInfo> experimentsInfo) {
         log.debug(experimentsInfo.size() + " new experiments");
 
-        List<Experiment> experiments = new ArrayList<Experiment>();
-
         for (ExperimentInfo expInfo : experimentsInfo) {
-            Experiment exp = new Experiment();
-            exp.setExperimentId(expInfo.getExperimentId());
+            Experiment exp = experimentDao.get(expInfo.getExperimentId());
+            if (exp == null) {
+                exp = new Experiment();
+                exp.setExperimentId(expInfo.getExperimentId());
+            }
+
             exp.setEndTime(new java.sql.Date(expInfo.getEndTimeInMillis()));
             exp.setStartTime(new java.sql.Date(expInfo.getStartTimeInMillis()));
             exp.setVersion(expInfo.getScn());
@@ -348,10 +504,8 @@ public class DataSyncer {
                 exp.setResearchGroup(group);
             }
 
-            experiments.add(exp);
+            saveOrUpdate(exp);
         }
-
-        commitCollection(experiments);
     }
 
     /**
@@ -363,11 +517,15 @@ public class DataSyncer {
     private void importNewDataFiles(List<DataFileInfo> filesInfo) {
         log.debug(filesInfo.size() + " new data files");
 
-        List<DataFile> dataFiles = new ArrayList<DataFile>();
-
         for (DataFileInfo fileInfo : filesInfo) {
-            DataFile file = new DataFile();
-            file.setDataFileId(fileInfo.getFileId());
+
+            DataFile file = dataFileDao.get(fileInfo.getFileId());
+            if (file == null) {
+                file = new DataFile();
+                file.setDataFileId(fileInfo.getFileId());
+            }else{
+                HibernateUtil.rebind(file);
+            }
             file.setFileLength(fileInfo.getFileLength());
             file.setMimetype(fileInfo.getMimeType());
             file.setSamplingRate(fileInfo.getSamplingRate());
@@ -377,10 +535,9 @@ public class DataSyncer {
             Experiment exp = experimentDao.get(fileInfo.getExperimentId());
             if (exp != null) {
                 file.setExperiment(exp);
-                dataFiles.add(file);
+                saveOrUpdate(file);
             }
         }
-        commitCollection(dataFiles);
     }
 
     /**
@@ -392,19 +549,20 @@ public class DataSyncer {
     private void importNewHardware(List<HardwareInfo> hardwareInfo) {
         log.debug(hardwareInfo.size() + " new hardware types");
 
-        List<Hardware> hardwareTypes = new ArrayList<Hardware>();
-
         for (HardwareInfo hw : hardwareInfo) {
-            Hardware hardware = new Hardware();
-            hardware.setTitle(hw.getTitle());
+            Hardware hardware = hardwareDao.get(hw.getHardwareId());
+            if (hardware == null) {
+                hardware = new Hardware();
+                hardware.setTitle(hw.getTitle());
+            }
+
             hardware.setType(hw.getType());
             hardware.setDescription(hw.getDescription());
             hardware.setHardwareId(hw.getHardwareId());
             hardware.setVersion(hw.getScn());
 
-            hardwareTypes.add(hardware);
+            saveOrUpdate(hardware);
         }
-        commitCollection(hardwareTypes);
     }
 
     /**
@@ -416,7 +574,6 @@ public class DataSyncer {
     private void updateExperimentHwRelations(List<ExperimentInfo> experimentsInfo) {
         log.debug("Linking experiments and hardware");
 
-        List<Experiment> experiments = new ArrayList<Experiment>();
         for (ExperimentInfo expInfo : experimentsInfo) {
             Experiment exp = experimentDao.get(expInfo.getExperimentId());
             Set<Hardware> hws;
@@ -428,28 +585,23 @@ public class DataSyncer {
             }
 
             exp.setHardwares(hws);
-            experiments.add(exp);
+            saveOrUpdate(exp);
         }
-
-        commitCollection(experiments);
     }
 
     /**
      * Method for saving or updating data in database using collection input.
      *
-     * @param collection objects created in accordance to sync data from server
+     * @param o object to be commited
      */
-    private void commitCollection(Collection<?> collection) {
+    private void saveOrUpdate(Object o) {
         SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
         Session session = sessionFactory.getCurrentSession();
         Transaction transaction = session.beginTransaction();
 
         try {
 
-            for (Object ob : collection) {
-                session.saveOrUpdate(ob);
-                session.flush();
-            }
+            session.saveOrUpdate(o);
             transaction.commit();
         } catch (HibernateException e) {
             log.error(e.getMessage(), e);

@@ -96,9 +96,7 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
      * Method for updating experiment table.
      */
     public void updateExpTable() {
-
         synchronized (ExperimentViewerLogic.class) {
-
             Working.setActivity(true, "working.ededb.update.exptable");
             List<Experiment> experiments = experimentDao.getAll();
             if (experiments.size() != expModel.getRowCount()) {
@@ -121,16 +119,26 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
         synchronized (ExperimentViewerLogic.class) {
 
             List<DataFile> dataFiles = dataFileDao.getAllFromExperiments(selectedExps);
-
             if (dataFiles.size() != dataModel.getRowCount()) {
                 dataModel.clear();
                 for (DataFile file : dataFiles) {
                     FileState state = (controller.getDownloader().isDownloading(file) ? FileState.DOWNLOADING : dataFileDao.getFileState(file));
                     dataModel.addRow(file, state);
                 }
-                repaint();
+                dataTable.repaint();
             }
+
+            for (DataRowModel row : dataModel.getData()) {
+
+                if (controller.getDownloader().isDownloading(row.getDataFile())) {
+                    row.setState(FileState.DOWNLOADING);
+                } else {
+                    row.setState(dataFileDao.getFileState(row.getDataFile()));
+                }
+            }
+            repaint();
         }
+
     }
 
     /**
@@ -156,18 +164,5 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
     public void update(Observable o, Object arg) {
         updateExpTable();
         updateDataTable();
-
-        synchronized (ExperimentViewerLogic.class) {
-            for (DataRowModel row : dataModel.getData()) {
-
-                if (controller.getDownloader().isDownloading(row.getDataFile())) {
-                    row.setState(FileState.DOWNLOADING);
-                } else {
-                    row.setState(dataFileDao.getFileState(row.getDataFile()));
-                }
-            }
-        }
-
-        this.repaint();
     }
 }

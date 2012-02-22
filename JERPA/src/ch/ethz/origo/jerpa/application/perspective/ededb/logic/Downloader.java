@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 public class Downloader extends Observable implements Observer, ILanguage {
 
     private static String resourceBundlePath;
-	private static ResourceBundle resource;
+    private static ResourceBundle resource;
 
     private static boolean isDownloading = false;
     private static final Logger log = Logger.getLogger(Downloader.class);
@@ -34,6 +34,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
     private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
     private final Map<Integer, Boolean> downloading;
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private final static Object lock = new Object();
 
     /**
      * Constructor.
@@ -44,7 +45,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
     public Downloader(EDEDBController controller, EDEDClient session) {
 
         LanguageObservable.getInstance().attach(this);
-		setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
+        setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 
         this.controller = controller;
         this.session = session;
@@ -63,7 +64,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
             public void run() {
                 while (!Thread.interrupted()) {
-                    synchronized (Downloader.class) {
+                    synchronized (lock) {
                         try {
                             if (!downloading.isEmpty())
                                 Downloader.class.wait(1000L);
@@ -89,6 +90,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
     /**
      * Method for downloading specified data file.
+     *
      * @param dataFile data file to be downloaded
      */
     public void download(DataFile dataFile) {
@@ -114,16 +116,18 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
             synchronized (downloading) {
                 Downloader.isDownloading = true;
-                setChanged();
-                notifyObservers(DownloadState.DOWNLOADING);
-
                 pool.submit(fileDownload);
                 downloading.put(dataFile.getDataFileId(), true);
-                controller.update();
             }
 
-            synchronized (Downloader.class) {
-                Downloader.class.notify();
+            if (isDownloading()) {
+                setChanged();
+                notifyObservers(DownloadState.DOWNLOADING);
+            }
+            controller.update();
+
+            synchronized (lock) {
+                lock.notify();
             }
         } catch (HeadlessException e) {
             log.error(e.getMessage(), e);
@@ -132,6 +136,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
     /**
      * Checks whether specified file is being downloaded.
+     *
      * @param fileInfo data file
      * @return true/false
      */
@@ -141,6 +146,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
     /**
      * Checks whether specified file is being downloaded.
+     *
      * @param fileId data file identifier
      * @return true/false
      */
@@ -152,6 +158,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
     /**
      * Checks whether is something being downloaded in general.
+     *
      * @return true/false
      */
     public static boolean isDownloading() {
@@ -167,10 +174,12 @@ public class Downloader extends Observable implements Observer, ILanguage {
                 downloading.remove(id);
                 if (downloading.isEmpty()) {
                     Downloader.isDownloading = false;
-                    setChanged();
-                    notifyObservers(DownloadState.NOT_DOWNLOADING);
-
                 }
+            }
+
+            if (!isDownloading) {
+                setChanged();
+                notifyObservers(DownloadState.NOT_DOWNLOADING);
             }
             controller.update();
         } else if (arg instanceof DownloadException) {
@@ -180,7 +189,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
 
     public void setLocalizedResourceBundle(String path) {
         resourceBundlePath = path;
-		resource = ResourceBundle.getBundle(path);
+        resource = ResourceBundle.getBundle(path);
     }
 
     public String getResourceBundlePath() {

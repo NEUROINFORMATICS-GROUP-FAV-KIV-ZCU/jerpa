@@ -59,13 +59,12 @@ public class ActionDownloadSelected extends AbstractAction implements ILanguage 
 		}
 
 		for (DataRowModel file : filesToDownload) {
-
+            file.setSelected(false);
 			if (file.getState() == FileState.DOWNLOADING) {
-				file.setSelected(false);
-
 				controller.update();
 				continue;
 			}
+
 			downloader.download(file.getDataFile());
 		}
 	}

@@ -15,7 +15,7 @@ public class HibernateUtil {
     private static SessionFactory buildSessionFactory() {
         try {
             DbTool dbTools = DbToolFactory.getDerbyCreator();
-            if(!dbTools.dbExists()){
+            if (!dbTools.dbExists()) {
                 dbTools.createDb();
             }
             Configuration cfg = new Configuration().configure();
@@ -38,6 +38,8 @@ public class HibernateUtil {
      * @return rebinded transient object
      */
     public static Object rebind(Object transientObject) {
+
+        if (transientObject == null) return transientObject;
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.beginTransaction();
         session.refresh(transientObject);

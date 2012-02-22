@@ -8,6 +8,7 @@ import ch.ethz.origo.jerpa.data.tier.dao.*;
 import ch.ethz.origo.jerpa.data.tier.pojo.*;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ImportWizard;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
+import com.sun.codemodel.JOp;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -92,11 +93,19 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         } else if ("removeFile".equals(e.getActionCommand())) {
             removeFile();
         } else if ("ok".equals(e.getActionCommand())) {
-            confirm();
+            if (isRequiredFilled()) {
+                confirm();
+            } else {
+                JOptionPane.showConfirmDialog(this, "No experiment to be saved!");
+            }
         } else if ("cancel".equals(e.getActionCommand())) {
             if (!(saveThread != null && saveThread.isAlive()))
                 closeWizard();
         }
+    }
+
+    private boolean isRequiredFilled() {
+        return experimentsCombo.getSelectedObjects() != null;
     }
 
     /**
@@ -139,6 +148,10 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         ImportFilesTableModel model = (ImportFilesTableModel) importTable.getModel();
         List<ImportFilesRowModel> rows = model.getFiles();
 
+        if (!exp.getAdded()) {
+            exp.setChanged(true);
+        }
+
         if (!rows.isEmpty()) {
             Set<String> fileNames = new HashSet<String>();
 
@@ -179,7 +192,6 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
      */
     private void saveNew() {
         Experiment exp = new Experiment();
-        exp.setChanged(true);
 
         Hardware hw = (Hardware) hwCombo.getSelectedItem();
         Set<Hardware> hws = new HashSet<Hardware>();
@@ -198,6 +210,7 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         exp.setSubject(subject);
         exp.setWeathernote(weatherNoteArea.getText());
         exp.setExperimentId(experimentDao.getNextAvailableId());
+        exp.setAdded(true);
 
         String temperature = expTemperatureField.getText().substring(0, 2).trim();
         exp.setTemperature(temperature.isEmpty() ? 0 : Short.parseShort(temperature));
@@ -231,6 +244,8 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
     private void expSelected() {
 
         Experiment exp = (Experiment) experimentsCombo.getSelectedItem();
+
+        if (exp == null) return;
 
         expOwnerCombo.setSelectedItem(HibernateUtil.rebind(exp.getOwner()));
         expSubjectCombo.setSelectedItem(HibernateUtil.rebind(exp.getSubject()));
