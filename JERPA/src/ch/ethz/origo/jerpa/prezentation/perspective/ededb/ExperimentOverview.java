@@ -139,6 +139,7 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         hwDescriptionLabel = new JLabel();
 
         Session session = HibernateUtil.getActiveSession();
+        HibernateUtil.reattachObject(session, experiment);
         int row = 0;
         for (Hardware hw : experiment.getHardwares()) {
             HibernateUtil.reattachObject(session, hw);

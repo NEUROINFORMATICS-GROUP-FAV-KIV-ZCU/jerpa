@@ -13,6 +13,15 @@ public class History {
     private int historyId;
     private boolean changed;
     private boolean added;
+    private int historyKey;
+
+    public int getHistoryKey() {
+        return historyKey;
+    }
+
+    public void setHistoryKey(int historyKey) {
+        this.historyKey = historyKey;
+    }
 
     public boolean getAdded() {
         return added;

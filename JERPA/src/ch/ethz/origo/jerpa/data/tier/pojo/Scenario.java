@@ -14,6 +14,15 @@ public class Scenario {
     private int scenarioId;
     private boolean changed;
     private boolean added;
+    private int scenarioKey;
+
+    public int getScenarioKey() {
+        return scenarioKey;
+    }
+
+    public void setScenarioKey(int scenarioKey) {
+        this.scenarioKey = scenarioKey;
+    }
 
     public boolean getAdded() {
         return added;

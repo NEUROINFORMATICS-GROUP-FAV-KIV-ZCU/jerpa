@@ -91,18 +91,18 @@ public class ExperimentDao extends GenericDao<Experiment, Integer> {
         }
     }
 
-//    @Override
-//    public Experiment get(Integer identifier) throws DaoException {
-//
-//        String hql = "from Experiment e where e.experimentId = :identifier";
-//
-//        Session session = HibernateUtil.getSessionFactory().openSession();
-//        Transaction transaction = session.beginTransaction();
-//        try {
-//            return (Experiment) session.createQuery(hql).setInteger("identifier",identifier).uniqueResult();
-//        } finally {
-//            transaction.commit();
-//            session.close();
-//        }
-//    }
+    @Override
+    public Experiment get(Integer identifier) throws DaoException {
+
+        String hql = "from Experiment e where e.experimentId = :identifier";
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            return (Experiment) session.createQuery(hql).setInteger("identifier",identifier).uniqueResult();
+        } finally {
+            transaction.commit();
+            session.close();
+        }
+    }
 }

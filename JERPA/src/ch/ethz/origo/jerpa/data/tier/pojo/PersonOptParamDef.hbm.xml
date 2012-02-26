@@ -5,9 +5,13 @@
 <hibernate-mapping>
 
     <class name="ch.ethz.origo.jerpa.data.tier.pojo.PersonOptParamDef" table="PERSON_OPT_PARAM_DEF" schema="APP">
-        <id name="personOptParamDefId">
-            <column name="PERSON_OPT_PARAM_DEF_ID" sql-type="integer" length="10" not-null="true"/>
+        <id name="personOptParamDefKey">
+            <column name="PERSON_OPT_PARAM_DEF_KEY" sql-type="integer" length="10" not-null="true"/>
+            <generator class="increment"/>
         </id>
+        <property name="personOptParamDefId">
+            <column name="PERSON_OPT_PARAM_DEF_ID" sql-type="integer" length="10" not-null="true"/>
+        </property>
         <property name="paramName">
             <column name="PARAM_NAME" sql-type="varchar" length="30" not-null="true"/>
         </property>

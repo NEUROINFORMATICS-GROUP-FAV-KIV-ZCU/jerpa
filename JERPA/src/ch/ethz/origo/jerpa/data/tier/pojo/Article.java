@@ -15,6 +15,15 @@ public class Article {
     private int articleId;
     private boolean changed;
     private boolean added;
+    private int articleKey;
+
+    public int getArticleKey() {
+        return articleKey;
+    }
+
+    public void setArticleKey(int articleKey) {
+        this.articleKey = articleKey;
+    }
 
     public boolean getAdded() {
         return added;

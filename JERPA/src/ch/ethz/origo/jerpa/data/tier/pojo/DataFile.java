@@ -14,6 +14,15 @@ public class DataFile {
     private int dataFileId;
     private boolean changed;
     private boolean added;
+    private int dataFileKey;
+
+    public int getDataFileKey() {
+        return dataFileKey;
+    }
+
+    public void setDataFileKey(int dataFileKey) {
+        this.dataFileKey = dataFileKey;
+    }
 
     public boolean getAdded() {
         return added;
@@ -37,16 +46,6 @@ public class DataFile {
 
     public void setDataFileId(int dataFileId) {
         this.dataFileId = dataFileId;
-    }
-
-    private double samplingRate;
-
-    public double getSamplingRate() {
-        return samplingRate;
-    }
-
-    public void setSamplingRate(double samplingRate) {
-        this.samplingRate = samplingRate;
     }
 
     private Blob fileContent;
@@ -108,7 +107,6 @@ public class DataFile {
 
         if (dataFileId != dataFile.dataFileId) return false;
         if (fileLength != dataFile.fileLength) return false;
-        if (Double.compare(dataFile.samplingRate, samplingRate) != 0) return false;
         if (version != dataFile.version) return false;
         if (fileContent != null ? !fileContent.equals(dataFile.fileContent) : dataFile.fileContent != null)
             return false;
@@ -121,10 +119,7 @@ public class DataFile {
     @Override
     public int hashCode() {
         int result;
-        long temp;
         result = dataFileId;
-        temp = samplingRate != +0.0d ? Double.doubleToLongBits(samplingRate) : 0L;
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (fileContent != null ? fileContent.hashCode() : 0);
         result = 31 * result + (mimetype != null ? mimetype.hashCode() : 0);
         result = 31 * result + (filename != null ? filename.hashCode() : 0);

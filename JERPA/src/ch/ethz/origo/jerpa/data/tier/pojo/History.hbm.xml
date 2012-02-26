@@ -5,9 +5,13 @@
 <hibernate-mapping>
 
     <class name="ch.ethz.origo.jerpa.data.tier.pojo.History" table="HISTORY" schema="APP">
-        <id name="historyId">
-            <column name="HISTORY_ID" sql-type="integer" length="10" not-null="true"/>
+        <id name="historyKey">
+            <column name="HISTORY_KEY" sql-type="integer" length="10" not-null="true"/>
+            <generator class="increment"/>
         </id>
+        <property name="historyId">
+            <column name="HISTORY_ID" sql-type="integer" length="10" not-null="true"/>
+        </property>
         <property name="dateOfDownload">
             <column name="DATE_OF_DOWNLOAD" sql-type="date" length="10" not-null="true"/>
         </property>

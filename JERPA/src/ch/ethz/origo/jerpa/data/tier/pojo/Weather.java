@@ -13,6 +13,15 @@ public class Weather {
     private int weatherId;
     private boolean changed;
     private boolean added;
+    private int weatherKey;
+
+    public int getWeatherKey() {
+        return weatherKey;
+    }
+
+    public void setWeatherKey(int weatherKey) {
+        this.weatherKey = weatherKey;
+    }
 
     public boolean getAdded() {
         return added;

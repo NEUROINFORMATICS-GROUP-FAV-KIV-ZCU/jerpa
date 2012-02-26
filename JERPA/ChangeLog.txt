@@ -10,6 +10,13 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (02/26/2012) kivan
+	#267
+	
+	CHANGED: mappings, updated EDEDClient and DataSyncer logic. Not functional yet due to error on the side of EEG base.
+	
+	Previous bugs are still present, will be fixed in upcomming commits.
+
  * (02/23/2012) kivan
 	#266
 	

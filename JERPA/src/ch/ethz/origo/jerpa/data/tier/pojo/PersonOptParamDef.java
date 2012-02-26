@@ -11,6 +11,15 @@ import java.util.Collection;
  */
 public class PersonOptParamDef {
     private int personOptParamDefId;
+    private int personOptParamDefKey;
+
+    public int getPersonOptParamDefKey() {
+        return personOptParamDefKey;
+    }
+
+    public void setPersonOptParamDefKey(int personOptParamDefKey) {
+        this.personOptParamDefKey = personOptParamDefKey;
+    }
 
     public int getPersonOptParamDefId() {
         return personOptParamDefId;

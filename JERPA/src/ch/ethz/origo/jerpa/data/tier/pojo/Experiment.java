@@ -20,6 +20,42 @@ public class Experiment {
     private boolean changed;
     private Set<Hardware> hardwares;
     private boolean added;
+    private int experimentKey;
+    private float samplingRate;
+    private float gain;
+    private String filter;
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
+
+    public float getGain() {
+        return gain;
+    }
+
+    public void setGain(float gain) {
+        this.gain = gain;
+    }
+
+    public float getSamplingRate() {
+        return samplingRate;
+    }
+
+    public void setSamplingRate(float samplingRate) {
+        this.samplingRate = samplingRate;
+    }
+
+    public int getExperimentKey() {
+        return experimentKey;
+    }
+
+    public void setExperimentKey(int experimentKey) {
+        this.experimentKey = experimentKey;
+    }
 
     public boolean getAdded() {
         return added;

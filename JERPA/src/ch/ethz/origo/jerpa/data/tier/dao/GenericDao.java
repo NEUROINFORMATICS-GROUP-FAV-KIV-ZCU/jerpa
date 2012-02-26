@@ -16,7 +16,7 @@ import java.util.List;
  *         <p/>
  *         Class with functionality shared among all the DAO instances.
  */
-public class GenericDao<T, PK extends Serializable> {
+public abstract class GenericDao<T, PK extends Serializable> {
 
     private Class<T> type;
 
@@ -80,19 +80,19 @@ public class GenericDao<T, PK extends Serializable> {
      * @throws DaoException error during getting object
      */
     @SuppressWarnings("unchecked")
-    public T get(PK identifier) throws DaoException {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        T object = (T) session.get(type, identifier);
-        try {
-            transaction.commit();
-            return object;
-        } catch (HibernateException e) {
-            transaction.rollback();
-            throw new DaoException(e);
-        } finally {
-            session.close();
-        }
+    public abstract T get(PK identifier) throws DaoException; {
+//        Session session = HibernateUtil.getSessionFactory().openSession();
+//        Transaction transaction = session.beginTransaction();
+//        T object = (T) session.get(type, identifier);
+//        try {
+//            transaction.commit();
+//            return object;
+//        } catch (HibernateException e) {
+//            transaction.rollback();
+//            throw new DaoException(e);
+//        } finally {
+//            session.close();
+//        }
     }
 
     /**

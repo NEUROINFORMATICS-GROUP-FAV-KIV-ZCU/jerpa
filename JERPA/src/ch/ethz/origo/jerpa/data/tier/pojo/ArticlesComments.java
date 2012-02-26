@@ -15,6 +15,15 @@ public class ArticlesComments {
     private int commentId;
     private boolean changed;
     private boolean added;
+    private int commentKey;
+
+    public int getCommentKey() {
+        return commentKey;
+    }
+
+    public void setCommentKey(int commentKey) {
+        this.commentKey = commentKey;
+    }
 
     public boolean getAdded() {
         return added;

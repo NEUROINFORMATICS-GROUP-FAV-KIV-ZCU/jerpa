@@ -5,9 +5,13 @@
 <hibernate-mapping>
 
     <class name="ch.ethz.origo.jerpa.data.tier.pojo.Experiment" table="EXPERIMENT" schema="APP">
-        <id name="experimentId">
-            <column name="EXPERIMENT_ID" sql-type="integer" length="10" not-null="true"/>
+        <id name="experimentKey">
+            <column name="EXPERIMENT_KEY" sql-type="integer" length="10" not-null="true"/>
+            <generator class="increment"/>
         </id>
+        <property name="experimentId">
+            <column name="EXPERIMENT_ID" sql-type="integer" length="10" not-null="true"/>
+        </property>
         <property name="startTime">
             <column name="START_TIME" sql-type="date" length="10"/>
         </property>
@@ -19,6 +23,15 @@
         </property>
         <property name="weathernote">
             <column name="WEATHERNOTE" sql-type="varchar"/>
+        </property>
+        <property name="samplingRate">
+            <column name="SAMPLING_RATE" sql-type="float"/>
+        </property>
+        <property name="gain">
+            <column name="GAIN" sql-type="float"/>
+        </property>
+        <property name="filter">
+            <column name="FILTER" sql-type="varchar"/>
         </property>
         <property name="isPrivate">
             <column name="IS_PRIVATE" sql-type="boolean" length="10" not-null="true"/>

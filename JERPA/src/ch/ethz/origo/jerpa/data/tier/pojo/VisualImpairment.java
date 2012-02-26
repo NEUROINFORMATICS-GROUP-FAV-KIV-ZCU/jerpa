@@ -13,6 +13,15 @@ public class VisualImpairment {
     private int visualImpairmentId;
     private boolean changed;
     private boolean added;
+    private int visualImpairmentKey;
+
+    public int getVisualImpairmentKey() {
+        return visualImpairmentKey;
+    }
+
+    public void setVisualImpairmentKey(int visualImpairmentKey) {
+        this.visualImpairmentKey = visualImpairmentKey;
+    }
 
     public boolean getAdded() {
         return added;

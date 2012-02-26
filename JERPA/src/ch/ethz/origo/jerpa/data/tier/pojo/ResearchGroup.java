@@ -13,6 +13,15 @@ public class ResearchGroup {
     private int researchGroupId;
     private boolean changed;
     private boolean added;
+    private int researchGroupKey;
+
+    public int getResearchGroupKey() {
+        return researchGroupKey;
+    }
+
+    public void setResearchGroupKey(int researchGroupKey) {
+        this.researchGroupKey = researchGroupKey;
+    }
 
     public boolean getAdded() {
         return added;
@@ -92,14 +101,14 @@ public class ResearchGroup {
         return result;
     }
 
-    private Collection<Article> articleses;
+    private Collection<Article> articles;
 
-    public Collection<Article> getArticleses() {
-        return articleses;
+    public Collection<Article> getArticles() {
+        return articles;
     }
 
-    public void setArticleses(Collection<Article> articleses) {
-        this.articleses = articleses;
+    public void setArticles(Collection<Article> articles) {
+        this.articles = articles;
     }
 
     private Collection<Experiment> experiments;

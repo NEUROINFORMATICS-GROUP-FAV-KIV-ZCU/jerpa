@@ -5,9 +5,13 @@
 <hibernate-mapping>
 
     <class name="ch.ethz.origo.jerpa.data.tier.pojo.Person" table="PERSON" schema="APP">
-        <id name="personId">
-            <column name="PERSON_ID" sql-type="integer" length="10" not-null="true"/>
+        <id name="personKey">
+            <column name="PERSON_KEY" sql-type="integer" length="10" not-null="true"/>
+            <generator class="increment" />
         </id>
+        <property name="personId">
+            <column name="PERSON_ID" sql-type="integer" length="10" not-null="true"/>
+        </property>
         <property name="name">
             <column name="NAME" sql-type="varchar" length="50"/>
         </property>

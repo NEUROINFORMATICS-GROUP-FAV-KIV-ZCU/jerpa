@@ -13,6 +13,15 @@ public class HearingImpairment {
     private int hearingImpairmentId;
     private boolean changed;
     private boolean added;
+    private int hearingImpairmentKey;
+
+    public int getHearingImpairmentKey() {
+        return hearingImpairmentKey;
+    }
+
+    public void setHearingImpairmentKey(int hearingImpairmentKey) {
+        this.hearingImpairmentKey = hearingImpairmentKey;
+    }
 
     public boolean getAdded() {
         return added;

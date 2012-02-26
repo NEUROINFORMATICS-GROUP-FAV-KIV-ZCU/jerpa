@@ -164,6 +164,12 @@ public class DataSyncer {
             info.setWeatherNote(exp.getWeathernote());
             info.setTemperature(exp.getTemperature());
 
+            DigitizationInfo digitizationInfo = new DigitizationInfo();
+            digitizationInfo.setSamplingRate(exp.getSamplingRate());
+            digitizationInfo.setFilter(exp.getFilter());
+            digitizationInfo.setGain(exp.getGain());
+            info.setDigitizationInfo(digitizationInfo);
+
             HibernateUtil.reattachObject(session, exp);
             for (Hardware hardware : exp.getHardwares()) {
                 info.getHwIds().add(hardware.getHardwareId());
@@ -204,7 +210,6 @@ public class DataSyncer {
                 info.setFileName(file.getFilename());
                 info.setFileLength(file.getFileLength());
                 info.setMimeType(file.getMimetype());
-                info.setSamplingRate(file.getSamplingRate());
                 info.setAdded(file.getAdded());
                 info.setChanged(file.getChanged());
 
@@ -486,6 +491,14 @@ public class DataSyncer {
             exp.setTemperature((short) expInfo.getTemperature());
             exp.setWeathernote(expInfo.getWeatherNote());
 
+            DigitizationInfo digitizationInfo = expInfo.getDigitizationInfo();
+
+            if(digitizationInfo != null){
+                exp.setSamplingRate(digitizationInfo.getSamplingRate());
+                exp.setFilter(digitizationInfo.getFilter());
+                exp.setGain(digitizationInfo.getGain());
+            }
+
             Scenario scn = scenarioDao.get(expInfo.getScenarioId());
             if (scn != null) {
                 exp.setScenario(scn);
@@ -538,7 +551,6 @@ public class DataSyncer {
             }
             file.setFileLength(fileInfo.getFileLength());
             file.setMimetype(fileInfo.getMimeType());
-            file.setSamplingRate(fileInfo.getSamplingRate());
             file.setVersion(fileInfo.getScn());
             file.setFilename(fileInfo.getFileName());
 

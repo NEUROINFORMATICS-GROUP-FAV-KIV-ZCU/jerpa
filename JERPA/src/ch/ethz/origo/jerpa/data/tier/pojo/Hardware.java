@@ -13,6 +13,15 @@ public class Hardware {
     private int hardwareId;
     private boolean changed;
     private boolean added;
+    private int hardwareKey;
+
+    public int getHardwareKey() {
+        return hardwareKey;
+    }
+
+    public void setHardwareKey(int hardwareKey) {
+        this.hardwareKey = hardwareKey;
+    }
 
     public boolean getAdded() {
         return added;

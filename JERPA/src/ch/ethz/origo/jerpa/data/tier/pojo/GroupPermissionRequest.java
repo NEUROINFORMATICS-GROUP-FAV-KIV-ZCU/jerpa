@@ -11,6 +11,15 @@ public class GroupPermissionRequest {
     private int requestId;
     private boolean changed;
     private boolean added;
+    private int requestKey;
+
+    public int getRequestKey() {
+        return requestKey;
+    }
+
+    public void setRequestKey(int requestKey) {
+        this.requestKey = requestKey;
+    }
 
     public boolean getAdded() {
         return added;

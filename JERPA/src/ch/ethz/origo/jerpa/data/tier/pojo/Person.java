@@ -14,6 +14,15 @@ public class Person {
     private int personId;
     private boolean changed;
     private boolean added;
+    private int personKey;
+
+    public int getPersonKey() {
+        return personKey;
+    }
+
+    public void setPersonKey(int personKey) {
+        this.personKey = personKey;
+    }
 
     public boolean getAdded() {
         return added;

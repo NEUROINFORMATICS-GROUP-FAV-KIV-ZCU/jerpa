@@ -5,9 +5,13 @@
 <hibernate-mapping>
 
     <class name="ch.ethz.origo.jerpa.data.tier.pojo.ResearchGroup" table="RESEARCH_GROUP" schema="APP">
-        <id name="researchGroupId">
-            <column name="RESEARCH_GROUP_ID" sql-type="integer" length="10" not-null="true"/>
+        <id name="researchGroupKey">
+            <column name="RESEARCH_GROUP_KEY" sql-type="integer" length="10" not-null="true"/>
+            <generator class="increment"/>
         </id>
+        <property name="researchGroupId">
+            <column name="RESEARCH_GROUP_ID" sql-type="integer" length="10" not-null="true"/>
+        </property>
         <property name="title">
             <column name="TITLE" sql-type="varchar" length="100" not-null="true"/>
         </property>
@@ -26,7 +30,7 @@
         <many-to-one name="owner" class="ch.ethz.origo.jerpa.data.tier.pojo.Person">
             <column name="OWNER_ID" not-null="true"/>
         </many-to-one>
-        <set name="articleses" inverse="true">
+        <set name="articles" inverse="true">
             <key>
                 <column name="RESEARCH_GROUP_ID"/>
             </key>

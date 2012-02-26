@@ -5,9 +5,13 @@
 <hibernate-mapping>
 
     <class name="ch.ethz.origo.jerpa.data.tier.pojo.ArticlesComments" table="ARTICLES_COMMENTS" schema="APP">
-        <id name="commentId">
-            <column name="COMMENT_ID" sql-type="integer" length="10" not-null="true"/>
+        <id name="commentKey">
+            <column name="COMMENT_KEY" sql-type="integer" length="10" not-null="true"/>
+            <generator class="increment"/>
         </id>
+        <property name="commentId">
+            <column name="COMMENT_ID" sql-type="integer" length="10" not-null="true"/>
+        </property>
         <property name="text">
             <column name="TEXT" sql-type="clob" length="2147483647" not-null="true"/>
         </property>

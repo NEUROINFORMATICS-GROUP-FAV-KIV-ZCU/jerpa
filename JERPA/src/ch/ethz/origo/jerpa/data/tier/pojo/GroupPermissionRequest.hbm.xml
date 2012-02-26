@@ -6,9 +6,13 @@
 
     <class name="ch.ethz.origo.jerpa.data.tier.pojo.GroupPermissionRequest" table="GROUP_PERMISSION_REQUEST"
            schema="APP">
-        <id name="requestId">
-            <column name="REQUEST_ID" sql-type="integer" length="10" not-null="true"/>
+        <id name="requestKey">
+            <column name="REQUEST_KEY" sql-type="integer" length="10" not-null="true"/>
+            <generator class="increment"/>
         </id>
+        <property name="requestId">
+            <column name="REQUEST_ID" sql-type="integer" length="10" not-null="true"/>
+        </property>
         <property name="requestedPermission">
             <column name="REQUESTED_PERMISSION" sql-type="varchar" length="20" not-null="true"/>
         </property>

@@ -11,6 +11,15 @@ import java.util.Collection;
  */
 public class ExperimentOptParamDef {
     private int experimentOptParamDefId;
+    private int experimentOptParamDefKey;
+
+    public int getExperimentOptParamDefKey() {
+        return experimentOptParamDefKey;
+    }
+
+    public void setExperimentOptParamDefKey(int experimentOptParamDefKey) {
+        this.experimentOptParamDefKey = experimentOptParamDefKey;
+    }
 
     public int getExperimentOptParamDefId() {
         return experimentOptParamDefId;

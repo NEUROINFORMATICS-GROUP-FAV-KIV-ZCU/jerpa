@@ -194,7 +194,6 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         dataFile.setFileLength(file.length());
         dataFile.setFilename(file.getName());
         dataFile.setMimetype(new MimetypesFileTypeMap().getContentType(file));
-        dataFile.setSamplingRate(samplingRate);
 
         InputStream inStream = null;
         try {
@@ -241,7 +240,6 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         try {
             inStream = new FileInputStream(file);
             dataFile.setFileContent(Hibernate.getLobCreator(session).createBlob(inStream, file.length()));
-            dataFile.setSamplingRate(samplingRate);
         } catch (FileNotFoundException e) {
             log.error(e.getMessage(), e);
         } finally {
@@ -315,18 +313,18 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         }
     }
 
-//    @Override
-//    public DataFile get(Integer identifier) throws DaoException {
-//
-//        String hql = "from DataFile d where d.dataFileId = :identifier";
-//
-//        Session session = HibernateUtil.getSessionFactory().openSession();
-//        Transaction transaction = session.beginTransaction();
-//        try {
-//            return (DataFile) session.createQuery(hql).setInteger("identifier",identifier).uniqueResult();
-//        } finally {
-//            transaction.commit();
-//            session.close();
-//        }
-//    }
+    @Override
+    public DataFile get(Integer identifier) throws DaoException {
+
+        String hql = "from DataFile d where d.dataFileId = :identifier";
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            return (DataFile) session.createQuery(hql).setInteger("identifier",identifier).uniqueResult();
+        } finally {
+            transaction.commit();
+            session.close();
+        }
+    }
 }
