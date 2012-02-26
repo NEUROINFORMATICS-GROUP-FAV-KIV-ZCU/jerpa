@@ -170,6 +170,9 @@ public class DataSyncer {
             digitizationInfo.setGain(exp.getGain());
             info.setDigitizationInfo(digitizationInfo);
 
+//            not used yet
+//            info.setSubjectGroupId();
+
             HibernateUtil.reattachObject(session, exp);
             for (Hardware hardware : exp.getHardwares()) {
                 info.getHwIds().add(hardware.getHardwareId());
@@ -212,6 +215,7 @@ public class DataSyncer {
                 info.setMimeType(file.getMimetype());
                 info.setAdded(file.getAdded());
                 info.setChanged(file.getChanged());
+//                info.setDescription(file.getDescription());
 
                 final InputStream in = file.getFileContent().getBinaryStream();
                 DataSource rawData = new DataSource() {
@@ -493,7 +497,7 @@ public class DataSyncer {
 
             DigitizationInfo digitizationInfo = expInfo.getDigitizationInfo();
 
-            if(digitizationInfo != null){
+            if (digitizationInfo != null) {
                 exp.setSamplingRate(digitizationInfo.getSamplingRate());
                 exp.setFilter(digitizationInfo.getFilter());
                 exp.setGain(digitizationInfo.getGain());

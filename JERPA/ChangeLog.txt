@@ -11,6 +11,14 @@
 *********************************************************************************************
 
  * (02/26/2012) kivan
+	#268
+	
+	CHANGED: EDEDClient update
+	CHANGED: minor changes in db mapping and sql due to changes of data storage logic in EEG Base
+	
+	Bugs still persists.
+
+ * (02/26/2012) kivan
 	#267
 	
 	CHANGED: mappings, updated EDEDClient and DataSyncer logic. Not functional yet due to error on the side of EEG base.
