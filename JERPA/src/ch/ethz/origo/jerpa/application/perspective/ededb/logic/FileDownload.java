@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.DownloadException;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
@@ -21,7 +20,7 @@ import java.util.Observable;
  */
 public class FileDownload extends Observable implements Runnable {
 
-    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private DataFileDao dataFileDao = DataFileDao.getInstance();
     private final EDEDClient session;
     private final DataFile dataFile;
     private ProgressInputStream inStream = null;

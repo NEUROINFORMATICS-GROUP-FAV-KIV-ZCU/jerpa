@@ -48,7 +48,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import ch.ethz.origo.jerpa.application.exception.CorruptedFileException;
 import ch.ethz.origo.jerpa.data.BufferCreator;
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
@@ -146,7 +145,7 @@ public class SignalPerspective extends Perspective implements IObserver {
     private ArtefactSelectionDialog artefactSelectionDialog;
     private BaselineCorrectionDialog baselineCorrectionDialog;
 
-    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private DataFileDao dataFileDao = DataFileDao.getInstance();
 
     public static final String ID_PERSPECTIVE = SignalPerspective.class.getName();
 

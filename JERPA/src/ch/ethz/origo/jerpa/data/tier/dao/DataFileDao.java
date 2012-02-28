@@ -21,11 +21,12 @@ import java.util.List;
  *         <p/>
  *         DAO for DataFile type manipulation.
  */
-public class DataFileDao extends GenericDao<DataFile, Integer> {
+public final class DataFileDao extends GenericDao<DataFile, Integer> {
 
     private final static Logger log = Logger.getLogger(DataFileDao.class);
+    private static DataFileDao instance = new DataFileDao();
 
-    public DataFileDao() {
+    private DataFileDao() {
         super(DataFile.class);
     }
 
@@ -328,5 +329,13 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
             transaction.commit();
             session.close();
         }
+    }
+
+    /**
+     * Getter of DataFileDao instance.
+     * @return dao instance
+     */
+    public static DataFileDao getInstance(){
+        return instance;
     }
 }

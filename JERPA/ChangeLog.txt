@@ -10,6 +10,12 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (02/29/2012) kivan
+	# 270
+	
+	INTERNAL: Dao classes are now singletons. Instead of using DaoFactory is sufficient to use DaoClassName.getInstance();
+	Bug with not freezing gui while downloading files does not appear anymore. Will fix, when I'll run into it again.
+
  * (02/28/2012) kivan
 	# 269
 	

@@ -10,9 +10,19 @@ import org.hibernate.Transaction;
  *         <p/>
  *         DAO for manipulation with Person types.
  */
-public class PersonDao extends GenericDao<Person, Integer> {
+public final class PersonDao extends GenericDao<Person, Integer> {
 
-    public PersonDao(){
+    private static PersonDao instance = new PersonDao();
+
+    /**
+     * Getter of PersonDao instance.
+     * @return dao instance
+     */
+    public static PersonDao getInstance(){
+        return instance;
+    }
+
+    private PersonDao(){
         super(Person.class);
     }
 

@@ -2,7 +2,6 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.actions;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.FileState;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
@@ -28,7 +27,7 @@ public class ActionDeleteSelected extends AbstractAction implements ILanguage{
     private static final long serialVersionUID = -1107239494943191652L;
     private final EDEDBController controller;
     private static final Logger log = Logger.getLogger(ActionDeleteSelected.class);
-    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private DataFileDao dataFileDao = DataFileDao.getInstance();
     private static String resourceBundlePath;
     private static ResourceBundle resource;
 

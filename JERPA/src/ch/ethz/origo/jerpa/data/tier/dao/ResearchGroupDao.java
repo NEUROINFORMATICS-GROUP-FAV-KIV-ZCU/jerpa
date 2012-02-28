@@ -10,9 +10,19 @@ import org.hibernate.Transaction;
  *         <p/>
  *         DAO for ResearchGroup type.
  */
-public class ResearchGroupDao extends GenericDao<ResearchGroup, Integer> {
+public final class ResearchGroupDao extends GenericDao<ResearchGroup, Integer> {
 
-    public ResearchGroupDao() {
+    private static ResearchGroupDao instance = new ResearchGroupDao();
+
+    /**
+     * Getter of ResearchGroupDao instance.
+     * @return dao instance
+     */
+    public static ResearchGroupDao getInstance(){
+        return instance;
+    }
+
+    private ResearchGroupDao() {
         super(ResearchGroup.class);
     }
 

@@ -1,7 +1,6 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.data.JERPAUtils;
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.dao.*;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
@@ -41,13 +40,13 @@ public class ImportWizard extends JFrame implements ILanguage {
     protected JButton addWeather, addScenario, addFile, removeFile, addGroup, confirmButton, cancelButton, addHw;
     protected JProgressBar progressBar = new JProgressBar();
 
-    protected DataFileDao dataFileDao = DaoFactory.getDataFileDao();
-    protected PersonDao personDao = DaoFactory.getPersonDao();
-    protected ExperimentDao experimentDao = DaoFactory.getExperimentDao();
-    protected WeatherDao weatherDao = DaoFactory.getWeatherDao();
-    protected ScenarioDao scenarioDao = DaoFactory.getScenarioDao();
-    protected ResearchGroupDao researchGroupDao = DaoFactory.getResearchGroupDao();
-    protected HardwareDao hardwareDao = DaoFactory.getHardwareDao();
+    protected DataFileDao dataFileDao = DataFileDao.getInstance();
+    protected PersonDao personDao = PersonDao.getInstance();
+    protected ExperimentDao experimentDao = ExperimentDao.getInstance();
+    protected WeatherDao weatherDao = WeatherDao.getInstance();
+    protected ScenarioDao scenarioDao = ScenarioDao.getInstance();
+    protected ResearchGroupDao researchGroupDao = ResearchGroupDao.getInstance();
+    protected HardwareDao hardwareDao = HardwareDao.getInstance();
 
     protected ImportFilesTable importTable = new ImportFilesTable();
 

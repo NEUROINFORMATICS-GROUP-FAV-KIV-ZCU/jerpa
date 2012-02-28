@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.DownloadException;
 import ch.ethz.origo.jerpa.data.tier.FileState;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
@@ -33,7 +32,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
     private final EDEDClient session;
     private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
     private final Map<Integer, Boolean> downloading;
-    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private DataFileDao dataFileDao = DataFileDao.getInstance();
     private final static Object lock = new Object();
 
     /**

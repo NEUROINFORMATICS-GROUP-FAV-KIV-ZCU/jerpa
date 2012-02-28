@@ -4,7 +4,6 @@ import ch.ethz.origo.jerpa.application.perspective.ededb.logic.Downloader;
 import ch.ethz.origo.jerpa.application.perspective.ededb.logic.EDEDBController;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.data.perspective.signalprocess.Const;
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
@@ -36,7 +35,7 @@ public class ActionVisualizeSelected extends AbstractAction implements ILanguage
 
     private static final long serialVersionUID = -7447433391197216763L;
     private final static Logger log = Logger.getLogger(ActionVisualizeSelected.class);
-    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private DataFileDao dataFileDao = DataFileDao.getInstance();
     private ResourceBundle resource;
     private String resourceBundlePath;
     private final EDEDBController controller;

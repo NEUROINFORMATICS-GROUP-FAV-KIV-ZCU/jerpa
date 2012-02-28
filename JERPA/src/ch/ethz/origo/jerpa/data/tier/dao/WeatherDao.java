@@ -10,9 +10,19 @@ import org.hibernate.Transaction;
  *
  * DAO for Weather type.
  */
-public class WeatherDao extends GenericDao<Weather, Integer> {
+public final class WeatherDao extends GenericDao<Weather, Integer> {
 
-    public WeatherDao(){
+    private static WeatherDao instance = new WeatherDao();
+
+    /**
+     * Getter of WeatherDao instance.
+     * @return dao instance
+     */
+    public static WeatherDao getInstance(){
+        return instance;
+    }
+
+    private WeatherDao(){
         super(Weather.class);
     }
 

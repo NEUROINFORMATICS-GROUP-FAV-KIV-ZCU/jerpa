@@ -10,9 +10,19 @@ import org.hibernate.Transaction;
  *         <p/>
  *         DAO for Hardware type.
  */
-public class HardwareDao extends GenericDao<Hardware, Integer> {
+public final class HardwareDao extends GenericDao<Hardware, Integer> {
 
-    public HardwareDao() {
+    private static HardwareDao instance = new HardwareDao();
+
+    /**
+     * Getter of HardwareDao instance.
+     * @return dao instance
+     */
+    public static HardwareDao getInstance(){
+        return instance;
+    }
+
+    private HardwareDao() {
         super(Hardware.class);
     }
 

@@ -3,7 +3,6 @@ package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataRowModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.DataTableModel;
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.FileState;
 import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
@@ -31,8 +30,8 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
     private static final long serialVersionUID = 4318865850000265030L;
     private static final Logger log = Logger.getLogger(ExperimentViewer.class);
 
-    private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
-    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private ExperimentDao experimentDao = ExperimentDao.getInstance();
+    private DataFileDao dataFileDao = DataFileDao.getInstance();
     private List<Experiment> selectedExps;
     private EDEDBController controller;
 

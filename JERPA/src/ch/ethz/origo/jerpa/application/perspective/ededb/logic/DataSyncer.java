@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.application.perspective.ededb.logic;
 
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.jerpa.data.tier.dao.*;
 import ch.ethz.origo.jerpa.data.tier.pojo.*;
@@ -33,13 +32,13 @@ public class DataSyncer {
     public static boolean dataUpdated = false;
     public static boolean experimentsUpdated = false;
 
-    private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
-    private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
-    private HardwareDao hardwareDao = DaoFactory.getHardwareDao();
-    private ResearchGroupDao researchGroupDao = DaoFactory.getResearchGroupDao();
-    private ScenarioDao scenarioDao = DaoFactory.getScenarioDao();
-    private WeatherDao weatherDao = DaoFactory.getWeatherDao();
-    private PersonDao personDao = DaoFactory.getPersonDao();
+    private DataFileDao dataFileDao = DataFileDao.getInstance();
+    private ExperimentDao experimentDao = ExperimentDao.getInstance();
+    private HardwareDao hardwareDao = HardwareDao.getInstance();
+    private ResearchGroupDao researchGroupDao = ResearchGroupDao.getInstance();
+    private ScenarioDao scenarioDao = ScenarioDao.getInstance();
+    private WeatherDao weatherDao = WeatherDao.getInstance();
+    private PersonDao personDao = PersonDao.getInstance();
 
     private final static Logger log = Logger.getLogger(DataSyncer.class);
 

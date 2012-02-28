@@ -10,9 +10,19 @@ import org.hibernate.Transaction;
  *
  * DAO for Scenario manipulation.
  */
-public class ScenarioDao extends GenericDao<Scenario, Integer> {
+public final class ScenarioDao extends GenericDao<Scenario, Integer> {
 
-    public ScenarioDao(){
+    private static ScenarioDao instance = new ScenarioDao();
+
+    /**
+     * Getter of ScenarioDao instance.
+     * @return dao instance
+     */
+    public static ScenarioDao getInstance(){
+        return instance;
+    }
+
+    private ScenarioDao(){
         super(Scenario.class);
     }
 

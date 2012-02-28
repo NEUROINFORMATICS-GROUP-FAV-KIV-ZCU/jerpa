@@ -14,11 +14,20 @@ import java.util.List;
  *         <p/>
  *         DAO for Experiment type manipulation.
  */
-public class ExperimentDao extends GenericDao<Experiment, Integer> {
+public final class ExperimentDao extends GenericDao<Experiment, Integer> {
 
     private static final Logger log = Logger.getLogger(ExperimentDao.class);
+    private static ExperimentDao instance = new ExperimentDao();
 
-    public ExperimentDao() {
+    /**
+     * Getter of ExperimentDao instance.
+     * @return dao instance
+     */
+    public static ExperimentDao getInstance(){
+        return instance;
+    }
+
+    private ExperimentDao() {
         super(Experiment.class);
     }
 

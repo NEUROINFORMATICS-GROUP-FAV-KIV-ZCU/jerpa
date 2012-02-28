@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
 import ch.ethz.origo.jerpa.data.tier.dao.DataFileDao;
 import ch.ethz.origo.jerpa.data.tier.pojo.DataFile;
@@ -36,14 +35,13 @@ public final class Working extends JPanel implements ILanguage {
     private static String resourceBundlePath;
     private static ResourceBundle resource;
 
-    private static DataFileDao dataFileDao = DaoFactory.getDataFileDao();
+    private static DataFileDao dataFileDao = DataFileDao.getInstance();
 
     /**
      * Method creating JDialog
      */
     private Working() {
         super();
-
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
 

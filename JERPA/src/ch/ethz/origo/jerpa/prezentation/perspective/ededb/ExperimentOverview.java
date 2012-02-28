@@ -1,6 +1,5 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
-import ch.ethz.origo.jerpa.data.tier.DaoFactory;
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 import ch.ethz.origo.jerpa.data.tier.dao.DaoException;
 import ch.ethz.origo.jerpa.data.tier.dao.ExperimentDao;
@@ -8,7 +7,6 @@ import ch.ethz.origo.jerpa.data.tier.pojo.*;
 import ch.ethz.origo.juigle.application.ILanguage;
 import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
-import ch.ethz.origo.juigle.prezentation.JUIGLEErrorDialog;
 import ch.ethz.origo.juigle.prezentation.JUIGLErrorInfoUtils;
 import org.hibernate.Session;
 
@@ -18,7 +16,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -64,7 +61,7 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         this.getRootPane().registerKeyboardAction(this, "close", stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        ExperimentDao experimentDao = DaoFactory.getExperimentDao();
+        ExperimentDao experimentDao = ExperimentDao.getInstance();
         try {
             experiment = experimentDao.get(experimentId);
         } catch (DaoException e) {
