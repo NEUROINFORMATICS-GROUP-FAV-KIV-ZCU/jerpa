@@ -84,7 +84,7 @@ public class Downloader extends Observable implements Observer, ILanguage {
                 }
             }
         });
-
+        online.setName("Download thread");
         online.start();
     }
 

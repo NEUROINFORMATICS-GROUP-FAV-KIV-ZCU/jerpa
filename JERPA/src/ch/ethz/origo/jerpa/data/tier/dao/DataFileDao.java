@@ -64,8 +64,10 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         List<DataFile> files = new ArrayList<DataFile>();
 
         for (Experiment experiment : experiments) {
-            session.refresh(experiment);
-            files.addAll(experiment.getDataFiles());
+            if (experiment != null) {
+                session.refresh(experiment);
+                files.addAll(experiment.getDataFiles());
+            }
         }
         try {
             transaction.commit();
@@ -258,7 +260,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         } catch (HibernateException e) {
             log.error(e.getMessage(), e);
             transaction.rollback();
-        }  finally {
+        } finally {
             session.close();
         }
     }
@@ -321,7 +323,7 @@ public class DataFileDao extends GenericDao<DataFile, Integer> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            return (DataFile) session.createQuery(hql).setInteger("identifier",identifier).uniqueResult();
+            return (DataFile) session.createQuery(hql).setInteger("identifier", identifier).uniqueResult();
         } finally {
             transaction.commit();
             session.close();

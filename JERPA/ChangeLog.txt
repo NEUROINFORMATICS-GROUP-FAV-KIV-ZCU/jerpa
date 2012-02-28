@@ -10,6 +10,12 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (02/28/2012) kivan
+	# 269
+	
+	FIXED: DataSyncer - upload of experiments and datafiles now works!
+	CHANGED: minor changes in order to update ededb table properly
+
  * (02/26/2012) kivan
 	#268
 	

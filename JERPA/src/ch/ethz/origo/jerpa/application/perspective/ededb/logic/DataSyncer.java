@@ -30,6 +30,9 @@ public class DataSyncer {
 
     private long sleepInterval = 60000;
 
+    public static boolean dataUpdated = false;
+    public static boolean experimentsUpdated = false;
+
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
     private ExperimentDao experimentDao = DaoFactory.getExperimentDao();
     private HardwareDao hardwareDao = DaoFactory.getHardwareDao();
@@ -111,6 +114,7 @@ public class DataSyncer {
             uploadExperiments(experimentDao.getAdded());
             uploadDataFiles(dataFileDao.getChanged());
             uploadDataFiles(dataFileDao.getAdded());
+            controller.update();
         } catch (DaoException e) {
             log.error(e.getMessage(), e);
         }
@@ -192,6 +196,7 @@ public class DataSyncer {
                 transaction.rollback();
             } finally {
                 session.close();
+                experimentsUpdated = true;
             }
         }
     }
@@ -251,6 +256,7 @@ public class DataSyncer {
                     log.error(e.getMessage(), e);
                 } finally {
                     session.close();
+                    dataUpdated = true;
                 }
             }
         } catch (SQLException e) {

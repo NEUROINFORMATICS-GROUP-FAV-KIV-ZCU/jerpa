@@ -14,6 +14,7 @@ import ch.ethz.origo.jerpa.prezentation.perspective.ededb.ExperimentViewer;
 import ch.ethz.origo.jerpa.prezentation.perspective.ededb.Working;
 import org.apache.log4j.Logger;
 
+import javax.activation.DataSource;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -34,6 +35,9 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
     private DataFileDao dataFileDao = DaoFactory.getDataFileDao();
     private List<Experiment> selectedExps;
     private EDEDBController controller;
+
+    private long expVersion = 0;
+    private long dataVersion = 0;
 
     /**
      * Constructor.
@@ -107,7 +111,9 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
         synchronized (ExpTableModel.class) {
             Working.setActivity(true, "working.ededb.update.exptable");
             List<Experiment> experiments = experimentDao.getAll();
-            if (experiments.size() != expModel.getRowCount()) {
+            if (experiments.size() != expModel.getRowCount() || experimentDao.getLastRevision() != expVersion || DataSyncer.experimentsUpdated) {
+                expVersion = experimentDao.getLastRevision();
+                DataSyncer.experimentsUpdated = false;
                 expModel.clear();
                 for (Experiment exp : experiments) {
                     expModel.addRow(exp);
@@ -127,7 +133,9 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
         synchronized (DataTableModel.class) {
 
             List<DataFile> dataFiles = dataFileDao.getAllFromExperiments(selectedExps);
-            if (dataFiles.size() != dataModel.getRowCount()) {
+            if (dataFiles.size() != dataModel.getRowCount() || dataVersion != dataFileDao.getLastRevision() || DataSyncer.dataUpdated) {
+                DataSyncer.dataUpdated = false;
+                dataVersion = dataFileDao.getLastRevision();
                 dataModel.clear();
                 for (DataFile file : dataFiles) {
                     FileState state = (controller.getDownloader().isDownloading(file) ? FileState.DOWNLOADING : dataFileDao.getFileState(file));
