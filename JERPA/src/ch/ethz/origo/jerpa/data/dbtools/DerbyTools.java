@@ -1,6 +1,8 @@
 package ch.ethz.origo.jerpa.data.dbtools;
 
+import ch.ethz.origo.jerpa.application.perspective.ededb.logic.ConfigPropertiesLoader;
 import ch.ethz.origo.juigle.application.PropertiesLoader;
+import org.apache.cxf.common.util.PropertiesLoaderUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.cfg.NotYetImplementedException;
 
@@ -21,19 +23,18 @@ public class DerbyTools implements DbTool {
         Connection connection = null;
         Statement statement = null;
         try {
-            Class.forName(PropertiesLoader.getProperty("db.derby.driver", "config.properties")).newInstance();
-            String url = PropertiesLoader.getProperty("db.derby.url", "config.properties") + ";create=true";
+
+            Class.forName(ConfigPropertiesLoader.getProperty("config.properties", "db.derby.driver")).newInstance();
+            String url = ConfigPropertiesLoader.getProperty("config.properties", "db.derby.url") + ";create=true";
             connection = DriverManager.getConnection(url);
 
-            String sql = getSqlFromFile(PropertiesLoader.getProperty("db.derby.sql", "config.properties"));
+            String sql = getSqlFromFile(ConfigPropertiesLoader.getProperty("config.properties", "db.derby.sql"));
             String[] commands = sql.split(";");
 
             statement = connection.createStatement();
 
-            for(String command : commands)
-            {
-                if(!command.trim().isEmpty())
-                {
+            for (String command : commands) {
+                if (!command.trim().isEmpty()) {
                     log.debug(command);
                     statement.executeUpdate(command);
                 }

@@ -59,6 +59,12 @@
         <javac srcdir="${src}" destdir="${build}" classpathref="compile.class.path" debug="on">
             <compilerarg value="-Xlint:none" />
         </javac>
+		
+		<copy todir="${build}">
+            <fileset dir="${src}/">
+				<exclude name="**/*.java"/>
+			</fileset>
+        </copy>
     </target>
 
     <target name="copy_img" depends="compile">

@@ -10,6 +10,14 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (03/02/2012) kivan
+	# 271
+	
+	CHANGED: EDEDBProperties is now ConfigPropertiesLoader which loads properties file from config directory by file name. Used because JUIGLE 
+			PropertiesLoader was throwing NullPointers when "config.properties" was tried to load (my bad?)
+	CHANGED: build.xml - added copying non/java files into bin directory when compile (hibernate config files)
+	FIXED: app is now launchable using build.xml
+
  * (02/29/2012) kivan
 	# 270
 	

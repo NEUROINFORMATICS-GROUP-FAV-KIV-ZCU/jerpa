@@ -53,9 +53,9 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
     }
 
     private void initTextFields() {
-        usernameField.setText(EDEDBProperties.getConfigKey("ededb.username"));
-        passwordField.setText(EDEDBProperties.getConfigKey("ededb.password"));
-        endpointField.setText(EDEDBProperties.getConfigKey("ededb.endpoint"));
+        usernameField.setText(ConfigPropertiesLoader.getProperty("ededb.properties","ededb.username"));
+        passwordField.setText(ConfigPropertiesLoader.getProperty("ededb.properties","ededb.password"));
+        endpointField.setText(ConfigPropertiesLoader.getProperty("ededb.properties","ededb.endpoint"));
 
         boolean isEndpointEmpty = endpointField.getText().trim().isEmpty();
         optionsButton.setSelected(isEndpointEmpty);
@@ -153,9 +153,9 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
                     service.userLogout();
                     return;
                 }
-                EDEDBProperties.setConfigKey("ededb.endpoint", endpoint);
-                EDEDBProperties.setConfigKey("ededb.username", username);
-                EDEDBProperties.setConfigKey("ededb.password", password);
+                ConfigPropertiesLoader.setProperty("ededb.properties","ededb.endpoint", endpoint);
+                ConfigPropertiesLoader.setProperty("ededb.properties","ededb.username", username);
+                ConfigPropertiesLoader.setProperty("ededb.properties","ededb.password", password);
             } catch (WebServiceException ex) {
 
                 if (ex.getCause() instanceof IOException) {

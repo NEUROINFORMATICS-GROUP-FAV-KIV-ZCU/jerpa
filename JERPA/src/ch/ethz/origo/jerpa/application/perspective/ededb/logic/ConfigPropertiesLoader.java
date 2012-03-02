@@ -14,51 +14,53 @@ import java.util.Properties;
  *         <p/>
  *         Class for properties operations.
  */
-public class EDEDBProperties {
+public class ConfigPropertiesLoader {
 
-    private static final Logger log = Logger.getLogger(EDEDBProperties.class);
-    private static final String fileName = "config/ededb.properties";
-    private static Properties properties = new Properties() {
-        {
-            FileInputStream inPropStream = null;
+    private static final Logger log = Logger.getLogger(ConfigPropertiesLoader.class);
+
+
+    private static Properties loadFile(String fileName) {
+        Properties properties = new Properties();
+        FileInputStream inPropStream = null;
+        try {
+            inPropStream = new FileInputStream("config/" + fileName);
+            properties.load(inPropStream);
+        } catch (IOException e) {
+            log.error(e);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA - ConfigPropertiesLoader ERROR", e.getMessage(), e);
+        } finally {
             try {
-                inPropStream = new FileInputStream(fileName);
-                this.load(inPropStream);
-                log.info("EDEDB properties loaded successfully.");
+                if (inPropStream != null) {
+                    inPropStream.close();
+                }
             } catch (IOException e) {
                 log.error(e);
-                JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR", e.getMessage(), e);
-            } finally {
-
-                try {
-                    if (inPropStream != null) {
-                        inPropStream.close();
-                    }
-                } catch (IOException e) {
-                    log.error(e);
-                }
             }
         }
-    };
+
+        return properties;
+    }
 
     /**
      * Loader of properties files.
      *
-     * @param key identifier to value in properties file
+     * @param fileName file Name
+     * @param key      identifier to value in properties file
      * @return proper value from properties file
      */
-    public static String getConfigKey(String key) {
-        return properties.getProperty(key);
+    public static String getProperty(String fileName, String key) {
+        return loadFile(fileName).getProperty(key);
     }
 
     /**
      * Add/Set key in config properties file.
      *
+     * @param fileName file name
      * @param key      String key
      * @param argument String value
      */
-    public static void setConfigKey(String key, String argument) {
-
+    public static void setProperty(String fileName, String key, String argument) {
+        Properties properties = loadFile(fileName);
         OutputStream outPropStream = null;
         try {
             outPropStream = new FileOutputStream(fileName);
@@ -66,7 +68,7 @@ public class EDEDBProperties {
             properties.store(outPropStream, null);
         } catch (IOException ex) {
             log.error(ex);
-            JUIGLErrorInfoUtils.showErrorDialog("JERPA - EDEDB ERROR", ex.getMessage(), ex);
+            JUIGLErrorInfoUtils.showErrorDialog("JERPA - ConfigPropertiesLoader ERROR", ex.getMessage(), ex);
         } finally {
             try {
                 if (outPropStream != null) {

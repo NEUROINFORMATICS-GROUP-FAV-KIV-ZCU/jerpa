@@ -46,7 +46,7 @@ public class DataSyncer {
         this.service = service;
         this.controller = controller;
 
-        String tmpSleep = EDEDBProperties.getConfigKey("ededb.sync.miliseconds");
+        String tmpSleep = ConfigPropertiesLoader.getProperty("ededb.properties","ededb.sync.miliseconds");
         if (tmpSleep != null)
             sleepInterval = Long.parseLong(tmpSleep);
 
