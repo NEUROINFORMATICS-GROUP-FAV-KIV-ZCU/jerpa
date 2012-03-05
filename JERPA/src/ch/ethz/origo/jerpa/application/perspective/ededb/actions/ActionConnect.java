@@ -19,17 +19,14 @@ public class ActionConnect extends AbstractAction {
 	private static final long serialVersionUID = 6355605804293660348L;
 	private final EDEDBController controller;
     private final EDEDClient service;
-    private final Window owner;
 
 	/**
 	 * Constructor method for action connect to EEG/ERP Database
 	 * 
-	 * @param owner window owner
      * @param controller EEG/ERP Database Experiment Data Browser Controller instance
      * @param service web service
 	 */
-	public ActionConnect(Window owner, EDEDBController controller, EDEDClient service) {
-        this.owner = owner;
+	public ActionConnect(EDEDBController controller, EDEDClient service) {
 		this.controller = controller;
         this.service = service;
 		putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_C));
@@ -41,6 +38,6 @@ public class ActionConnect extends AbstractAction {
 	 * @param e performed action
 	 */
 	public void actionPerformed(ActionEvent e) {
-        LoginDialogLogic.showLoginDialog(owner, service, controller);
+        LoginDialogLogic.showLoginDialog(service, controller);
 	}
 }

@@ -1,6 +1,7 @@
 package ch.ethz.origo.jerpa.prezentation.perspective.ededb;
 
 import ch.ethz.origo.jerpa.application.perspective.ededb.tables.ExpTableModel;
+import ch.ethz.origo.jerpa.data.tier.pojo.Experiment;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -41,6 +42,17 @@ public class ExperimentsTable extends JTable implements MouseListener {
             }
         }
 
+    }
+
+    public Experiment getSelectedExperiment() {
+        int selectedRow = getSelectedRow();
+
+        if (selectedRow >= 0 && selectedRow < expTableModel.getRowCount()) {
+            int modelId = this.convertRowIndexToModel(selectedRow);
+            return expTableModel.getExperimentAtIndex(modelId);
+        }
+
+        return null;
     }
 
     public void mousePressed(MouseEvent e) {

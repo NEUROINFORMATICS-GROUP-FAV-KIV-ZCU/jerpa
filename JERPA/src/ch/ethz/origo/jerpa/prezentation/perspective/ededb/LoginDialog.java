@@ -42,11 +42,9 @@ public class LoginDialog extends JDialog implements ILanguage {
 
     /**
      * Constructor.
-     *
-     * @param owner window owner
      */
-    protected LoginDialog(Window owner) {
-        super(owner, ModalityType.APPLICATION_MODAL);
+    protected LoginDialog() {
+        super(SwingUtilities.getWindowAncestor(new JPanel()), ModalityType.APPLICATION_MODAL);
 
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         LanguageObservable.getInstance().attach(this);

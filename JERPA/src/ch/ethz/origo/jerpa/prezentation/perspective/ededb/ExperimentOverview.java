@@ -53,7 +53,7 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
      * @param experimentId experiment identifier
      */
     public ExperimentOverview(int experimentId) {
-        super();
+        super(SwingUtilities.getWindowAncestor(new JPanel()), ModalityType.APPLICATION_MODAL);
 
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
@@ -85,7 +85,6 @@ public class ExperimentOverview extends JDialog implements ActionListener, ILang
         this.add(canvas);
         this.pack();
         this.setResizable(false);
-        this.setAlwaysOnTop(true);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }

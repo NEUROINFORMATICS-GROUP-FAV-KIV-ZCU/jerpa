@@ -55,6 +55,10 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
 
         experimentsCombo.addActionListener(this);
         experimentsCombo.setActionCommand("expSelected");
+        Experiment exp = controller.getSelectedExperiment();
+        if (exp != null) {
+            experimentsCombo.setSelectedItem(exp);
+        }
 
         addWeather.addActionListener(this);
         addWeather.setActionCommand("addWeather");
@@ -78,6 +82,9 @@ public class ImportWizardLogic extends ImportWizard implements ActionListener {
         cancelButton.setActionCommand("cancel");
 
         switchView();
+
+        this.pack();
+        this.setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e) {

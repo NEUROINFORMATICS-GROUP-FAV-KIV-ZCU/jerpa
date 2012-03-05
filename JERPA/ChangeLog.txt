@@ -11,6 +11,12 @@
 *********************************************************************************************
 
  * (03/05/2012) kivan
+	# 273
+	
+	FIXED: All popup windows in EDEDB are now modal and no longer stay on top even when other app is focused.
+	FIXED: experiment selected in experiments table is automatically the one to be imported into in Import Wizard.
+
+ * (03/05/2012) kivan
 	# 272
 	
 	FIXED: LoginDialog is now not always on top (is modal now) and it is resizable now (text field/area elements too).

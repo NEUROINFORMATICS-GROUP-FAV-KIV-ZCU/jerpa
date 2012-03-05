@@ -176,6 +176,26 @@ public class ExperimentViewerLogic extends ExperimentViewer implements Observer 
         }
     }
 
+    /**
+     * Getter of first selected Experiment in experiment table.
+     *
+     * @return first selected experiment
+     */
+    public Experiment getSelectedExperiment() {
+        synchronized (ExpTableModel.class) {
+            {
+                int selectedRow = expTable.getSelectedRow();
+
+                if (selectedRow >= 0 && selectedRow < expModel.getRowCount()) {
+                    int modelId = expTable.convertRowIndexToModel(selectedRow);
+                    return expModel.getExperimentAtIndex(modelId);
+                }
+
+                return null;
+            }
+        }
+    }
+
     public void update(Observable o, Object arg) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

@@ -27,7 +27,7 @@ import static javax.swing.BorderFactory.createMatteBorder;
 /**
  * GUI frame with tools for import new scenarios, experiments and its files.
  */
-public class ImportWizard extends JFrame implements ILanguage {
+public class ImportWizard extends JDialog implements ILanguage {
 
     private final static Logger log = Logger.getLogger(ImportWizard.class);
 
@@ -64,7 +64,7 @@ public class ImportWizard extends JFrame implements ILanguage {
      * Constructor - creates frame and invokes canvas creating method.
      */
     public ImportWizard() {
-        super("Import Wizard");
+        super(SwingUtilities.getWindowAncestor(new JPanel()),"Import Wizard",ModalityType.APPLICATION_MODAL);
 
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
@@ -73,10 +73,7 @@ public class ImportWizard extends JFrame implements ILanguage {
         updateTitles();
 
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.pack();
         this.setMinimumSize(new Dimension(400, 300));
-        this.setVisible(true);
-        this.setAlwaysOnTop(true);
     }
 
     /**
@@ -97,7 +94,12 @@ public class ImportWizard extends JFrame implements ILanguage {
         experimentsCombo.setPreferredSize(COMBO_SIZE);
         experimentsCombo.setRenderer(tooltipComboBoxRenderer);
 
-        JPanel chooser = new JPanel(new BorderLayout());
+        GridBagConstraints iconConstraints = new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints existingRadioConstraints = new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints newRadioConstraints = new GridBagConstraints(1, 1, 1, 1, 0, 0, GridBagConstraints.PAGE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints experimentsComboConstraints = new GridBagConstraints(2, 1, 1, 1, 0.5, 0, GridBagConstraints.PAGE_START, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+
+        JPanel chooser = new JPanel(new GridBagLayout());
 
         try {
             JLabel icon = new JLabel();
@@ -106,14 +108,14 @@ public class ImportWizard extends JFrame implements ILanguage {
             icon.setText("Import Wizard");
             Font iconFont = new Font(Font.SANS_SERIF, Font.BOLD, 30);
             icon.setFont(iconFont);
-            chooser.add(icon, BorderLayout.BEFORE_FIRST_LINE);
+            chooser.add(icon, iconConstraints);
         } catch (PerspectiveException e) {
             log.error(e.getMessage(), e);
         }
 
-        chooser.add(existingRadio, BorderLayout.LINE_START);
-        chooser.add(newRadio, BorderLayout.CENTER);
-        chooser.add(experimentsCombo, BorderLayout.LINE_END);
+        chooser.add(existingRadio, existingRadioConstraints);
+        chooser.add(newRadio, newRadioConstraints);
+        chooser.add(experimentsCombo, experimentsComboConstraints);
 
         GridBagConstraints chooserPaneConstraints = new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
         canvas.add(chooser, chooserPaneConstraints);

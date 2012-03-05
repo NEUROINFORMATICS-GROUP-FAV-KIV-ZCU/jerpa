@@ -33,12 +33,11 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
     /**
      * Constructor.
      *
-     * @param owner      Window owner
      * @param controller EDEDB Controller instance
      * @param service    EDEDClient from EDEDClient.jar
      */
-    private LoginDialogLogic(Window owner, EDEDBController controller, EDEDClient service) {
-        super(owner);
+    private LoginDialogLogic(EDEDBController controller, EDEDClient service) {
+        super();
 
         this.controller = controller;
         this.service = service;
@@ -125,13 +124,12 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
     /**
      * Singleton getter of Login Dialog instance.
      *
-     * @param owner      window owner
      * @param service    web service instance
      * @param controller EDEDB Controller instance
      */
-    public static void showLoginDialog(Window owner, EDEDClient service, EDEDBController controller) {
+    public static void showLoginDialog(EDEDClient service, EDEDBController controller) {
         if (instance == null) {
-            instance = new LoginDialogLogic(owner, controller, service);
+            instance = new LoginDialogLogic(controller, service);
             instance.pack();
             instance.setVisible(true);
         } else if (!instance.isShowing()) {
