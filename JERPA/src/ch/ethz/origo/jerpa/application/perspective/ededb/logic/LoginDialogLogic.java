@@ -33,11 +33,12 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
     /**
      * Constructor.
      *
+     * @param owner      Window owner
      * @param controller EDEDB Controller instance
      * @param service    EDEDClient from EDEDClient.jar
      */
-    private LoginDialogLogic(EDEDBController controller, EDEDClient service) {
-        super();
+    private LoginDialogLogic(Window owner, EDEDBController controller, EDEDClient service) {
+        super(owner);
 
         this.controller = controller;
         this.service = service;
@@ -53,11 +54,11 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
     }
 
     private void initTextFields() {
-        usernameField.setText(ConfigPropertiesLoader.getProperty("ededb.properties","ededb.username"));
-        passwordField.setText(ConfigPropertiesLoader.getProperty("ededb.properties","ededb.password"));
-        endpointField.setText(ConfigPropertiesLoader.getProperty("ededb.properties","ededb.endpoint"));
+        usernameField.setText(ConfigPropertiesLoader.getProperty("ededb.properties", "ededb.username"));
+        passwordField.setText(ConfigPropertiesLoader.getProperty("ededb.properties", "ededb.password"));
+        endpointArea.setText(ConfigPropertiesLoader.getProperty("ededb.properties", "ededb.endpoint"));
 
-        boolean isEndpointEmpty = endpointField.getText().trim().isEmpty();
+        boolean isEndpointEmpty = endpointArea.getText().trim().isEmpty();
         optionsButton.setSelected(isEndpointEmpty);
         morePane.setVisible(isEndpointEmpty);
     }
@@ -76,7 +77,7 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
     public void actionPerformed(ActionEvent event) {
 
         if ("ok".equals(event.getActionCommand())) {
-            if (!endpointField.getText().isEmpty() && !usernameField.getText().isEmpty()
+            if (!endpointArea.getText().isEmpty() && !usernameField.getText().isEmpty()
                     && passwordField.getPassword().length > 0) {
                 loginThread = new LoginThread();
                 loginThread.start();
@@ -94,7 +95,6 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
             this.dispose();
         } else if ("options".equals(event.getActionCommand())) {
             morePane.setVisible(optionsButton.isSelected());
-            this.pack();
         }
 
     }
@@ -125,12 +125,15 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
     /**
      * Singleton getter of Login Dialog instance.
      *
+     * @param owner      window owner
      * @param service    web service instance
      * @param controller EDEDB Controller instance
      */
-    public static void showLoginDialog(EDEDClient service, EDEDBController controller) {
+    public static void showLoginDialog(Window owner, EDEDClient service, EDEDBController controller) {
         if (instance == null) {
-            instance = new LoginDialogLogic(controller, service);
+            instance = new LoginDialogLogic(owner, controller, service);
+            instance.pack();
+            instance.setVisible(true);
         } else if (!instance.isShowing()) {
             instance.setVisible(true);
         }
@@ -145,17 +148,17 @@ public final class LoginDialogLogic extends LoginDialog implements ActionListene
             try {
                 setLogInProgress(true);
 
-                String endpoint = endpointField.getText();
+                String endpoint = endpointArea.getText();
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 service.userLogIn(username, password, endpoint);
-                if(this.isInterrupted()){
+                if (this.isInterrupted()) {
                     service.userLogout();
                     return;
                 }
-                ConfigPropertiesLoader.setProperty("ededb.properties","ededb.endpoint", endpoint);
-                ConfigPropertiesLoader.setProperty("ededb.properties","ededb.username", username);
-                ConfigPropertiesLoader.setProperty("ededb.properties","ededb.password", password);
+                ConfigPropertiesLoader.setProperty("ededb.properties", "ededb.endpoint", endpoint);
+                ConfigPropertiesLoader.setProperty("ededb.properties", "ededb.username", username);
+                ConfigPropertiesLoader.setProperty("ededb.properties", "ededb.password", password);
             } catch (WebServiceException ex) {
 
                 if (ex.getCause() instanceof IOException) {

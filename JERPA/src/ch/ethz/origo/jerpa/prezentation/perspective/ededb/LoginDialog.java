@@ -6,8 +6,12 @@ import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
+import com.sun.java.swing.SwingUtilities3;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.SwingXUtilities;
+import sun.swing.SwingUtilities2;
 
+import javax.security.sasl.RealmChoiceCallback;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
@@ -23,7 +27,6 @@ public class LoginDialog extends JDialog implements ILanguage {
     protected ResourceBundle resource;
     protected String resourceBundlePath;
 
-    private final int VISIBLE_LETTERS = 10;
     private JTextArea info;
     private JLabel usernameLabel;
     private JLabel passwordLabel;
@@ -33,15 +36,18 @@ public class LoginDialog extends JDialog implements ILanguage {
     protected JToggleButton optionsButton;
     protected JFormattedTextField usernameField;
     protected JPasswordField passwordField;
-    protected JFormattedTextField endpointField;
+    protected JTextArea endpointArea;
     protected JPanel morePane;
     protected final JProgressBar progress = new JProgressBar();
 
     /**
      * Constructor.
+     *
+     * @param owner window owner
      */
-    protected LoginDialog() {
-        super();
+    protected LoginDialog(Window owner) {
+        super(owner, ModalityType.APPLICATION_MODAL);
+
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         LanguageObservable.getInstance().attach(this);
         setLocalizedResourceBundle("ch.ethz.origo.jerpa.jerpalang.perspective.ededb.EDEDB");
@@ -69,17 +75,16 @@ public class LoginDialog extends JDialog implements ILanguage {
         canvas.add(progress);
 
         updateTexts();
-
-        this.setResizable(false);
-        this.setAlwaysOnTop(true);
         this.add(canvas);
-        this.setVisible(true);
+
         this.setLocationRelativeTo(null);
-        this.pack();
+        this.setMinimumSize(new Dimension(400, 300));
+        this.setMaximumSize(new Dimension(800, 600));
     }
 
     /**
      * Creator of panel with additional login options.
+     *
      * @return panel with additional options
      */
     private JPanel createMorePane() {
@@ -88,25 +93,29 @@ public class LoginDialog extends JDialog implements ILanguage {
         morePane.setLayout(new GridBagLayout());
 
         endpointLabel = new JLabel();
-        endpointLabel.setLabelFor(endpointField);
-        endpointField = new JFormattedTextField();
-        endpointField.setColumns(VISIBLE_LETTERS);
+        endpointLabel.setLabelFor(endpointArea);
+        endpointArea = new JTextArea();
+        endpointArea.setLineWrap(true);
+
+        JScrollPane endpointScrollArea = new JScrollPane(endpointArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        endpointScrollArea.setPreferredSize(new Dimension(250,80));
 
         GridBagConstraints endpointLabelConstraints = new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
-        GridBagConstraints endpointFieldConstraints = new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints endpointFieldConstraints = new GridBagConstraints(0, 1, 1, 1, 0.5, 0.5, GridBagConstraints.LINE_START, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0);
 
         morePane.add(endpointLabel, endpointLabelConstraints);
-        morePane.add(endpointField, endpointFieldConstraints);
+        morePane.add(endpointScrollArea, endpointFieldConstraints);
 
         return morePane;
     }
 
     /**
      * Creator of panel containing information about login process.
+     *
      * @return panel with login information
      */
     private JPanel createInfoPane() {
-        JPanel infoPane = new JPanel(new FlowLayout());
+        JPanel infoPane = new JPanel(new GridBagLayout());
 
         info = new JTextArea();
         info.setEditable(false);
@@ -115,20 +124,24 @@ public class LoginDialog extends JDialog implements ILanguage {
         info.setBackground(infoPane.getBackground());
         info.setForeground(infoPane.getForeground());
 
-        infoPane.setLayout(new BoxLayout(infoPane, BoxLayout.LINE_AXIS));
+        GridBagConstraints infoIconConstraints = new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
+        GridBagConstraints infoAreaFieldConstraints = new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+
+
         try {
-            infoPane.add(new JLabel(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32)));
+            infoPane.add(new JLabel(JUIGLEGraphicsUtils.createImageIcon(JERPAUtils.IMAGE_PATH + "login_48.png", 32, 32)), infoIconConstraints);
         } catch (PerspectiveException ex) {
             log.error(ex);
         }
 
-        infoPane.add(info);
+        infoPane.add(info, infoAreaFieldConstraints);
 
         return infoPane;
     }
 
     /**
      * Creator of panel with buttons.
+     *
      * @return buttons panel
      */
     private JPanel createButtonPane() {
@@ -147,6 +160,7 @@ public class LoginDialog extends JDialog implements ILanguage {
 
     /**
      * Creator of panel with credentials inputs.
+     *
      * @return credentials panel.
      */
     private JPanel createCredentialsPane() {
@@ -157,15 +171,13 @@ public class LoginDialog extends JDialog implements ILanguage {
         usernameField = new JFormattedTextField();
         passwordField = new JPasswordField();
 
-        usernameField.setColumns(VISIBLE_LETTERS);
-        passwordField.setColumns(VISIBLE_LETTERS);
         usernameLabel.setLabelFor(usernameField);
         passwordLabel.setLabelFor(passwordField);
 
         GridBagConstraints usernameLabelConstraints = new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
-        GridBagConstraints usernameFieldConstraints = new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints usernameFieldConstraints = new GridBagConstraints(1, 0, 1, 1, 0.5, 0, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
         GridBagConstraints passwordLabelConstraints = new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 1), 0, 0);
-        GridBagConstraints passwordFieldConstraints = new GridBagConstraints(1, 1, 1, 1, 0, 0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+        GridBagConstraints passwordFieldConstraints = new GridBagConstraints(1, 1, 1, 1, 0.5, 0, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
 
         credentialsPane.add(usernameLabel, usernameLabelConstraints);
         credentialsPane.add(usernameField, usernameFieldConstraints);

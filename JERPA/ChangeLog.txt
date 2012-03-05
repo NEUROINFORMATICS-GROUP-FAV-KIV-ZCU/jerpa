@@ -10,6 +10,11 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (03/05/2012) kivan
+	# 272
+	
+	FIXED: LoginDialog is now not always on top (is modal now) and it is resizable now (text field/area elements too).
+
  * (03/02/2012) kivan
 	# 271
 	

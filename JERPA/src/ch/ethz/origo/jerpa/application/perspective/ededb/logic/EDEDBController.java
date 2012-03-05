@@ -81,7 +81,7 @@ public class EDEDBController extends Observable {
 	private void initActions() {
 
         actionImportWizard = new ActionImportWizard(this);
-		actionConnect = new ActionConnect(this, service);
+		actionConnect = new ActionConnect(SwingUtilities.getWindowAncestor(new JPanel()), this, service);
 		actionDisconnect = new ActionDisconnect(this);
 		actionDownloadSelected = new ActionDownloadSelected(this, downloader);
 		actionDeleteSelected = new ActionDeleteSelected(this);

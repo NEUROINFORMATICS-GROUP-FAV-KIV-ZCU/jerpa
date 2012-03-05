@@ -36,22 +36,28 @@ public class DataFilesTable extends JTable implements MouseListener {
         if (2 == e.getClickCount()) {
 
             int selectedRow = this.getSelectedRow();
-            int modelId = this.convertRowIndexToModel(selectedRow);
-            final DataFile selectedFile = tableModel.getDataFileAtIndex(modelId);
+            if (selectedRow >= 0 && selectedRow < tableModel.getRowCount()) {
+                int modelId = this.convertRowIndexToModel(selectedRow);
+                final DataFile selectedFile = tableModel.getDataFileAtIndex(modelId);
 
-            Session session = HibernateUtil.getActiveSession();
-            HibernateUtil.reattachObject(session, selectedFile);
+                Session session = HibernateUtil.getActiveSession();
+                HibernateUtil.reattachObject(session, selectedFile);
 
-            new BlobViewer(selectedFile.getFileContent(), selectedFile.getFilename(), selectedFile.getFileLength(), selectedFile.getMimetype());
-            session.close();
+                new BlobViewer(selectedFile.getFileContent(), selectedFile.getFilename(), selectedFile.getFileLength(), selectedFile.getMimetype());
+                session.close();
+            }
         }
     }
 
-    public void mousePressed(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+    }
 
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {
+    }
 
-    public void mouseEntered(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {
+    }
 
-    public void mouseExited(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {
+    }
 }
