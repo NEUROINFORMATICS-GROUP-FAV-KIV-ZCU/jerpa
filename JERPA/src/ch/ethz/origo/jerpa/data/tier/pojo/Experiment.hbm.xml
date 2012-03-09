@@ -13,10 +13,10 @@
             <column name="EXPERIMENT_ID" sql-type="integer" length="10" not-null="true"/>
         </property>
         <property name="startTime">
-            <column name="START_TIME" sql-type="date" length="10"/>
+            <column name="START_TIME" sql-type="timestamp" length="10"/>
         </property>
         <property name="endTime">
-            <column name="END_TIME" sql-type="date" length="10"/>
+            <column name="END_TIME" sql-type="timestamp" length="10"/>
         </property>
         <property name="temperature">
             <column name="TEMPERATURE" sql-type="smallint" length="5"/>

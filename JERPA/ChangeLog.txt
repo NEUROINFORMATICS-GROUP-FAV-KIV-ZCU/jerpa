@@ -10,6 +10,11 @@
 *                                  CHANGE LOG 1.0.1 - > 1.1.0                               *
 *********************************************************************************************
 
+ * (03/09/2012) kivan
+	# 274
+	
+	FIXED: experiment endtime and starttime is now showing seconds, hours, minutes
+
  * (03/05/2012) kivan
 	# 273
 	

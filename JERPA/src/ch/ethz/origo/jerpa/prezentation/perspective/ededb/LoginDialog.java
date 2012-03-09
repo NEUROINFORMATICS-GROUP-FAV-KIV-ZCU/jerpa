@@ -6,12 +6,7 @@ import ch.ethz.origo.juigle.application.exception.JUIGLELangException;
 import ch.ethz.origo.juigle.application.exception.PerspectiveException;
 import ch.ethz.origo.juigle.application.observers.LanguageObservable;
 import ch.ethz.origo.juigle.prezentation.JUIGLEGraphicsUtils;
-import com.sun.java.swing.SwingUtilities3;
 import org.apache.log4j.Logger;
-import org.jdesktop.swingx.SwingXUtilities;
-import sun.swing.SwingUtilities2;
-
-import javax.security.sasl.RealmChoiceCallback;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;

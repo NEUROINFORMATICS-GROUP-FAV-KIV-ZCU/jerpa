@@ -494,8 +494,8 @@ public class DataSyncer {
                 exp.setExperimentId(expInfo.getExperimentId());
             }
 
-            exp.setEndTime(new java.sql.Date(expInfo.getEndTimeInMillis()));
-            exp.setStartTime(new java.sql.Date(expInfo.getStartTimeInMillis()));
+            exp.setEndTime(new Date(expInfo.getEndTimeInMillis()));
+            exp.setStartTime(new Date(expInfo.getStartTimeInMillis()));
             exp.setVersion(expInfo.getScn());
             exp.setTemperature((short) expInfo.getTemperature());
             exp.setWeathernote(expInfo.getWeatherNote());

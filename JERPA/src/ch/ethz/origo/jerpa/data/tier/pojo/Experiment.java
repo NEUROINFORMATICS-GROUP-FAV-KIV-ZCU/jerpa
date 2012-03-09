@@ -2,10 +2,10 @@ package ch.ethz.origo.jerpa.data.tier.pojo;
 
 import ch.ethz.origo.jerpa.data.tier.HibernateUtil;
 
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Set;
 
 /**
